@@ -12,8 +12,8 @@ const depts = ["PLATFORM", "DATABASE", "NETWORK", "APPLICATION", "SECURITY"];
 const deptNames = ["플랫폼운영", "DB운영", "네트워크운영", "업무개발", "보안운영"];
 const readJson = (value: any) => { try { return typeof value === "string" ? JSON.parse(value) : value; } catch { return value; } };
 
-export default function IncidentWorkflow({ incident, isAdmin, canEdit, operators, api, onRefresh, onClose, onGraph, renderDecision, renderTimeline, renderAgent }: {
-  incident: Row | null; isAdmin: boolean; canEdit: boolean; operators: Row[];
+export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, operators, api, onRefresh, onClose, onGraph, renderDecision, renderTimeline, renderAgent }: {
+  open: boolean; incident: Row | null; isAdmin: boolean; canEdit: boolean; operators: Row[];
   api: (path: string, method?: string, body?: any) => Promise<any>;
   onRefresh: () => Promise<any>; onClose: () => void; onGraph: () => void;
   renderDecision: (decision: Row | null) => ReactNode;
@@ -58,7 +58,7 @@ export default function IncidentWorkflow({ incident, isAdmin, canEdit, operators
     setStep(activeStep); setEvidence("");
   }, [id, status, activeStep, follow]);
   useEffect(() => {
-    if (!incident) return;
+    if (!incident || !open) return;
     const frame = requestAnimationFrame(() => {
       const el = content.current, head = document.querySelector(".workflow-head");
       if (!el) return;
@@ -69,7 +69,7 @@ export default function IncidentWorkflow({ incident, isAdmin, canEdit, operators
       keyboardStep.current = false;
     });
     return () => cancelAnimationFrame(frame);
-  }, [id, step, evidence]);
+  }, [open, id, step, evidence]);
   useEffect(() => {
     if (!operation) { setSeconds(0); return; }
     const tick = () => setSeconds(Math.floor((Date.now() - operation.since) / 1000));
@@ -114,8 +114,8 @@ export default function IncidentWorkflow({ incident, isAdmin, canEdit, operators
       <div className="workflow-title"><div><span className="small muted">장애 처리 · {id || "조회 중"}</span><h2>{incident?.title || "장애 정보를 불러오고 있습니다…"}</h2>{incident && <p className="workflow-provider">{decisionSource}{incident.decision && ` · ${incident.decision.provider} · ${Number.isFinite(incident.decision.latencyMs) ? incident.decision.latencyMs + "ms" : "소요 시간 미기록"}`}{incident.decision?.fallback && " · 연결 실패 후 Mock 대체"}</p>}</div><Button variant="outline" size="sm" aria-label="상세 닫기" onClick={onClose} disabled={busy}><ArrowLeft size={14} />관제로 돌아가기</Button></div>
       {incident && <>
         <div className="workflow-stepper" role="tablist" aria-label="장애 처리 단계">
-          {guide.steps.map((item, index) => <button key={item.label} id={`workflow-tab-${index}`} role="tab" aria-controls="workflow-stage" aria-selected={step === index && !evidence} aria-current={item.state === "current" ? "step" : undefined} tabIndex={step === index ? 0 : -1} disabled={busy}
-            className={`${item.state} ${step === index && !evidence ? "selected" : ""}`} onClick={() => selectStep(index)}
+          {guide.steps.map((item, index) => <button key={item.label} id={`workflow-tab-${index}`} role="tab" aria-controls="workflow-stage" aria-selected={step === index} aria-current={item.state === "current" ? "step" : undefined} tabIndex={step === index ? 0 : -1} disabled={busy}
+            className={`${item.state} ${step === index ? "selected" : ""}`} onClick={() => selectStep(index)}
             onKeyDown={e => { const next = e.key === "ArrowRight" ? (index + 1) % 6 : e.key === "ArrowLeft" ? (index + 5) % 6 : e.key === "Home" ? 0 : e.key === "End" ? 5 : null; if (next !== null) { e.preventDefault(); keyboardStep.current = true; selectStep(next); } }}>
             <span className="step-point" aria-hidden="true">{item.state === "complete" ? <Check size={14} /> : index + 1}</span><span><strong>{index + 1}. {item.label}</strong><small>{item.state === "complete" ? "완료" : item.state === "current" ? "현재 단계" : "예정"}</small></span>
           </button>)}

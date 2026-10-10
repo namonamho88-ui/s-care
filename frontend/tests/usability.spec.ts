@@ -128,6 +128,9 @@ test('edited recovery notes must be saved before closing an incident',async({pag
   await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
   await page.getByRole('tab',{name:/5\. 후기 검토/}).click();
   await page.getByRole('textbox',{name:'조치 후기',exact:true}).fill('수정된 가상 복구 후기');
+  await page.getByRole('button',{name:'상세 닫기',exact:true}).click();
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  await expect(page.getByRole('textbox',{name:'조치 후기',exact:true})).toHaveValue('수정된 가상 복구 후기');
   await page.getByRole('tab',{name:/6\. 장애 종료/}).click();
   await expect(page.getByRole('button',{name:'장애 종료',exact:true})).toBeDisabled();
   await page.getByRole('tab',{name:/5\. 후기 검토/}).click();
@@ -408,4 +411,22 @@ test('an old in-flight read cannot delay or reverse the next stage after approva
   await page.clock.runFor(500);
   await expect(dialog.getByRole('tab',{name:/4\. 복구/})).toHaveAttribute('aria-selected','true');
   await expect(dialog.getByRole('progressbar')).toHaveAttribute('aria-valuenow','50');
+});
+
+test('checking the impact graph preserves an unsaved approval reason and hidden forms do not trap focus',async({page})=>{
+  const mutations=await setup(page,undefined,'ADMIN',{status:'WAITING_APPROVAL'});
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  const dialog=page.getByRole('dialog',{name:'장애 상세'});
+  await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('가상 영향 범위 검토 중인 미저장 사유');
+  await dialog.getByRole('button',{name:'영향 그래프 크게 보기'}).click();
+  await expect(dialog).toHaveCount(0);
+  await page.getByRole('button',{name:'선택 장애 상세 보기'}).click();
+  await expect(dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true})).toHaveValue('가상 영향 범위 검토 중인 미저장 사유');
+  await expect.poll(()=>dialog.locator('.workflow-content').evaluate(el=>el.contains(document.activeElement)||el===document.activeElement)).toBe(true);
+  await dialog.getByRole('button',{name:'상세 닫기',exact:true}).click();
+  await page.getByRole('button',{name:'장애 직접 등록',exact:true}).click();
+  const registration=page.getByRole('dialog',{name:'장애 등록'});
+  await expect(registration).toBeVisible();
+  await expect.poll(()=>registration.evaluate(el=>el.contains(document.activeElement))).toBe(true);
+  expect(mutations).toEqual([]);
 });

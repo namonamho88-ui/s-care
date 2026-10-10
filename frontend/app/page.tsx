@@ -1431,8 +1431,8 @@ export default function Home() {
           </div>
         </main>
       </div>
-      {drawer && selected && <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="장애 상세">
-        <IncidentWorkflow incident={detail} isAdmin={isAdmin} canEdit={canEdit} operators={catalog.operators} api={api}
+      {selected && <div className="modal-backdrop" style={{ display: drawer ? "flex" : "none" }} role={drawer ? "dialog" : undefined} aria-modal={drawer ? true : undefined} aria-label="장애 상세">
+        <IncidentWorkflow open={drawer} incident={detail} isAdmin={isAdmin} canEdit={canEdit} operators={catalog.operators} api={api}
           onClose={() => setDrawer(false)} onGraph={() => { setDrawer(false); setView("ontology"); }}
           onRefresh={async () => { const result = await loadDetail(selected, true); await refresh(); return result; }}
           renderDecision={d => <Decision d={d} />} renderTimeline={events => <Timeline events={events} />} renderAgent={task => <AgentResult task={task} />} />
