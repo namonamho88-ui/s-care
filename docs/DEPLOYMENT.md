@@ -80,6 +80,16 @@ npm.cmd --prefix frontend start
 
 Neo4j Aura를 쓰면 neo4j 서비스 대신 실제 Aura의 URI/사용자/DB명을 지정한다. Supabase는 Neo4j를 대체하지 않는다.
 
+### 자원 한도와 빌드 범위
+
+Railway Trial의 서비스당 RAM 1GB, 영구 볼륨 0.5GB 한도는 실제 모델을 포함한 최종 시연의 검증된 실행 사양이 아니다. 2026-10-10 실제 배포에서 backend/Supabase와 Hermes gateway/승인 Skill 게시까지 성공했지만, Jev는 반복 종료됐고 Neo4j는 디스크 공간 부족으로 시작하지 못했다. Jev 종료의 구체적인 원인은 별도 확인이 필요하며, RAM 2GB 증설 요청은 Trial 한도로 거부됐다. 건강 확인용 `/health` 성공만으로 모델 추론이나 전체 시연 성공을 판정하지 않는다.
+
+유료 요금제 전환과 결제는 프로젝트 소유자가 수행한다. 전환 후 서비스 한도와 기존 볼륨 크기를 다시 확인하고, 자원을 조정한 뒤 실제 추론·그래프·복구·재시작 보존을 검증한다. Hobby의 월 $5는 포함 사용량과 최소 요금이며 전체 구성의 월 요금 상한이 아니다. [Railway 공식 요금제](https://docs.railway.com/pricing/plans).
+
+작은 시연 볼륨에서는 Neo4j의 트랜잭션 로그 사전 할당을 끄고 16MB 단위, 2개 파일 보존으로 설정한다. `deploy/railway/neo4j.env.example`에 포함되어 있다. 이미 디스크가 가득 찬 볼륨을 이 설정만으로 복구했다고 가정하거나 기존 데이터를 삭제하지 않는다. 필요한 경우 용량을 늘리고 재검증한다. [Neo4j 설정](https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/).
+
+GitHub 자동 배포의 Watch Paths는 backend `/backend/**`, jevos `/infra/jevos/**`, hermes `/infra/hermes/**`, `/scripts/**`, `/.dockerignore`로 제한한다. 문서나 프론트엔드 수정만으로 모든 모델 서버가 재시작되지 않도록 한다. [Railway 모노레포 배포](https://docs.railway.com/deployments/monorepo).
+
 - backend만 공개 HTTPS 주소를 만들고 Vercel BACKEND_URL에 넣는다. DB/jevos/Hermes/bridge는 같은 프로젝트의 private network로 연결한다. 예제의 `*.railway.internal`은 실제 서비스 주소로 바꾼다.
 - Hermes는 OPENAI_API_KEY, HERMES_API_KEY, 별도의 HERMES_PUBLISH_KEY를 받는다. 백엔드는 내부 인증 키 두 개만 받는다. bridge에는 upstream OpenAI 키를 전달하지 않는다.
 - **backend는 항상 실행되는 단일 replica**로 운영한다. 현재 Harness의 스레드/시작 시 중단 복구 정책은 여러 인스턴스의 동시 실행을 지원하지 않는다. 수평 확장은 향후 작업 큐/lease가 필요하다.

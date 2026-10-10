@@ -1,0 +1,187 @@
+{
+  "backendUrl": "https://backend-production-0eb45.up.railway.app",
+  "actualHostedBackend": true,
+  "fictional": true,
+  "health": {
+    "fictional": true,
+    "status": "UP",
+    "graph": "UNAVAILABLE"
+  },
+  "config": {
+    "hermes": {
+      "apiReachable": true,
+      "reason": "",
+      "configured": true,
+      "toolsDisabled": true,
+      "provider": "HERMES_AGENT",
+      "lastResult": {},
+      "llmVerified": false,
+      "knowledgeStore": "POSTGRESQL_APPROVED_SKILLS"
+    },
+    "hermesExportConfigured": true,
+    "database": "POSTGRESQL",
+    "graph": "UNAVAILABLE",
+    "fictional": true,
+    "a2a": "0.3.0",
+    "defaultProvider": "LOCAL",
+    "cloudConfigured": false
+  },
+  "anonymousRejected": true,
+  "catalog": {
+    "assets": 52,
+    "scenarios": 50,
+    "manuals": 30,
+    "operators": 15
+  },
+  "migratedIncidentCount": 203,
+  "previousRealIncidentPreserved": "INC-e069ac26-8d59-49",
+  "a2aCards": [
+    "incident",
+    "diagnosis",
+    "knowledge",
+    "impact",
+    "recovery",
+    "report"
+  ],
+  "reports": {
+    "pdf": {
+      "bytes": 47899,
+      "sha256": "1d5302b33e4d8b8328bfed40e58692764038344073d460f6958fe3aa36890283"
+    },
+    "xlsx": {
+      "bytes": 20908,
+      "sha256": "0eba512c33e202f3683d4f75b9af992afde3c7fd5c1372840f6f0b18e0022faa"
+    }
+  },
+  "sse": {
+    "firstEventId": 67,
+    "resumedEventId": 68,
+    "lastEventIdReconnect": true
+  },
+  "approvedSkillExports": 22,
+  "pending": [
+    "Jev runtime stable operation",
+    "Neo4j runtime ready",
+    "cloud end-to-end incident",
+    "Vercel frontend deployment"
+  ],
+  "verifiedAt": "2026-10-10T12:23:57.915232+00:00",
+  "railway": {
+    "projectId": "aa25ff56-1b44-4bf8-9931-5373f6fff51a",
+    "projectName": "astonishing-balance",
+    "services": [
+      {
+        "id": "107657a0-35c6-41bf-8b8f-0cfd913b821b",
+        "name": "hermes",
+        "deployment": {
+          "id": "67c47c7a-21b5-4e33-804c-94e6ae386fa3",
+          "status": "SUCCESS"
+        },
+        "domains": {
+          "customDomains": [],
+          "serviceDomains": []
+        }
+      },
+      {
+        "id": "58cc5d21-3d9f-4dde-8dd7-77b3c075272b",
+        "name": "neo4j",
+        "deployment": {
+          "id": "72e75857-adae-4ab6-ba7d-3f7408078675",
+          "status": "FAILED"
+        },
+        "domains": {
+          "customDomains": [],
+          "serviceDomains": []
+        }
+      },
+      {
+        "id": "b3135f0f-7733-4b55-9006-bfe07a320389",
+        "name": "jevos",
+        "deployment": {
+          "id": "02aeac2d-7ae0-4aab-9fbf-175d7d4e4507",
+          "status": "CRASHED"
+        },
+        "domains": {
+          "customDomains": [],
+          "serviceDomains": []
+        }
+      },
+      {
+        "id": "22096c8c-913e-448d-87f7-0557e71c7c91",
+        "name": "backend",
+        "deployment": {
+          "id": "91b3aef2-bd8f-41fb-8cce-eca25fcc9af4",
+          "status": "SUCCESS"
+        },
+        "domains": {
+          "customDomains": [],
+          "serviceDomains": [
+            {
+              "domain": "backend-production-0eb45.up.railway.app",
+              "id": "89a1606d-cabf-400d-a288-b0501146da61",
+              "targetPort": 8080
+            }
+          ]
+        }
+      }
+    ],
+    "volumes": {
+      "edges": [
+        {
+          "node": {
+            "currentSizeMB": 48.783359999999995,
+            "deletedAt": null,
+            "environmentId": "ee522179-f135-49dc-9393-842724b2c115",
+            "id": "a51b8ffd-c404-4378-8b85-9b3059faf626",
+            "isPendingDeletion": false,
+            "mountPath": "/data/hermes",
+            "serviceId": "107657a0-35c6-41bf-8b8f-0cfd913b821b",
+            "sizeMB": 500,
+            "state": "READY",
+            "volume": {
+              "id": "171323ff-6953-471a-aa50-578e7b7e98c7",
+              "name": "hermes-volume"
+            }
+          }
+        },
+        {
+          "node": {
+            "currentSizeMB": 35.766272,
+            "deletedAt": null,
+            "environmentId": "ee522179-f135-49dc-9393-842724b2c115",
+            "id": "b73fa8b5-fb12-4d35-9263-cf378cf0898e",
+            "isPendingDeletion": false,
+            "mountPath": "/data",
+            "serviceId": "58cc5d21-3d9f-4dde-8dd7-77b3c075272b",
+            "sizeMB": 500,
+            "state": "READY",
+            "volume": {
+              "id": "aefabdb6-a00e-4332-8f9d-22643c269978",
+              "name": "neo4j-volume"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "supabaseMigration": {
+    "incidents": 203,
+    "skills": 23,
+    "assets": 52,
+    "dependencies": 80,
+    "manuals": 30,
+    "operators": 15,
+    "agentTasks": 22,
+    "events": 117,
+    "audit": 98,
+    "publicApiAccess": false
+  },
+  "allCloudDemoComplete": false,
+  "resourceBlockers": {
+    "trialMemoryLimitGb": 1,
+    "requestedMemoryGb": 2,
+    "limitError": "The maximum allowed memory for this service is 1 GB",
+    "neo4jError": "No space left on device",
+    "jevTerminationCause": "Not yet confirmed"
+  }
+}

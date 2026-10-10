@@ -2,7 +2,18 @@
 
 검증일: 2026-10-10 (KST). 모든 장애·관측·담당자·자산은 가상 데이터다.
 
-이 문서는 단계별 검증 이력이다. **최신 결과는 마지막 GitHub Linux 컨테이너 검증 절**을 기준으로 한다. 실제 Vercel/Supabase/Railway 배포는 아직 검증하지 않았다.
+이 문서는 단계별 검증 이력이다. **최신 결과는 아래 실제 Railway/Supabase 부분 배포 절**을 기준으로 한다. 전체 클라우드 시연과 Vercel 연결은 아직 완료하지 않았다.
+
+## 실제 Railway/Supabase 부분 배포 (최신)
+
+- 기존 Railway 프로젝트 `astonishing-balance`에서 backend, jevos, hermes, neo4j 서비스를 구성했다. 기존 실패한 저장소 루트 빌드를 `/backend` Dockerfile 빌드로 수정했다.
+- 실제 backend HTTPS에서 인증 없는 요청의 401 거부, 관리자 인증 조회, PostgreSQL 연결, 기존 장애 203건과 카탈로그 52자산/15담당자/30매뉴얼/50시나리오를 확인했다.
+- Supabase 전용 `brain` schema에 이전용 백업을 단일 트랜잭션으로 복원했다. 장애 203건, Skill 23개, 의존 관계 80개, Agent Task 22개, 이벤트 117개, 감사 98개를 보존했다. `anon`, `authenticated` 역할의 schema 접근은 허용하지 않는다.
+- 공식 Hermes gateway에 내부 네트워크로 접속했으며 실행 도구가 모두 비활성화된 것을 확인했다. 승인 Skill 22개를 인증된 HTTP bridge로 게시하고 PostgreSQL의 EXPORTED 결과를 확인했다. 이 단계는 새 클라우드 LLM 추론 검증을 뜻하지 않는다.
+- 6개 A2A Agent Card의 공개 HTTPS 주소, 기존 보고서 PDF/Excel 다운로드, SSE 이벤트와 Last-Event-ID 재접속을 확인했다. 다운로드 파일 형식/크기를 검사했으며 이번 배포에서 보고서의 시각 검수를 다시 수행하지는 않았다.
+- Trial의 실제 한도는 서비스당 메모리 1GB이며, 2GB 설정 시도는 `The maximum allowed memory for this service is 1 GB`로 거부됐다. Jev가 기동 뒤 반복 종료됐으며 구체적인 종료 원인은 아직 확정하지 않았다. Neo4j는 `No space left on device`로 기동하지 못했다. 로그 사전 할당을 줄인 뒤에도 해결되지 않아 자원 조정과 재검증이 필요하다.
+- **미완료:** Railway의 안정적인 Jev 추론/Neo4j 기동, 클라우드 전체 장애 처리 시연, 모델 호출/볼륨 재시작 보존, Vercel 화면 연결. Mock이나 SQL fallback으로 이 검증을 대신하지 않았다.
+- 증적: `evidence/railway-cloud.json`. 이전의 로컬 REAL 및 GitHub 컨테이너 검증 결과는 아래 기록과 구별한다.
 
 ## 실행 환경
 
