@@ -1,0 +1,63 @@
+{
+  "scope": "GitHub-hosted Linux CI, not Vercel/Supabase/Railway deployment",
+  "validatedAt": "2026-10-10",
+  "sourceCommit": "3331b32d90318ac1a724be87f40007c0c29c0a41",
+  "workflows": [
+    {
+      "id": 38048796620,
+      "name": "verify",
+      "commit": "3331b32d90318ac1a724be87f40007c0c29c0a41",
+      "conclusion": "success",
+      "url": "https://github.com/namonamho88-ui/s-care/actions/runs/38048796620",
+      "jobs": [
+        {
+          "id": 114203579213,
+          "name": "backend",
+          "conclusion": "success"
+        },
+        {
+          "id": 114203579324,
+          "name": "postgres-neo4j",
+          "conclusion": "success"
+        },
+        {
+          "id": 114203579345,
+          "name": "frontend",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 38048796614,
+      "name": "container verification",
+      "commit": "3331b32d90318ac1a724be87f40007c0c29c0a41",
+      "conclusion": "success",
+      "url": "https://github.com/namonamho88-ui/s-care/actions/runs/38048796614",
+      "jobs": [
+        {
+          "id": 114203579138,
+          "name": "ai-images (jevos)",
+          "conclusion": "success"
+        },
+        {
+          "id": 114203579291,
+          "name": "ai-images (hermes)",
+          "conclusion": "success"
+        },
+        {
+          "id": 114203579297,
+          "name": "application",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "h2JavaTests": 40,
+  "pythonTests": 6,
+  "postgresJavaPassed": 39,
+  "postgresJavaSkipped": 1,
+  "skipReason": "Python bridge process test is run in H2 job, not installed in PostgreSQL job",
+  "containerDemoMode": "DEMO",
+  "actualCloudDeployment": false,
+  "currentBrowserClickVerification": "Blocked by Codex browser URL security policy"
+}

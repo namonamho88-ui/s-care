@@ -2,14 +2,16 @@
 
 검증일: 2026-10-10 (KST). 모든 장애·관측·담당자·자산은 가상 데이터다.
 
+이 문서는 단계별 검증 이력이다. **최신 결과는 마지막 GitHub Linux 컨테이너 검증 절**을 기준으로 한다. 실제 Vercel/Supabase/Railway 배포는 아직 검증하지 않았다.
+
 ## 실행 환경
 
 Windows 호스트에서 공식 portable Java 21, PostgreSQL 17.6, Neo4j 5.26.12,
 jevos-v4 Windows x64 / OpenVINO CPU와 Node.js 24.13을 직접 실행했다.
 이 PC에는 Docker가 없어 컨테이너를 실행했다고 주장하지 않는다.
-Compose와 CI workflow는 제공하며, 현재 기록은 호스트 프로세스 기반 검증이다.
+아래 초기 기록은 호스트 프로세스 기반 검증이며, 이후 GitHub Linux runner에서 컨테이너 검증을 추가했다.
 
-## 자동 검증
+## 2차 개발 시점 자동 검증
 
 | 항목 | 결과 |
 |---|---|
@@ -107,3 +109,12 @@ Mock 시연 점수와 실제 모델 점수를 섞지 않는다. 정답은 모델
 - cloud 프로필의 기본/자리표시자/약한 관리자 토큰 거부, 승인 Skill의 최대 5개 단위 커서 동기화와 미승인 게시 방지를 보완했다. 로그인 화면의 기본 토큰 자동 입력을 제거했다.
 - Java **40개 모두 통과**(H2, 실제 Python HTTP bridge 왕복 포함), Python **6개 모두 통과**, Next.js production build 통과. 이번 변경의 PostgreSQL/Neo4j 재검증 및 컨테이너 결과는 GitHub Actions 실행 후 별도로 기록한다.
 - `container verification` workflow는 backend/frontend Docker 빌드 → 실제 PostgreSQL/Neo4j DEMO → BFF 로그인 → backend 재시작 후 이력 보존을 검사한다. 별도 job은 공식 jevos/Hermes 이미지를 빌드·기동하고 health 및 Hermes tool 비활성화를 확인한다. 이 검사는 실제 OpenAI 호출이나 클라우드 배포 성공을 뜻하지 않는다.
+
+## GitHub Linux 컨테이너 검증 완료 (2026-10-10)
+
+- 코드 커밋 `3331b32d90318ac1a724be87f40007c0c29c0a41`의 [verify](https://github.com/namonamho88-ui/s-care/actions/runs/38048796620)와 [container verification](https://github.com/namonamho88-ui/s-care/actions/runs/38048796614)가 모두 성공했다. 기계 판독 증적은 `evidence/github-ci.json`이다.
+- H2 Java **40개**, Python **6개** 통과. PostgreSQL 17.6 + Neo4j + cloud/brain schema에서는 **39개 통과, 1개 건너뜀**이다. 건너뛴 Python bridge 프로세스 테스트는 H2 job에서 실제 Python 서버를 사용해 통과했다.
+- Docker의 backend/frontend/PostgreSQL/Neo4j를 실제 기동하고 DEMO 장애를 생성 → 6개 A2A Agent → 관리자 승인 → 가상 복구 검증 → 보고서 생성 → CLOSED 이력 저장까지 확인했다. Next.js BFF 로그인·장애 201건 조회와 backend 재시작 후 새 이력 보존도 통과했다.
+- 공식 jevos Linux CPU 이미지 빌드와 health 기동 확인 성공. 공식 Hermes pinned source 이미지 빌드·비-root gateway 기동·HTTP Skill bridge health·전체 API tool 비활성화 확인 성공. Hermes는 upstream이 지원하는 editable 설치를 사용하며, 앱 볼륨 소유권 초기화 후 전용 UID 10001로 실행한다.
+- 이 CI에는 OpenAI 실제 비밀키를 제공하지 않았다. 컨테이너 health 검증을 실제 LLM 판단 성공으로 표시하지 않는다. 실제 Jev/Hermes 모델 호출 결과는 앞선 PC 시연 증적과 구별한다.
+- 최신 UI의 클릭·시각 검증은 Codex 내장 브라우저 URL 보안 정책으로 막혀 수행하지 못했다. 로컬 서버의 HTTP 200과 빌드는 확인했으며 테스트용 서버는 종료했다. 실제 클라우드 도메인·네트워크·인증·볼륨 재시작 시연은 배포 후 검증한다.

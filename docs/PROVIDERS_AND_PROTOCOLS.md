@@ -73,7 +73,7 @@
 | GET | /api/incidents/{id}/report/pdf, /xlsx | 실제 생성 파일 다운로드 |
 | GET | /api/skills, /api/audit, /api/evaluations | 저장 기록 조회 |
 | POST | /api/skills/{id}/review | APPROVED 또는 REJECTED |
-| POST | /api/hermes/sync | 승인 Skill만 Hermes 파일로 게시/재시도 |
+| POST | /api/hermes/sync?limit=5&after= | 승인 Skill만 최대 5개씩 게시/재시도; hasMore/nextCursor 반환 |
 | POST | /api/evaluations | 50건 비동기 평가 시작; 조회 API로 진행 확인 |
 
 ## 배포 환경 전환 시 추가 계약
@@ -81,3 +81,5 @@
 `HERMES_PUBLISH_MODE=filesystem|http|disabled`로 승인 Skill 게시 방식을 선택한다. `http`는 이 프로젝트의 `scripts/hermes_skill_bridge.py`와 통신하며 **공식 Hermes API가 아니다**. PUT `/skills/{id}`에 별도 HERMES_PUBLISH_KEY Bearer 인증과 `approved=true`, `fictional=true`, `markdown`, `sha256`를 보낸다. 응답의 EXPORTED/skillId/sha256가 모두 일치해야 게시 완료로 기록한다. 오류 시 DB 승인 상태는 유지하고 export_status=FAILED로 재시도 가능하게 남긴다. 공식 Hermes 카탈로그 인식은 `/v1/skills`에서 별도로 확인한다.
 
 Vercel용 SSE는 서버에서 최대 240초 후 정상 종료하며 DB event ID 기반 Last-Event-ID 재접속을 지원한다. 내부 A2A/MCP 주소는 PORT를 따르고 외부 Agent Card 주소는 AGENT_BASE_URL로 분리한다. 배포 설정/볼륨/DB 이전 절차는 [DEPLOYMENT.md](DEPLOYMENT.md)를 따른다.
+
+Skill 동기화는 `limit` 1~5, 마지막 처리 ID `after`를 받는다. `results`에 각 Skill의 EXPORTED/FAILED가 기록되며 `hasMore=true`일 때 `nextCursor`를 다음 요청의 `after`로 전달한다. API 한 번을 호출한 것만으로 전체 동기화가 완료됐다고 간주하지 않는다. 실패 항목은 승인 상태를 유지하며, 전체 동기화를 다시 실행해 안전하게 재게시할 수 있다.
