@@ -424,10 +424,10 @@ export default function Home() {
     ++refreshVersion.current; setAuth(false); setUser({}); setToken(""); setPassword(""); setInviteCode(""); setSelected(null); setDetail(null); setDrawer(false); setCreateOpen(false); setView("dashboard"); setIncidents([]); setSkills([]); setAudit([]); setEvaluations([]);
   }, []);
   useEffect(() => {
-    const expired = () => { clearSession(); setError("세션이 만료되었거나 폐기되었습니다. 다시 로그인하세요."); };
+    const expired = () => { if (auth !== true) return; clearSession(); setError("세션이 만료되었거나 폐기되었습니다. 다시 로그인하세요."); };
     window.addEventListener("brain-session-expired", expired);
     return () => window.removeEventListener("brain-session-expired", expired);
-  }, [clearSession]);
+  }, [clearSession, auth]);
   useEffect(() => {
     api("/config")
       .then((c) => {

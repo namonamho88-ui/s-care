@@ -225,6 +225,7 @@ test('login defaults to a personal account and keeps bootstrap and activation se
   });
   await page.goto('/');
   await expect(page.getByRole('tab',{name:'개인 계정',exact:true})).toHaveAttribute('aria-selected','true');
+  await expect(page.getByRole('alert').filter({hasText:'세션이 만료'})).toHaveCount(0);
   await expect(page.getByLabel('관리자 토큰')).toHaveCount(0);
   await page.getByLabel('아이디',{exact:true}).fill('fictional.user');
   await page.getByLabel('비밀번호',{exact:true}).fill('fictional-password-2026');

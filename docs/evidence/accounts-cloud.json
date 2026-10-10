@@ -1,0 +1,67 @@
+{
+  "verifiedAt": "2026-10-10T15:10:43.047016+00:00",
+  "sourceCommit": "948ae28afcbc3ccbe56db8defb2350bdee7b1c5a",
+  "vercelDeployment": "CzdLYmeNyA9uhq8pHZkWfU6roRG1",
+  "railwayBackendDeployment": "dd5efc19-c99a-4ac1-99c7-dc41b33fa2de",
+  "local": {
+    "backendTests": 44,
+    "backendSkipped": 0,
+    "frontendUnitTests": 12,
+    "uiTests": 12,
+    "nextProductionBuild": "PASS",
+    "bff": {
+      "url": "http://127.0.0.1:3310",
+      "userId": "USR-9412e169-2fee-47",
+      "fictional": true,
+      "existingIncidentsModified": false,
+      "result": "PASS",
+      "invitationSingleUse": true,
+      "httpOnlyCookie": true,
+      "roleAndOwnershipEnforced": true,
+      "logoutAndDisableRevoke": true,
+      "verificationAccountDisabled": true
+    }
+  },
+  "cloud": {
+    "url": "https://s-care-mu.vercel.app",
+    "userId": "USR-c73eeffe-1029-4d",
+    "fictional": true,
+    "existingIncidentsModified": false,
+    "result": "PASS",
+    "invitationSingleUse": true,
+    "httpOnlyCookie": true,
+    "roleAndOwnershipEnforced": true,
+    "logoutAndDisableRevoke": true,
+    "verificationAccountDisabled": true
+  },
+  "preservedIncidents": {
+    "count": 207,
+    "entireListSha256BeforeAndAfter": "566c7d1129a5f2035423325bed9d609c2544b0af11a79ab3ebdaacfb27428bf6",
+    "identical": true,
+    "reviewPendingId": "INC-60e304df-469f-49"
+  },
+  "ci": [
+    {
+      "id": 38062182738,
+      "name": "verify",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38062182738"
+    },
+    {
+      "id": 38062182610,
+      "name": "container verification",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38062182610"
+    }
+  ],
+  "manuals": {
+    "user": {
+      "matchesSource": true,
+      "sha256": "0313e22aa20a7d57bf97280175c31a40ab070b34dd111eef7343886e2f3bbbce"
+    },
+    "admin": {
+      "matchesSource": true,
+      "sha256": "02bd90b7ce4ad02a5e54ebe4584eab38e2a1bec09a235249eb297e7162edb67e"
+    }
+  }
+}
