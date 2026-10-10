@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./workflow.css";
 @config "../tailwind.config.ts";
 :root {
   color-scheme: dark;

@@ -43,6 +43,7 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
 test('fullscreen fills the viewport, fit keeps every node visible, Escape returns focus', async ({page}) => {
   await page.setViewportSize({width:1440,height:960});
   const mutations=await setup(page);
+  await page.getByText('운영 현황 펼치기 · 지표 / 온톨로지 / Agent',{exact:true}).click();
   const trigger=page.getByRole('button',{name:'전체화면',exact:true});
   await trigger.click();
   const dialog=page.getByRole('dialog',{name:'온톨로지 전체화면'});
@@ -82,6 +83,7 @@ test('ontology selection filters impact and clearing it removes stale highlights
 test('mobile fullscreen closes without horizontal page overflow',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await setup(page);
+  await page.getByText('운영 현황 펼치기 · 지표 / 온톨로지 / Agent',{exact:true}).click();
   await page.getByRole('button',{name:'전체화면',exact:true}).click();
   const dialog=page.getByRole('dialog',{name:'온톨로지 전체화면'});
   await expect(dialog.getByRole('button',{name:'전체화면 닫기 · Esc'})).toBeVisible();
@@ -124,9 +126,11 @@ test('ID search and visible filter reset restore the full list',async({page})=>{
 test('edited recovery notes must be saved before closing an incident',async({page})=>{
   const mutations=await setup(page);
   await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
-  await page.getByRole('button',{name:'후기 & 보고서',exact:true}).click();
+  await page.getByRole('tab',{name:/5\. 후기 검토/}).click();
   await page.getByRole('textbox',{name:'조치 후기',exact:true}).fill('수정된 가상 복구 후기');
+  await page.getByRole('tab',{name:/6\. 장애 종료/}).click();
   await expect(page.getByRole('button',{name:'장애 종료',exact:true})).toBeDisabled();
+  await page.getByRole('tab',{name:/5\. 후기 검토/}).click();
   await page.getByRole('button',{name:'수정 내용 저장'}).click();
   await expect(page.getByRole('button',{name:'장애 종료',exact:true})).toBeEnabled();
   await page.getByRole('button',{name:'장애 종료',exact:true}).click();
@@ -178,11 +182,13 @@ test('raw recovery JSON becomes a reviewable Korean draft and saves through the 
   const raw=JSON.stringify({before:{healthyDependencies:false,latencyMs:3200,errorRate:12.5},after:{healthyDependencies:true,latencyMs:120,errorRate:0.02},realChanges:false,passed:true,provider:'SIMULATED_METRICS'});
   await setup(page,raw);
   await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
-  await page.getByRole('button',{name:'후기 & 보고서',exact:true}).click();
+  await page.getByRole('tab',{name:/5\. 후기 검토/}).click();
   const notes=page.getByRole('textbox',{name:'조치 후기',exact:true});
   await expect(notes).toHaveValue(/오류율: 12.5% → 0.02%/);
   await expect(notes).toHaveValue(/실제 운영 시스템은 변경하지 않았습니다/);
+  await page.getByRole('tab',{name:/6\. 장애 종료/}).click();
   await expect(page.getByRole('button',{name:'장애 종료',exact:true})).toBeDisabled();
+  await page.getByRole('tab',{name:/5\. 후기 검토/}).click();
   await page.getByText('복구 검증 원본 보기',{exact:true}).click();
   await expect(page.getByRole('dialog',{name:'장애 상세'}).locator('details[open] pre')).toContainText('SIMULATED_METRICS');
   await notes.fill((await notes.inputValue())+'\n담당자 확인: 가상 관측과 검증 결과를 대조했습니다.');
@@ -191,6 +197,8 @@ test('raw recovery JSON becomes a reviewable Korean draft and saves through the 
   expect((await saved).postDataJSON().notes).toContain('담당자 확인: 가상 관측과 검증 결과를 대조했습니다.');
   await expect(page.getByRole('button',{name:'장애 종료',exact:true})).toBeEnabled();
   await expect(page.getByText('가상 복구 검증 결과를 한국어 후기 초안으로 정리했습니다.',{exact:false})).toHaveCount(0);
+  await page.getByRole('tab',{name:/5\. 후기 검토/}).click();
+  await page.getByText('복구 검증 원본 보기',{exact:true}).click();
   await expect(page.getByRole('dialog',{name:'장애 상세'}).locator('details[open] pre')).toContainText('SIMULATED_METRICS');
 });
 
@@ -202,7 +210,8 @@ test('user role hides administrator controls and allows only owned incident note
   await expect(page.getByRole('button',{name:'가상 장애 발생',exact:true})).toHaveCount(0);
   await page.getByRole('button',{name:'장애 이력',exact:true}).click();
   await page.getByRole('button',{name:/P1 가상 자원 부족 장애/}).click();
-  await page.getByRole('button',{name:'후기 & 보고서',exact:true}).click();
+  await page.getByRole('tab',{name:/5\. 후기 검토/}).click();
+  await page.getByText('제목·담당자 수정',{exact:true}).click();
   await expect(page.getByLabel('장애 제목',{exact:true})).toBeDisabled();
   await expect(page.getByLabel('담당자',{exact:true})).toBeDisabled();
   await expect(page.getByRole('button',{name:'장애 종료',exact:true})).toHaveCount(0);
@@ -212,7 +221,7 @@ test('user role hides administrator controls and allows only owned incident note
   expect((await patch).postDataJSON()).toEqual({notes:'가상 사용자 후기',prevention:'저장된 예방 대책'});
   await page.getByRole('button',{name:'상세 닫기'}).click();
   await page.getByRole('button',{name:/P1 가상 네트워크 장애/}).click();
-  await page.getByRole('button',{name:'후기 & 보고서',exact:true}).click();
+  await page.getByRole('tab',{name:/5\. 후기 검토/}).click();
   await expect(page.getByRole('button',{name:'수정 내용 저장',exact:true})).toBeDisabled();
   await expect(page.getByRole('textbox',{name:'조치 후기',exact:true})).toHaveAttribute('readonly','');
   expect(mutations).toEqual(['/api/incidents/INC-UI-RESOLVED']);
@@ -270,94 +279,94 @@ test('admin invites an account and confirms session-revoking changes', async ({p
   expect(users[0].enabled).toBe(false);
 });
 
-test('guide follows backend transitions and navigation never approves or closes', async ({page}) => {
+test('stepper shows named requests, truthful progress and automatically opens the next form', async ({page}) => {
   await page.clock.install();
-  const mutations=await setup(page,undefined,'ADMIN',{status:'ANALYZING'});
-  const record:any={...rows[0],status:'ANALYZING',events:[{id:1,stage:'JEV',state:'RUNNING',message:'가상 분석 실행',data_json:'{}',created_at:'2026-10-10T12:00:00Z'}]};
+  await setup(page,undefined,'ADMIN',{status:'NEEDS_REVIEW'});
+  const record:any={...rows[0],status:'NEEDS_REVIEW'};
   const commands:string[]=[];
+  let releaseReview:()=>void=()=>{};
+  const reviewGate=new Promise<void>(resolve=>{releaseReview=resolve;});
   await page.route('**/api/incidents/INC-UI-RESOLVED',async route=>{
     if(route.request().method()==='PATCH') {commands.push('save');Object.assign(record,route.request().postDataJSON());}
     await route.fulfill({json:record});
   });
   for(const [suffix,status] of [['review','WAITING_APPROVAL'],['approval','RECOVERING'],['close','CLOSED']]) {
-    await page.route('**/api/incidents/INC-UI-RESOLVED/'+suffix,async route=>{commands.push(suffix);record.status=status;await route.fulfill({json:record});});
+    await page.route('**/api/incidents/INC-UI-RESOLVED/'+suffix,async route=>{commands.push(suffix);if(suffix==='review') await reviewGate;record.status=status;await route.fulfill({json:record});});
   }
   await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
-  const dialog=page.getByRole('dialog',{name:'장애 상세'}), guide=dialog.getByRole('region',{name:'장애 처리 길잡이'});
-  await expect(guide.locator('[aria-current="step"]')).toContainText('분석·판단 확인');
-  await expect(guide).toContainText('AI 장애 판단 · Jev · 진행 중');
-  record.status='NEEDS_REVIEW';
+  const dialog=page.getByRole('dialog',{name:'장애 상세'}), progress=dialog.getByRole('progressbar',{name:'전체 처리 진행률'});
+  await expect(dialog.getByRole('tab',{name:/2\. 분석/})).toHaveAttribute('aria-selected','true');
+  await expect(progress).toHaveAttribute('aria-valuenow','17');
+  await expect(dialog.getByRole('textbox',{name:'확인 근거',exact:true})).toBeVisible();
+  await expect(dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true})).toHaveCount(0);
+  await dialog.getByRole('textbox',{name:'확인 근거',exact:true}).fill('가상 CPU 관측을 검토했습니다.');
   await page.clock.runFor(5100);
-  await guide.getByRole('button',{name:'판단 확인 위치로 이동'}).click();
-  await expect(dialog.locator('#guide-review')).toBeFocused();
-  await expect(dialog.getByRole('button',{name:'판단 확정 & 분석 계속'})).toBeDisabled();
-  expect(commands).toEqual([]);
-  const reason=dialog.getByRole('textbox',{name:'확인 근거',exact:true});
-  await reason.fill('가상 CPU 관측을 확인했습니다.');
-  await page.clock.runFor(5100);
-  await expect(reason).toHaveValue('가상 CPU 관측을 확인했습니다.');
-  await expect(reason).toBeFocused();
+  await expect(dialog.getByRole('textbox',{name:'확인 근거',exact:true})).toHaveValue('가상 CPU 관측을 검토했습니다.');
+  await expect(dialog.getByRole('textbox',{name:'확인 근거',exact:true})).toBeFocused();
   await dialog.getByRole('button',{name:'판단 확정 & 분석 계속'}).click();
-  await expect(guide.locator('[aria-current="step"]')).toContainText('대응 승인');
-  await guide.getByRole('button',{name:'대응 승인 위치로 이동'}).click();
-  await expect(dialog.locator('#guide-approval')).toBeFocused();
-  expect(commands).toEqual(['review']);
-  await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('영향 범위를 검토했고 가상 복구만 승인합니다.');
+  await expect(dialog.getByRole('status').filter({hasText:'판단 확인 근거 저장 중'})).toBeVisible();
+  await expect(progress).toHaveAttribute('aria-valuenow','17');
+  await expect(dialog.getByRole('button',{name:'판단 확정 & 분석 계속'})).toBeDisabled();
+  await page.clock.runFor(2100);
+  await expect(dialog.getByRole('status').filter({hasText:'판단 확인 근거 저장 중'})).toContainText('2초 경과');
+  releaseReview();
+  await expect(dialog.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true');
+  await expect(progress).toHaveAttribute('aria-valuenow','33');
+  await expect(dialog.getByRole('textbox',{name:'확인 근거',exact:true})).toHaveCount(0);
+  await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('영향 범위를 확인했으며 가상 복구만 승인합니다.');
   await dialog.getByRole('button',{name:'대응 승인',exact:true}).click();
-  await expect(guide.locator('[aria-current="step"]')).toContainText('복구 검증');
+  await expect(dialog.getByRole('tab',{name:/4\. 복구 검증/})).toHaveAttribute('aria-selected','true');
+  await expect(progress).toHaveAttribute('aria-valuenow','50');
   record.status='RESOLVED';record.notes='';record.prevention='';
   await page.clock.runFor(5100);
-  await expect(guide.locator('[aria-current="step"]')).toContainText('후기 검토·저장');
-  await guide.getByRole('button',{name:'후기 작성 위치로 이동'}).click();
-  await expect(dialog.locator('#guide-notes')).toBeFocused();
-  await expect(dialog.getByRole('button',{name:'장애 종료',exact:true})).toBeDisabled();
+  await expect(dialog.getByRole('tab',{name:/5\. 후기/})).toHaveAttribute('aria-selected','true');
+  await expect(progress).toHaveAttribute('aria-valuenow','67');
   await dialog.getByRole('textbox',{name:'조치 후기',exact:true}).fill('가상 복구 지표를 확인했습니다.');
   await dialog.getByRole('textbox',{name:'재발 방지 대책',exact:true}).fill('가상 부하 테스트를 추가합니다.');
   await dialog.getByRole('button',{name:'수정 내용 저장'}).click();
-  await expect(guide.locator('[aria-current="step"]')).toContainText('장애 종료');
-  await guide.getByRole('button',{name:'최종 확인 위치로 이동'}).click();
-  await expect(dialog.locator('#guide-notes')).toBeFocused();
+  await expect(dialog.getByRole('tab',{name:/6\. 장애 종료/})).toHaveAttribute('aria-selected','true');
+  await expect(progress).toHaveAttribute('aria-valuenow','83');
+  await expect(dialog.getByText('가상 복구 지표를 확인했습니다.',{exact:true})).toBeVisible();
   expect(commands).toEqual(['review','approval','save']);
   await dialog.getByRole('button',{name:'장애 종료',exact:true}).click();
-  await expect(guide).toContainText('전체 단계 완료');
-  await expect(guide.locator('[aria-current="step"]')).toHaveCount(0);
-  await expect(guide.locator('li.complete')).toHaveCount(6);
-  await guide.getByRole('button',{name:'보고서 위치로 이동'}).click();
-  await expect(dialog.locator('#guide-report')).toBeFocused();
+  await expect(progress).toHaveAttribute('aria-valuenow','100');
+  await expect(dialog.getByText('전체 단계 완료',{exact:true})).toBeVisible();
   expect(commands).toEqual(['review','approval','save','close']);
-  expect(mutations).toEqual([]);
 });
 
-test('mobile guide fits and takes a waiting user to read-only analysis above the sticky header',async({page})=>{
+test('mobile stepper fits, separates user waiting from input, and browsing steps has no side effect',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   const mutations=await setup(page,undefined,'USER',{status:'WAITING_APPROVAL'});
   await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
-  const dialog=page.getByRole('dialog',{name:'장애 상세'}), guide=dialog.getByRole('region',{name:'장애 처리 길잡이'});
-  await expect(guide).toContainText('관리자 승인 대기');
-  await expect(guide.locator('[aria-current="step"]')).toContainText('대응 승인');
+  const dialog=page.getByRole('dialog',{name:'장애 상세'});
+  await expect(dialog.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true');
+  await expect(dialog.getByText('관리자 승인 대기',{exact:true})).toBeVisible();
+  await expect(dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true})).toHaveCount(0);
   await expect(dialog.getByRole('button',{name:'대응 승인',exact:true})).toHaveCount(0);
-  await expect.poll(()=>guide.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
-  await expect.poll(()=>dialog.locator('.drawer').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
-  await guide.getByRole('button',{name:'분석 결과 보기'}).click();
-  await expect(dialog.locator('#guide-analysis')).toBeFocused();
-  await expect.poll(()=>dialog.evaluate(el=>{
-    const target=el.querySelector('#guide-analysis')!.getBoundingClientRect(),head=el.querySelector('.drawer-head')!.getBoundingClientRect();
-    return target.top>=head.bottom-1 && target.top<window.innerHeight;
-  })).toBe(true);
+  await expect.poll(()=>dialog.locator('.workflow-drawer').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+  await expect.poll(()=>dialog.locator('.workflow-stepper').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+  await dialog.getByRole('tab',{name:/5\. 후기/}).click();
+  await expect(dialog.getByText('앞 단계를 완료하면 이 단계로 자동 이동합니다.',{exact:false})).toBeVisible();
+  await expect(dialog.getByRole('button',{name:'수정 내용 저장'})).toBeDisabled();
+  await dialog.getByRole('tab',{name:/5\. 후기/}).press('ArrowLeft');
+  await expect(dialog.getByRole('tab',{name:/4\. 복구/})).toBeFocused();
+  await dialog.getByRole('button',{name:'현재 단계로 돌아가기',exact:false}).click();
+  await expect(dialog.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true');
+  await expect.poll(()=>dialog.evaluate(el=>{const target=el.querySelector('.workflow-content')!.getBoundingClientRect(),head=el.querySelector('.workflow-head')!.getBoundingClientRect();return target.top>=head.bottom-1 && target.top<window.innerHeight;})).toBe(true);
   expect(mutations).toEqual([]);
 });
 
-test('failure guide shows error records before retry without executing a request',async({page})=>{
-  const mutations=await setup(page,undefined,'ADMIN',{status:'FAILED',events:[{id:1,stage:'FAILURE',state:'FAILED',message:'가상 연결 오류',data_json:'{}',created_at:'2026-10-10T12:00:00Z'}]});
+test('failed request does not advance the stepper or clear the draft',async({page})=>{
+  const mutations=await setup(page,undefined,'ADMIN',{status:'WAITING_APPROVAL'});
+  await page.route('**/api/incidents/INC-UI-RESOLVED/approval',route=>route.fulfill({status:502,json:{error:'처리 결과를 확인할 수 없습니다. 상태를 다시 확인하세요.'}}));
   await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
-  const dialog=page.getByRole('dialog',{name:'장애 상세'}), guide=dialog.getByRole('region',{name:'장애 처리 길잡이'});
-  await expect(guide).toContainText('실행 실패 · 확인 필요');
-  await guide.getByRole('button',{name:'오류 기록 보기'}).click();
-  await expect(dialog.locator('#guide-timeline')).toBeFocused();
-  await expect(dialog.locator('#guide-timeline')).toContainText('가상 연결 오류');
-  await dialog.getByRole('button',{name:'원인 해결 후 재시도 위치로 이동'}).click();
-  await expect(dialog.locator('#guide-retry')).toBeFocused();
-  await expect(dialog.getByRole('button',{name:'실패 작업 재시도',exact:true})).toBeVisible();
+  const dialog=page.getByRole('dialog',{name:'장애 상세'});
+  await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('가상 승인 검토 사유');
+  await dialog.getByRole('button',{name:'대응 승인',exact:true}).click();
+  await expect(dialog.getByRole('alert')).toContainText('처리 결과를 확인할 수 없습니다');
+  await expect(dialog.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true');
+  await expect(dialog.getByRole('progressbar')).toHaveAttribute('aria-valuenow','33');
+  await expect(dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true})).toHaveValue('가상 승인 검토 사유');
   expect(mutations).toEqual([]);
 });
 
@@ -367,12 +376,36 @@ test('replaying a long SSE history does not flood or starve the initial detail r
   await page.route('**/api/incidents/INC-UI-RESOLVED',async route=>{
     reads++;active++;maxActive=Math.max(maxActive,active);
     await new Promise(resolve=>setTimeout(resolve,700));
-    await route.fulfill({json:{...rows[0],status:'NEEDS_REVIEW'}});
-    active--;
+    await route.fulfill({json:{...rows[0],status:'NEEDS_REVIEW'}});active--;
   });
   await page.route('**/api/incidents/INC-UI-RESOLVED/events',route=>route.fulfill({contentType:'text/event-stream',body:'retry: 60000\n\n'+Array.from({length:20},(_,i)=>`id: ${i+1}\nevent: stage\ndata: {}\n\n`).join('')}));
   await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
-  await expect(page.getByRole('dialog',{name:'장애 상세'}).getByRole('button',{name:'판단 확인 위치로 이동',exact:true})).toBeVisible({timeout:4000});
-  expect(maxActive).toBe(1);
-  expect(reads).toBeLessThanOrEqual(2);
+  await expect(page.getByRole('dialog',{name:'장애 상세'}).getByRole('textbox',{name:'확인 근거',exact:true})).toBeVisible({timeout:4000});
+  expect(maxActive).toBe(1);expect(reads).toBeLessThanOrEqual(2);
+});
+
+test('an old in-flight read cannot delay or reverse the next stage after approval',async({page})=>{
+  await page.clock.install();
+  await setup(page,undefined,'ADMIN',{status:'WAITING_APPROVAL'});
+  let status='WAITING_APPROVAL', delayNext=false, delayed=false;
+  let release:()=>void=()=>{};
+  const gate=new Promise<void>(resolve=>{release=resolve;});
+  await page.route('**/api/incidents/INC-UI-RESOLVED',async route=>{
+    const snapshot={...rows[0],status};
+    if(delayNext) {delayNext=false;delayed=true;await gate;}
+    await route.fulfill({json:snapshot});
+  });
+  await page.route('**/api/incidents/INC-UI-RESOLVED/approval',async route=>{status='RECOVERING';await route.fulfill({json:{ok:true}});});
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  const dialog=page.getByRole('dialog',{name:'장애 상세'});
+  await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('가상 영향 범위 확인');
+  delayNext=true;
+  await page.clock.runFor(5100);
+  await expect.poll(()=>delayed).toBe(true);
+  await dialog.getByRole('button',{name:'대응 승인',exact:true}).click();
+  await expect(dialog.getByRole('tab',{name:/4\. 복구/})).toHaveAttribute('aria-selected','true');
+  release();
+  await page.clock.runFor(500);
+  await expect(dialog.getByRole('tab',{name:/4\. 복구/})).toHaveAttribute('aria-selected','true');
+  await expect(dialog.getByRole('progressbar')).toHaveAttribute('aria-valuenow','50');
 });

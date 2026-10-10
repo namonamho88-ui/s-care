@@ -1,0 +1,76 @@
+.operations-details { border: 1px solid #34465e; border-radius: 10px; padding: 16px; margin-top: 18px; }
+.operations-details > summary { color: #9edfe8; font-weight: 600; font-size: 13px; cursor: pointer; }
+.operations-details[open] > summary { margin-bottom: 22px; }
+.drawer.workflow-drawer { width: 100%; border: 0; background: #0a1320; }
+.workflow-head { position: sticky; top: 0; z-index: 5; background: #101d2e; border-bottom: 1px solid #34465e; padding: 16px max(24px, calc((100% - 1180px) / 2)); }
+.workflow-title { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.workflow-title h2 { font-size: 19px; margin: 5px 0 0; line-height: 1.5; }
+.workflow-title > button { flex-shrink: 0; }
+.workflow-provider { color: #b9cadc; font-size: 11px; margin-top: 6px; line-height: 1.6; }
+.workflow-stepper { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 8px; margin-top: 18px; }
+.workflow-stepper button { display: flex; align-items: center; gap: 8px; text-align: left; border: 1px solid #34445b; background: #0b1727; border-radius: 8px; padding: 12px 8px; min-width: 0; color: #a1b2c7; }
+.workflow-stepper strong { display: block; font-size: 12px; line-height: 1.5; }
+.workflow-stepper small { display: block; font-size: 10px; margin-top: 4px; }
+.workflow-stepper .complete .step-point { background: #194135; border-color: #51ab89; color: #a7f3d0; }
+.workflow-stepper .current { color: #fcd479; border-color: #cda958; background: #2d281d; }
+.workflow-stepper .current .step-point { background: #fcd479; color: #142034; border-color: #fcd479; }
+.workflow-stepper .selected { outline: 2px solid #67e8f9; outline-offset: 2px; }
+.workflow-progress-info { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #a5b7cf; margin: 14px 0 8px; }
+.workflow-progress-info strong { color: #e7f5ff; font-size: 12px; }
+.workflow-progress-info button { display: inline-flex; align-items: center; gap: 6px; color: #67e8f9; margin-left: auto; }
+.workflow-progress-bar { height: 5px; border-radius: 4px; background: #34445b; overflow: hidden; }
+.workflow-progress-bar i { display: block; height: 100%; background: #67e8f9; }
+.workflow-request { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; margin-top: 12px; padding: 12px; background: #15384a; border: 1px solid #3c8194; border-radius: 8px; font-size: 12px; }
+.workflow-request span { color: #c3d5e8; }
+.working-spinner { animation: working-spin 1.5s linear infinite; flex-shrink: 0; }
+@keyframes working-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .working-spinner { animation: none; } }
+.workflow-content { max-width: 1228px; margin: 0 auto; padding: 24px; outline: none; }
+.workflow-instruction { padding: 16px 20px; background: #142539; border-left: 4px solid #67e8f9; border-radius: 8px; margin-bottom: 22px; }
+.workflow-instruction.attention { border-color: #fcd479; }
+.workflow-instruction.stopped { border-color: #fda4af; }
+.workflow-instruction.complete { border-color: #86efac; }
+.workflow-instruction > span { font-size: 11px; color: #fcd479; }
+.workflow-instruction h2 { font-size: 18px; margin: 8px 0; line-height: 1.5; }
+.workflow-instruction p { font-size: 12px; line-height: 1.8; color: #bacadd; max-width: 980px; }
+.workflow-card, .workflow-context { border: 1px solid #31445d; background: #111e30; border-radius: 10px; padding: 22px; margin-bottom: 18px; min-width: 0; }
+.workflow-card h3, .workflow-context h3 { margin: 0 0 14px; font-size: 15px; }
+.workflow-card p, .workflow-context p { line-height: 1.9; overflow-wrap: anywhere; }
+.workflow-context p { color: #cad6e7; margin-bottom: 10px; white-space: pre-wrap; }
+.workflow-context small { color: #93a8c3; }
+.workflow-form-layout { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); align-items: start; gap: 20px; }
+.workflow-card.guide-target { border: 1px solid #cda958; }
+@media (min-width: 701px) { #guide-review .form-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.workflow-evidence { margin: 20px 0; border: 1px solid #34445b; border-radius: 8px; padding: 14px; }
+.workflow-evidence summary { cursor: pointer; color: #a6bbd3; font-size: 12px; }
+.workflow-evidence[open] > summary { margin-bottom: 16px; }
+.workflow-auto { display: flex; align-items: flex-start; gap: 16px; padding: 24px; border: 1px solid #34728a; background: #103040; border-radius: 10px; margin-bottom: 20px; }
+.workflow-auto h3 { font-size: 16px; margin-bottom: 10px; }
+.workflow-auto p { color: #67e8f9; margin: 8px 0; }
+.workflow-auto small { color: #adbdce; line-height: 1.7; }
+.workflow-success { display: flex; align-items: center; gap: 8px; color: #a7f3d0; margin-bottom: 16px; font-size: 12px; }
+.workflow-final-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.workflow-final-grid h4 { color: #9eb4ce; margin: 6px 0 10px; }
+.workflow-final-grid p { white-space: pre-wrap; }
+@media (max-width: 900px) {
+  .workflow-head { padding: 12px 18px; }
+  .workflow-stepper { gap: 5px; }
+  .workflow-stepper button { flex-direction: column; align-items: flex-start; padding: 9px 6px; }
+  .workflow-stepper strong { font-size: 11px; }
+  .workflow-form-layout { grid-template-columns: 1fr; }
+  .workflow-form-layout > .workflow-card { grid-row: 1; }
+}
+@media (max-width: 600px) {
+  .workflow-title h2 { font-size: 15px; }
+  .workflow-title > button { padding: 6px; font-size: 10px; }
+  .workflow-stepper { grid-template-columns: repeat(3,minmax(0,1fr)); margin-top: 12px; }
+  .workflow-stepper button { flex-direction: row; padding: 7px; gap: 6px; }
+  .workflow-stepper small { display: none; }
+  .workflow-stepper .step-point { width: 19px; height: 19px; flex-basis: 19px; font-size: 10px; }
+  .workflow-stepper strong { font-size: 10px; }
+  .workflow-progress-info { font-size: 10px; gap: 5px; }
+  .workflow-content { padding: 18px 14px; }
+  .workflow-instruction, .workflow-card, .workflow-context { padding: 16px; }
+  .workflow-instruction h2 { font-size: 15px; }
+  .workflow-final-grid { grid-template-columns: 1fr; gap: 14px; }
+}

@@ -33,8 +33,8 @@ import { Button } from "@/components/ui/button";
 import AccountCenter from "@/components/account-center";
 import ManualCenter from "@/components/manual-center";
 import IncidentProgress from "@/components/incident-progress";
+import IncidentWorkflow from "@/components/incident-workflow";
 import { incidentGuide, stageLabel, eventStateLabel } from "@/lib/incident-guide.mjs";
-import { recoveryNotesDraft } from "@/lib/recovery-notes.mjs";
 const ImpactGraph = dynamic(() => import("@/components/impact-graph"), {
   ssr: false,
 });
@@ -317,6 +317,7 @@ export default function Home() {
   const [loginMode, setLoginMode] = useState("login"), [loginName, setLoginName] = useState(""), [password, setPassword] = useState(""), [inviteCode, setInviteCode] = useState("");
   const [syncProgress, setSyncProgress] = useState("");
   const [notice, setNotice] = useState("");
+  const [requestLabel, setRequestLabel] = useState("");
   const [view, setView] = useState("dashboard"),
     [config, setConfig] = useState<Row>({}),
     [catalog, setCatalog] = useState<Row>({
@@ -337,7 +338,6 @@ export default function Home() {
     [selected, setSelected] = useState<string | null>(null),
     [detail, setDetail] = useState<Row | null>(null),
     [drawer, setDrawer] = useState(false),
-    [detailTab, setDetailTab] = useState("analysis"),
     [live, setLive] = useState(false),
     [online, setOnline] = useState(true),
     [createOpen, setCreateOpen] = useState(false),
@@ -346,15 +346,6 @@ export default function Home() {
     [filterSystem, setFilterSystem] = useState(""),
     [from, setFrom] = useState(""),
     [to, setTo] = useState("");
-  const [approvalReason, setApprovalReason] = useState(""),
-    [reviewType, setReviewType] = useState("RESOURCE"),
-    [reviewSeverity, setReviewSeverity] = useState("P1"),
-    [reviewDept, setReviewDept] = useState("PLATFORM"),
-    [reviewReason, setReviewReason] = useState("");
-  const [editTitle, setEditTitle] = useState(""),
-    [notes, setNotes] = useState(""),
-    [prevention, setPrevention] = useState(""),
-    [owner, setOwner] = useState("OP-01");
   const [newTitle, setNewTitle] = useState(""),
     [newObservations, setNewObservations] = useState(""),
     [newAsset, setNewAsset] = useState("CMP-01");
@@ -364,7 +355,6 @@ export default function Home() {
   const refreshVersion = useRef(0);
   const detailVersion = useRef(0);
   const detailRequest = useRef<{ id: string; promise: Promise<any> } | null>(null);
-  const [guideJump, setGuideJump] = useState<{ target: string; incidentId: string } | null>(null);
   const resetFilters = () => { setFilterType(""); setFilterSystem(""); setFrom(""); setTo(""); setSearch(""); };
   const refresh = useCallback(async () => {
     const version = ++refreshVersion.current;
@@ -392,10 +382,10 @@ export default function Home() {
     setConfig(c);
     setOnline(true);
   }, [filterType, filterSystem, from, to, isAdmin]);
-  const loadDetail = useCallback(async (id: string) => {
+  const loadDetail = useCallback(async (id: string, fresh = false) => {
     // Replayed SSE events can arrive in a burst. Share a pending read instead of
     // queuing many requests that delay the first visible result.
-    if (detailRequest.current?.id === id) return detailRequest.current.promise;
+    if (!fresh && detailRequest.current?.id === id) return detailRequest.current.promise;
     const version = ++detailVersion.current;
     const promise = api("/incidents/" + id).then(d => {
       if (selectedRef.current === id && version === detailVersion.current) setDetail(d);
@@ -406,12 +396,14 @@ export default function Home() {
     detailRequest.current = { id, promise };
     return promise;
   }, []);
-  const action = async (fn: () => Promise<any>, successMessage = "요청이 처리되었습니다.") => {
+  const action = async (fn: () => Promise<any>, successMessage = "요청이 처리되었습니다.", label = "요청을 서버에서 처리 중") => {
     setBusy(true);
+    setRequestLabel(label);
     setError("");
     setNotice("");
     try {
       await fn();
+      setRequestLabel("처리 결과와 다음 단계 확인 중");
       setNotice(successMessage);
       try {
         await refresh();
@@ -423,6 +415,7 @@ export default function Home() {
       setError((e as Error).message);
     } finally {
       setBusy(false);
+      setRequestLabel("");
     }
   };
   const clearSession = useCallback(() => {
@@ -498,21 +491,6 @@ export default function Home() {
     };
   }, [selected, loadDetail, refresh]);
   useEffect(() => {
-    if (detail) {
-      setReviewReason("");
-      setApprovalReason("");
-      setEditTitle(detail.title);
-      setNotes(recoveryNotesDraft(detail.notes) ?? detail.notes);
-      setPrevention(detail.prevention);
-      setOwner(detail.owner_id);
-      if (detail.decision) {
-        setReviewType(detail.decision.type);
-        setReviewSeverity(detail.decision.severity);
-        setReviewDept(detail.decision.department);
-      }
-    }
-  }, [detail?.id, detail?.status]);
-  useEffect(() => {
     if (!error) return;
     const timer = setTimeout(() => setError(""), 12000);
     return () => clearTimeout(timer);
@@ -554,27 +532,9 @@ export default function Home() {
       previous?.focus();
     };
   }, [drawer, createOpen]);
-  useEffect(() => {
-    if (!guideJump || !drawer || detail?.id !== guideJump.incidentId) return;
-    const frame = requestAnimationFrame(() => {
-      const element = document.getElementById("guide-" + guideJump.target);
-      if (!element) return;
-      const headerHeight = document.querySelector(".drawer-head")?.getBoundingClientRect().height || 0;
-      element.style.scrollMarginTop = `${headerHeight + 16}px`;
-      element.scrollIntoView({ block: "start", behavior: "instant" });
-      // Focus the explanation, never an approval/close button. Navigation performs no mutation.
-      element.focus({ preventScroll: true });
-      setGuideJump(null);
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [guideJump, drawer, detail?.id, detailTab]);
   function navigateGuide(target: string) {
     if (target === "register") { setCreateOpen(true); return; }
-    if (!detail) return;
-    const tab = ["notes", "close", "report", "downloads"].includes(target) ? "report" : target === "timeline" ? "timeline" : "analysis";
-    setDetailTab(tab);
-    setDrawer(true);
-    setGuideJump({ target: ["close", "report"].includes(target) ? "notes" : target === "downloads" ? "report" : target, incidentId: detail.id });
+    if (detail) setDrawer(true);
   }
   async function login(e: React.FormEvent) {
     e.preventDefault();
@@ -593,9 +553,6 @@ export default function Home() {
   function openIncident(id: string) {
     setSelected(id);
     setDrawer(true);
-    setDetailTab("analysis");
-    setApprovalReason("");
-    setReviewReason("");
   }
   async function simulate() {
     await action(async () => {
@@ -605,9 +562,9 @@ export default function Home() {
         provider: mode === "DEMO" ? "MOCK" : provider,
       });
       setSelected(r.id);
-      setDrawer(false);
+      setDrawer(true);
       setView("dashboard");
-    });
+    }, "장애가 접수되었습니다. 분석 단계로 이동합니다.", "가상 장애 접수 및 분석 시작 요청 중");
   }
   const visible = incidents.filter((i) =>
     `${i.title} ${i.id}`.toLowerCase().includes(search.toLowerCase()),
@@ -637,10 +594,7 @@ export default function Home() {
     accounts: "개인 계정과 로그인 정보를 관리합니다. 권한은 서버에서도 검사합니다.",
   };
   const canEdit = !!detail && (isAdmin || (user.operatorId && user.operatorId === detail.owner_id));
-  const reportDirty = !!detail && (editTitle !== detail.title || notes !== detail.notes || prevention !== detail.prevention || owner !== detail.owner_id);
-  const generatedNotes = detail ? recoveryNotesDraft(detail.notes) : null;
-  const recoveryProof = generatedNotes ? detail?.notes : [...(detail?.events || [])].reverse().find((event: Row) => event.stage === "VERIFY" && event.state === "COMPLETED")?.data_json;
-  const guide = incidentGuide(detail, { isAdmin, canEdit, dirty: reportDirty, notes, prevention });
+  const guide = incidentGuide(detail, { isAdmin, canEdit });
   if (auth === null)
     return (
       <div className="login">
@@ -848,6 +802,10 @@ export default function Home() {
           {view === "dashboard" && (
             <>
               <IncidentProgress guide={guide} incidentTitle={current?.title} onNavigate={navigateGuide} announce={!drawer} />
+              <Panel title="처리할 장애 · 최근 이력" body={false} extra={<Button variant="ghost" size="sm" onClick={() => setView("incidents")}>전체 이력</Button>}>
+                {recent.map(i => <IncidentRow key={i.id} i={i} selected={selected === i.id} onClick={() => openIncident(i.id)} />)}
+              </Panel>
+              <details className="operations-details"><summary>운영 현황 펼치기 · 지표 / 온톨로지 / Agent</summary>
               <div className="stats">
                 {[
                   [
@@ -959,29 +917,6 @@ export default function Home() {
                       root={current?.impact?.root}
                       affected={current?.impact?.affected || NO_AFFECTED}
                     />
-                  </Panel>
-                  <Panel
-                    title="최근 장애"
-                    extra={
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setView("incidents")}
-                      >
-                        전체 이력
-                        <ArrowUpRight size={13} />
-                      </Button>
-                    }
-                    body={false}
-                  >
-                    {recent.map((i) => (
-                      <IncidentRow
-                        key={i.id}
-                        i={i}
-                        selected={selected === i.id}
-                        onClick={() => openIncident(i.id)}
-                      />
-                    ))}
                   </Panel>
                 </div>
                 <div>
@@ -1112,6 +1047,7 @@ export default function Home() {
                   })}
                 </div>
               </Panel>
+              </details>
             </>
           )}
           {view === "incidents" && (
@@ -1495,458 +1431,12 @@ export default function Home() {
           </div>
         </main>
       </div>
-      {drawer && selected && (
-        <div
-          className="modal-backdrop"
-          role="dialog"
-          aria-modal="true"
-          aria-label="장애 상세"
-        >
-          <div className="drawer">
-            <div className="drawer-head">
-              <div className="flex-row justify-between">
-                <span className="mono muted small">{selected}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  aria-label="상세 닫기"
-                  onClick={() => setDrawer(false)}
-                >
-                  <X size={18} />
-                </Button>
-              </div>
-              <h2 className="drawer-title">
-                {detail?.title || "불러오는 중…"}
-              </h2>
-              <div className="flex-row">
-                {detail && (
-                  <>
-                    <Status value={detail.status} />
-                    <Chip>{detail.severity}</Chip>
-                    <span className="small muted">
-                      {detail.owner_name} · {deptLabels[detail.department]}
-                    </span>
-                  </>
-                )}
-              </div>
-              <div className="tabs">
-                {[
-                  ["analysis", "판단 & 대응"],
-                  ["timeline", "실행 타임라인"],
-                  ["agents", "Agent 협업"],
-                  ["report", "후기 & 보고서"],
-                ].map(([id, label]) => (
-                  <button
-                    key={id}
-                    className={"tab " + (detailTab === id ? "active" : "")}
-                    onClick={() => setDetailTab(id)}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              {detail && <button className={"guide-anchor " + guide.tone} onClick={() => navigateGuide(guide.target)}>
-                <span>{guide.badge}{guide.step >= 0 && guide.step < 6 ? ` · ${guide.step + 1}단계` : ""}</span>
-                <strong>{guide.title}</strong><ChevronRight size={15} aria-hidden="true" />
-              </button>}
-            </div>
-            <div className="drawer-body">
-              {detail && (
-                <>
-                  <IncidentProgress guide={guide} incidentTitle={detail.title} onNavigate={navigateGuide} />
-                  {detailTab === "analysis" && (
-                    <>
-                      <div id="guide-analysis" tabIndex={-1} className="guide-destination"><Panel title="관측 정보">
-                        <p className="muted small mb-3">
-                          {detail.system_name} / {detail.asset_name}
-                        </p>
-                        <p className="text-sm leading-7">
-                          {detail.observations}
-                        </p>
-                      </Panel></div>
-                      <Panel title="Jev 모델 판단">
-                        <Decision d={detail.decision} />
-                      </Panel>
-                      {detail.tasks?.some((t: Row) => t.agent === "diagnosis") && <Panel title="Diagnosis 원인 후보 · 확정 근본 원인 아님">
-                        <AgentResult task={detail.tasks.filter((t: Row) => t.agent === "diagnosis").at(-1)} />
-                      </Panel>}
-                      {isAdmin && detail.status === "NEEDS_REVIEW" && (
-                        <Panel title="담당자 판단 확인" point={{ id: "guide-review", label: "포인트 2 · 관측·AI 판단 확인 → 분류 검토 → 확인 근거 입력 → 분석 계속" }}>
-                          <Button size="sm" variant="outline" className="mb-3" onClick={() => navigateGuide("analysis")}>관측과 AI 판단 다시 보기</Button>
-                          <div className="banner">
-                            모델 근거가 부족합니다. 원본 관측과 모델 응답을
-                            확인한 후 분류를 확정하세요.
-                            {parse(detail.events?.filter((e: Row) => e.stage === "HARNESS" && e.state === "COMPLETED").at(-1)?.data_json)?.reviewReasons?.map((reason: string) => <p className="small mt-2" key={reason}>{reason}</p>)}
-                          </div>
-                          <div className="form-grid">
-                            <label>
-                              장애 유형
-                              <select
-                                value={reviewType}
-                                onChange={(e) => setReviewType(e.target.value)}
-                              >
-                                {types.map((t) => (
-                                  <option key={t} value={t}>
-                                    {typeLabels[t]}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-                            <label>
-                              심각도
-                              <select
-                                value={reviewSeverity}
-                                onChange={(e) =>
-                                  setReviewSeverity(e.target.value)
-                                }
-                              >
-                                {["P1", "P2", "P3"].map((t) => (
-                                  <option key={t}>{t}</option>
-                                ))}
-                              </select>
-                            </label>
-                            <label>
-                              담당 부서
-                              <select
-                                value={reviewDept}
-                                onChange={(e) => setReviewDept(e.target.value)}
-                              >
-                                {departments.map((d) => (
-                                  <option key={d} value={d}>
-                                    {deptLabels[d]}
-                                  </option>
-                                ))}
-                              </select>
-                            </label>
-                            <label className="full">
-                              확인 근거
-                              <textarea
-                                value={reviewReason}
-                                onChange={(e) =>
-                                  setReviewReason(e.target.value)
-                                }
-                                placeholder="관측 내용을 확인한 근거를 기록하세요."
-                              />
-                            </label>
-                          </div>
-                          <Button
-                            className={"mt-4" + (reviewReason.trim() ? " guide-action" : "")}
-                            disabled={busy || !reviewReason.trim()}
-                            onClick={() =>
-                              action(() =>
-                                api(
-                                  "/incidents/" + selected + "/review",
-                                  "POST",
-                                  {
-                                    type: reviewType,
-                                    severity: reviewSeverity,
-                                    department: reviewDept,
-                                    reason: reviewReason,
-                                  },
-                                ),
-                              )
-                            }
-                          >
-                            판단 확정 & 분석 계속
-                          </Button>
-                          <p className="small muted mt-3">{reviewReason.trim() ? "입력한 근거로 판단을 확정하면 분석이 계속됩니다. 대응 승인은 다음 단계입니다." : "확인 근거를 입력하면 ‘판단 확정 & 분석 계속’ 버튼이 활성화됩니다."}</p>
-                        </Panel>
-                      )}
-                      {detail.impact && (
-                        <Panel title="Ontology 영향 분석">
-                          <Button size="sm" variant="outline" className="mb-3" onClick={() => { setDrawer(false); setView("ontology"); }}>영향 그래프 크게 보기</Button>
-                          <p className="mb-3">
-                            <strong className="text-cyan-200">
-                              {detail.impact.affected.length}
-                            </strong>
-                            개 자산에 영향 가능성 · {detail.impact.engine}
-                          </p>
-                          <div className="flex-row">
-                            {detail.impact.affected.map((id: string) => (
-                              <Chip
-                                key={id}
-                                tone={id === detail.asset_id ? "red" : ""}
-                              >
-                                {catalog.assets.find((a: Row) => a.id === id)
-                                  ?.name || id}
-                              </Chip>
-                            ))}
-                          </div>
-                        </Panel>
-                      )}
-                      {isAdmin && detail.status === "WAITING_APPROVAL" && (
-                        <Panel title="가상 대응 승인" point={{ id: "guide-approval", label: "포인트 3 · 영향 범위 확인 → 승인 / 거부 사유 입력 → 대응 여부 선택" }}>
-                          <Button size="sm" variant="outline" className="mb-3" onClick={() => navigateGuide("analysis")}>판단과 영향 범위 다시 보기</Button>
-                          <div className="banner">
-                            Harness 검증이 완료되었습니다. 승인 후 가상 복구
-                            지표를 변경하고 정상 범위 도달 여부를 확인합니다.
-                          </div>
-                          <label>
-                            승인 / 거부 사유
-                            <textarea
-                              value={approvalReason}
-                              onChange={(e) =>
-                                setApprovalReason(e.target.value)
-                              }
-                              placeholder="영향 범위와 대응 가이드를 확인한 내용을 입력하세요."
-                            />
-                          </label>
-                          <div className="flex-row mt-4">
-                            <Button
-                              disabled={busy || !approvalReason.trim()}
-                              onClick={() =>
-                                action(() =>
-                                  api(
-                                    "/incidents/" + selected + "/approval",
-                                    "POST",
-                                    { approved: true, reason: approvalReason },
-                                  ),
-                                )
-                              }
-                            >
-                              <ShieldCheck size={15} />
-                              대응 승인
-                            </Button>
-                            <Button
-                              variant="danger"
-                              disabled={busy || !approvalReason.trim()}
-                              onClick={() =>
-                                action(() =>
-                                  api(
-                                    "/incidents/" + selected + "/approval",
-                                    "POST",
-                                    { approved: false, reason: approvalReason },
-                                  ),
-                                )
-                              }
-                            >
-                              대응 거부
-                            </Button>
-                          </div>
-                          <p className="small muted mt-3">{approvalReason.trim() ? "승인을 누르면 가상 복구가 시작됩니다. 사유를 검토하고 직접 선택하세요." : "사유를 입력하면 대응 승인·거부 버튼이 활성화됩니다."}</p>
-                        </Panel>
-                      )}
-                      {isAdmin && detail.status === "FAILED" && (
-                        <div id="guide-retry" tabIndex={-1} className="banner error guide-target">
-                          <p className="guide-point">중단 지점 · 오류 확인 → 원인 해결 → 명시적 재시도</p>
-                          <p>
-                            실행 오류가 기록되었습니다. 타임라인에서 원인을
-                            확인하고 연결 상태를 복구한 뒤 다시 실행하세요.
-                          </p>
-                          <Button
-                            size="sm"
-                            className="mt-3"
-                            disabled={busy}
-                            onClick={() =>
-                              action(() =>
-                                api(
-                                  "/incidents/" + selected + "/retry",
-                                  "POST",
-                                  {},
-                                ),
-                              )
-                            }
-                          >
-                            실패 작업 재시도
-                          </Button>
-                        </div>
-                      )}
-                      {["RESOLVED", "CLOSED"].includes(detail.status) && (
-                        <div className="banner good">
-                          <CheckCircle2 size={15} className="inline mr-2" />
-                          복구 검증과 장애 이력 저장이 완료되었습니다. 후기 &
-                          보고서에서 확인하세요.
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {detailTab === "timeline" && (
-                    <div id="guide-timeline" tabIndex={-1} className="guide-destination">
-                      {isAdmin && detail.status === "FAILED" && <div className="banner error"><p>오류 기록을 먼저 읽고 원인을 해결하세요.</p><Button size="sm" variant="outline" className="mt-3" onClick={() => navigateGuide("retry")}>원인 해결 후 재시도 위치로 이동</Button></div>}
-                      <Timeline events={detail.events || []} />
-                    </div>
-                  )}
-                  {detailTab === "agents" && (
-                    <>
-                      {(detail.tasks || []).map((t: Row) => (
-                        <Panel
-                          key={t.id}
-                          title={t.agent + " Agent"}
-                          extra={
-                            <Chip
-                              tone={t.status === "completed" ? "green" : "red"}
-                            >
-                              {t.status}
-                            </Chip>
-                          }
-                        >
-                          <span className="mono small muted">{t.id}</span>
-                          <AgentResult task={t} />
-                          <Json value={t.request_json} label="A2A 작업 요청" />
-                          <Json value={t.result_json} label="A2A 응답 결과" />
-                        </Panel>
-                      ))}
-                      {!detail.tasks?.length && (
-                        <div className="empty">
-                          Agent 실행 기록을 기다리고 있습니다.
-                        </div>
-                      )}
-                    </>
-                  )}
-                  {detailTab === "report" && (
-                    <>
-                      <Panel title="장애 정보 & 조치 후기" point={{ id: "guide-notes", label: detail.status === "RESOLVED" ? reportDirty || !notes.trim() || !prevention.trim() ? "포인트 5 · 후기 검토 → 예방 대책 작성 → 수정 내용 저장" : "포인트 6 · 저장된 후기·예방 대책 최종 확인 → 관리자 종료" : "저장된 장애 정보와 조치 기록" }}>
-                        {!canEdit && <div className="banner mb-4">다른 담당자의 장애는 조회만 가능합니다. 담당자 변경이 필요하면 관리자에게 요청하세요.</div>}
-                        {generatedNotes && <div className="banner mb-4">가상 복구 검증 결과를 한국어 후기 초안으로 정리했습니다. 내용을 검토하고 필요한 조치 설명을 추가한 뒤 ‘수정 내용 저장’을 누르세요. 저장 전에는 보고서에 반영되지 않습니다.</div>}
-                        <div className="form-grid">
-                          <label className="full">
-                            장애 제목
-                            <input
-                              disabled={!isAdmin}
-                              value={editTitle}
-                              onChange={(e) => setEditTitle(e.target.value)}
-                            />
-                          </label>
-                          <label className="full">
-                            담당자
-                            <select
-                              aria-label="담당자"
-                              disabled={!isAdmin}
-                              value={owner}
-                              onChange={(e) => setOwner(e.target.value)}
-                            >
-                              {catalog.operators.map((o: Row) => (
-                                <option key={o.id} value={o.id}>
-                                  {o.name} · {deptLabels[o.department]}
-                                </option>
-                              ))}
-                            </select>
-                          </label>
-                          <label className="full">
-                            조치 후기
-                            <textarea
-                              rows={6}
-                              readOnly={!canEdit}
-                              value={notes}
-                              onChange={(e) => setNotes(e.target.value)}
-                            />
-                          </label>
-                          <label className="full">
-                            재발 방지 대책
-                            <textarea
-                              readOnly={!canEdit}
-                              value={prevention}
-                              onChange={(e) => setPrevention(e.target.value)}
-                            />
-                          </label>
-                        </div>
-                        <div className="flex-row mt-4">
-                          <Button
-                            variant="outline"
-                            className={detail.status === "RESOLVED" && reportDirty && canEdit ? "guide-action" : ""}
-                            disabled={
-                              !canEdit || busy ||
-                              [
-                                "REGISTERED",
-                                "ANALYZING",
-                                "RECOVERING",
-                              ].includes(detail.status)
-                            }
-                            onClick={() =>
-                              action(() =>
-                                api("/incidents/" + selected, "PATCH", {
-                                  ...(isAdmin ? { title: editTitle, ownerId: owner } : {}),
-                                  notes,
-                                  prevention,
-                                }),
-                              )
-                            }
-                          >
-                            수정 내용 저장
-                          </Button>
-                          {isAdmin && detail.status === "RESOLVED" && (
-                            <Button
-                              className={!reportDirty && notes.trim() && prevention.trim() ? "guide-action" : ""}
-                              disabled={busy || reportDirty || !notes.trim() || !prevention.trim()}
-                              onClick={() =>
-                                action(() =>
-                                  api(
-                                    "/incidents/" + selected + "/close",
-                                    "POST",
-                                    {},
-                                  ),
-                                )
-                              }
-                            >
-                              장애 종료
-                            </Button>
-                          )}
-                        </div>
-                        {isAdmin && detail.status === "RESOLVED" && <p className="small muted mt-3">{reportDirty ? "수정한 내용을 먼저 저장하면 장애를 종료할 수 있습니다." : !notes.trim() || !prevention.trim() ? "조치 후기와 재발 방지 대책을 입력하고 저장하세요." : "저장된 후기와 예방 대책을 확인한 후 종료하세요."}</p>}
-                        {recoveryProof && <details className="mt-4"><summary>복구 검증 원본 보기</summary><pre>{JSON.stringify(parse(recoveryProof), null, 2)}</pre></details>}
-                      </Panel>
-                      <div id="guide-report" tabIndex={-1} className="guide-destination"><Panel title="보고서 다운로드">
-                        {["RESOLVED", "CLOSED"].includes(detail.status) ? (
-                          <>
-                            <div className="flex-row">
-                              <Button asChild variant="outline">
-                                <a
-                                  href={
-                                    "/api/incidents/" + selected + "/report/pdf"
-                                  }
-                                  download
-                                >
-                                  <Download size={15} />
-                                  PDF 보고서
-                                </a>
-                              </Button>
-                              <Button asChild variant="outline">
-                                <a
-                                  href={
-                                    "/api/incidents/" +
-                                    selected +
-                                    "/report/xlsx"
-                                  }
-                                  download
-                                >
-                                  <Download size={15} />
-                                  Excel 보고서
-                                </a>
-                              </Button>
-                            </div>
-                            <Json
-                              value={detail.report}
-                              label="저장된 보고서 증적"
-                            />
-                          </>
-                        ) : (
-                          <p className="muted">
-                            복구 검증 완료 후 다운로드할 수 있습니다.
-                          </p>
-                        )}
-                      </Panel>
-                      </div><Panel title="감사 증적">
-                        {detail.audit.map((a: Row) => (
-                          <div key={a.id} className="mb-3">
-                            <div className="flex-row small">
-                              <Chip>{a.actor}</Chip>
-                              <strong>{a.action}</strong>
-                              <span className="muted">
-                                {formatTime(a.created_at)}
-                              </span>
-                            </div>
-                            <Json value={a.data_json} />
-                          </div>
-                        ))}
-                      </Panel>
-                    </>
-                  )}
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      {drawer && selected && <div className="modal-backdrop" role="dialog" aria-modal="true" aria-label="장애 상세">
+        <IncidentWorkflow incident={detail} isAdmin={isAdmin} canEdit={canEdit} operators={catalog.operators} api={api}
+          onClose={() => setDrawer(false)} onGraph={() => { setDrawer(false); setView("ontology"); }}
+          onRefresh={async () => { const result = await loadDetail(selected, true); await refresh(); return result; }}
+          renderDecision={d => <Decision d={d} />} renderTimeline={events => <Timeline events={events} />} renderAgent={task => <AgentResult task={task} />} />
+      </div>}
       {createOpen && (
         <div
           className="modal-backdrop"
@@ -1969,10 +1459,11 @@ export default function Home() {
                 });
                 setCreateOpen(false);
                 setSelected(r.id);
+                setDrawer(true);
                 setView("dashboard");
                 setNewTitle("");
                 setNewObservations("");
-              }, "장애가 등록되었습니다. 분석 상태는 실시간 실행 흐름에서 확인하세요.");
+              }, "장애가 등록되었습니다. 현재 단계의 처리 화면으로 이동합니다.", "장애 등록 정보 저장 및 분석 시작 요청 중");
             }}
           >
             <div className="drawer-head flex-row justify-between">
@@ -2041,7 +1532,8 @@ export default function Home() {
           </form>
         </div>
       )}
-      {notice && !error && (
+      {busy && requestLabel && <div role="status" className="toast workflow-request"><RefreshCw size={16} className="working-spinner"/><div><strong>{requestLabel}</strong><p className="small">서버 응답을 기다리고 있습니다. 완료된 단계가 확인되면 화면에 반영됩니다.</p></div></div>}
+      {notice && !error && !busy && (
         <div role="status" className="toast flex-row">
           <span>{notice}</span>
           <button aria-label="처리 결과 닫기" onClick={() => setNotice("")}><X size={15} /></button>
