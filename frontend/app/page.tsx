@@ -30,6 +30,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ManualCenter from "@/components/manual-center";
 const ImpactGraph = dynamic(() => import("@/components/impact-graph"), {
   ssr: false,
 });
@@ -69,6 +70,17 @@ const statusLabels: Row = {
   REJECTED: "승인 거부",
 };
 const NO_AFFECTED: string[] = [];
+const nextSteps: Row = {
+  REGISTERED: "장애를 접수했습니다. 분석이 시작될 때까지 기다려 주세요.",
+  ANALYZING: "Jev와 전문 Agent가 분석 중입니다. 실행 타임라인에서 최신 단계를 확인하세요.",
+  NEEDS_REVIEW: "담당자 확인이 필요합니다. 관측과 원인 후보를 대조하고 아래 확인 근거를 작성하세요.",
+  WAITING_APPROVAL: "대응 승인을 기다립니다. 영향 범위와 복구 가이드를 확인한 뒤 승인 또는 거부하세요.",
+  RECOVERING: "승인된 가상 복구를 검증하고 있습니다. 실제 운영 시스템을 변경하지 않습니다.",
+  RESOLVED: "복구 검증을 통과했습니다. ‘후기 & 보고서’에서 후기와 재발 방지 대책을 저장한 후 종료하세요.",
+  CLOSED: "종료된 장애입니다. ‘후기 & 보고서’에서 저장된 기록과 PDF/Excel을 확인할 수 있습니다.",
+  FAILED: "실행 실패 원인을 타임라인에서 확인하세요. 연결 문제를 해결한 후 명시적으로 재시도할 수 있습니다.",
+  REJECTED: "대응이 거부됐습니다. 실행 타임라인과 감사 로그에서 사유를 확인하세요.",
+};
 const agents = [
   "incident",
   "diagnosis",
@@ -332,8 +344,8 @@ export default function Home() {
     [search, setSearch] = useState(""),
     [filterType, setFilterType] = useState(""),
     [filterSystem, setFilterSystem] = useState(""),
-    [from, setFrom] = useState("2026-07-01"),
-    [to, setTo] = useState("2026-12-31");
+    [from, setFrom] = useState(""),
+    [to, setTo] = useState("");
   const [approvalReason, setApprovalReason] = useState(""),
     [reviewType, setReviewType] = useState("RESOURCE"),
     [reviewSeverity, setReviewSeverity] = useState("P1"),
@@ -348,18 +360,17 @@ export default function Home() {
     [newAsset, setNewAsset] = useState("CMP-01");
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
-  const filters = new URLSearchParams({
-    type: filterType,
-    system: filterSystem,
-    from,
-    to,
-  });
+  const filtered = !!(filterType || filterSystem || from || to);
+  const refreshVersion = useRef(0);
+  const resetFilters = () => { setFilterType(""); setFilterSystem(""); setFrom(""); setTo(""); setSearch(""); };
   const refresh = useCallback(async () => {
+    const version = ++refreshVersion.current;
+    if (from && to && from > to) throw new Error("시작일은 종료일보다 늦을 수 없습니다.");
     const q = new URLSearchParams({
       type: filterType,
       system: filterSystem,
-      from,
-      to,
+      ...(from ? { from } : {}),
+      ...(to ? { to } : {}),
     });
     const [d, i, k, a, e, c] = await Promise.all([
       api("/dashboard?" + q),
@@ -369,6 +380,7 @@ export default function Home() {
       api("/evaluations"),
       api("/config"),
     ]);
+    if (version !== refreshVersion.current) return;
     setDashboard(d);
     setIncidents(i);
     setSkills(k);
@@ -430,7 +442,7 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [auth, refresh]);
   useEffect(() => {
-    if (!selected) return;
+    if (!selected) { setDetail(null); return; }
     setDetail(null);
     loadDetail(selected).catch((e) => setError(e.message));
     const source = new EventSource("/api/incidents/" + selected + "/events");
@@ -478,6 +490,8 @@ export default function Home() {
       ).filter((x) => x.getClientRects().length);
     controls()[0]?.focus();
     const handle = (e: KeyboardEvent) => {
+      // Native graph dialogs own keyboard focus and Escape while in the top layer.
+      if (document.querySelector("dialog[open]")) return;
       if (e.key === "Escape") {
         setDrawer(false);
         setCreateOpen(false);
@@ -534,7 +548,7 @@ export default function Home() {
     });
   }
   const visible = incidents.filter((i) =>
-    i.title.toLowerCase().includes(search.toLowerCase()),
+    `${i.title} ${i.id}`.toLowerCase().includes(search.toLowerCase()),
   );
   const recent = incidents.slice(0, 6);
   const current = detail;
@@ -544,10 +558,21 @@ export default function Home() {
   ][];
   const title: Row = {
     dashboard: "AI Incident Command Center",
+    ontology: "온톨로지 · 시스템 영향 분석",
     incidents: "장애 이력 & 보고서",
-    knowledge: "Knowledge & Skills",
-    harness: "Harness & Evaluation",
+    knowledge: "지식 & Skill · 해결 절차 관리",
+    harness: "Harness · 실행 통제와 평가",
+    guide: "사용 안내 · 역할별 매뉴얼",
   };
+  const descriptions: Row = {
+    dashboard: "현재 장애와 처리 진행 상황을 확인합니다. 장애를 선택하면 판단·영향 분석·Agent 결과가 표시됩니다.",
+    ontology: "시스템이 무엇에 의존하는지 확인하고, 선택한 장애의 영향 가능성을 전체화면으로 살펴봅니다.",
+    incidents: "장애를 검색하고 조치 후기·재발 방지 대책·보고서를 확인합니다.",
+    knowledge: "해결 방법을 재사용하는 공간입니다. 검토한 Skill만 승인하고 Hermes 게시 상태를 확인하세요.",
+    harness: "AI의 실행 제한과 승인 기록을 확인하고 가상 시나리오로 판단 정확도를 평가합니다.",
+    guide: "처음 사용하는 분은 사용자용부터, 승인과 환경 운영 담당자는 관리자용을 확인하세요.",
+  };
+  const reportDirty = !!detail && (editTitle !== detail.title || notes !== detail.notes || prevention !== detail.prevention || owner !== detail.owner_id);
   if (auth === null)
     return (
       <div className="login">
@@ -617,13 +642,16 @@ export default function Home() {
         <nav>
           {[
             ["dashboard", LayoutDashboard, "통합 관제"],
+            ["ontology", Network, "온톨로지"],
             ["incidents", History, "장애 이력"],
             ["knowledge", BookOpen, "지식 & Skill"],
             ["harness", ShieldCheck, "Harness & 평가"],
+            ["guide", FileText, "사용 안내"],
           ].map(([id, Icon, label]) => (
             <button
               key={id as string}
               className={"nav-button " + (view === id ? "active" : "")}
+              aria-current={view === id ? "page" : undefined}
               onClick={() => setView(id as string)}
             >
               {typeof Icon !== "string" && <Icon size={17} />}
@@ -653,7 +681,7 @@ export default function Home() {
           <p className="small muted mt-3">
             금융 IT 혁신 서비스 시연
             <br />
-            Local administration · v3.0
+            관리자 시연 환경 · v3.0
           </p>
         </div>
       </aside>
@@ -689,17 +717,14 @@ export default function Home() {
             <div>
               <div className="eyebrow">OPERATIONS / {view.toUpperCase()}</div>
               <h1>{title[view]}</h1>
-              <p>
-                관측에서 판단으로, 협업에서 복구로. 모든 실행은 검증되고
-                기록됩니다.
-              </p>
+              <p>{descriptions[view]}</p>
             </div>
             <Button variant="outline" onClick={() => setCreateOpen(true)}>
               <Plus size={16} />
               장애 직접 등록
             </Button>
           </div>
-          <div className="simulation-bar">
+          {view !== "guide" && <><div className="simulation-bar">
             <div className="flex-row">
               <div className="brand-icon">
                 <Zap size={19} />
@@ -757,6 +782,13 @@ export default function Home() {
               기다립니다.
             </div>
           )}
+          </>}
+          {filtered && ["dashboard", "incidents", "ontology"].includes(view) && <div className="filter-notice" role="status"><span>집계 필터 적용 중 · {typeLabels[filterType] || "모든 유형"} · {catalog.assets.find((a: Row) => a.id === filterSystem)?.name || "모든 시스템"} · {from || "처음"} ~ {to || "현재 이후 포함"}</span><Button size="sm" variant="outline" onClick={resetFilters}>집계 필터 초기화</Button></div>}
+          {view === "guide" && <ManualCenter />}
+          {view === "ontology" && <>
+            <div className="ontology-context"><label>분석 기준 장애<select value={selected || ""} onChange={e => setSelected(e.target.value || null)}><option value="">선택 안 함 · 전체 구조</option>{incidents.map(i => <option key={i.id} value={i.id}>{i.id} · {i.title} · {statusLabels[i.status]}</option>)}</select></label><p className="small muted">저장된 분석 결과를 조회합니다. 영향도 분석 전 장애는 전체 구조만 표시됩니다.</p>{current && <Button size="sm" variant="outline" onClick={() => openIncident(current.id)}>선택 장애 상세 보기</Button>}</div>
+            <Panel title="자산 의존 관계" body={false} extra={<Chip tone="cyan">{current?.impact?.engine || graph.engine}</Chip>}><ImpactGraph assets={graph.nodes} edges={graph.edges} root={current?.impact?.root} affected={current?.impact?.affected || NO_AFFECTED} expanded /></Panel>
+          </>}
           {view === "dashboard" && (
             <>
               <div className="stats">
@@ -859,7 +891,7 @@ export default function Home() {
                         <Chip tone="cyan">
                           {current?.impact?.engine || graph.engine}
                         </Chip>
-                        <span className="small muted">52 nodes · 80 edges</span>
+                        <span className="small muted">{graph.nodes.length}개 자산 · {graph.edges.length}개 관계</span>
                       </div>
                     }
                     body={false}
@@ -870,13 +902,6 @@ export default function Home() {
                       root={current?.impact?.root}
                       affected={current?.impact?.affected || NO_AFFECTED}
                     />
-                    <div className="panel-body flex-row small muted">
-                      <span style={{ color: "#ff8aa8" }}>● 장애 지점</span>
-                      <span style={{ color: "#d7b071" }}>● 영향 가능성</span>
-                      <span>
-                        화살표: 사용하는 자산 → 의존 자산 · 역방향 6단계 탐색
-                      </span>
-                    </div>
                   </Panel>
                   <Panel
                     title="최근 장애"
@@ -1044,7 +1069,7 @@ export default function Home() {
                     type="search"
                     aria-label="장애 검색"
                     className="w-full pl-9"
-                    placeholder="장애 제목 검색"
+                    placeholder="장애 제목 또는 ID 검색"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
@@ -1079,14 +1104,17 @@ export default function Home() {
                   aria-label="시작일"
                   type="date"
                   value={from}
+                  max={to || undefined}
                   onChange={(e) => setFrom(e.target.value)}
                 />
                 <input
                   aria-label="종료일"
                   type="date"
                   value={to}
+                  min={from || undefined}
                   onChange={(e) => setTo(e.target.value)}
                 />
+                <Button variant="outline" onClick={resetFilters}>검색 초기화</Button>
               </div>
               <div className="flex-row muted small mb-4">
                 필터 결과 {visible.length}건 · 평균 복구 {dashboard.mttrMinutes}
@@ -1339,7 +1367,8 @@ export default function Home() {
                             </strong>
                           )}
                         </div>
-                        {r && (
+                        {r?.error && <p role="alert" className="banner error mt-3">평가 실패: {r.error}</p>}
+                        {r?.total && (
                           <>
                             <div className="flex-row small muted mt-3">
                               유형 {r.typeCorrect}/50 · 심각도{" "}
@@ -1463,6 +1492,7 @@ export default function Home() {
             <div className="drawer-body">
               {detail && (
                 <>
+                  <div className="banner next-step"><strong>다음 할 일</strong><p>{nextSteps[detail.status]}</p></div>
                   {detailTab === "analysis" && (
                     <>
                       <Panel title="관측 정보">
@@ -1561,6 +1591,7 @@ export default function Home() {
                       )}
                       {detail.impact && (
                         <Panel title="Ontology 영향 분석">
+                          <Button size="sm" variant="outline" className="mb-3" onClick={() => { setDrawer(false); setView("ontology"); }}>영향 그래프 크게 보기</Button>
                           <p className="mb-3">
                             <strong className="text-cyan-200">
                               {detail.impact.affected.length}
@@ -1758,7 +1789,7 @@ export default function Home() {
                           </Button>
                           {detail.status === "RESOLVED" && (
                             <Button
-                              disabled={busy}
+                              disabled={busy || reportDirty || !notes.trim() || !prevention.trim()}
                               onClick={() =>
                                 action(() =>
                                   api(
@@ -1773,6 +1804,7 @@ export default function Home() {
                             </Button>
                           )}
                         </div>
+                        {detail.status === "RESOLVED" && <p className="small muted mt-3">{reportDirty ? "수정한 내용을 먼저 저장하면 장애를 종료할 수 있습니다." : !notes.trim() || !prevention.trim() ? "조치 후기와 재발 방지 대책을 입력하고 저장하세요." : "저장된 후기와 예방 대책을 확인한 후 종료하세요."}</p>}
                       </Panel>
                       <Panel title="보고서 다운로드">
                         {["RESOLVED", "CLOSED"].includes(detail.status) ? (

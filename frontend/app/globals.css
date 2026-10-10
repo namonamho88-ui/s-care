@@ -371,6 +371,57 @@ h3 {
   height: 420px;
   background: radial-gradient(ellipse at 50% 50%, #14273a, #0b1422 80%);
 }
+.graph-expanded { height: 600px; }
+.graph-open, .graph-toolbar, .graph-dialog-head, .graph-legend, .manual-switch, .filter-notice {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 14px 18px;
+}
+.graph-open, .graph-toolbar { border-bottom: 1px solid var(--line); }
+.graph-toolbar .flex-row { flex-wrap: wrap; }
+.graph-node-kind { font-size: 10px; color: #b6c8da; margin-bottom: 5px; }
+.graph-info { display: flex; flex-wrap: wrap; gap: 8px 16px; min-height: 52px; padding: 12px 18px; border-top: 1px solid var(--line); font-size: 12px; color: #b5c4d7; }
+.graph-legend { justify-content: flex-start; color: #b5c4d7; padding-top: 0; line-height: 1.7; }
+.graph-dialog { margin: 0; padding: 0; inset: 0; width: 100vw; max-width: none; height: 100dvh; max-height: none; border: 0; background: #0d1725; color: #e7edf6; overflow: hidden; }
+.graph-dialog[open] { display: flex; flex-direction: column; }
+.graph-dialog::backdrop { background: #020711e6; }
+.graph-dialog-head { border-bottom: 1px solid var(--line); flex: none; }
+.graph-dialog-head p { margin-top: 6px; }
+.graph-canvas-full { display: flex; flex-direction: column; min-height: 0; flex: 1; }
+.graph-canvas-full .graph-wrap { flex: 1; height: auto; min-height: 100px; }
+.graph-canvas-full .graph-toolbar, .graph-canvas-full .graph-info, .graph-canvas-full .graph-legend { flex: none; }
+.ontology-context { display: flex; flex-wrap: wrap; align-items: end; gap: 16px; margin-bottom: 18px; }
+.ontology-context label { flex: 1; min-width: 200px; }
+.ontology-context select { width: 100%; }
+.filter-notice { margin-bottom: 18px; border: 1px solid #51664d; border-radius: 8px; background: #1b2b28; line-height: 1.6; }
+.next-step p { margin-top: 5px; }
+.manual-switch { justify-content: flex-start; padding: 0 0 20px; }
+.manual-download { display: inline-flex; align-items: center; gap: 8px; color: #8de9f7; padding: 8px; text-decoration: underline; text-underline-offset: 4px; }
+.manual-intro { padding: 24px; border: 1px solid #345669; border-radius: 12px; background: #102736; line-height: 1.9; margin-bottom: 24px; }
+.manual-intro h2 { font-size: 23px; }
+.manual-intro p { margin-top: 10px; }
+.manual-intro small { display: block; color: #a7bacb; margin-top: 12px; }
+.manual-layout { display: grid; grid-template-columns: 215px minmax(0, 1fr); gap: 24px; align-items: start; }
+.manual-toc { display: grid; gap: 6px; position: sticky; top: 20px; }
+.manual-toc a { padding: 10px 12px; border-radius: 6px; color: #b4c8df; line-height: 1.6; }
+.manual-toc a:hover { color: #91ebf5; background: #14303d; }
+.manual-section { scroll-margin-top: 20px; padding: 24px; margin-bottom: 18px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); font-size: 14px; line-height: 1.9; }
+.manual-section h3 { font-size: 19px; margin-bottom: 18px; }
+.manual-section p, .manual-section ol, .manual-section table { margin: 14px 0; }
+.manual-section ol { list-style: decimal; padding-left: 24px; }
+.manual-section li { padding-left: 4px; margin: 10px 0; }
+.manual-table-scroll { overflow: auto; }
+.manual-section table { width: 100%; min-width: 420px; border-collapse: collapse; font-size: 13px; }
+.manual-section th, .manual-section td { padding: 12px; border: 1px solid #34445a; text-align: left; vertical-align: top; }
+.manual-section th { background: #192c3e; }
+.manual-section aside { margin-top: 18px; }
+@media (max-width: 720px) {
+  .manual-layout { grid-template-columns: 1fr; }
+  .manual-toc { position: static; grid-template-columns: 1fr 1fr; }
+  .manual-section { padding: 18px; }
+  .graph-open, .graph-toolbar, .graph-dialog-head { padding: 10px 12px; }
+  .graph-dialog-head h2 { font-size: 14px; }
+  .graph-info, .graph-legend { padding-left: 12px; padding-right: 12px; font-size: 11px; }
+  .panel-head { flex-wrap: wrap; }
+}
 .react-flow__node-default {
   font-size: 10px !important;
   padding: 11px !important;
