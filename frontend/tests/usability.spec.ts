@@ -8,8 +8,9 @@ const rows = [
   { id: 'INC-UI-CLOSED', title: '가상 네트워크 장애', type: 'NETWORK', status: 'CLOSED' },
 ].map(row => ({ ...row, asset_id: 'ASSET-12', asset_name: '가상 자산 12', system_name: '가상 업무', severity: 'P1', owner_id: 'OP-01', owner_name: '가상 담당자', department: 'PLATFORM', created_at: '2026-10-10T12:00:00Z', notes: '저장된 조치 후기', prevention: '저장된 예방 대책', observations: 'Fictional CPU usage 96%', decision: null, tasks: [], events: [], audit: [], impact: { root: 'ASSET-12', affected: ['ASSET-12','ASSET-13','ASSET-14'], engine: 'NEO4J' } }));
 
-async function setup(page: Page, recoveryNotes?: string, role = "ADMIN") {
+async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial: Record<string, unknown> = {}) {
   const records = structuredClone(rows);
+  Object.assign(records[0], initial);
   records[1].owner_id="OP-02";
   if (recoveryNotes !== undefined) Object.assign(records[0], {notes:recoveryNotes,events:[{id:1,stage:'VERIFY',state:'COMPLETED',message:'가상 복구 검증',data_json:recoveryNotes,created_at:'2026-10-10T12:01:00Z'}]});
   const mutations: string[] = [];
@@ -267,4 +268,95 @@ test('admin invites an account and confirms session-revoking changes', async ({p
   await page.getByRole('button',{name:'확인 후 적용',exact:true}).click();
   await expect(page.getByRole('button',{name:'활성화',exact:true})).toBeVisible();
   expect(users[0].enabled).toBe(false);
+});
+
+test('guide follows backend transitions and navigation never approves or closes', async ({page}) => {
+  await page.clock.install();
+  const mutations=await setup(page,undefined,'ADMIN',{status:'ANALYZING'});
+  const record:any={...rows[0],status:'ANALYZING',events:[{id:1,stage:'JEV',state:'RUNNING',message:'가상 분석 실행',data_json:'{}',created_at:'2026-10-10T12:00:00Z'}]};
+  const commands:string[]=[];
+  await page.route('**/api/incidents/INC-UI-RESOLVED',async route=>{
+    if(route.request().method()==='PATCH') {commands.push('save');Object.assign(record,route.request().postDataJSON());}
+    await route.fulfill({json:record});
+  });
+  for(const [suffix,status] of [['review','WAITING_APPROVAL'],['approval','RECOVERING'],['close','CLOSED']]) {
+    await page.route('**/api/incidents/INC-UI-RESOLVED/'+suffix,async route=>{commands.push(suffix);record.status=status;await route.fulfill({json:record});});
+  }
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  const dialog=page.getByRole('dialog',{name:'장애 상세'}), guide=dialog.getByRole('region',{name:'장애 처리 길잡이'});
+  await expect(guide.locator('[aria-current="step"]')).toContainText('분석·판단 확인');
+  await expect(guide).toContainText('AI 장애 판단 · Jev · 진행 중');
+  record.status='NEEDS_REVIEW';
+  await page.clock.runFor(5100);
+  await guide.getByRole('button',{name:'판단 확인 위치로 이동'}).click();
+  await expect(dialog.locator('#guide-review')).toBeFocused();
+  await expect(dialog.getByRole('button',{name:'판단 확정 & 분석 계속'})).toBeDisabled();
+  expect(commands).toEqual([]);
+  const reason=dialog.getByRole('textbox',{name:'확인 근거',exact:true});
+  await reason.fill('가상 CPU 관측을 확인했습니다.');
+  await page.clock.runFor(5100);
+  await expect(reason).toHaveValue('가상 CPU 관측을 확인했습니다.');
+  await expect(reason).toBeFocused();
+  await dialog.getByRole('button',{name:'판단 확정 & 분석 계속'}).click();
+  await expect(guide.locator('[aria-current="step"]')).toContainText('대응 승인');
+  await guide.getByRole('button',{name:'대응 승인 위치로 이동'}).click();
+  await expect(dialog.locator('#guide-approval')).toBeFocused();
+  expect(commands).toEqual(['review']);
+  await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('영향 범위를 검토했고 가상 복구만 승인합니다.');
+  await dialog.getByRole('button',{name:'대응 승인',exact:true}).click();
+  await expect(guide.locator('[aria-current="step"]')).toContainText('복구 검증');
+  record.status='RESOLVED';record.notes='';record.prevention='';
+  await page.clock.runFor(5100);
+  await expect(guide.locator('[aria-current="step"]')).toContainText('후기 검토·저장');
+  await guide.getByRole('button',{name:'후기 작성 위치로 이동'}).click();
+  await expect(dialog.locator('#guide-notes')).toBeFocused();
+  await expect(dialog.getByRole('button',{name:'장애 종료',exact:true})).toBeDisabled();
+  await dialog.getByRole('textbox',{name:'조치 후기',exact:true}).fill('가상 복구 지표를 확인했습니다.');
+  await dialog.getByRole('textbox',{name:'재발 방지 대책',exact:true}).fill('가상 부하 테스트를 추가합니다.');
+  await dialog.getByRole('button',{name:'수정 내용 저장'}).click();
+  await expect(guide.locator('[aria-current="step"]')).toContainText('장애 종료');
+  await guide.getByRole('button',{name:'최종 확인 위치로 이동'}).click();
+  await expect(dialog.locator('#guide-notes')).toBeFocused();
+  expect(commands).toEqual(['review','approval','save']);
+  await dialog.getByRole('button',{name:'장애 종료',exact:true}).click();
+  await expect(guide).toContainText('전체 단계 완료');
+  await expect(guide.locator('[aria-current="step"]')).toHaveCount(0);
+  await expect(guide.locator('li.complete')).toHaveCount(6);
+  await guide.getByRole('button',{name:'보고서 위치로 이동'}).click();
+  await expect(dialog.locator('#guide-report')).toBeFocused();
+  expect(commands).toEqual(['review','approval','save','close']);
+  expect(mutations).toEqual([]);
+});
+
+test('mobile guide fits and takes a waiting user to read-only analysis above the sticky header',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  const mutations=await setup(page,undefined,'USER',{status:'WAITING_APPROVAL'});
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  const dialog=page.getByRole('dialog',{name:'장애 상세'}), guide=dialog.getByRole('region',{name:'장애 처리 길잡이'});
+  await expect(guide).toContainText('관리자 승인 대기');
+  await expect(guide.locator('[aria-current="step"]')).toContainText('대응 승인');
+  await expect(dialog.getByRole('button',{name:'대응 승인',exact:true})).toHaveCount(0);
+  await expect.poll(()=>guide.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+  await expect.poll(()=>dialog.locator('.drawer').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+  await guide.getByRole('button',{name:'분석 결과 보기'}).click();
+  await expect(dialog.locator('#guide-analysis')).toBeFocused();
+  await expect.poll(()=>dialog.evaluate(el=>{
+    const target=el.querySelector('#guide-analysis')!.getBoundingClientRect(),head=el.querySelector('.drawer-head')!.getBoundingClientRect();
+    return target.top>=head.bottom-1 && target.top<window.innerHeight;
+  })).toBe(true);
+  expect(mutations).toEqual([]);
+});
+
+test('failure guide shows error records before retry without executing a request',async({page})=>{
+  const mutations=await setup(page,undefined,'ADMIN',{status:'FAILED',events:[{id:1,stage:'FAILURE',state:'FAILED',message:'가상 연결 오류',data_json:'{}',created_at:'2026-10-10T12:00:00Z'}]});
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  const dialog=page.getByRole('dialog',{name:'장애 상세'}), guide=dialog.getByRole('region',{name:'장애 처리 길잡이'});
+  await expect(guide).toContainText('실행 실패 · 확인 필요');
+  await guide.getByRole('button',{name:'오류 기록 보기'}).click();
+  await expect(dialog.locator('#guide-timeline')).toBeFocused();
+  await expect(dialog.locator('#guide-timeline')).toContainText('가상 연결 오류');
+  await dialog.getByRole('button',{name:'원인 해결 후 재시도 위치로 이동'}).click();
+  await expect(dialog.locator('#guide-retry')).toBeFocused();
+  await expect(dialog.getByRole('button',{name:'실패 작업 재시도',exact:true})).toBeVisible();
+  expect(mutations).toEqual([]);
 });

@@ -32,6 +32,8 @@ import {
 import { Button } from "@/components/ui/button";
 import AccountCenter from "@/components/account-center";
 import ManualCenter from "@/components/manual-center";
+import IncidentProgress from "@/components/incident-progress";
+import { incidentGuide, stageLabel, eventStateLabel } from "@/lib/incident-guide.mjs";
 import { recoveryNotesDraft } from "@/lib/recovery-notes.mjs";
 const ImpactGraph = dynamic(() => import("@/components/impact-graph"), {
   ssr: false,
@@ -72,17 +74,6 @@ const statusLabels: Row = {
   REJECTED: "승인 거부",
 };
 const NO_AFFECTED: string[] = [];
-const nextSteps: Row = {
-  REGISTERED: "장애를 접수했습니다. 분석이 시작될 때까지 기다려 주세요.",
-  ANALYZING: "Jev와 전문 Agent가 분석 중입니다. 실행 타임라인에서 최신 단계를 확인하세요.",
-  NEEDS_REVIEW: "담당자 확인이 필요합니다. 관측과 원인 후보를 대조하고 아래 확인 근거를 작성하세요.",
-  WAITING_APPROVAL: "대응 승인을 기다립니다. 영향 범위와 복구 가이드를 확인한 뒤 승인 또는 거부하세요.",
-  RECOVERING: "승인된 가상 복구를 검증하고 있습니다. 실제 운영 시스템을 변경하지 않습니다.",
-  RESOLVED: "복구 검증을 통과했습니다. ‘후기 & 보고서’에서 후기와 재발 방지 대책을 저장한 후 종료하세요.",
-  CLOSED: "종료된 장애입니다. ‘후기 & 보고서’에서 저장된 기록과 PDF/Excel을 확인할 수 있습니다.",
-  FAILED: "실행 실패 원인을 타임라인에서 확인하세요. 연결 문제를 해결한 후 명시적으로 재시도할 수 있습니다.",
-  REJECTED: "대응이 거부됐습니다. 실행 타임라인과 감사 로그에서 사유를 확인하세요.",
-};
 const agents = [
   "incident",
   "diagnosis",
@@ -178,19 +169,21 @@ function Panel({
   extra,
   children,
   body = true,
+  point,
 }: {
   title: string;
   extra?: React.ReactNode;
   children: React.ReactNode;
   body?: boolean;
+  point?: { id: string; label: string };
 }) {
   return (
-    <section className="panel">
+    <section className={"panel" + (point ? " guide-target" : "")} id={point?.id} tabIndex={point ? -1 : undefined}>
       <div className="panel-head">
         <h2>{title}</h2>
         {extra}
       </div>
-      <div className={body ? "panel-body" : ""}>{children}</div>
+      <div className={body ? "panel-body" : ""}>{point && <p className="guide-point">{point.label}</p>}{children}</div>
     </section>
   );
 }
@@ -213,7 +206,7 @@ function Timeline({ events }: { events: Row[] }) {
             }
           >
             <div className="event-top">
-              <h3>{e.stage.replace("AGENT_", "A2A · ")}</h3>
+              <h3>{stageLabel(e.stage)} <span className="muted small">· {eventStateLabel(e.state)}</span></h3>
               <small className="mono">
                 {formatTime(e.created_at).slice(-8)}
               </small>
@@ -369,6 +362,8 @@ export default function Home() {
   selectedRef.current = selected;
   const filtered = !!(filterType || filterSystem || from || to);
   const refreshVersion = useRef(0);
+  const detailVersion = useRef(0);
+  const [guideJump, setGuideJump] = useState<{ target: string; incidentId: string } | null>(null);
   const resetFilters = () => { setFilterType(""); setFilterSystem(""); setFrom(""); setTo(""); setSearch(""); };
   const refresh = useCallback(async () => {
     const version = ++refreshVersion.current;
@@ -397,8 +392,9 @@ export default function Home() {
     setOnline(true);
   }, [filterType, filterSystem, from, to, isAdmin]);
   const loadDetail = useCallback(async (id: string) => {
+    const version = ++detailVersion.current;
     const d = await api("/incidents/" + id);
-    if (selectedRef.current === id) setDetail(d);
+    if (selectedRef.current === id && version === detailVersion.current) setDetail(d);
     return d;
   }, []);
   const action = async (fn: () => Promise<any>, successMessage = "요청이 처리되었습니다.") => {
@@ -477,13 +473,20 @@ export default function Home() {
         setError("실시간 화면 갱신 실패: " + e.message);
       });
     });
+    // Also observe edits from another session and recover from a missed SSE event.
+    const interval = setInterval(() => {
+      loadDetail(selected).catch(() => setLive(false));
+    }, 5000);
     return () => {
+      clearInterval(interval);
       source.close();
       setLive(false);
     };
   }, [selected, loadDetail, refresh]);
   useEffect(() => {
     if (detail) {
+      setReviewReason("");
+      setApprovalReason("");
       setEditTitle(detail.title);
       setNotes(recoveryNotesDraft(detail.notes) ?? detail.notes);
       setPrevention(detail.prevention);
@@ -537,6 +540,28 @@ export default function Home() {
       previous?.focus();
     };
   }, [drawer, createOpen]);
+  useEffect(() => {
+    if (!guideJump || !drawer || detail?.id !== guideJump.incidentId) return;
+    const frame = requestAnimationFrame(() => {
+      const element = document.getElementById("guide-" + guideJump.target);
+      if (!element) return;
+      const headerHeight = document.querySelector(".drawer-head")?.getBoundingClientRect().height || 0;
+      element.style.scrollMarginTop = `${headerHeight + 16}px`;
+      element.scrollIntoView({ block: "start", behavior: "instant" });
+      // Focus the explanation, never an approval/close button. Navigation performs no mutation.
+      element.focus({ preventScroll: true });
+      setGuideJump(null);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [guideJump, drawer, detail?.id, detailTab]);
+  function navigateGuide(target: string) {
+    if (target === "register") { setCreateOpen(true); return; }
+    if (!detail) return;
+    const tab = ["notes", "close", "report", "downloads"].includes(target) ? "report" : target === "timeline" ? "timeline" : "analysis";
+    setDetailTab(tab);
+    setDrawer(true);
+    setGuideJump({ target: ["close", "report"].includes(target) ? "notes" : target === "downloads" ? "report" : target, incidentId: detail.id });
+  }
   async function login(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -601,6 +626,7 @@ export default function Home() {
   const reportDirty = !!detail && (editTitle !== detail.title || notes !== detail.notes || prevention !== detail.prevention || owner !== detail.owner_id);
   const generatedNotes = detail ? recoveryNotesDraft(detail.notes) : null;
   const recoveryProof = generatedNotes ? detail?.notes : [...(detail?.events || [])].reverse().find((event: Row) => event.stage === "VERIFY" && event.state === "COMPLETED")?.data_json;
+  const guide = incidentGuide(detail, { isAdmin, canEdit, dirty: reportDirty, notes, prevention });
   if (auth === null)
     return (
       <div className="login">
@@ -807,6 +833,7 @@ export default function Home() {
           </>}
           {view === "dashboard" && (
             <>
+              <IncidentProgress guide={guide} incidentTitle={current?.title} onNavigate={navigateGuide} announce={!drawer} />
               <div className="stats">
                 {[
                   [
@@ -1504,21 +1531,25 @@ export default function Home() {
                   </button>
                 ))}
               </div>
+              {detail && <button className={"guide-anchor " + guide.tone} onClick={() => navigateGuide(guide.target)}>
+                <span>{guide.badge}{guide.step >= 0 && guide.step < 6 ? ` · ${guide.step + 1}단계` : ""}</span>
+                <strong>{guide.title}</strong><ChevronRight size={15} aria-hidden="true" />
+              </button>}
             </div>
             <div className="drawer-body">
               {detail && (
                 <>
-                  <div className="banner next-step"><strong>다음 할 일</strong><p>{!isAdmin && ["NEEDS_REVIEW", "WAITING_APPROVAL", "FAILED"].includes(detail.status) ? "관리자의 검토·승인 또는 재시도를 기다리고 있습니다. 분석 결과와 실행 타임라인을 확인하세요." : !isAdmin && detail.status === "RESOLVED" ? "본인 담당 장애이면 후기와 예방 대책을 저장하세요. 최종 종료는 관리자가 수행합니다." : nextSteps[detail.status]}</p></div>
+                  <IncidentProgress guide={guide} incidentTitle={detail.title} onNavigate={navigateGuide} />
                   {detailTab === "analysis" && (
                     <>
-                      <Panel title="관측 정보">
+                      <div id="guide-analysis" tabIndex={-1} className="guide-destination"><Panel title="관측 정보">
                         <p className="muted small mb-3">
                           {detail.system_name} / {detail.asset_name}
                         </p>
                         <p className="text-sm leading-7">
                           {detail.observations}
                         </p>
-                      </Panel>
+                      </Panel></div>
                       <Panel title="Jev 모델 판단">
                         <Decision d={detail.decision} />
                       </Panel>
@@ -1526,7 +1557,8 @@ export default function Home() {
                         <AgentResult task={detail.tasks.filter((t: Row) => t.agent === "diagnosis").at(-1)} />
                       </Panel>}
                       {isAdmin && detail.status === "NEEDS_REVIEW" && (
-                        <Panel title="담당자 판단 확인">
+                        <Panel title="담당자 판단 확인" point={{ id: "guide-review", label: "포인트 2 · 관측·AI 판단 확인 → 분류 검토 → 확인 근거 입력 → 분석 계속" }}>
+                          <Button size="sm" variant="outline" className="mb-3" onClick={() => navigateGuide("analysis")}>관측과 AI 판단 다시 보기</Button>
                           <div className="banner">
                             모델 근거가 부족합니다. 원본 관측과 모델 응답을
                             확인한 후 분류를 확정하세요.
@@ -1584,7 +1616,7 @@ export default function Home() {
                             </label>
                           </div>
                           <Button
-                            className="mt-4"
+                            className={"mt-4" + (reviewReason.trim() ? " guide-action" : "")}
                             disabled={busy || !reviewReason.trim()}
                             onClick={() =>
                               action(() =>
@@ -1603,6 +1635,7 @@ export default function Home() {
                           >
                             판단 확정 & 분석 계속
                           </Button>
+                          <p className="small muted mt-3">{reviewReason.trim() ? "입력한 근거로 판단을 확정하면 분석이 계속됩니다. 대응 승인은 다음 단계입니다." : "확인 근거를 입력하면 ‘판단 확정 & 분석 계속’ 버튼이 활성화됩니다."}</p>
                         </Panel>
                       )}
                       {detail.impact && (
@@ -1628,7 +1661,8 @@ export default function Home() {
                         </Panel>
                       )}
                       {isAdmin && detail.status === "WAITING_APPROVAL" && (
-                        <Panel title="가상 대응 승인">
+                        <Panel title="가상 대응 승인" point={{ id: "guide-approval", label: "포인트 3 · 영향 범위 확인 → 승인 / 거부 사유 입력 → 대응 여부 선택" }}>
+                          <Button size="sm" variant="outline" className="mb-3" onClick={() => navigateGuide("analysis")}>판단과 영향 범위 다시 보기</Button>
                           <div className="banner">
                             Harness 검증이 완료되었습니다. 승인 후 가상 복구
                             지표를 변경하고 정상 범위 도달 여부를 확인합니다.
@@ -1675,10 +1709,12 @@ export default function Home() {
                               대응 거부
                             </Button>
                           </div>
+                          <p className="small muted mt-3">{approvalReason.trim() ? "승인을 누르면 가상 복구가 시작됩니다. 사유를 검토하고 직접 선택하세요." : "사유를 입력하면 대응 승인·거부 버튼이 활성화됩니다."}</p>
                         </Panel>
                       )}
                       {isAdmin && detail.status === "FAILED" && (
-                        <div className="banner error">
+                        <div id="guide-retry" tabIndex={-1} className="banner error guide-target">
+                          <p className="guide-point">중단 지점 · 오류 확인 → 원인 해결 → 명시적 재시도</p>
                           <p>
                             실행 오류가 기록되었습니다. 타임라인에서 원인을
                             확인하고 연결 상태를 복구한 뒤 다시 실행하세요.
@@ -1711,7 +1747,10 @@ export default function Home() {
                     </>
                   )}
                   {detailTab === "timeline" && (
-                    <Timeline events={detail.events || []} />
+                    <div id="guide-timeline" tabIndex={-1} className="guide-destination">
+                      {isAdmin && detail.status === "FAILED" && <div className="banner error"><p>오류 기록을 먼저 읽고 원인을 해결하세요.</p><Button size="sm" variant="outline" className="mt-3" onClick={() => navigateGuide("retry")}>원인 해결 후 재시도 위치로 이동</Button></div>}
+                      <Timeline events={detail.events || []} />
+                    </div>
                   )}
                   {detailTab === "agents" && (
                     <>
@@ -1742,7 +1781,7 @@ export default function Home() {
                   )}
                   {detailTab === "report" && (
                     <>
-                      <Panel title="장애 정보 & 조치 후기">
+                      <Panel title="장애 정보 & 조치 후기" point={{ id: "guide-notes", label: detail.status === "RESOLVED" ? reportDirty || !notes.trim() || !prevention.trim() ? "포인트 5 · 후기 검토 → 예방 대책 작성 → 수정 내용 저장" : "포인트 6 · 저장된 후기·예방 대책 최종 확인 → 관리자 종료" : "저장된 장애 정보와 조치 기록" }}>
                         {!canEdit && <div className="banner mb-4">다른 담당자의 장애는 조회만 가능합니다. 담당자 변경이 필요하면 관리자에게 요청하세요.</div>}
                         {generatedNotes && <div className="banner mb-4">가상 복구 검증 결과를 한국어 후기 초안으로 정리했습니다. 내용을 검토하고 필요한 조치 설명을 추가한 뒤 ‘수정 내용 저장’을 누르세요. 저장 전에는 보고서에 반영되지 않습니다.</div>}
                         <div className="form-grid">
@@ -1790,6 +1829,7 @@ export default function Home() {
                         <div className="flex-row mt-4">
                           <Button
                             variant="outline"
+                            className={detail.status === "RESOLVED" && reportDirty && canEdit ? "guide-action" : ""}
                             disabled={
                               !canEdit || busy ||
                               [
@@ -1812,6 +1852,7 @@ export default function Home() {
                           </Button>
                           {isAdmin && detail.status === "RESOLVED" && (
                             <Button
+                              className={!reportDirty && notes.trim() && prevention.trim() ? "guide-action" : ""}
                               disabled={busy || reportDirty || !notes.trim() || !prevention.trim()}
                               onClick={() =>
                                 action(() =>
@@ -1830,7 +1871,7 @@ export default function Home() {
                         {isAdmin && detail.status === "RESOLVED" && <p className="small muted mt-3">{reportDirty ? "수정한 내용을 먼저 저장하면 장애를 종료할 수 있습니다." : !notes.trim() || !prevention.trim() ? "조치 후기와 재발 방지 대책을 입력하고 저장하세요." : "저장된 후기와 예방 대책을 확인한 후 종료하세요."}</p>}
                         {recoveryProof && <details className="mt-4"><summary>복구 검증 원본 보기</summary><pre>{JSON.stringify(parse(recoveryProof), null, 2)}</pre></details>}
                       </Panel>
-                      <Panel title="보고서 다운로드">
+                      <div id="guide-report" tabIndex={-1} className="guide-destination"><Panel title="보고서 다운로드">
                         {["RESOLVED", "CLOSED"].includes(detail.status) ? (
                           <>
                             <div className="flex-row">
@@ -1870,7 +1911,7 @@ export default function Home() {
                           </p>
                         )}
                       </Panel>
-                      <Panel title="감사 증적">
+                      </div><Panel title="감사 증적">
                         {detail.audit.map((a: Row) => (
                           <div key={a.id} className="mb-3">
                             <div className="flex-row small">
@@ -1932,6 +1973,7 @@ export default function Home() {
               </Button>
             </div>
             <div className="drawer-body">
+              <p className="guide-point">포인트 1 · 제목·구성요소·가상 관측 입력 → 등록 & 분석 시작<br />등록 후에는 통합 관제의 ‘장애 처리 길잡이’에서 다음 단계를 확인하세요.</p>
               <div className="banner">
                 실제 개인정보나 운영 시스템 로그를 입력하지 마세요. 가상 관측
                 데이터만 사용합니다.
