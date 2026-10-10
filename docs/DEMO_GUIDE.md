@@ -1,10 +1,12 @@
 # 시연 대본
 
 ## 준비
-UI http://localhost:3100, backend `/api/health`, jevos `/health`, Hermes `http://127.0.0.1:8642/health`를 확인한다. 실제 Hermes 생성 시 OpenAI 키와 인터넷 연결도 필요하다. 좌측 DB는 POSTGRESQL, 그래프는 NEO4J여야 한다. 관리자는 개발 토큰으로 로그인한다. 인터넷 연결 없이 재현해야 하는 발표는 미리 이미지/모델을 받아 두고 DEMO를 선택한다.
+최종 클라우드 시연 화면은 https://s-care-mu.vercel.app/ 이다. 클라우드 `ADMIN_TOKEN`으로 로그인한다. 이 PC의 값은 Git에서 제외된 `.env.cloud`에 있으며 화면 공유나 발표 자료에 토큰을 노출하지 않는다. Railway의 backend/jevos/hermes/neo4j가 정상 실행 중인지 확인하고 좌측 DB는 POSTGRESQL, 그래프는 NEO4J인지 확인한다. 실제 Hermes 생성은 OpenAI 키와 인터넷 연결이 필요하다.
+
+로컬 개발 시 UI http://localhost:3100, backend `/api/health`, jevos `/health`, Hermes `http://127.0.0.1:8642/health`를 사용한다. 인터넷 연결 없이 재현해야 하는 발표는 PC에 이미지/모델을 받아 두고 DEMO를 선택한다. 클라우드 DEMO는 외부 모델을 호출하지 않지만 웹·DB 접근을 위한 인터넷은 필요하다.
 
 ## 1. 실제 AI 시연 (약 3분)
-“모든 데이터는 가상입니다. Jev 모델은 실제 로컬 CPU에서, Hermes의 Skill 생성은 OpenAI에서 동작하고, 승인 이후에도 실제 운영 시스템을 변경하지 않습니다.”
+“모든 데이터는 가상입니다. Local Jev 모델은 Railway 컨테이너의 CPU에서, Hermes의 Skill 생성은 OpenAI에서 동작하고, 승인 이후에도 실제 운영 시스템을 변경하지 않습니다.”
 
 실제 AI / Local jevos / SCN-01 → 가상 장애 발생.
 “장애가 DB에 저장되고 Jev가 유형, 심각도, 담당 부서를 판단합니다. Provider와 모델, 실행 시간이 함께 남습니다.”
@@ -32,7 +34,7 @@ NEEDS_REVIEW를 확인한다. 분류/심각도/담당 부서와 확인 사유를
 “연결 실패를 실제 AI 성공처럼 표시하지 않습니다. 시뮬레이션 결과임이 화면·보고서·DB에 남습니다.”
 
 ## 4. 지식 승인과 자동 평가
-지식 & Skill에서 신규 DRAFT를 확인하고 승인한다. 승인 전 검색에서 제외됨을 설명한다.
+지식 & Skill에서 신규 DRAFT의 적용 조건·절차·해결 방법·주의사항을 관측과 대조한 후 승인하거나 거부한다. 승인 전 검색에서 제외됨을 설명한다. 실제 클라우드 검증에서는 Hermes가 ‘최근 7일’을 ‘향후 7일’로 잘못 생성한 초안을 거부했고, Hermes 파일 카탈로그에도 게시되지 않았음을 확인했다. 실제 모델 생성 표시는 내용의 정확성을 보장하지 않는다. 현재 UI는 승인/거부를 지원하며 초안 수정·재생성은 후속 개선 범위다.
 Harness & 평가에서 Mock 50건 또는 실제 Local 50건 평가를 실행한다.
 “평가 정답은 모델에 전달하지 않습니다. 실제 일치율과 검토 필요 건수, 대체 실행 횟수를 각각 저장합니다.”
 

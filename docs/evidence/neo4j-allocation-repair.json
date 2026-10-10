@@ -1,0 +1,14 @@
+{
+  "fictional": true,
+  "backupFile": "neo4j-before-sparse-repair-20261010.tar.gz",
+  "backupBytes": 443442,
+  "backupSha256": "b63a3e3180b371c34f444d02cfbf4399aab7730f7b72827545a91839064d4448",
+  "transactionLogChecksumsUnchanged": {
+    "transactions/system/neostore.transaction.db.0": "c2124080398dc1659bfe3c6a6f90138a48e7241b56e6e4e63a0079cf13c4ad68",
+    "transactions/neo4j/neostore.transaction.db.0": "9ddd9d3b8223b48a11f33d68851dd4ea4c311ce9ac2f68f425133d3190495a1e"
+  },
+  "operation": "fallocate --dig-holes while Neo4j stopped; no truncation/deletion",
+  "diskAfter": "Filesystem      Size  Used Avail Use% Mounted on\n/dev/zd10512    434M  2.3M  422M   1% /data",
+  "allocatedAfter": "1.1M\t/data/databases\n8.0K\t/data/dbms\n16K\t/data/lost+found\n1.1M\t/data/transactions\n2.1M\t/data",
+  "databaseRestartedSuccessfully": true
+}

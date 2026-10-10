@@ -1,0 +1,59 @@
+{
+  "frontendUrl": "https://s-care-mu.vercel.app",
+  "fictional": true,
+  "anonymousRejected": true,
+  "secureHttpOnlyCookie": true,
+  "config": {
+    "hermes": {
+      "apiReachable": true,
+      "reason": "",
+      "configured": true,
+      "toolsDisabled": true,
+      "provider": "HERMES_AGENT",
+      "lastResult": {
+        "requestedProvider": "HERMES_AGENT",
+        "latencyMs": 2816,
+        "operation": "search",
+        "provider": "HERMES_AGENT",
+        "fallback": false,
+        "hermesConnected": true,
+        "fictional": true,
+        "usage": {
+          "prompt_tokens": 2802,
+          "completion_tokens": 156,
+          "total_tokens": 2958
+        },
+        "simulated": false,
+        "at": "2026-10-10T12:59:25.518179186Z",
+        "model": "hermes-agent"
+      },
+      "llmVerified": true,
+      "knowledgeStore": "POSTGRESQL_APPROVED_SKILLS"
+    },
+    "hermesExportConfigured": true,
+    "database": "POSTGRESQL",
+    "graph": "NEO4J",
+    "fictional": true,
+    "a2a": "0.3.0",
+    "defaultProvider": "LOCAL",
+    "cloudConfigured": false
+  },
+  "incidentCount": 205,
+  "demoClosedVisible": "INC-66a82c6e-3353-46",
+  "sse": {
+    "firstEventId": 118,
+    "resumedEventId": 119,
+    "lastEventIdReconnect": true
+  },
+  "reports": {
+    "pdf": {
+      "bytes": 45013,
+      "sha256": "ea3cc1da589f7d2bdb422cf4a8d3eca4ed36d694ecce034c9abe1299241a35f6"
+    },
+    "xlsx": {
+      "bytes": 16514,
+      "sha256": "7e0b652778d7c8a543ebceb2e27503081e8b19194c09af196be166627ec3ab76"
+    }
+  },
+  "logoutVerified": true
+}

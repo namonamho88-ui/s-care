@@ -6,7 +6,9 @@
 
 GitHub 저장소 `namonamho88-ui/s-care`를 연결합니다. Vercel은 **Root Directory `frontend`**, Framework **Next.js**, Build **`npm run build`**, Install **`npm ci`**로 설정합니다. Railway backend의 공개 HTTPS 주소를 Vercel의 `BACKEND_URL`에 넣고 `COOKIE_SECURE=true`를 지정합니다. 화면만 먼저 배포할 수도 있지만 백엔드 연결 전에는 로그인·장애 시연이 동작하지 않습니다.
 
-Supabase와 Railway의 서비스별 구성은 **[배포 가이드](docs/DEPLOYMENT.md)**와 `deploy/` 예제를 따릅니다. `.env`와 API 키는 GitHub에 올리지 않습니다. 최종 완료 판정은 클라우드에서 실제 Jev·Hermes 호출과 승인·이력 저장·재시작 보존까지 확인한 후에 합니다. 현재 실제 클라우드 배포는 미검증입니다.
+Supabase와 Railway의 서비스별 구성은 **[배포 가이드](docs/DEPLOYMENT.md)**와 `deploy/` 예제를 따릅니다. `.env`와 API 키는 GitHub에 올리지 않습니다.
+
+**클라우드 시연: [s-care-mu.vercel.app](https://s-care-mu.vercel.app/)**. 2026-10-10 Vercel → Railway → Supabase에서 DEMO와 실제 Local Jev/Hermes 시연을 모두 장애 종료까지 검증했습니다. 실제 Jev 분류, Neo4j 영향 탐색, 여섯 A2A Agent, 담당자 검토·승인, 가상 복구, 보고서와 이력 저장이 동작합니다. 실제 모델 50건 평가는 47/50(94%), Mock 대체 0건입니다. [클라우드 검증 결과와 한계](docs/VALIDATION.md)를 확인하세요. Railway는 현재 Trial이며 최종 시연 전 요금제·자원 확인과 부하 리허설이 필요합니다.
 
 ## 개발 실행 — 현재 PC
 

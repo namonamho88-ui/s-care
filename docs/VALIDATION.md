@@ -137,3 +137,19 @@ Mock 시연 점수와 실제 모델 점수를 섞지 않는다. 정답은 모델
 - 이는 Trial 1GB 환경의 단일 요청 검증이며, 0.5GB Free 플랜 성공 또는 backend에서 전체 REAL 시연 완료를 의미하지 않는다. 최초 반복 종료의 OS 수준 원인은 확정하지 않았다.
 - Neo4j는 트랜잭션 로그 할당을 줄인 뒤에도 `No space left on device`가 남았다. 보고된 볼륨 사용량은 약 36MB/500MB여서 영구 볼륨 용량 소진이라고 확정하지 않는다. 진단용 배포는 취소하고 원래 healthcheck와 시작 설정을 복원했다. 임시 SSH 키는 계정에서 해제하고 로컬 파일도 제거했다.
 - 유료 전환은 수행하지 않았다. Neo4j 정상 실행, 전체 hosted REAL 장애 처리·재시작 보존, Vercel 연결은 남아 있다.
+
+## Vercel · Supabase · Railway 전체 통합 검증 완료 (2026-10-10 후속)
+
+아래 결과는 앞 절의 부분 배포 상태를 대체한다. 실행 코드는 `1b85dadb84ef7f40c939a3aeb0692a51d9b44115`다. 해당 커밋의 [verify](https://github.com/namonamho88-ui/s-care/actions/runs/38053239162), [container verification](https://github.com/namonamho88-ui/s-care/actions/runs/38053239077)가 모두 성공했다. 이번 후속 변경은 배포 설정·검증 문서·증적이며 애플리케이션 코드를 변경하지 않았다.
+
+- **화면 배포:** [s-care-mu.vercel.app](https://s-care-mu.vercel.app/), Vercel Root Directory `frontend`, Framework `Next.js`, Production BACKEND_URL/COOKIE_SECURE 설정. 배포 `dpl_FfEtMJSWGFFfLQqBS5wsqq79vKyK` Ready를 확인했다. 관리자 로그인, 상세 조회, 담당자 검토, 승인, 후기 저장, 종료, Skill 승인/거부, 실제 평가 실행을 브라우저에서 검증했다. 앞 절에 남아 있던 브라우저 검증 제한은 이 호스팅 주소에서 해소됐다.
+- **Neo4j 복구:** 실제 `/data`는 사용 가능한 434MB 중 424MB가 할당돼 여유 공간이 없었다. 사전 할당된 두 트랜잭션 로그의 논리 크기는 약 256MB/165MB였다. DB 완전 중지 → 전체 백업 → 백업/원본 SHA 확인 → zero-block sparse 처리 → 원본 SHA 재확인 순서로 복구했다. 삭제나 truncate를 하지 않았다. 이후 실제 Neo4j 기동과 그래프 52개 자산·80개 관계를 확인했다. `evidence/neo4j-allocation-repair.json`.
+- **DEMO:** `INC-66a82c6e-3353-46`, MOCK 분류, 실제 Neo4j/6개 Agent/승인/가상 복구/보고서/Skill 초안/DB 저장을 거쳐 CLOSED. 외부 LLM을 호출하지 않았다.
+- **실제 AI:** `INC-b6b3504a-d150-4d`, Local jevos-v4가 RESOURCE/P1/PLATFORM을 419ms에 판단했다. 신뢰도 75.66%, 근거 85.29%, simulated=false, fallback=false다. Neo4j 영향 자산은 14개였다. 원인 후보의 근거 48.94% 때문에 NEEDS_REVIEW로 정지했고, 화면에서 관측 대조 사유를 기록한 후 분석을 재개했다. 여섯 Agent가 완료됐으며 재분석 포함 10개 Task가 남았다. 별도 대응 승인 후 가상 지표 검증, Report, Skill 초안, 후기·재발 방지 저장과 CLOSED까지 완료했다.
+- **Hermes 실제 호출:** 공식 Hermes → 설정된 OpenAI `gpt-4.1-mini`, API 응답 모델명 `hermes-agent`. 실제 검색 2,816ms, 실제 초안 생성 2,705ms/3,666 tokens. 초안 `SKL-4a0739a8-8987-43`은 ‘최근 7일’을 ‘향후 7일’로 잘못 생성해 **관리자 검토에서 거부**했다. 이는 자동 의미 검증으로 탐지한 것이 아니다. REJECTED/NOT_EXPORTED를 확인했고 공식 `/v1/skills`와 파일 저장소에도 없었다. 검토한 DEMO Skill은 승인 후 파일/카탈로그에 게시됐다. 이전 실제 Hermes 생성·승인 Skill도 클라우드 카탈로그에 유지된다. 자동 생성 성공과 내용 승인 성공을 구분한다. 초안 수정·재생성 UI는 아직 지원하지 않는다.
+- **배포된 BFF:** 인증 없는 요청 401, Secure/HttpOnly/SameSite=strict 쿠키, 로그아웃 후 401, SSE Last-Event-ID 118→119 이어받기, 유효한 PDF/Excel 다운로드를 확인했다. `evidence/vercel-cloud.json`.
+- **실제 Jev 50건 클라우드 평가:** `EVAL-24846a5d-36b8-48`, COMPLETED, 47/50(94%). 유형/심각도/부서 각각 50/50, 재발 47/50, 검토 0, fallback 0. 고정 가상 분류 평가이며 Hermes 생성 품질이나 지속 부하의 점수가 아니다. 이전 PC 결과와 별도 보관: `evidence/railway-jevos-evaluation.json`.
+- **재시작 보존:** 활성 장애·평가가 없는 상태에서 Railway backend/Neo4j/Hermes를 재시작했다. Supabase read-only SQL로 장애 205, Skill 25, Agent Task 38, 이벤트 203, 감사 165건의 동일 수량을 확인했다. 신규 DEMO/REAL의 CLOSED 상세·후기·승인 증적, 승인 Skill 23건, graph 52/80이 유지됐고 Hermes 게시 파일 SHA-256과 카탈로그도 동일했다. 초기 시드 200건은 보존됐다. 브라우저 새로고침 후 다시 연결됐다. `evidence/cloud-end-to-end.json`.
+- **정리:** 진단용 Neo4j 시작 명령과 healthcheck를 정상값으로 복원하고 실패 재시도 3회로 되돌렸다. 임시 Railway SSH 키는 계정에서 해제하고 로컬 키 파일도 제거했다. 유료 요금제로 전환하지 않았다.
+
+현재 환경은 실제 클라우드 **기능 시연 검증을 통과한 Trial 구성**이다. 0.5GB 영구 Free 운영, 지속/동시 부하, 고가용성, SSO, 운영 보안 인증 또는 공식 A2A/MCP 적합성 인증을 의미하지 않는다. TypeSafe 실제 호출은 키가 없어 검증하지 않았으며 향후 설정 가능한 Provider 계약 테스트만 포함한다. 최종 발표 전에 요금제·자원 확인과 부하 리허설을 수행한다.
