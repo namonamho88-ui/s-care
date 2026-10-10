@@ -317,6 +317,7 @@ export default function Home() {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   const [syncProgress, setSyncProgress] = useState("");
+  const [notice, setNotice] = useState("");
   const [view, setView] = useState("dashboard"),
     [config, setConfig] = useState<Row>({}),
     [catalog, setCatalog] = useState<Row>({
@@ -394,13 +395,19 @@ export default function Home() {
     if (selectedRef.current === id) setDetail(d);
     return d;
   }, []);
-  const action = async (fn: () => Promise<any>) => {
+  const action = async (fn: () => Promise<any>, successMessage = "요청이 처리되었습니다.") => {
     setBusy(true);
     setError("");
+    setNotice("");
     try {
       await fn();
-      await refresh();
-      if (selectedRef.current) await loadDetail(selectedRef.current);
+      setNotice(successMessage);
+      try {
+        await refresh();
+        if (selectedRef.current) await loadDetail(selectedRef.current);
+      } catch (e) {
+        setError("요청은 처리됐지만 화면 갱신에 실패했습니다. " + (e as Error).message);
+      }
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -423,19 +430,19 @@ export default function Home() {
         setCatalog(c);
         setGraph(g);
       })
-      .catch((e) => setError(e.message));
+      .catch((e) => setError("기초 정보 조회 실패: " + e.message));
   }, [auth]);
   useEffect(() => {
     if (!auth) return;
     refresh().catch((e) => {
       setOnline(false);
-      setError(e.message);
+      setError("화면 정보 조회 실패: " + e.message);
     });
     const interval = setInterval(
       () =>
         refresh().catch((e) => {
           setOnline(false);
-          setError(e.message);
+          setError("자동 새로고침 실패: " + e.message);
         }),
       5000,
     );
@@ -444,15 +451,15 @@ export default function Home() {
   useEffect(() => {
     if (!selected) { setDetail(null); return; }
     setDetail(null);
-    loadDetail(selected).catch((e) => setError(e.message));
+    loadDetail(selected).catch((e) => setError("장애 상세 조회 실패: " + e.message));
     const source = new EventSource("/api/incidents/" + selected + "/events");
     source.onopen = () => setLive(true);
     source.onerror = () => setLive(false);
     source.addEventListener("stage", () => {
-      loadDetail(selected).catch((e) => setError(e.message));
+      loadDetail(selected).catch((e) => setError("장애 상세 갱신 실패: " + e.message));
       refresh().catch((e) => {
         setOnline(false);
-        setError(e.message);
+        setError("실시간 화면 갱신 실패: " + e.message);
       });
     });
     return () => {
@@ -1893,7 +1900,7 @@ export default function Home() {
                 setView("dashboard");
                 setNewTitle("");
                 setNewObservations("");
-              });
+              }, "장애가 등록되었습니다. 분석 상태는 실시간 실행 흐름에서 확인하세요.");
             }}
           >
             <div className="drawer-head flex-row justify-between">
@@ -1958,6 +1965,12 @@ export default function Home() {
               </div>
             </div>
           </form>
+        </div>
+      )}
+      {notice && !error && (
+        <div role="status" className="toast flex-row">
+          <span>{notice}</span>
+          <button aria-label="처리 결과 닫기" onClick={() => setNotice("")}><X size={15} /></button>
         </div>
       )}
       {error && (

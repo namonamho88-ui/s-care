@@ -130,3 +130,43 @@ test('edited recovery notes must be saved before closing an incident',async({pag
   await expect(page.getByRole('dialog',{name:'장애 상세'})).toContainText('종료된 장애입니다');
   expect(mutations).toEqual(['/api/incidents/INC-UI-RESOLVED','/api/incidents/INC-UI-RESOLVED/close']);
 });
+
+test('a successful registration followed by a failed refresh is reported separately and is not resubmitted',async({page})=>{
+  await setup(page);
+  let registrations=0;
+  await page.route('**/api/incidents',async route=>{
+    if(route.request().method()!=='POST') return route.fallback();
+    registrations++;
+    await route.fulfill({json:{id:'INC-UI-CREATED'}});
+  });
+  await page.route('**/api/incidents/INC-UI-CREATED',route=>route.fulfill({json:{...rows[0],id:'INC-UI-CREATED',status:'REGISTERED'}}));
+  await page.route('**/api/incidents/INC-UI-CREATED/events',route=>route.fulfill({contentType:'text/event-stream',body:': heartbeat\n\n'}));
+  await page.route('**/api/dashboard?*',route=>route.fulfill({status:502,json:{error:'가상 테스트 통신 오류'}}));
+  await page.getByRole('button',{name:'장애 직접 등록',exact:true}).click();
+  const form=page.getByRole('dialog',{name:'장애 등록',exact:true});
+  await form.getByRole('textbox',{name:'장애 제목',exact:true}).fill('가상 등록 검증');
+  await form.getByRole('textbox',{name:'가상 관측 내용',exact:true}).fill('Fictional CPU usage 96%; customer outage');
+  await form.getByRole('button',{name:'등록 & 분석 시작'}).click();
+  await expect(form).toHaveCount(0);
+  await expect(page.getByRole('alert').filter({hasText:'요청은 처리됐지만 화면 갱신에 실패했습니다.'})).toContainText('가상 테스트 통신 오류');
+  expect(registrations).toBe(1);
+});
+
+test('an uncertain registration response preserves the form and does not automatically register again',async({page})=>{
+  await setup(page);
+  let registrations=0;
+  await page.route('**/api/incidents',async route=>{
+    if(route.request().method()!=='POST') return route.fallback();
+    registrations++;
+    await route.fulfill({status:502,json:{error:'서버 응답을 받지 못해 처리 결과를 확인할 수 없습니다. 중복 요청 전에 장애 이력과 현재 상태를 확인해 주세요.',resultUnknown:true}});
+  });
+  await page.getByRole('button',{name:'장애 직접 등록',exact:true}).click();
+  const form=page.getByRole('dialog',{name:'장애 등록',exact:true});
+  await form.getByRole('textbox',{name:'장애 제목',exact:true}).fill('가상 입력 보존 검증');
+  await form.getByRole('textbox',{name:'가상 관측 내용',exact:true}).fill('Fictional database connection timeout');
+  await form.getByRole('button',{name:'등록 & 분석 시작'}).click();
+  await expect(page.getByRole('alert').filter({hasText:'중복 요청 전에'})).toBeVisible();
+  await expect(form.getByRole('textbox',{name:'장애 제목',exact:true})).toHaveValue('가상 입력 보존 검증');
+  await expect(form.getByRole('textbox',{name:'가상 관측 내용',exact:true})).toHaveValue('Fictional database connection timeout');
+  expect(registrations).toBe(1);
+});

@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import { fetchBackend } from "@/lib/backend-proxy.mjs";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 // Backend closes each SSE stream before this budget; EventSource resumes by DB event ID.
@@ -24,8 +25,7 @@ async function proxy(
     headers.set("Content-Type", req.headers.get("Content-Type")!);
   if (req.headers.get("Last-Event-ID"))
     headers.set("Last-Event-ID", req.headers.get("Last-Event-ID")!);
-  try {
-    const res = await fetch(
+    const res = await fetchBackend(
       `${upstream}/api/${path.map(encodeURIComponent).join("/")}${req.nextUrl.search}`,
       {
         method: req.method,
@@ -36,19 +36,14 @@ async function proxy(
         cache: "no-store",
         signal: req.signal,
       },
+      ["dashboard", "incidents", "simulate", "skills", "audit", "evaluations", "config", "catalog", "graph", "hermes"].includes(path[0]) ? path[0] : "other",
     );
     const out = new Headers();
-    for (const key of ["content-type", "content-disposition"])
+    for (const key of ["content-type", "content-disposition", "x-brain-request-id"])
       if (res.headers.has(key)) out.set(key, res.headers.get(key)!);
     out.set("Cache-Control", "no-store");
     if (res.headers.get("content-type")?.includes("text/event-stream"))
       out.set("X-Accel-Buffering", "no");
     return new Response(res.body, { status: res.status, headers: out });
-  } catch {
-    return Response.json(
-      { error: "백엔드 연결 실패. Spring Boot 실행 상태를 확인하세요." },
-      { status: 502 },
-    );
-  }
 }
 export { proxy as GET, proxy as POST, proxy as PATCH };
