@@ -363,6 +363,7 @@ export default function Home() {
   const filtered = !!(filterType || filterSystem || from || to);
   const refreshVersion = useRef(0);
   const detailVersion = useRef(0);
+  const detailRequest = useRef<{ id: string; promise: Promise<any> } | null>(null);
   const [guideJump, setGuideJump] = useState<{ target: string; incidentId: string } | null>(null);
   const resetFilters = () => { setFilterType(""); setFilterSystem(""); setFrom(""); setTo(""); setSearch(""); };
   const refresh = useCallback(async () => {
@@ -392,10 +393,18 @@ export default function Home() {
     setOnline(true);
   }, [filterType, filterSystem, from, to, isAdmin]);
   const loadDetail = useCallback(async (id: string) => {
+    // Replayed SSE events can arrive in a burst. Share a pending read instead of
+    // queuing many requests that delay the first visible result.
+    if (detailRequest.current?.id === id) return detailRequest.current.promise;
     const version = ++detailVersion.current;
-    const d = await api("/incidents/" + id);
-    if (selectedRef.current === id && version === detailVersion.current) setDetail(d);
-    return d;
+    const promise = api("/incidents/" + id).then(d => {
+      if (selectedRef.current === id && version === detailVersion.current) setDetail(d);
+      return d;
+    }).finally(() => {
+      if (detailRequest.current?.promise === promise) detailRequest.current = null;
+    });
+    detailRequest.current = { id, promise };
+    return promise;
   }, []);
   const action = async (fn: () => Promise<any>, successMessage = "요청이 처리되었습니다.") => {
     setBusy(true);
@@ -466,12 +475,16 @@ export default function Home() {
     const source = new EventSource("/api/incidents/" + selected + "/events");
     source.onopen = () => setLive(true);
     source.onerror = () => setLive(false);
+    let stageTimer: ReturnType<typeof setTimeout>;
     source.addEventListener("stage", () => {
-      loadDetail(selected).catch((e) => setError("장애 상세 갱신 실패: " + e.message));
-      refresh().catch((e) => {
-        setOnline(false);
-        setError("실시간 화면 갱신 실패: " + e.message);
-      });
+      clearTimeout(stageTimer);
+      stageTimer = setTimeout(() => {
+        loadDetail(selected).catch((e) => setError("장애 상세 갱신 실패: " + e.message));
+        refresh().catch((e) => {
+          setOnline(false);
+          setError("실시간 화면 갱신 실패: " + e.message);
+        });
+      }, 150);
     });
     // Also observe edits from another session and recover from a missed SSE event.
     const interval = setInterval(() => {
@@ -479,6 +492,7 @@ export default function Home() {
     }, 5000);
     return () => {
       clearInterval(interval);
+      clearTimeout(stageTimer);
       source.close();
       setLive(false);
     };

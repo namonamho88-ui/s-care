@@ -360,3 +360,19 @@ test('failure guide shows error records before retry without executing a request
   await expect(dialog.getByRole('button',{name:'실패 작업 재시도',exact:true})).toBeVisible();
   expect(mutations).toEqual([]);
 });
+
+test('replaying a long SSE history does not flood or starve the initial detail read',async({page})=>{
+  await setup(page);
+  let reads=0,active=0,maxActive=0;
+  await page.route('**/api/incidents/INC-UI-RESOLVED',async route=>{
+    reads++;active++;maxActive=Math.max(maxActive,active);
+    await new Promise(resolve=>setTimeout(resolve,700));
+    await route.fulfill({json:{...rows[0],status:'NEEDS_REVIEW'}});
+    active--;
+  });
+  await page.route('**/api/incidents/INC-UI-RESOLVED/events',route=>route.fulfill({contentType:'text/event-stream',body:'retry: 60000\n\n'+Array.from({length:20},(_,i)=>`id: ${i+1}\nevent: stage\ndata: {}\n\n`).join('')}));
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  await expect(page.getByRole('dialog',{name:'장애 상세'}).getByRole('button',{name:'판단 확인 위치로 이동',exact:true})).toBeVisible({timeout:4000});
+  expect(maxActive).toBe(1);
+  expect(reads).toBeLessThanOrEqual(2);
+});
