@@ -1,0 +1,3718 @@
+{
+  "result": {
+    "severityCorrect": 50,
+    "reviews": 2,
+    "note": "Synthetic benchmark only; fallback results are not actual AI performance.",
+    "recurrenceCorrect": 47,
+    "typeCorrect": 50,
+    "accuracy": 0.94,
+    "fallbacks": 0,
+    "results": [
+      {
+        "actual": {
+          "type": "RESOURCE",
+          "severity": "P1",
+          "priority": 1,
+          "department": "PLATFORM",
+          "recurrence": true,
+          "confidence": 0.6993419219260724,
+          "evidenceScore": 0.8510380459434603,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 3411,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "RESOURCE",
+              "probabilities": {
+                "SECURITY": 0.018978849436787543,
+                "RESOURCE": 0.9256732491230714,
+                "DATABASE": 0.03166528239725354,
+                "APPLICATION": 0.015105002930920573,
+                "NETWORK": 0.008577616111967131
+              },
+              "confidence": 0.9070915614038391
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.010504000321120917,
+                "P1": 0.9849796838237399,
+                "P3": 0.004516315855139163
+              },
+              "confidence": 0.9774695257356099
+            },
+            "department": {
+              "type": "choice",
+              "choice": "PLATFORM",
+              "probabilities": {
+                "SECURITY": 0.05490701176659677,
+                "DATABASE": 0.09748994811560763,
+                "APPLICATION": 0.062333858351590825,
+                "NETWORK": 0.025795644225346814,
+                "PLATFORM": 0.759473537540858
+              },
+              "confidence": 0.6993419219260724
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9608086645576029
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8510380459434603
+            }
+          }
+        },
+        "scenarioId": "SCN-01",
+        "expected": {
+          "severity": "P1",
+          "department": "PLATFORM",
+          "type": "RESOURCE",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "DATABASE",
+          "severity": "P2",
+          "priority": 2,
+          "department": "DATABASE",
+          "recurrence": false,
+          "confidence": 0.8727086569813228,
+          "evidenceScore": 0.8015521216318988,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 3199,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Database connection pool exhausted; database lock timeout on queries; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.009511836991033865,
+                "RESOURCE": 0.017018164917046597,
+                "DATABASE": 0.9573180014538418,
+                "APPLICATION": 0.011146450890947653,
+                "NETWORK": 0.005005545747130041
+              },
+              "confidence": 0.9466475018173023
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.9151391046542153,
+                "P1": 0.049088065129742536,
+                "P3": 0.035772830216042155
+              },
+              "confidence": 0.8727086569813228
+            },
+            "department": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.017609534971601868,
+                "DATABASE": 0.9270270547922776,
+                "APPLICATION": 0.02042055308063528,
+                "NETWORK": 0.010440489354648308,
+                "PLATFORM": 0.02450236780083701
+              },
+              "confidence": 0.9087838184903471
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.12165375314698632
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8015521216318988
+            }
+          }
+        },
+        "scenarioId": "SCN-02",
+        "expected": {
+          "severity": "P2",
+          "department": "DATABASE",
+          "type": "DATABASE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "NETWORK",
+          "severity": "P1",
+          "priority": 1,
+          "department": "NETWORK",
+          "recurrence": false,
+          "confidence": 0.9200438335208674,
+          "evidenceScore": 0.8104097204683942,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 6243,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Packet loss 12%, DNS resolution timeout, gateway unreachable; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.014125481381708207,
+                "RESOURCE": 0.015788067267623884,
+                "DATABASE": 0.01799243355837378,
+                "APPLICATION": 0.016058950975600096,
+                "NETWORK": 0.936035066816694
+              },
+              "confidence": 0.9200438335208674
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.00821706737759443,
+                "P1": 0.986671448547827,
+                "P3": 0.0051114840745786405
+              },
+              "confidence": 0.9800071728217404
+            },
+            "department": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.013433623864249412,
+                "DATABASE": 0.014763681262948991,
+                "APPLICATION": 0.015199722241459771,
+                "NETWORK": 0.9449695217302099,
+                "PLATFORM": 0.011633450901131999
+              },
+              "confidence": 0.9312119021627624
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.10202825220155413
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8104097204683942
+            }
+          }
+        },
+        "scenarioId": "SCN-03",
+        "expected": {
+          "severity": "P1",
+          "department": "NETWORK",
+          "type": "NETWORK",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "APPLICATION",
+          "severity": "P2",
+          "priority": 2,
+          "department": "APPLICATION",
+          "recurrence": true,
+          "confidence": 0.842906304605513,
+          "evidenceScore": 0.8138052295751433,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 5032,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "HTTP 500 exceptions after application deployment; regression confirmed; degraded performance, service still available; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.023680173819135914,
+                "RESOURCE": 0.020654536928431513,
+                "DATABASE": 0.03322698021397944,
+                "APPLICATION": 0.9075996583058016,
+                "NETWORK": 0.014838650732651476
+              },
+              "confidence": 0.8844995728822519
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.925564455095408,
+                "P1": 0.03717717773651145,
+                "P3": 0.03725836716808062
+              },
+              "confidence": 0.8883466826431118
+            },
+            "department": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.03451165152658754,
+                "DATABASE": 0.04094169954621665,
+                "APPLICATION": 0.8743250436844103,
+                "NETWORK": 0.02411202933084752,
+                "PLATFORM": 0.02610957591193802
+              },
+              "confidence": 0.842906304605513
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9527387579934785
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8138052295751433
+            }
+          }
+        },
+        "scenarioId": "SCN-04",
+        "expected": {
+          "severity": "P2",
+          "department": "APPLICATION",
+          "type": "APPLICATION",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "SECURITY",
+          "severity": "P1",
+          "priority": 1,
+          "department": "SECURITY",
+          "recurrence": false,
+          "confidence": 0.876266586087136,
+          "evidenceScore": 0.6744696895345766,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 3572,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Unusual authentication failure spike; suspicious access attempts blocked; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9548801940028128,
+                "RESOURCE": 0.009310398382719754,
+                "DATABASE": 0.012709038786069767,
+                "APPLICATION": 0.009546742841321995,
+                "NETWORK": 0.013553625987075697
+              },
+              "confidence": 0.9436002425035158
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.014819645898047424,
+                "P1": 0.973117767768524,
+                "P3": 0.012062586333428695
+              },
+              "confidence": 0.9596766516527858
+            },
+            "department": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9010132688697089,
+                "DATABASE": 0.023136617875966596,
+                "APPLICATION": 0.02431709285316775,
+                "NETWORK": 0.038213990459527586,
+                "PLATFORM": 0.01331902994162919
+              },
+              "confidence": 0.876266586087136
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.15693205694087092
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.6744696895345766
+            }
+          }
+        },
+        "scenarioId": "SCN-05",
+        "expected": {
+          "severity": "P1",
+          "department": "SECURITY",
+          "type": "SECURITY",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "RESOURCE",
+          "severity": "P2",
+          "priority": 2,
+          "department": "PLATFORM",
+          "recurrence": false,
+          "confidence": 0.7083157984407109,
+          "evidenceScore": 0.8500363180210435,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 3009,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "CPU utilization 96%, memory exhaustion and process queue saturation; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "RESOURCE",
+              "probabilities": {
+                "SECURITY": 0.007926731073619932,
+                "RESOURCE": 0.9479947484141463,
+                "DATABASE": 0.025577445769105384,
+                "APPLICATION": 0.011881299493621274,
+                "NETWORK": 0.006619775249507048
+              },
+              "confidence": 0.9349934355176828
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.9030047891913915,
+                "P1": 0.05900992250006488,
+                "P3": 0.03798528830854371
+              },
+              "confidence": 0.8545071837870872
+            },
+            "department": {
+              "type": "choice",
+              "choice": "PLATFORM",
+              "probabilities": {
+                "SECURITY": 0.018171057926018808,
+                "DATABASE": 0.11769696697579796,
+                "APPLICATION": 0.07742813880121227,
+                "NETWORK": 0.020051197544402412,
+                "PLATFORM": 0.7666526387525687
+              },
+              "confidence": 0.7083157984407109
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.11012254835607782
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8500363180210435
+            }
+          }
+        },
+        "scenarioId": "SCN-06",
+        "expected": {
+          "severity": "P2",
+          "department": "PLATFORM",
+          "type": "RESOURCE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "DATABASE",
+          "severity": "P1",
+          "priority": 1,
+          "department": "DATABASE",
+          "recurrence": true,
+          "confidence": 0.878176991738201,
+          "evidenceScore": 0.7833555624586738,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 3247,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Database connection pool exhausted; database lock timeout on queries; customer outage, service unavailable; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.02759999445546901,
+                "RESOURCE": 0.01974430739839736,
+                "DATABASE": 0.9275088817180229,
+                "APPLICATION": 0.017161788228803616,
+                "NETWORK": 0.007985028199307184
+              },
+              "confidence": 0.9093861021475286
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.014768431982287555,
+                "P1": 0.975209132509238,
+                "P3": 0.01002243550847441
+              },
+              "confidence": 0.962813698763857
+            },
+            "department": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.036196451625795066,
+                "DATABASE": 0.9025415933905607,
+                "APPLICATION": 0.02261305305435959,
+                "NETWORK": 0.015278688963703876,
+                "PLATFORM": 0.023370212965580676
+              },
+              "confidence": 0.878176991738201
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9507731556707533
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.7833555624586738
+            }
+          }
+        },
+        "scenarioId": "SCN-07",
+        "expected": {
+          "severity": "P1",
+          "department": "DATABASE",
+          "type": "DATABASE",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "NETWORK",
+          "severity": "P2",
+          "priority": 2,
+          "department": "NETWORK",
+          "recurrence": false,
+          "confidence": 0.8687161102131113,
+          "evidenceScore": 0.8091008211422739,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2226,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Packet loss 12%, DNS resolution timeout, gateway unreachable; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.013345158546388453,
+                "RESOURCE": 0.017941469648313543,
+                "DATABASE": 0.017935582576218464,
+                "APPLICATION": 0.01613262085589678,
+                "NETWORK": 0.9346451683731827
+              },
+              "confidence": 0.9183064604664783
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.912477406808741,
+                "P1": 0.04446211641625983,
+                "P3": 0.04306047677499914
+              },
+              "confidence": 0.8687161102131113
+            },
+            "department": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.011143160688366018,
+                "DATABASE": 0.014087261635983188,
+                "APPLICATION": 0.017645334655194345,
+                "NETWORK": 0.9447984809476314,
+                "PLATFORM": 0.012325762072825144
+              },
+              "confidence": 0.9309981011845392
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.08079357978137595
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8091008211422739
+            }
+          }
+        },
+        "scenarioId": "SCN-08",
+        "expected": {
+          "severity": "P2",
+          "department": "NETWORK",
+          "type": "NETWORK",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "APPLICATION",
+          "severity": "P1",
+          "priority": 1,
+          "department": "APPLICATION",
+          "recurrence": true,
+          "confidence": 0.8716863267828218,
+          "evidenceScore": 0.740745771030257,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 3022,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "HTTP 500 exceptions after application deployment; regression confirmed; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.016545190243110085,
+                "RESOURCE": 0.017602002868161083,
+                "DATABASE": 0.033886947176256586,
+                "APPLICATION": 0.9163343460085301,
+                "NETWORK": 0.015631513703942224
+              },
+              "confidence": 0.8954179325106626
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.008642849769781972,
+                "P1": 0.9861985313373164,
+                "P3": 0.00515861889290176
+              },
+              "confidence": 0.9792977970059744
+            },
+            "department": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.02384388465067826,
+                "DATABASE": 0.03559608053445755,
+                "APPLICATION": 0.8973490614262575,
+                "NETWORK": 0.02272242737587264,
+                "PLATFORM": 0.020488546012733977
+              },
+              "confidence": 0.8716863267828218
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.5464604767055795
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.740745771030257
+            }
+          }
+        },
+        "scenarioId": "SCN-09",
+        "expected": {
+          "severity": "P1",
+          "department": "APPLICATION",
+          "type": "APPLICATION",
+          "recurrence": false
+        },
+        "passed": false
+      },
+      {
+        "actual": {
+          "type": "SECURITY",
+          "severity": "P2",
+          "priority": 2,
+          "department": "SECURITY",
+          "recurrence": true,
+          "confidence": 0.7825035825697692,
+          "evidenceScore": 0.7440325929377511,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2400,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Unusual authentication failure spike; suspicious access attempts blocked; degraded performance, service still available; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9531368784683966,
+                "RESOURCE": 0.014256362475552814,
+                "DATABASE": 0.013904681091484064,
+                "APPLICATION": 0.009879526211829383,
+                "NETWORK": 0.008822551752737261
+              },
+              "confidence": 0.9414210980854956
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.8550023883798462,
+                "P1": 0.05720287212240668,
+                "P3": 0.08779473949774709
+              },
+              "confidence": 0.7825035825697692
+            },
+            "department": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.8839126963392195,
+                "DATABASE": 0.029849590920392518,
+                "APPLICATION": 0.03310831809791136,
+                "NETWORK": 0.02838921979103671,
+                "PLATFORM": 0.024740174851439853
+              },
+              "confidence": 0.8548908704240243
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9398707594175192
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.7440325929377511
+            }
+          }
+        },
+        "scenarioId": "SCN-10",
+        "expected": {
+          "severity": "P2",
+          "department": "SECURITY",
+          "type": "SECURITY",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "RESOURCE",
+          "severity": "P1",
+          "priority": 1,
+          "department": "PLATFORM",
+          "recurrence": false,
+          "confidence": 0.78024388887659,
+          "evidenceScore": 0.8537159761574196,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2634,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "RESOURCE",
+              "probabilities": {
+                "SECURITY": 0.008502895658627612,
+                "RESOURCE": 0.9474392799014539,
+                "DATABASE": 0.02574088314017475,
+                "APPLICATION": 0.01151379341249739,
+                "NETWORK": 0.006803147887246282
+              },
+              "confidence": 0.9342990998768175
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.009979730169788934,
+                "P1": 0.9862510306311629,
+                "P3": 0.003769239199048184
+              },
+              "confidence": 0.9793765459467444
+            },
+            "department": {
+              "type": "choice",
+              "choice": "PLATFORM",
+              "probabilities": {
+                "SECURITY": 0.018927315848701467,
+                "DATABASE": 0.08257207987349126,
+                "APPLICATION": 0.05446346553727068,
+                "NETWORK": 0.01984202763926456,
+                "PLATFORM": 0.8241951111012721
+              },
+              "confidence": 0.78024388887659
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.12744122706210376
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8537159761574196
+            }
+          }
+        },
+        "scenarioId": "SCN-11",
+        "expected": {
+          "severity": "P1",
+          "department": "PLATFORM",
+          "type": "RESOURCE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "DATABASE",
+          "severity": "P2",
+          "priority": 2,
+          "department": "DATABASE",
+          "recurrence": false,
+          "confidence": 0.8727086569813228,
+          "evidenceScore": 0.8015521216318988,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 3079,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Database connection pool exhausted; database lock timeout on queries; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.009511836991033865,
+                "RESOURCE": 0.017018164917046597,
+                "DATABASE": 0.9573180014538418,
+                "APPLICATION": 0.011146450890947653,
+                "NETWORK": 0.005005545747130041
+              },
+              "confidence": 0.9466475018173023
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.9151391046542153,
+                "P1": 0.049088065129742536,
+                "P3": 0.035772830216042155
+              },
+              "confidence": 0.8727086569813228
+            },
+            "department": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.017609534971601868,
+                "DATABASE": 0.9270270547922776,
+                "APPLICATION": 0.02042055308063528,
+                "NETWORK": 0.010440489354648308,
+                "PLATFORM": 0.02450236780083701
+              },
+              "confidence": 0.9087838184903471
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.12165375314698632
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8015521216318988
+            }
+          }
+        },
+        "scenarioId": "SCN-12",
+        "expected": {
+          "severity": "P2",
+          "department": "DATABASE",
+          "type": "DATABASE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "NETWORK",
+          "severity": "P1",
+          "priority": 1,
+          "department": "NETWORK",
+          "recurrence": true,
+          "confidence": 0.8943925145656519,
+          "evidenceScore": 0.8120625711687983,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2598,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Packet loss 12%, DNS resolution timeout, gateway unreachable; customer outage, service unavailable; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.028173284619555816,
+                "RESOURCE": 0.018362655327146572,
+                "DATABASE": 0.020311608588664133,
+                "APPLICATION": 0.0176384398121119,
+                "NETWORK": 0.9155140116525216
+              },
+              "confidence": 0.8943925145656519
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.009678316459601802,
+                "P1": 0.9845627463073241,
+                "P3": 0.005758937233074114
+              },
+              "confidence": 0.9768441194609861
+            },
+            "department": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.02871288185514071,
+                "DATABASE": 0.01850850078223334,
+                "APPLICATION": 0.01837751812317505,
+                "NETWORK": 0.9202130307290016,
+                "PLATFORM": 0.01418806851044937
+              },
+              "confidence": 0.9002662884112519
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9615635233769596
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8120625711687983
+            }
+          }
+        },
+        "scenarioId": "SCN-13",
+        "expected": {
+          "severity": "P1",
+          "department": "NETWORK",
+          "type": "NETWORK",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "APPLICATION",
+          "severity": "P2",
+          "priority": 2,
+          "department": "APPLICATION",
+          "recurrence": false,
+          "confidence": 0.8648500529866349,
+          "evidenceScore": 0.716917562174064,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2758,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "HTTP 500 exceptions after application deployment; regression confirmed; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.014755345989640517,
+                "RESOURCE": 0.019082408795661553,
+                "DATABASE": 0.034661268086334,
+                "APPLICATION": 0.9174410838910807,
+                "NETWORK": 0.01405989323728325
+              },
+              "confidence": 0.8968013548638509
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.9531528257460965,
+                "P1": 0.023071328003854797,
+                "P3": 0.023775846250048728
+              },
+              "confidence": 0.9297292386191446
+            },
+            "department": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.02248842903297799,
+                "DATABASE": 0.03958461589251373,
+                "APPLICATION": 0.8918800423893078,
+                "NETWORK": 0.02275113010517488,
+                "PLATFORM": 0.023295782580025518
+              },
+              "confidence": 0.8648500529866349
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.2684534418574285
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.716917562174064
+            }
+          }
+        },
+        "scenarioId": "SCN-14",
+        "expected": {
+          "severity": "P2",
+          "department": "APPLICATION",
+          "type": "APPLICATION",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "SECURITY",
+          "severity": "P1",
+          "priority": 1,
+          "department": "SECURITY",
+          "recurrence": false,
+          "confidence": 0.876266586087136,
+          "evidenceScore": 0.6744696895345766,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2301,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Unusual authentication failure spike; suspicious access attempts blocked; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9548801940028128,
+                "RESOURCE": 0.009310398382719754,
+                "DATABASE": 0.012709038786069767,
+                "APPLICATION": 0.009546742841321995,
+                "NETWORK": 0.013553625987075697
+              },
+              "confidence": 0.9436002425035158
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.014819645898047424,
+                "P1": 0.973117767768524,
+                "P3": 0.012062586333428695
+              },
+              "confidence": 0.9596766516527858
+            },
+            "department": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9010132688697089,
+                "DATABASE": 0.023136617875966596,
+                "APPLICATION": 0.02431709285316775,
+                "NETWORK": 0.038213990459527586,
+                "PLATFORM": 0.01331902994162919
+              },
+              "confidence": 0.876266586087136
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.15693205694087092
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.6744696895345766
+            }
+          }
+        },
+        "scenarioId": "SCN-15",
+        "expected": {
+          "severity": "P1",
+          "department": "SECURITY",
+          "type": "SECURITY",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "RESOURCE",
+          "severity": "P2",
+          "priority": 2,
+          "department": "PLATFORM",
+          "recurrence": true,
+          "confidence": 0.6486779040234136,
+          "evidenceScore": 0.8547211303587479,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2106,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": true,
+          "evidence": [
+            "CPU utilization 96%, memory exhaustion and process queue saturation; degraded performance, service still available; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "RESOURCE",
+              "probabilities": {
+                "SECURITY": 0.016818256083070977,
+                "RESOURCE": 0.92136513011907,
+                "DATABASE": 0.0326507456913597,
+                "APPLICATION": 0.020824135613294555,
+                "NETWORK": 0.00834173249320474
+              },
+              "confidence": 0.9017064126488374
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.8394920545188732,
+                "P1": 0.10163632271320747,
+                "P3": 0.058871622767919414
+              },
+              "confidence": 0.7592380817783096
+            },
+            "department": {
+              "type": "choice",
+              "choice": "PLATFORM",
+              "probabilities": {
+                "SECURITY": 0.03949948570131937,
+                "DATABASE": 0.11930291767360685,
+                "APPLICATION": 0.09645406784432535,
+                "NETWORK": 0.025801205562017586,
+                "PLATFORM": 0.7189423232187309
+              },
+              "confidence": 0.6486779040234136
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.967644823479101
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8547211303587479
+            }
+          }
+        },
+        "scenarioId": "SCN-16",
+        "expected": {
+          "severity": "P2",
+          "department": "PLATFORM",
+          "type": "RESOURCE",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "DATABASE",
+          "severity": "P1",
+          "priority": 1,
+          "department": "DATABASE",
+          "recurrence": false,
+          "confidence": 0.9122783105301951,
+          "evidenceScore": 0.7856862726611411,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1786,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Database connection pool exhausted; database lock timeout on queries; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.011621957449106943,
+                "RESOURCE": 0.015002316397952256,
+                "DATABASE": 0.9548354433137847,
+                "APPLICATION": 0.012011343689553262,
+                "NETWORK": 0.006528939149602809
+              },
+              "confidence": 0.9435443041422309
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.013378450324051779,
+                "P1": 0.9783244772349925,
+                "P3": 0.008297072440955754
+              },
+              "confidence": 0.9674867158524886
+            },
+            "department": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.018520685779362393,
+                "DATABASE": 0.9298226484241561,
+                "APPLICATION": 0.018310973031388473,
+                "NETWORK": 0.012187948142195792,
+                "PLATFORM": 0.02115774462289736
+              },
+              "confidence": 0.9122783105301951
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.1807764580162133
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.7856862726611411
+            }
+          }
+        },
+        "scenarioId": "SCN-17",
+        "expected": {
+          "severity": "P1",
+          "department": "DATABASE",
+          "type": "DATABASE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "NETWORK",
+          "severity": "P2",
+          "priority": 2,
+          "department": "NETWORK",
+          "recurrence": false,
+          "confidence": 0.8687161102131113,
+          "evidenceScore": 0.8091008211422739,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1854,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Packet loss 12%, DNS resolution timeout, gateway unreachable; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.013345158546388453,
+                "RESOURCE": 0.017941469648313543,
+                "DATABASE": 0.017935582576218464,
+                "APPLICATION": 0.01613262085589678,
+                "NETWORK": 0.9346451683731827
+              },
+              "confidence": 0.9183064604664783
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.912477406808741,
+                "P1": 0.04446211641625983,
+                "P3": 0.04306047677499914
+              },
+              "confidence": 0.8687161102131113
+            },
+            "department": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.011143160688366018,
+                "DATABASE": 0.014087261635983188,
+                "APPLICATION": 0.017645334655194345,
+                "NETWORK": 0.9447984809476314,
+                "PLATFORM": 0.012325762072825144
+              },
+              "confidence": 0.9309981011845392
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.08079357978137595
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8091008211422739
+            }
+          }
+        },
+        "scenarioId": "SCN-18",
+        "expected": {
+          "severity": "P2",
+          "department": "NETWORK",
+          "type": "NETWORK",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "APPLICATION",
+          "severity": "P1",
+          "priority": 1,
+          "department": "APPLICATION",
+          "recurrence": true,
+          "confidence": 0.8273610009828472,
+          "evidenceScore": 0.81192276984758,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1956,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "HTTP 500 exceptions after application deployment; regression confirmed; customer outage, service unavailable; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.031686390661553314,
+                "RESOURCE": 0.020850690684692034,
+                "DATABASE": 0.03557020881497245,
+                "APPLICATION": 0.8933103252208383,
+                "NETWORK": 0.018582384617944012
+              },
+              "confidence": 0.8666379065260479
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.009126329225444575,
+                "P1": 0.985298103448924,
+                "P3": 0.005575567325631468
+              },
+              "confidence": 0.9779471551733858
+            },
+            "department": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.04435159019171756,
+                "DATABASE": 0.04305693627432055,
+                "APPLICATION": 0.8618888007862778,
+                "NETWORK": 0.027201942005067935,
+                "PLATFORM": 0.023500730742616167
+              },
+              "confidence": 0.8273610009828472
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9423642617071315
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.81192276984758
+            }
+          }
+        },
+        "scenarioId": "SCN-19",
+        "expected": {
+          "severity": "P1",
+          "department": "APPLICATION",
+          "type": "APPLICATION",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "SECURITY",
+          "severity": "P2",
+          "priority": 2,
+          "department": "SECURITY",
+          "recurrence": false,
+          "confidence": 0.8278143271175413,
+          "evidenceScore": 0.6720220212841551,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1674,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Unusual authentication failure spike; suspicious access attempts blocked; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9501815923430078,
+                "RESOURCE": 0.015400666844537851,
+                "DATABASE": 0.014393769235513335,
+                "APPLICATION": 0.00896545968785437,
+                "NETWORK": 0.01105851188908669
+              },
+              "confidence": 0.9377269904287596
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.8852095514116943,
+                "P1": 0.041912598114733364,
+                "P3": 0.0728778504735723
+              },
+              "confidence": 0.8278143271175413
+            },
+            "department": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.8637303765791018,
+                "DATABASE": 0.03409589619270737,
+                "APPLICATION": 0.0363794929647798,
+                "NETWORK": 0.036167646321137344,
+                "PLATFORM": 0.02962658794227363
+              },
+              "confidence": 0.8296629707238773
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.10470884937737417
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.6720220212841551
+            }
+          }
+        },
+        "scenarioId": "SCN-20",
+        "expected": {
+          "severity": "P2",
+          "department": "SECURITY",
+          "type": "SECURITY",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "RESOURCE",
+          "severity": "P1",
+          "priority": 1,
+          "department": "PLATFORM",
+          "recurrence": false,
+          "confidence": 0.78024388887659,
+          "evidenceScore": 0.8537159761574196,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1943,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "RESOURCE",
+              "probabilities": {
+                "SECURITY": 0.008502895658627612,
+                "RESOURCE": 0.9474392799014539,
+                "DATABASE": 0.02574088314017475,
+                "APPLICATION": 0.01151379341249739,
+                "NETWORK": 0.006803147887246282
+              },
+              "confidence": 0.9342990998768175
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.009979730169788934,
+                "P1": 0.9862510306311629,
+                "P3": 0.003769239199048184
+              },
+              "confidence": 0.9793765459467444
+            },
+            "department": {
+              "type": "choice",
+              "choice": "PLATFORM",
+              "probabilities": {
+                "SECURITY": 0.018927315848701467,
+                "DATABASE": 0.08257207987349126,
+                "APPLICATION": 0.05446346553727068,
+                "NETWORK": 0.01984202763926456,
+                "PLATFORM": 0.8241951111012721
+              },
+              "confidence": 0.78024388887659
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.12744122706210376
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8537159761574196
+            }
+          }
+        },
+        "scenarioId": "SCN-21",
+        "expected": {
+          "severity": "P1",
+          "department": "PLATFORM",
+          "type": "RESOURCE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "DATABASE",
+          "severity": "P2",
+          "priority": 2,
+          "department": "DATABASE",
+          "recurrence": true,
+          "confidence": 0.8218348736059886,
+          "evidenceScore": 0.8001455106627507,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1910,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Database connection pool exhausted; database lock timeout on queries; degraded performance, service still available; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.023263265646726775,
+                "RESOURCE": 0.022555765532332888,
+                "DATABASE": 0.9310459194288698,
+                "APPLICATION": 0.016727548008828228,
+                "NETWORK": 0.006407501383242416
+              },
+              "confidence": 0.9138073992860873
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.8812232490706591,
+                "P1": 0.06794218968942722,
+                "P3": 0.050834561239913666
+              },
+              "confidence": 0.8218348736059886
+            },
+            "department": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.029970314928703185,
+                "DATABASE": 0.9068411343280588,
+                "APPLICATION": 0.024629377854456777,
+                "NETWORK": 0.013060982566736325,
+                "PLATFORM": 0.02549819032204488
+              },
+              "confidence": 0.8835514179100734
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9583060596341062
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8001455106627507
+            }
+          }
+        },
+        "scenarioId": "SCN-22",
+        "expected": {
+          "severity": "P2",
+          "department": "DATABASE",
+          "type": "DATABASE",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "NETWORK",
+          "severity": "P1",
+          "priority": 1,
+          "department": "NETWORK",
+          "recurrence": false,
+          "confidence": 0.9200438335208674,
+          "evidenceScore": 0.8104097204683942,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1944,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Packet loss 12%, DNS resolution timeout, gateway unreachable; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.014125481381708207,
+                "RESOURCE": 0.015788067267623884,
+                "DATABASE": 0.01799243355837378,
+                "APPLICATION": 0.016058950975600096,
+                "NETWORK": 0.936035066816694
+              },
+              "confidence": 0.9200438335208674
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.00821706737759443,
+                "P1": 0.986671448547827,
+                "P3": 0.0051114840745786405
+              },
+              "confidence": 0.9800071728217404
+            },
+            "department": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.013433623864249412,
+                "DATABASE": 0.014763681262948991,
+                "APPLICATION": 0.015199722241459771,
+                "NETWORK": 0.9449695217302099,
+                "PLATFORM": 0.011633450901131999
+              },
+              "confidence": 0.9312119021627624
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.10202825220155413
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8104097204683942
+            }
+          }
+        },
+        "scenarioId": "SCN-23",
+        "expected": {
+          "severity": "P1",
+          "department": "NETWORK",
+          "type": "NETWORK",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "APPLICATION",
+          "severity": "P2",
+          "priority": 2,
+          "department": "APPLICATION",
+          "recurrence": false,
+          "confidence": 0.8648500529866349,
+          "evidenceScore": 0.716917562174064,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2379,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "HTTP 500 exceptions after application deployment; regression confirmed; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.014755345989640517,
+                "RESOURCE": 0.019082408795661553,
+                "DATABASE": 0.034661268086334,
+                "APPLICATION": 0.9174410838910807,
+                "NETWORK": 0.01405989323728325
+              },
+              "confidence": 0.8968013548638509
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.9531528257460965,
+                "P1": 0.023071328003854797,
+                "P3": 0.023775846250048728
+              },
+              "confidence": 0.9297292386191446
+            },
+            "department": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.02248842903297799,
+                "DATABASE": 0.03958461589251373,
+                "APPLICATION": 0.8918800423893078,
+                "NETWORK": 0.02275113010517488,
+                "PLATFORM": 0.023295782580025518
+              },
+              "confidence": 0.8648500529866349
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.2684534418574285
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.716917562174064
+            }
+          }
+        },
+        "scenarioId": "SCN-24",
+        "expected": {
+          "severity": "P2",
+          "department": "APPLICATION",
+          "type": "APPLICATION",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "SECURITY",
+          "severity": "P1",
+          "priority": 1,
+          "department": "SECURITY",
+          "recurrence": true,
+          "confidence": 0.8917527053442861,
+          "evidenceScore": 0.7359775654916626,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2089,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Unusual authentication failure spike; suspicious access attempts blocked; customer outage, service unavailable; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9569724468727963,
+                "RESOURCE": 0.00973684204907725,
+                "DATABASE": 0.012635621521944009,
+                "APPLICATION": 0.009769321870947893,
+                "NETWORK": 0.010885767685234526
+              },
+              "confidence": 0.9462155585909954
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.016434431328494342,
+                "P1": 0.970821511984241,
+                "P3": 0.012744056687264547
+              },
+              "confidence": 0.9562322679763614
+            },
+            "department": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.913402164275429,
+                "DATABASE": 0.021733927476719834,
+                "APPLICATION": 0.02243895352132441,
+                "NETWORK": 0.02869764359434686,
+                "PLATFORM": 0.013727311132179943
+              },
+              "confidence": 0.8917527053442861
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9225416702706305
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.7359775654916626
+            }
+          }
+        },
+        "scenarioId": "SCN-25",
+        "expected": {
+          "severity": "P1",
+          "department": "SECURITY",
+          "type": "SECURITY",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "RESOURCE",
+          "severity": "P2",
+          "priority": 2,
+          "department": "PLATFORM",
+          "recurrence": false,
+          "confidence": 0.7083157984407109,
+          "evidenceScore": 0.8500363180210435,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2383,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "CPU utilization 96%, memory exhaustion and process queue saturation; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "RESOURCE",
+              "probabilities": {
+                "SECURITY": 0.007926731073619932,
+                "RESOURCE": 0.9479947484141463,
+                "DATABASE": 0.025577445769105384,
+                "APPLICATION": 0.011881299493621274,
+                "NETWORK": 0.006619775249507048
+              },
+              "confidence": 0.9349934355176828
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.9030047891913915,
+                "P1": 0.05900992250006488,
+                "P3": 0.03798528830854371
+              },
+              "confidence": 0.8545071837870872
+            },
+            "department": {
+              "type": "choice",
+              "choice": "PLATFORM",
+              "probabilities": {
+                "SECURITY": 0.018171057926018808,
+                "DATABASE": 0.11769696697579796,
+                "APPLICATION": 0.07742813880121227,
+                "NETWORK": 0.020051197544402412,
+                "PLATFORM": 0.7666526387525687
+              },
+              "confidence": 0.7083157984407109
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.11012254835607782
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8500363180210435
+            }
+          }
+        },
+        "scenarioId": "SCN-26",
+        "expected": {
+          "severity": "P2",
+          "department": "PLATFORM",
+          "type": "RESOURCE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "DATABASE",
+          "severity": "P1",
+          "priority": 1,
+          "department": "DATABASE",
+          "recurrence": false,
+          "confidence": 0.9122783105301951,
+          "evidenceScore": 0.7856862726611411,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2084,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Database connection pool exhausted; database lock timeout on queries; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.011621957449106943,
+                "RESOURCE": 0.015002316397952256,
+                "DATABASE": 0.9548354433137847,
+                "APPLICATION": 0.012011343689553262,
+                "NETWORK": 0.006528939149602809
+              },
+              "confidence": 0.9435443041422309
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.013378450324051779,
+                "P1": 0.9783244772349925,
+                "P3": 0.008297072440955754
+              },
+              "confidence": 0.9674867158524886
+            },
+            "department": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.018520685779362393,
+                "DATABASE": 0.9298226484241561,
+                "APPLICATION": 0.018310973031388473,
+                "NETWORK": 0.012187948142195792,
+                "PLATFORM": 0.02115774462289736
+              },
+              "confidence": 0.9122783105301951
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.1807764580162133
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.7856862726611411
+            }
+          }
+        },
+        "scenarioId": "SCN-27",
+        "expected": {
+          "severity": "P1",
+          "department": "DATABASE",
+          "type": "DATABASE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "NETWORK",
+          "severity": "P2",
+          "priority": 2,
+          "department": "NETWORK",
+          "recurrence": true,
+          "confidence": 0.8239508332221167,
+          "evidenceScore": 0.8103307292427739,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2125,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Packet loss 12%, DNS resolution timeout, gateway unreachable; degraded performance, service still available; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.027166925774842546,
+                "RESOURCE": 0.019143276453600953,
+                "DATABASE": 0.01996373881699854,
+                "APPLICATION": 0.01982763129228997,
+                "NETWORK": 0.913898427662268
+              },
+              "confidence": 0.8923730345778349
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.8826338888147446,
+                "P1": 0.06944903422744361,
+                "P3": 0.04791707695781182
+              },
+              "confidence": 0.8239508332221167
+            },
+            "department": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.021517623052973722,
+                "DATABASE": 0.01707411113241528,
+                "APPLICATION": 0.019796569163058896,
+                "NETWORK": 0.9279414979149478,
+                "PLATFORM": 0.01367019873660426
+              },
+              "confidence": 0.9099268723936849
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.968380553810964
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8103307292427739
+            }
+          }
+        },
+        "scenarioId": "SCN-28",
+        "expected": {
+          "severity": "P2",
+          "department": "NETWORK",
+          "type": "NETWORK",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "APPLICATION",
+          "severity": "P1",
+          "priority": 1,
+          "department": "APPLICATION",
+          "recurrence": true,
+          "confidence": 0.8716863267828218,
+          "evidenceScore": 0.740745771030257,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1880,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "HTTP 500 exceptions after application deployment; regression confirmed; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.016545190243110085,
+                "RESOURCE": 0.017602002868161083,
+                "DATABASE": 0.033886947176256586,
+                "APPLICATION": 0.9163343460085301,
+                "NETWORK": 0.015631513703942224
+              },
+              "confidence": 0.8954179325106626
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.008642849769781972,
+                "P1": 0.9861985313373164,
+                "P3": 0.00515861889290176
+              },
+              "confidence": 0.9792977970059744
+            },
+            "department": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.02384388465067826,
+                "DATABASE": 0.03559608053445755,
+                "APPLICATION": 0.8973490614262575,
+                "NETWORK": 0.02272242737587264,
+                "PLATFORM": 0.020488546012733977
+              },
+              "confidence": 0.8716863267828218
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.5464604767055795
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.740745771030257
+            }
+          }
+        },
+        "scenarioId": "SCN-29",
+        "expected": {
+          "severity": "P1",
+          "department": "APPLICATION",
+          "type": "APPLICATION",
+          "recurrence": false
+        },
+        "passed": false
+      },
+      {
+        "actual": {
+          "type": "SECURITY",
+          "severity": "P2",
+          "priority": 2,
+          "department": "SECURITY",
+          "recurrence": false,
+          "confidence": 0.8278143271175413,
+          "evidenceScore": 0.6720220212841551,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1875,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Unusual authentication failure spike; suspicious access attempts blocked; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9501815923430078,
+                "RESOURCE": 0.015400666844537851,
+                "DATABASE": 0.014393769235513335,
+                "APPLICATION": 0.00896545968785437,
+                "NETWORK": 0.01105851188908669
+              },
+              "confidence": 0.9377269904287596
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.8852095514116943,
+                "P1": 0.041912598114733364,
+                "P3": 0.0728778504735723
+              },
+              "confidence": 0.8278143271175413
+            },
+            "department": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.8637303765791018,
+                "DATABASE": 0.03409589619270737,
+                "APPLICATION": 0.0363794929647798,
+                "NETWORK": 0.036167646321137344,
+                "PLATFORM": 0.02962658794227363
+              },
+              "confidence": 0.8296629707238773
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.10470884937737417
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.6720220212841551
+            }
+          }
+        },
+        "scenarioId": "SCN-30",
+        "expected": {
+          "severity": "P2",
+          "department": "SECURITY",
+          "type": "SECURITY",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "RESOURCE",
+          "severity": "P1",
+          "priority": 1,
+          "department": "PLATFORM",
+          "recurrence": true,
+          "confidence": 0.6993419219260724,
+          "evidenceScore": 0.8510380459434603,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2153,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "RESOURCE",
+              "probabilities": {
+                "SECURITY": 0.018978849436787543,
+                "RESOURCE": 0.9256732491230714,
+                "DATABASE": 0.03166528239725354,
+                "APPLICATION": 0.015105002930920573,
+                "NETWORK": 0.008577616111967131
+              },
+              "confidence": 0.9070915614038391
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.010504000321120917,
+                "P1": 0.9849796838237399,
+                "P3": 0.004516315855139163
+              },
+              "confidence": 0.9774695257356099
+            },
+            "department": {
+              "type": "choice",
+              "choice": "PLATFORM",
+              "probabilities": {
+                "SECURITY": 0.05490701176659677,
+                "DATABASE": 0.09748994811560763,
+                "APPLICATION": 0.062333858351590825,
+                "NETWORK": 0.025795644225346814,
+                "PLATFORM": 0.759473537540858
+              },
+              "confidence": 0.6993419219260724
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9608086645576029
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8510380459434603
+            }
+          }
+        },
+        "scenarioId": "SCN-31",
+        "expected": {
+          "severity": "P1",
+          "department": "PLATFORM",
+          "type": "RESOURCE",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "DATABASE",
+          "severity": "P2",
+          "priority": 2,
+          "department": "DATABASE",
+          "recurrence": false,
+          "confidence": 0.8727086569813228,
+          "evidenceScore": 0.8015521216318988,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1999,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Database connection pool exhausted; database lock timeout on queries; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.009511836991033865,
+                "RESOURCE": 0.017018164917046597,
+                "DATABASE": 0.9573180014538418,
+                "APPLICATION": 0.011146450890947653,
+                "NETWORK": 0.005005545747130041
+              },
+              "confidence": 0.9466475018173023
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.9151391046542153,
+                "P1": 0.049088065129742536,
+                "P3": 0.035772830216042155
+              },
+              "confidence": 0.8727086569813228
+            },
+            "department": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.017609534971601868,
+                "DATABASE": 0.9270270547922776,
+                "APPLICATION": 0.02042055308063528,
+                "NETWORK": 0.010440489354648308,
+                "PLATFORM": 0.02450236780083701
+              },
+              "confidence": 0.9087838184903471
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.12165375314698632
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8015521216318988
+            }
+          }
+        },
+        "scenarioId": "SCN-32",
+        "expected": {
+          "severity": "P2",
+          "department": "DATABASE",
+          "type": "DATABASE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "NETWORK",
+          "severity": "P1",
+          "priority": 1,
+          "department": "NETWORK",
+          "recurrence": false,
+          "confidence": 0.9200438335208674,
+          "evidenceScore": 0.8104097204683942,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2121,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Packet loss 12%, DNS resolution timeout, gateway unreachable; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.014125481381708207,
+                "RESOURCE": 0.015788067267623884,
+                "DATABASE": 0.01799243355837378,
+                "APPLICATION": 0.016058950975600096,
+                "NETWORK": 0.936035066816694
+              },
+              "confidence": 0.9200438335208674
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.00821706737759443,
+                "P1": 0.986671448547827,
+                "P3": 0.0051114840745786405
+              },
+              "confidence": 0.9800071728217404
+            },
+            "department": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.013433623864249412,
+                "DATABASE": 0.014763681262948991,
+                "APPLICATION": 0.015199722241459771,
+                "NETWORK": 0.9449695217302099,
+                "PLATFORM": 0.011633450901131999
+              },
+              "confidence": 0.9312119021627624
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.10202825220155413
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8104097204683942
+            }
+          }
+        },
+        "scenarioId": "SCN-33",
+        "expected": {
+          "severity": "P1",
+          "department": "NETWORK",
+          "type": "NETWORK",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "APPLICATION",
+          "severity": "P2",
+          "priority": 2,
+          "department": "APPLICATION",
+          "recurrence": true,
+          "confidence": 0.842906304605513,
+          "evidenceScore": 0.8138052295751433,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2115,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "HTTP 500 exceptions after application deployment; regression confirmed; degraded performance, service still available; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.023680173819135914,
+                "RESOURCE": 0.020654536928431513,
+                "DATABASE": 0.03322698021397944,
+                "APPLICATION": 0.9075996583058016,
+                "NETWORK": 0.014838650732651476
+              },
+              "confidence": 0.8844995728822519
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.925564455095408,
+                "P1": 0.03717717773651145,
+                "P3": 0.03725836716808062
+              },
+              "confidence": 0.8883466826431118
+            },
+            "department": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.03451165152658754,
+                "DATABASE": 0.04094169954621665,
+                "APPLICATION": 0.8743250436844103,
+                "NETWORK": 0.02411202933084752,
+                "PLATFORM": 0.02610957591193802
+              },
+              "confidence": 0.842906304605513
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9527387579934785
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8138052295751433
+            }
+          }
+        },
+        "scenarioId": "SCN-34",
+        "expected": {
+          "severity": "P2",
+          "department": "APPLICATION",
+          "type": "APPLICATION",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "SECURITY",
+          "severity": "P1",
+          "priority": 1,
+          "department": "SECURITY",
+          "recurrence": false,
+          "confidence": 0.876266586087136,
+          "evidenceScore": 0.6744696895345766,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2334,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Unusual authentication failure spike; suspicious access attempts blocked; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9548801940028128,
+                "RESOURCE": 0.009310398382719754,
+                "DATABASE": 0.012709038786069767,
+                "APPLICATION": 0.009546742841321995,
+                "NETWORK": 0.013553625987075697
+              },
+              "confidence": 0.9436002425035158
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.014819645898047424,
+                "P1": 0.973117767768524,
+                "P3": 0.012062586333428695
+              },
+              "confidence": 0.9596766516527858
+            },
+            "department": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9010132688697089,
+                "DATABASE": 0.023136617875966596,
+                "APPLICATION": 0.02431709285316775,
+                "NETWORK": 0.038213990459527586,
+                "PLATFORM": 0.01331902994162919
+              },
+              "confidence": 0.876266586087136
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.15693205694087092
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.6744696895345766
+            }
+          }
+        },
+        "scenarioId": "SCN-35",
+        "expected": {
+          "severity": "P1",
+          "department": "SECURITY",
+          "type": "SECURITY",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "RESOURCE",
+          "severity": "P2",
+          "priority": 2,
+          "department": "PLATFORM",
+          "recurrence": false,
+          "confidence": 0.7083157984407109,
+          "evidenceScore": 0.8500363180210435,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2042,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "CPU utilization 96%, memory exhaustion and process queue saturation; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "RESOURCE",
+              "probabilities": {
+                "SECURITY": 0.007926731073619932,
+                "RESOURCE": 0.9479947484141463,
+                "DATABASE": 0.025577445769105384,
+                "APPLICATION": 0.011881299493621274,
+                "NETWORK": 0.006619775249507048
+              },
+              "confidence": 0.9349934355176828
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.9030047891913915,
+                "P1": 0.05900992250006488,
+                "P3": 0.03798528830854371
+              },
+              "confidence": 0.8545071837870872
+            },
+            "department": {
+              "type": "choice",
+              "choice": "PLATFORM",
+              "probabilities": {
+                "SECURITY": 0.018171057926018808,
+                "DATABASE": 0.11769696697579796,
+                "APPLICATION": 0.07742813880121227,
+                "NETWORK": 0.020051197544402412,
+                "PLATFORM": 0.7666526387525687
+              },
+              "confidence": 0.7083157984407109
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.11012254835607782
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8500363180210435
+            }
+          }
+        },
+        "scenarioId": "SCN-36",
+        "expected": {
+          "severity": "P2",
+          "department": "PLATFORM",
+          "type": "RESOURCE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "DATABASE",
+          "severity": "P1",
+          "priority": 1,
+          "department": "DATABASE",
+          "recurrence": true,
+          "confidence": 0.878176991738201,
+          "evidenceScore": 0.7833555624586738,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1848,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Database connection pool exhausted; database lock timeout on queries; customer outage, service unavailable; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.02759999445546901,
+                "RESOURCE": 0.01974430739839736,
+                "DATABASE": 0.9275088817180229,
+                "APPLICATION": 0.017161788228803616,
+                "NETWORK": 0.007985028199307184
+              },
+              "confidence": 0.9093861021475286
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.014768431982287555,
+                "P1": 0.975209132509238,
+                "P3": 0.01002243550847441
+              },
+              "confidence": 0.962813698763857
+            },
+            "department": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.036196451625795066,
+                "DATABASE": 0.9025415933905607,
+                "APPLICATION": 0.02261305305435959,
+                "NETWORK": 0.015278688963703876,
+                "PLATFORM": 0.023370212965580676
+              },
+              "confidence": 0.878176991738201
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9507731556707533
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.7833555624586738
+            }
+          }
+        },
+        "scenarioId": "SCN-37",
+        "expected": {
+          "severity": "P1",
+          "department": "DATABASE",
+          "type": "DATABASE",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "NETWORK",
+          "severity": "P2",
+          "priority": 2,
+          "department": "NETWORK",
+          "recurrence": false,
+          "confidence": 0.8687161102131113,
+          "evidenceScore": 0.8091008211422739,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2149,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Packet loss 12%, DNS resolution timeout, gateway unreachable; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.013345158546388453,
+                "RESOURCE": 0.017941469648313543,
+                "DATABASE": 0.017935582576218464,
+                "APPLICATION": 0.01613262085589678,
+                "NETWORK": 0.9346451683731827
+              },
+              "confidence": 0.9183064604664783
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.912477406808741,
+                "P1": 0.04446211641625983,
+                "P3": 0.04306047677499914
+              },
+              "confidence": 0.8687161102131113
+            },
+            "department": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.011143160688366018,
+                "DATABASE": 0.014087261635983188,
+                "APPLICATION": 0.017645334655194345,
+                "NETWORK": 0.9447984809476314,
+                "PLATFORM": 0.012325762072825144
+              },
+              "confidence": 0.9309981011845392
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.08079357978137595
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8091008211422739
+            }
+          }
+        },
+        "scenarioId": "SCN-38",
+        "expected": {
+          "severity": "P2",
+          "department": "NETWORK",
+          "type": "NETWORK",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "APPLICATION",
+          "severity": "P1",
+          "priority": 1,
+          "department": "APPLICATION",
+          "recurrence": true,
+          "confidence": 0.8716863267828218,
+          "evidenceScore": 0.740745771030257,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1965,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "HTTP 500 exceptions after application deployment; regression confirmed; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.016545190243110085,
+                "RESOURCE": 0.017602002868161083,
+                "DATABASE": 0.033886947176256586,
+                "APPLICATION": 0.9163343460085301,
+                "NETWORK": 0.015631513703942224
+              },
+              "confidence": 0.8954179325106626
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.008642849769781972,
+                "P1": 0.9861985313373164,
+                "P3": 0.00515861889290176
+              },
+              "confidence": 0.9792977970059744
+            },
+            "department": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.02384388465067826,
+                "DATABASE": 0.03559608053445755,
+                "APPLICATION": 0.8973490614262575,
+                "NETWORK": 0.02272242737587264,
+                "PLATFORM": 0.020488546012733977
+              },
+              "confidence": 0.8716863267828218
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.5464604767055795
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.740745771030257
+            }
+          }
+        },
+        "scenarioId": "SCN-39",
+        "expected": {
+          "severity": "P1",
+          "department": "APPLICATION",
+          "type": "APPLICATION",
+          "recurrence": false
+        },
+        "passed": false
+      },
+      {
+        "actual": {
+          "type": "SECURITY",
+          "severity": "P2",
+          "priority": 2,
+          "department": "SECURITY",
+          "recurrence": true,
+          "confidence": 0.7825035825697692,
+          "evidenceScore": 0.7440325929377511,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1928,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Unusual authentication failure spike; suspicious access attempts blocked; degraded performance, service still available; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9531368784683966,
+                "RESOURCE": 0.014256362475552814,
+                "DATABASE": 0.013904681091484064,
+                "APPLICATION": 0.009879526211829383,
+                "NETWORK": 0.008822551752737261
+              },
+              "confidence": 0.9414210980854956
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.8550023883798462,
+                "P1": 0.05720287212240668,
+                "P3": 0.08779473949774709
+              },
+              "confidence": 0.7825035825697692
+            },
+            "department": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.8839126963392195,
+                "DATABASE": 0.029849590920392518,
+                "APPLICATION": 0.03310831809791136,
+                "NETWORK": 0.02838921979103671,
+                "PLATFORM": 0.024740174851439853
+              },
+              "confidence": 0.8548908704240243
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9398707594175192
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.7440325929377511
+            }
+          }
+        },
+        "scenarioId": "SCN-40",
+        "expected": {
+          "severity": "P2",
+          "department": "SECURITY",
+          "type": "SECURITY",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "RESOURCE",
+          "severity": "P1",
+          "priority": 1,
+          "department": "PLATFORM",
+          "recurrence": false,
+          "confidence": 0.78024388887659,
+          "evidenceScore": 0.8537159761574196,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2157,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "RESOURCE",
+              "probabilities": {
+                "SECURITY": 0.008502895658627612,
+                "RESOURCE": 0.9474392799014539,
+                "DATABASE": 0.02574088314017475,
+                "APPLICATION": 0.01151379341249739,
+                "NETWORK": 0.006803147887246282
+              },
+              "confidence": 0.9342990998768175
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.009979730169788934,
+                "P1": 0.9862510306311629,
+                "P3": 0.003769239199048184
+              },
+              "confidence": 0.9793765459467444
+            },
+            "department": {
+              "type": "choice",
+              "choice": "PLATFORM",
+              "probabilities": {
+                "SECURITY": 0.018927315848701467,
+                "DATABASE": 0.08257207987349126,
+                "APPLICATION": 0.05446346553727068,
+                "NETWORK": 0.01984202763926456,
+                "PLATFORM": 0.8241951111012721
+              },
+              "confidence": 0.78024388887659
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.12744122706210376
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8537159761574196
+            }
+          }
+        },
+        "scenarioId": "SCN-41",
+        "expected": {
+          "severity": "P1",
+          "department": "PLATFORM",
+          "type": "RESOURCE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "DATABASE",
+          "severity": "P2",
+          "priority": 2,
+          "department": "DATABASE",
+          "recurrence": false,
+          "confidence": 0.8727086569813228,
+          "evidenceScore": 0.8015521216318988,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1790,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Database connection pool exhausted; database lock timeout on queries; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.009511836991033865,
+                "RESOURCE": 0.017018164917046597,
+                "DATABASE": 0.9573180014538418,
+                "APPLICATION": 0.011146450890947653,
+                "NETWORK": 0.005005545747130041
+              },
+              "confidence": 0.9466475018173023
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.9151391046542153,
+                "P1": 0.049088065129742536,
+                "P3": 0.035772830216042155
+              },
+              "confidence": 0.8727086569813228
+            },
+            "department": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.017609534971601868,
+                "DATABASE": 0.9270270547922776,
+                "APPLICATION": 0.02042055308063528,
+                "NETWORK": 0.010440489354648308,
+                "PLATFORM": 0.02450236780083701
+              },
+              "confidence": 0.9087838184903471
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.12165375314698632
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8015521216318988
+            }
+          }
+        },
+        "scenarioId": "SCN-42",
+        "expected": {
+          "severity": "P2",
+          "department": "DATABASE",
+          "type": "DATABASE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "NETWORK",
+          "severity": "P1",
+          "priority": 1,
+          "department": "NETWORK",
+          "recurrence": true,
+          "confidence": 0.8943925145656519,
+          "evidenceScore": 0.8120625711687983,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2027,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Packet loss 12%, DNS resolution timeout, gateway unreachable; customer outage, service unavailable; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.028173284619555816,
+                "RESOURCE": 0.018362655327146572,
+                "DATABASE": 0.020311608588664133,
+                "APPLICATION": 0.0176384398121119,
+                "NETWORK": 0.9155140116525216
+              },
+              "confidence": 0.8943925145656519
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.009678316459601802,
+                "P1": 0.9845627463073241,
+                "P3": 0.005758937233074114
+              },
+              "confidence": 0.9768441194609861
+            },
+            "department": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.02871288185514071,
+                "DATABASE": 0.01850850078223334,
+                "APPLICATION": 0.01837751812317505,
+                "NETWORK": 0.9202130307290016,
+                "PLATFORM": 0.01418806851044937
+              },
+              "confidence": 0.9002662884112519
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9615635233769596
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8120625711687983
+            }
+          }
+        },
+        "scenarioId": "SCN-43",
+        "expected": {
+          "severity": "P1",
+          "department": "NETWORK",
+          "type": "NETWORK",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "APPLICATION",
+          "severity": "P2",
+          "priority": 2,
+          "department": "APPLICATION",
+          "recurrence": false,
+          "confidence": 0.8648500529866349,
+          "evidenceScore": 0.716917562174064,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2174,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "HTTP 500 exceptions after application deployment; regression confirmed; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.014755345989640517,
+                "RESOURCE": 0.019082408795661553,
+                "DATABASE": 0.034661268086334,
+                "APPLICATION": 0.9174410838910807,
+                "NETWORK": 0.01405989323728325
+              },
+              "confidence": 0.8968013548638509
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.9531528257460965,
+                "P1": 0.023071328003854797,
+                "P3": 0.023775846250048728
+              },
+              "confidence": 0.9297292386191446
+            },
+            "department": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.02248842903297799,
+                "DATABASE": 0.03958461589251373,
+                "APPLICATION": 0.8918800423893078,
+                "NETWORK": 0.02275113010517488,
+                "PLATFORM": 0.023295782580025518
+              },
+              "confidence": 0.8648500529866349
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.2684534418574285
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.716917562174064
+            }
+          }
+        },
+        "scenarioId": "SCN-44",
+        "expected": {
+          "severity": "P2",
+          "department": "APPLICATION",
+          "type": "APPLICATION",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "SECURITY",
+          "severity": "P1",
+          "priority": 1,
+          "department": "SECURITY",
+          "recurrence": false,
+          "confidence": 0.876266586087136,
+          "evidenceScore": 0.6744696895345766,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2092,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Unusual authentication failure spike; suspicious access attempts blocked; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9548801940028128,
+                "RESOURCE": 0.009310398382719754,
+                "DATABASE": 0.012709038786069767,
+                "APPLICATION": 0.009546742841321995,
+                "NETWORK": 0.013553625987075697
+              },
+              "confidence": 0.9436002425035158
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.014819645898047424,
+                "P1": 0.973117767768524,
+                "P3": 0.012062586333428695
+              },
+              "confidence": 0.9596766516527858
+            },
+            "department": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9010132688697089,
+                "DATABASE": 0.023136617875966596,
+                "APPLICATION": 0.02431709285316775,
+                "NETWORK": 0.038213990459527586,
+                "PLATFORM": 0.01331902994162919
+              },
+              "confidence": 0.876266586087136
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.15693205694087092
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.6744696895345766
+            }
+          }
+        },
+        "scenarioId": "SCN-45",
+        "expected": {
+          "severity": "P1",
+          "department": "SECURITY",
+          "type": "SECURITY",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "RESOURCE",
+          "severity": "P2",
+          "priority": 2,
+          "department": "PLATFORM",
+          "recurrence": true,
+          "confidence": 0.6486779040234136,
+          "evidenceScore": 0.8547211303587479,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1765,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": true,
+          "evidence": [
+            "CPU utilization 96%, memory exhaustion and process queue saturation; degraded performance, service still available; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "RESOURCE",
+              "probabilities": {
+                "SECURITY": 0.016818256083070977,
+                "RESOURCE": 0.92136513011907,
+                "DATABASE": 0.0326507456913597,
+                "APPLICATION": 0.020824135613294555,
+                "NETWORK": 0.00834173249320474
+              },
+              "confidence": 0.9017064126488374
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.8394920545188732,
+                "P1": 0.10163632271320747,
+                "P3": 0.058871622767919414
+              },
+              "confidence": 0.7592380817783096
+            },
+            "department": {
+              "type": "choice",
+              "choice": "PLATFORM",
+              "probabilities": {
+                "SECURITY": 0.03949948570131937,
+                "DATABASE": 0.11930291767360685,
+                "APPLICATION": 0.09645406784432535,
+                "NETWORK": 0.025801205562017586,
+                "PLATFORM": 0.7189423232187309
+              },
+              "confidence": 0.6486779040234136
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.967644823479101
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8547211303587479
+            }
+          }
+        },
+        "scenarioId": "SCN-46",
+        "expected": {
+          "severity": "P2",
+          "department": "PLATFORM",
+          "type": "RESOURCE",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "DATABASE",
+          "severity": "P1",
+          "priority": 1,
+          "department": "DATABASE",
+          "recurrence": false,
+          "confidence": 0.9122783105301951,
+          "evidenceScore": 0.7856862726611411,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 1879,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Database connection pool exhausted; database lock timeout on queries; customer outage, service unavailable; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.011621957449106943,
+                "RESOURCE": 0.015002316397952256,
+                "DATABASE": 0.9548354433137847,
+                "APPLICATION": 0.012011343689553262,
+                "NETWORK": 0.006528939149602809
+              },
+              "confidence": 0.9435443041422309
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.013378450324051779,
+                "P1": 0.9783244772349925,
+                "P3": 0.008297072440955754
+              },
+              "confidence": 0.9674867158524886
+            },
+            "department": {
+              "type": "choice",
+              "choice": "DATABASE",
+              "probabilities": {
+                "SECURITY": 0.018520685779362393,
+                "DATABASE": 0.9298226484241561,
+                "APPLICATION": 0.018310973031388473,
+                "NETWORK": 0.012187948142195792,
+                "PLATFORM": 0.02115774462289736
+              },
+              "confidence": 0.9122783105301951
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.1807764580162133
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.7856862726611411
+            }
+          }
+        },
+        "scenarioId": "SCN-47",
+        "expected": {
+          "severity": "P1",
+          "department": "DATABASE",
+          "type": "DATABASE",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "NETWORK",
+          "severity": "P2",
+          "priority": 2,
+          "department": "NETWORK",
+          "recurrence": false,
+          "confidence": 0.8687161102131113,
+          "evidenceScore": 0.8091008211422739,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2420,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Packet loss 12%, DNS resolution timeout, gateway unreachable; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.013345158546388453,
+                "RESOURCE": 0.017941469648313543,
+                "DATABASE": 0.017935582576218464,
+                "APPLICATION": 0.01613262085589678,
+                "NETWORK": 0.9346451683731827
+              },
+              "confidence": 0.9183064604664783
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.912477406808741,
+                "P1": 0.04446211641625983,
+                "P3": 0.04306047677499914
+              },
+              "confidence": 0.8687161102131113
+            },
+            "department": {
+              "type": "choice",
+              "choice": "NETWORK",
+              "probabilities": {
+                "SECURITY": 0.011143160688366018,
+                "DATABASE": 0.014087261635983188,
+                "APPLICATION": 0.017645334655194345,
+                "NETWORK": 0.9447984809476314,
+                "PLATFORM": 0.012325762072825144
+              },
+              "confidence": 0.9309981011845392
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.08079357978137595
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.8091008211422739
+            }
+          }
+        },
+        "scenarioId": "SCN-48",
+        "expected": {
+          "severity": "P2",
+          "department": "NETWORK",
+          "type": "NETWORK",
+          "recurrence": false
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "APPLICATION",
+          "severity": "P1",
+          "priority": 1,
+          "department": "APPLICATION",
+          "recurrence": true,
+          "confidence": 0.8273610009828472,
+          "evidenceScore": 0.81192276984758,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2400,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "HTTP 500 exceptions after application deployment; regression confirmed; customer outage, service unavailable; repeated signature in last 7 days",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.031686390661553314,
+                "RESOURCE": 0.020850690684692034,
+                "DATABASE": 0.03557020881497245,
+                "APPLICATION": 0.8933103252208383,
+                "NETWORK": 0.018582384617944012
+              },
+              "confidence": 0.8666379065260479
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P1",
+              "probabilities": {
+                "P2": 0.009126329225444575,
+                "P1": 0.985298103448924,
+                "P3": 0.005575567325631468
+              },
+              "confidence": 0.9779471551733858
+            },
+            "department": {
+              "type": "choice",
+              "choice": "APPLICATION",
+              "probabilities": {
+                "SECURITY": 0.04435159019171756,
+                "DATABASE": 0.04305693627432055,
+                "APPLICATION": 0.8618888007862778,
+                "NETWORK": 0.027201942005067935,
+                "PLATFORM": 0.023500730742616167
+              },
+              "confidence": 0.8273610009828472
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.9423642617071315
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.81192276984758
+            }
+          }
+        },
+        "scenarioId": "SCN-49",
+        "expected": {
+          "severity": "P1",
+          "department": "APPLICATION",
+          "type": "APPLICATION",
+          "recurrence": true
+        },
+        "passed": true
+      },
+      {
+        "actual": {
+          "type": "SECURITY",
+          "severity": "P2",
+          "priority": 2,
+          "department": "SECURITY",
+          "recurrence": false,
+          "confidence": 0.8278143271175413,
+          "evidenceScore": 0.6720220212841551,
+          "provider": "LOCAL_JEV",
+          "model": "jevos-v4",
+          "latencyMs": 2375,
+          "simulated": false,
+          "fallback": false,
+          "fallbackReason": "",
+          "needsReview": false,
+          "evidence": [
+            "Unusual authentication failure spike; suspicious access attempts blocked; degraded performance, service still available; first occurrence",
+            "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+          ],
+          "answers": {
+            "type": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.9501815923430078,
+                "RESOURCE": 0.015400666844537851,
+                "DATABASE": 0.014393769235513335,
+                "APPLICATION": 0.00896545968785437,
+                "NETWORK": 0.01105851188908669
+              },
+              "confidence": 0.9377269904287596
+            },
+            "severity": {
+              "type": "choice",
+              "choice": "P2",
+              "probabilities": {
+                "P2": 0.8852095514116943,
+                "P1": 0.041912598114733364,
+                "P3": 0.0728778504735723
+              },
+              "confidence": 0.8278143271175413
+            },
+            "department": {
+              "type": "choice",
+              "choice": "SECURITY",
+              "probabilities": {
+                "SECURITY": 0.8637303765791018,
+                "DATABASE": 0.03409589619270737,
+                "APPLICATION": 0.0363794929647798,
+                "NETWORK": 0.036167646321137344,
+                "PLATFORM": 0.02962658794227363
+              },
+              "confidence": 0.8296629707238773
+            },
+            "recurrence": {
+              "type": "noul",
+              "noul": 0.10470884937737417
+            },
+            "evidence": {
+              "type": "noul",
+              "noul": 0.6720220212841551
+            }
+          }
+        },
+        "scenarioId": "SCN-50",
+        "expected": {
+          "severity": "P2",
+          "department": "SECURITY",
+          "type": "SECURITY",
+          "recurrence": false
+        },
+        "passed": true
+      }
+    ],
+    "total": 50,
+    "departmentCorrect": 50,
+    "passed": 47
+  },
+  "status": "COMPLETED",
+  "id": "EVAL-e63879d1-c08c-4a"
+}

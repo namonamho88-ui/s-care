@@ -1,0 +1,18 @@
+{
+  "scope": "Local rehearsal of cloud profile; no hosted service deployment",
+  "postgresSchema": "brain",
+  "backendPort": 18081,
+  "a2aCardUrl": "http://127.0.0.1:18081/a2a/incident",
+  "migratedIncidents": 203,
+  "afterDemoIncidents": 204,
+  "incidentId": "INC-aeb0257f-87db-46",
+  "mode": "DEMO",
+  "provider": "MOCK",
+  "graph": "NEO4J",
+  "agentTasks": 6,
+  "draftNotPublished": true,
+  "approvedTransport": "http",
+  "approvedSkillsExported": 23,
+  "restartPreservedHistory": true,
+  "actualCloudDeployment": false
+}

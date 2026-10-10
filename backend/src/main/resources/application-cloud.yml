@@ -1,0 +1,17 @@
+# Managed PostgreSQL uses a private application schema, never the Supabase Data API.
+spring:
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    hikari:
+      schema: ${DB_SCHEMA:brain}
+  flyway:
+    schemas: ${DB_SCHEMA:brain}
+    default-schema: ${DB_SCHEMA:brain}
+    create-schemas: true
+brain:
+  admin-token: ${ADMIN_TOKEN}
+  neo4j-uri: ${NEO4J_URI}
+  neo4j-password: ${NEO4J_PASSWORD}
+  hermes-publish-mode: ${HERMES_PUBLISH_MODE:http}

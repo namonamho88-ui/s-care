@@ -1,0 +1,22 @@
+# AI Incident Brain 3.0 개발 규칙
+
+- 모든 시스템, 담당자, 관측값과 장애 기록은 가상이다. UI·API·보고서에 표시한다.
+- Next.js/React/TypeScript/Tailwind/shadcn, Java Spring Boot, PostgreSQL, Neo4j, React Flow를 사용한다.
+- DEMO는 외부 모델을 호출하지 않는다. REAL은 LOCAL_JEV 기본, TYPESAFE_JEV 선택이다.
+- Local jevos 통신 실패만 명시적 MOCK_FALLBACK을 허용한다. 저신뢰 응답은 모의 성공으로 숨기지 않고 NEEDS_REVIEW로 전환한다.
+- Jev 결과에 요청 Provider, 실제 Provider, 모델, 신뢰도, 소요 시간, fallback 이유, 관측 근거를 기록한다.
+- 승인 전 복구는 금지한다. 승인 후에도 가상 지표만 변경한다. shell/SSH/실제 변경 도구를 구현하지 않는다.
+- A2A 0.3.0 JSON-RPC 프로필과 MCP 2025-03-26 stateless HTTP 프로필의 범위를 문서화한다.
+- 지식 초안은 관리자 검토 후 승인해야 검색된다. 자체 Skill 저장소를 실제 Hermes 연결로 표시하지 않는다.
+- Hermes는 Nous Research 공식 Agent의 /v1/chat/completions와 /v1/toolsets를 사용한다. DEMO는 외부 요청 금지, REAL 실패는 MOCK_HERMES_FALLBACK으로 원인을 기록한다.
+- Hermes 전용 HERMES_HOME과 빈 api_server toolset을 사용한다. OPENAI_API_KEY는 Hermes에만 전달하며 모델이 반환한 Skill ID는 승인 DB 레코드와 대조한다.
+- Skill 생성 HTTP 호출은 DB 트랜잭션 밖에서 수행한다. 관리자 승인 후에만 SKILL.md를 게시하며 게시 실패는 승인 상태와 구별해 재시도한다.
+- 원인 후보는 확정 근본 원인으로 표시하지 않는다. 분류 검토가 이후 원인 후보의 검토를 자동으로 면제하지 않도록 검토 대상을 기록한다.
+- 트랜잭션, FK, optimistic state transitions, 제한된 재시도, timeout, 감사 로그를 사용한다.
+- 정답은 모델 입력과 분리한다. 자동 평가는 실제 점수와 오류를 그대로 저장한다.
+- backend ./mvnw test, frontend npm run build와 주요 통합 시연을 검증한다.
+- H2 단위/통합 검증, 실제 PostgreSQL/Neo4j 검증, Docker 검증을 구별해 기록한다.
+- 비밀, 모델 가중치, 런타임 DB, node_modules와 빌드 산출물은 커밋하지 않는다.
+- 로컬 PC는 개발·검증 환경이며 최종 시연은 Vercel·Supabase·Railway에서 실행한다. 환경변수/배포 설정으로 전환하고 실제 클라우드 배포 여부를 로컬 계약 검증과 구분한다.
+- 원격 Hermes 게시에는 프로젝트 소유 Skill bridge를 사용한다. 공식 Hermes API로 오인하지 않도록 문서화하고 승인 검증·전용 인증·내용 해시 확인·재시도 가능성을 유지한다.
+- cloud 프로필은 전용 brain schema를 사용한다. Supabase Data API 노출이나 브라우저 직접 DB 접근을 추가하지 않는다. 백엔드 단일 인스턴스 제약과 중단 후 명시적 재시도를 유지한다.

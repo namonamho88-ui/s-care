@@ -1,0 +1,17 @@
+node_modules/
+.next/
+target/
+.env
+.env.local
+.env.*.local
+.env.cloud
+.vercel/
+*.log
+*.tsbuildinfo
+data/
+work/
+runtime/
+playwright-report/
+test-results/
+__pycache__/
+*.pyc

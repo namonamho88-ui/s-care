@@ -1,0 +1,56 @@
+name: container verification
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  application:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      HERMES_PUBLISH_MODE: disabled
+      STEP_MS: '50'
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose up --build -d --wait --wait-timeout 300 frontend
+      - run: python scripts/smoke.py --mode DEMO --output work/container-demo.json
+      - name: Check authenticated browser proxy and persisted history
+        run: |
+          curl --fail -c /tmp/brain-cookie -H 'Content-Type: application/json' \
+            -d '{"token":"local-demo-admin-change-me"}' http://127.0.0.1:3100/api/session
+          curl --fail -b /tmp/brain-cookie http://127.0.0.1:3100/api/incidents -o /tmp/brain-incidents.json
+          python -c "import json; rows=json.load(open('/tmp/brain-incidents.json')); assert len(rows)==201"
+          docker compose restart backend
+          docker compose up -d --wait --wait-timeout 120 backend
+          docker compose exec -T postgres psql -U brain -d brain -tAc "SELECT count(*) FROM incidents WHERE status='CLOSED' AND id NOT LIKE 'INC-SEED%';" | grep -x 1
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: container-demo-evidence
+          path: work/container-demo.json
+      - if: failure()
+        run: docker compose logs --tail 100
+      - if: always()
+        run: docker compose down -v
+  ai-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [jevos, hermes]
+    env:
+      HERMES_API_KEY: fictional-ci-hermes-api-7b3f9c10a4e562d8
+      HERMES_PUBLISH_KEY: fictional-ci-publish-8c4d2e10f6b593a7
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose --profile local-ai --profile hermes up --build -d --wait --wait-timeout 300 ${{ matrix.service }}
+      - name: Probe optional Skill bridge and verify tools are disabled
+        if: matrix.service == 'hermes'
+        run: |
+          docker compose exec -T hermes curl --fail http://127.0.0.1:8643/health
+          curl --fail -H "Authorization: Bearer $HERMES_API_KEY" http://127.0.0.1:8642/v1/toolsets -o /tmp/toolsets.json
+          python -c "import json; data=json.load(open('/tmp/toolsets.json')); rows=data['data']; assert isinstance(rows,list); assert all(not r['enabled'] for r in rows)"
+      - if: failure()
+        run: docker compose --profile local-ai --profile hermes logs --tail 100
+      - if: always()
+        run: docker compose --profile local-ai --profile hermes down -v

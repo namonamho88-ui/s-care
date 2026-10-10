@@ -1,0 +1,54 @@
+import { NextRequest } from "next/server";
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+// Backend closes each SSE stream before this budget; EventSource resumes by DB event ID.
+export const maxDuration = 300;
+const upstream = process.env.BACKEND_URL || "http://127.0.0.1:8080";
+async function proxy(
+  req: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
+  const { path } = await params;
+  if (path.some((p) => p === ".." || p.includes("/")))
+    return Response.json({ error: "Invalid path" }, { status: 400 });
+  if (
+    !["GET", "HEAD"].includes(req.method) &&
+    req.headers.get("origin") &&
+    new URL(req.headers.get("origin")!).host !== req.headers.get("host")
+  )
+    return Response.json({ error: "Invalid origin" }, { status: 403 });
+  const token = req.cookies.get("brain_token")?.value;
+  const headers = new Headers();
+  if (token) headers.set("Authorization", `Bearer ${token}`);
+  if (req.headers.get("Content-Type"))
+    headers.set("Content-Type", req.headers.get("Content-Type")!);
+  if (req.headers.get("Last-Event-ID"))
+    headers.set("Last-Event-ID", req.headers.get("Last-Event-ID")!);
+  try {
+    const res = await fetch(
+      `${upstream}/api/${path.map(encodeURIComponent).join("/")}${req.nextUrl.search}`,
+      {
+        method: req.method,
+        headers,
+        body: ["GET", "HEAD"].includes(req.method)
+          ? undefined
+          : await req.arrayBuffer(),
+        cache: "no-store",
+        signal: req.signal,
+      },
+    );
+    const out = new Headers();
+    for (const key of ["content-type", "content-disposition"])
+      if (res.headers.has(key)) out.set(key, res.headers.get(key)!);
+    out.set("Cache-Control", "no-store");
+    if (res.headers.get("content-type")?.includes("text/event-stream"))
+      out.set("X-Accel-Buffering", "no");
+    return new Response(res.body, { status: res.status, headers: out });
+  } catch {
+    return Response.json(
+      { error: "백엔드 연결 실패. Spring Boot 실행 상태를 확인하세요." },
+      { status: 502 },
+    );
+  }
+}
+export { proxy as GET, proxy as POST, proxy as PATCH };

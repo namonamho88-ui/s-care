@@ -1,0 +1,8 @@
+spring:
+  datasource:
+    url: jdbc:h2:file:./data/brain;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    username: sa
+    password:
+brain:
+  graph-required: false
+  neo4j-uri: disabled

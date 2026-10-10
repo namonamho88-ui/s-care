@@ -1,0 +1,25 @@
+{
+  "status": "SUCCESS",
+  "latencyMs": 11439,
+  "response": {
+    "id": "chatcmpl-7e74a149d9744759abdc919f15737",
+    "object": "chat.completion",
+    "created": 1791628613,
+    "model": "hermes-agent",
+    "choices": [
+      {
+        "index": 0,
+        "message": {
+          "role": "assistant",
+          "content": "{\"status\":\"ok\",\"fictional\":true}"
+        },
+        "finish_reason": "stop"
+      }
+    ],
+    "usage": {
+      "prompt_tokens": 1108,
+      "completion_tokens": 11,
+      "total_tokens": 1119
+    }
+  }
+}

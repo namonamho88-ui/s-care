@@ -1,0 +1,698 @@
+{
+  "id": "INC-4ea128ba-1176-41",
+  "title": "가상 코어뱅킹 · RESOURCE",
+  "asset_id": "CMP-01",
+  "scenario_id": "SCN-01",
+  "owner_id": "OP-01",
+  "type": "RESOURCE",
+  "severity": "P1",
+  "status": "CLOSED",
+  "mode": "REAL",
+  "provider": "LOCAL",
+  "observations": "CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days",
+  "notes": "{\"realChanges\":false,\"passed\":true,\"provider\":\"SIMULATED_METRICS\",\"before\":{\"latencyMs\":3200,\"errorRate\":12.5,\"healthyDependencies\":false},\"after\":{\"latencyMs\":120,\"errorRate\":0.02,\"healthyDependencies\":true}}",
+  "prevention": "반복 장애 알림 기준 및 주간 가상 부하 테스트 강화",
+  "created_at": "2026-10-10T09:04:47.460+00:00",
+  "resolved_at": "2026-10-10T09:04:54.731+00:00",
+  "version": 5,
+  "asset_name": "코어뱅킹 API-01",
+  "system_name": "가상 코어뱅킹",
+  "owner_name": "가상 담당자 01",
+  "department": "PLATFORM",
+  "decision": {
+    "type": "RESOURCE",
+    "severity": "P1",
+    "priority": 1,
+    "department": "PLATFORM",
+    "recurrence": true,
+    "confidence": 0.6993419219260724,
+    "evidenceScore": 0.8510380459434603,
+    "provider": "LOCAL_JEV",
+    "model": "jevos-v4",
+    "latencyMs": 3754,
+    "simulated": false,
+    "fallback": false,
+    "fallbackReason": "",
+    "needsReview": false,
+    "evidence": [
+      "CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days",
+      "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+    ],
+    "answers": {
+      "type": {
+        "type": "choice",
+        "choice": "RESOURCE",
+        "probabilities": {
+          "SECURITY": 0.018978849436787543,
+          "RESOURCE": 0.9256732491230714,
+          "DATABASE": 0.03166528239725354,
+          "APPLICATION": 0.015105002930920573,
+          "NETWORK": 0.008577616111967131
+        },
+        "confidence": 0.9070915614038391
+      },
+      "severity": {
+        "type": "choice",
+        "choice": "P1",
+        "probabilities": {
+          "P2": 0.010504000321120917,
+          "P1": 0.9849796838237399,
+          "P3": 0.004516315855139163
+        },
+        "confidence": 0.9774695257356099
+      },
+      "department": {
+        "type": "choice",
+        "choice": "PLATFORM",
+        "probabilities": {
+          "SECURITY": 0.05490701176659677,
+          "DATABASE": 0.09748994811560763,
+          "APPLICATION": 0.062333858351590825,
+          "NETWORK": 0.025795644225346814,
+          "PLATFORM": 0.759473537540858
+        },
+        "confidence": 0.6993419219260724
+      },
+      "recurrence": {
+        "type": "noul",
+        "noul": 0.9608086645576029
+      },
+      "evidence": {
+        "type": "noul",
+        "noul": 0.8510380459434603
+      }
+    }
+  },
+  "impact": {
+    "depth": 6,
+    "affected": [
+      "CMP-01",
+      "CMP-05",
+      "CMP-07",
+      "CMP-23",
+      "CMP-32",
+      "CMP-33",
+      "CMP-39",
+      "SYS-01",
+      "SYS-03",
+      "SYS-05",
+      "SYS-07",
+      "SYS-08",
+      "SYS-09",
+      "SYS-11"
+    ],
+    "root": "CMP-01",
+    "engine": "NEO4J"
+  },
+  "report": {
+    "kind": "task",
+    "id": "TASK-60f1c8e0-a438-4c",
+    "contextId": "INC-4ea128ba-1176-41",
+    "status": {
+      "timestamp": "2026-10-10T09:04:54.722200900Z",
+      "state": "completed"
+    },
+    "artifacts": [
+      {
+        "artifactId": "TASK-60f1c8e0-a438-4c-result",
+        "parts": [
+          {
+            "data": {
+              "summary": "가상 장애의 판단·영향 분석·승인·복구 검증을 완료했습니다.",
+              "decision": {
+                "type": "RESOURCE",
+                "severity": "P1",
+                "priority": 1,
+                "department": "PLATFORM",
+                "recurrence": true,
+                "confidence": 0.6993419219260724,
+                "evidenceScore": 0.8510380459434603,
+                "provider": "LOCAL_JEV",
+                "model": "jevos-v4",
+                "latencyMs": 3754,
+                "simulated": false,
+                "fallback": false,
+                "fallbackReason": "",
+                "needsReview": false,
+                "evidence": [
+                  "CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days",
+                  "Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+                ],
+                "answers": {
+                  "type": {
+                    "type": "choice",
+                    "choice": "RESOURCE",
+                    "probabilities": {
+                      "SECURITY": 0.018978849436787543,
+                      "RESOURCE": 0.9256732491230714,
+                      "DATABASE": 0.03166528239725354,
+                      "APPLICATION": 0.015105002930920573,
+                      "NETWORK": 0.008577616111967131
+                    },
+                    "confidence": 0.9070915614038391
+                  },
+                  "severity": {
+                    "type": "choice",
+                    "choice": "P1",
+                    "probabilities": {
+                      "P2": 0.010504000321120917,
+                      "P1": 0.9849796838237399,
+                      "P3": 0.004516315855139163
+                    },
+                    "confidence": 0.9774695257356099
+                  },
+                  "department": {
+                    "type": "choice",
+                    "choice": "PLATFORM",
+                    "probabilities": {
+                      "SECURITY": 0.05490701176659677,
+                      "DATABASE": 0.09748994811560763,
+                      "APPLICATION": 0.062333858351590825,
+                      "NETWORK": 0.025795644225346814,
+                      "PLATFORM": 0.759473537540858
+                    },
+                    "confidence": 0.6993419219260724
+                  },
+                  "recurrence": {
+                    "type": "noul",
+                    "noul": 0.9608086645576029
+                  },
+                  "evidence": {
+                    "type": "noul",
+                    "noul": 0.8510380459434603
+                  }
+                }
+              },
+              "verification": "{\"realChanges\":false,\"passed\":true,\"provider\":\"SIMULATED_METRICS\",\"before\":{\"latencyMs\":3200,\"errorRate\":12.5,\"healthyDependencies\":false},\"after\":{\"latencyMs\":120,\"errorRate\":0.02,\"healthyDependencies\":true}}",
+              "fictional": true,
+              "title": "가상 코어뱅킹 · RESOURCE",
+              "impact": {
+                "depth": 6,
+                "affected": [
+                  "CMP-01",
+                  "CMP-05",
+                  "CMP-07",
+                  "CMP-23",
+                  "CMP-32",
+                  "CMP-33",
+                  "CMP-39",
+                  "SYS-01",
+                  "SYS-03",
+                  "SYS-05",
+                  "SYS-07",
+                  "SYS-08",
+                  "SYS-09",
+                  "SYS-11"
+                ],
+                "root": "CMP-01",
+                "engine": "NEO4J"
+              }
+            },
+            "kind": "data"
+          }
+        ]
+      }
+    ]
+  },
+  "events": [
+    {
+      "id": 33,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "INCIDENT",
+      "state": "COMPLETED",
+      "message": "가상 장애 접수 및 DB 저장",
+      "data_json": "{\"requestedProvider\":\"LOCAL\",\"mode\":\"REAL\"}",
+      "created_at": "2026-10-10T09:04:47.481+00:00"
+    },
+    {
+      "id": 34,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "JEV",
+      "state": "RUNNING",
+      "message": "Jev 판단 요청",
+      "data_json": "{\"provider\":\"LOCAL\"}",
+      "created_at": "2026-10-10T09:04:47.550+00:00"
+    },
+    {
+      "id": 35,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "JEV",
+      "state": "COMPLETED",
+      "message": "실제 Jev 모델 판단 완료",
+      "data_json": "{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.6993419219260724,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3754,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"SECURITY\":0.018978849436787543,\"RESOURCE\":0.9256732491230714,\"DATABASE\":0.03166528239725354,\"APPLICATION\":0.015105002930920573,\"NETWORK\":0.008577616111967131},\"confidence\":0.9070915614038391},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P2\":0.010504000321120917,\"P1\":0.9849796838237399,\"P3\":0.004516315855139163},\"confidence\":0.9774695257356099},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"SECURITY\":0.05490701176659677,\"DATABASE\":0.09748994811560763,\"APPLICATION\":0.062333858351590825,\"NETWORK\":0.025795644225346814,\"PLATFORM\":0.759473537540858},\"confidence\":0.6993419219260724},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}}",
+      "created_at": "2026-10-10T09:04:51.314+00:00"
+    },
+    {
+      "id": 36,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "ONTOLOGY",
+      "state": "RUNNING",
+      "message": "Ontology 영향 분석",
+      "data_json": "{}",
+      "created_at": "2026-10-10T09:04:51.316+00:00"
+    },
+    {
+      "id": 37,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "ONTOLOGY",
+      "state": "COMPLETED",
+      "message": "Ontology 영향 분석 완료",
+      "data_json": "{\"depth\":6,\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"root\":\"CMP-01\",\"engine\":\"NEO4J\"}",
+      "created_at": "2026-10-10T09:04:51.899+00:00"
+    },
+    {
+      "id": 38,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_INCIDENT",
+      "state": "RUNNING",
+      "message": "incident Agent 작업 시작",
+      "data_json": "{\"taskId\":\"TASK-9e3f964e-3a7e-4f\"}",
+      "created_at": "2026-10-10T09:04:51.923+00:00"
+    },
+    {
+      "id": 39,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_INCIDENT",
+      "state": "COMPLETED",
+      "message": "incident Agent 작업 completed",
+      "data_json": "{\"taskId\":\"TASK-9e3f964e-3a7e-4f\"}",
+      "created_at": "2026-10-10T09:04:51.932+00:00"
+    },
+    {
+      "id": 40,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_DIAGNOSIS",
+      "state": "RUNNING",
+      "message": "diagnosis Agent 작업 시작",
+      "data_json": "{\"taskId\":\"TASK-416d675c-805b-4d\"}",
+      "created_at": "2026-10-10T09:04:51.961+00:00"
+    },
+    {
+      "id": 41,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_DIAGNOSIS",
+      "state": "COMPLETED",
+      "message": "diagnosis Agent 작업 completed",
+      "data_json": "{\"taskId\":\"TASK-416d675c-805b-4d\"}",
+      "created_at": "2026-10-10T09:04:51.975+00:00"
+    },
+    {
+      "id": 42,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_IMPACT",
+      "state": "RUNNING",
+      "message": "impact Agent 작업 시작",
+      "data_json": "{\"taskId\":\"TASK-ab72b002-2323-46\"}",
+      "created_at": "2026-10-10T09:04:51.984+00:00"
+    },
+    {
+      "id": 43,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_IMPACT",
+      "state": "COMPLETED",
+      "message": "impact Agent 작업 completed",
+      "data_json": "{\"taskId\":\"TASK-ab72b002-2323-46\"}",
+      "created_at": "2026-10-10T09:04:51.987+00:00"
+    },
+    {
+      "id": 44,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "HERMES",
+      "state": "RUNNING",
+      "message": "Hermes Adapter · 승인 Skill 검색",
+      "data_json": "{}",
+      "created_at": "2026-10-10T09:04:51.991+00:00"
+    },
+    {
+      "id": 45,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_KNOWLEDGE",
+      "state": "RUNNING",
+      "message": "knowledge Agent 작업 시작",
+      "data_json": "{\"taskId\":\"TASK-d6b9f350-4a84-4e\"}",
+      "created_at": "2026-10-10T09:04:52.357+00:00"
+    },
+    {
+      "id": 46,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_KNOWLEDGE",
+      "state": "COMPLETED",
+      "message": "knowledge Agent 작업 completed",
+      "data_json": "{\"taskId\":\"TASK-d6b9f350-4a84-4e\"}",
+      "created_at": "2026-10-10T09:04:52.365+00:00"
+    },
+    {
+      "id": 47,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "HERMES",
+      "state": "COMPLETED",
+      "message": "Hermes Adapter · 승인 Skill 검색 완료",
+      "data_json": "{\"kind\":\"task\",\"id\":\"TASK-d6b9f350-4a84-4e\",\"contextId\":\"INC-4ea128ba-1176-41\",\"status\":{\"timestamp\":\"2026-10-10T09:04:52.360397Z\",\"state\":\"completed\"},\"artifacts\":[{\"artifactId\":\"TASK-d6b9f350-4a84-4e-result\",\"parts\":[{\"data\":{\"manuals\":[{\"id\":\"MAN-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 01\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 06\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 11\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 16\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-26\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 26\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"hermesConnected\":false,\"skills\":[{\"id\":\"SKL-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 01\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"},{\"id\":\"SKL-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 06\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"},{\"id\":\"SKL-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 11\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"},{\"id\":\"SKL-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 16\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"}],\"provider\":\"LOCAL_SKILL_STORE\"},\"kind\":\"data\"}]}]}",
+      "created_at": "2026-10-10T09:04:52.370+00:00"
+    },
+    {
+      "id": 48,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "HARNESS",
+      "state": "RUNNING",
+      "message": "Harness 정책 검증",
+      "data_json": "{}",
+      "created_at": "2026-10-10T09:04:52.371+00:00"
+    },
+    {
+      "id": 49,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "HARNESS",
+      "state": "COMPLETED",
+      "message": "Harness 정책 검증 완료",
+      "data_json": "{\"realChanges\":false,\"approvalRequired\":true,\"passed\":true,\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"approvedSkills\":4}",
+      "created_at": "2026-10-10T09:04:52.744+00:00"
+    },
+    {
+      "id": 50,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "APPROVAL",
+      "state": "WAITING",
+      "message": "가상 복구 대응 승인 대기",
+      "data_json": "{\"actor\":\"admin\"}",
+      "created_at": "2026-10-10T09:04:52.746+00:00"
+    },
+    {
+      "id": 51,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "APPROVAL",
+      "state": "COMPLETED",
+      "message": "자동 통합 시연 테스트: 가상 자산과 조치 계획을 확인했습니다.",
+      "data_json": "{}",
+      "created_at": "2026-10-10T09:04:53.169+00:00"
+    },
+    {
+      "id": 52,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "RECOVERY",
+      "state": "RUNNING",
+      "message": "Recovery Agent 대응 가이드",
+      "data_json": "{}",
+      "created_at": "2026-10-10T09:04:53.173+00:00"
+    },
+    {
+      "id": 53,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_RECOVERY",
+      "state": "RUNNING",
+      "message": "recovery Agent 작업 시작",
+      "data_json": "{\"taskId\":\"TASK-3dd15094-f811-41\"}",
+      "created_at": "2026-10-10T09:04:53.552+00:00"
+    },
+    {
+      "id": 54,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_RECOVERY",
+      "state": "COMPLETED",
+      "message": "recovery Agent 작업 completed",
+      "data_json": "{\"taskId\":\"TASK-3dd15094-f811-41\"}",
+      "created_at": "2026-10-10T09:04:53.561+00:00"
+    },
+    {
+      "id": 55,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "RECOVERY",
+      "state": "COMPLETED",
+      "message": "Recovery Agent 대응 가이드 완료",
+      "data_json": "{\"kind\":\"task\",\"id\":\"TASK-3dd15094-f811-41\",\"contextId\":\"INC-4ea128ba-1176-41\",\"status\":{\"timestamp\":\"2026-10-10T09:04:53.555058900Z\",\"state\":\"completed\"},\"artifacts\":[{\"artifactId\":\"TASK-3dd15094-f811-41-result\",\"parts\":[{\"data\":{\"guide\":\"승인 확인 → 가상 지표 정상화 → 지표와 의존성 검증\",\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"realChanges\":false},\"kind\":\"data\"}]}]}",
+      "created_at": "2026-10-10T09:04:53.564+00:00"
+    },
+    {
+      "id": 56,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "MCP_ACTION",
+      "state": "RUNNING",
+      "message": "MCP 가상 복구 조치",
+      "data_json": "{}",
+      "created_at": "2026-10-10T09:04:53.566+00:00"
+    },
+    {
+      "id": 57,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "MCP_ACTION",
+      "state": "COMPLETED",
+      "message": "MCP 가상 복구 조치 완료",
+      "data_json": "{\"applied\":true,\"provider\":\"SIMULATED_METRICS\",\"realChanges\":false}",
+      "created_at": "2026-10-10T09:04:53.941+00:00"
+    },
+    {
+      "id": 58,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "VERIFY",
+      "state": "RUNNING",
+      "message": "가상 복구 지표 검증",
+      "data_json": "{}",
+      "created_at": "2026-10-10T09:04:53.942+00:00"
+    },
+    {
+      "id": 59,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "VERIFY",
+      "state": "COMPLETED",
+      "message": "가상 복구 지표 검증 완료",
+      "data_json": "{\"realChanges\":false,\"passed\":true,\"provider\":\"SIMULATED_METRICS\",\"before\":{\"latencyMs\":3200,\"errorRate\":12.5,\"healthyDependencies\":false},\"after\":{\"latencyMs\":120,\"errorRate\":0.02,\"healthyDependencies\":true}}",
+      "created_at": "2026-10-10T09:04:54.347+00:00"
+    },
+    {
+      "id": 60,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "REPORT",
+      "state": "RUNNING",
+      "message": "Report Agent 보고서 생성",
+      "data_json": "{}",
+      "created_at": "2026-10-10T09:04:54.349+00:00"
+    },
+    {
+      "id": 61,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_REPORT",
+      "state": "RUNNING",
+      "message": "report Agent 작업 시작",
+      "data_json": "{\"taskId\":\"TASK-60f1c8e0-a438-4c\"}",
+      "created_at": "2026-10-10T09:04:54.720+00:00"
+    },
+    {
+      "id": 62,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "AGENT_REPORT",
+      "state": "COMPLETED",
+      "message": "report Agent 작업 completed",
+      "data_json": "{\"taskId\":\"TASK-60f1c8e0-a438-4c\"}",
+      "created_at": "2026-10-10T09:04:54.726+00:00"
+    },
+    {
+      "id": 63,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "REPORT",
+      "state": "COMPLETED",
+      "message": "Report Agent 보고서 생성 완료",
+      "data_json": "{\"kind\":\"task\",\"id\":\"TASK-60f1c8e0-a438-4c\",\"contextId\":\"INC-4ea128ba-1176-41\",\"status\":{\"timestamp\":\"2026-10-10T09:04:54.722200900Z\",\"state\":\"completed\"},\"artifacts\":[{\"artifactId\":\"TASK-60f1c8e0-a438-4c-result\",\"parts\":[{\"data\":{\"summary\":\"가상 장애의 판단·영향 분석·승인·복구 검증을 완료했습니다.\",\"decision\":{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.6993419219260724,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3754,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"SECURITY\":0.018978849436787543,\"RESOURCE\":0.9256732491230714,\"DATABASE\":0.03166528239725354,\"APPLICATION\":0.015105002930920573,\"NETWORK\":0.008577616111967131},\"confidence\":0.9070915614038391},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P2\":0.010504000321120917,\"P1\":0.9849796838237399,\"P3\":0.004516315855139163},\"confidence\":0.9774695257356099},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"SECURITY\":0.05490701176659677,\"DATABASE\":0.09748994811560763,\"APPLICATION\":0.062333858351590825,\"NETWORK\":0.025795644225346814,\"PLATFORM\":0.759473537540858},\"confidence\":0.6993419219260724},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}},\"verification\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"fictional\":true,\"title\":\"가상 코어뱅킹 · RESOURCE\",\"impact\":{\"depth\":6,\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"root\":\"CMP-01\",\"engine\":\"NEO4J\"}},\"kind\":\"data\"}]}]}",
+      "created_at": "2026-10-10T09:04:54.730+00:00"
+    },
+    {
+      "id": 64,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "HISTORY",
+      "state": "COMPLETED",
+      "message": "보고서·Skill 초안·장애 이력 저장 완료",
+      "data_json": "{\"skillId\":\"SKL-c45260ff-5469-4e\",\"persisted\":true}",
+      "created_at": "2026-10-10T09:04:54.737+00:00"
+    },
+    {
+      "id": 65,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "stage": "CLOSE",
+      "state": "COMPLETED",
+      "message": "장애 종료",
+      "data_json": "{}",
+      "created_at": "2026-10-10T09:04:54.880+00:00"
+    }
+  ],
+  "tasks": [
+    {
+      "id": "TASK-9e3f964e-3a7e-4f",
+      "agent": "incident",
+      "incident_id": "INC-4ea128ba-1176-41",
+      "message_id": "INC-4ea128ba-1176-41-incident-1",
+      "status": "completed",
+      "request_json": "{\"params\":{\"message\":{\"role\":\"user\",\"kind\":\"message\",\"messageId\":\"INC-4ea128ba-1176-41-incident-1\",\"parts\":[{\"data\":{\"incidentId\":\"INC-4ea128ba-1176-41\"},\"kind\":\"data\"}]}},\"jsonrpc\":\"2.0\",\"id\":\"INC-4ea128ba-1176-41-incident-1\",\"method\":\"message/send\"}",
+      "result_json": "{\"kind\":\"task\",\"id\":\"TASK-9e3f964e-3a7e-4f\",\"contextId\":\"INC-4ea128ba-1176-41\",\"status\":{\"timestamp\":\"2026-10-10T09:04:51.925426100Z\",\"state\":\"completed\"},\"artifacts\":[{\"artifactId\":\"TASK-9e3f964e-3a7e-4f-result\",\"parts\":[{\"data\":{\"scope\":\"FICTIONAL_ONLY\",\"plan\":[\"incident\",\"diagnosis\",\"knowledge\",\"impact\",\"recovery\",\"report\"],\"incidentId\":\"INC-4ea128ba-1176-41\"},\"kind\":\"data\"}]}]}",
+      "created_at": "2026-10-10T09:04:51.921+00:00",
+      "updated_at": "2026-10-10T09:04:51.930+00:00"
+    },
+    {
+      "id": "TASK-416d675c-805b-4d",
+      "agent": "diagnosis",
+      "incident_id": "INC-4ea128ba-1176-41",
+      "message_id": "INC-4ea128ba-1176-41-diagnosis-1",
+      "status": "completed",
+      "request_json": "{\"params\":{\"message\":{\"role\":\"user\",\"kind\":\"message\",\"messageId\":\"INC-4ea128ba-1176-41-diagnosis-1\",\"parts\":[{\"data\":{\"incidentId\":\"INC-4ea128ba-1176-41\"},\"kind\":\"data\"}]}},\"jsonrpc\":\"2.0\",\"id\":\"INC-4ea128ba-1176-41-diagnosis-1\",\"method\":\"message/send\"}",
+      "result_json": "{\"kind\":\"task\",\"id\":\"TASK-416d675c-805b-4d\",\"contextId\":\"INC-4ea128ba-1176-41\",\"status\":{\"timestamp\":\"2026-10-10T09:04:51.963592900Z\",\"state\":\"completed\"},\"artifacts\":[{\"artifactId\":\"TASK-416d675c-805b-4d-result\",\"parts\":[{\"data\":{\"candidates\":[\"RESOURCE 관측 패턴\",\"의존 시스템 장애 전파 가능성\"],\"similarIncidents\":[{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"},{\"id\":\"INC-SEED-191\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"},{\"id\":\"INC-SEED-186\",\"title\":\"가상 배치운영 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"}],\"observations\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\"},\"kind\":\"data\"}]}]}",
+      "created_at": "2026-10-10T09:04:51.944+00:00",
+      "updated_at": "2026-10-10T09:04:51.974+00:00"
+    },
+    {
+      "id": "TASK-ab72b002-2323-46",
+      "agent": "impact",
+      "incident_id": "INC-4ea128ba-1176-41",
+      "message_id": "INC-4ea128ba-1176-41-impact-1",
+      "status": "completed",
+      "request_json": "{\"params\":{\"message\":{\"role\":\"user\",\"kind\":\"message\",\"messageId\":\"INC-4ea128ba-1176-41-impact-1\",\"parts\":[{\"data\":{\"incidentId\":\"INC-4ea128ba-1176-41\"},\"kind\":\"data\"}]}},\"jsonrpc\":\"2.0\",\"id\":\"INC-4ea128ba-1176-41-impact-1\",\"method\":\"message/send\"}",
+      "result_json": "{\"kind\":\"task\",\"id\":\"TASK-ab72b002-2323-46\",\"contextId\":\"INC-4ea128ba-1176-41\",\"status\":{\"timestamp\":\"2026-10-10T09:04:51.985640900Z\",\"state\":\"completed\"},\"artifacts\":[{\"artifactId\":\"TASK-ab72b002-2323-46-result\",\"parts\":[{\"data\":{\"depth\":6,\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"root\":\"CMP-01\",\"engine\":\"NEO4J\"},\"kind\":\"data\"}]}]}",
+      "created_at": "2026-10-10T09:04:51.983+00:00",
+      "updated_at": "2026-10-10T09:04:51.986+00:00"
+    },
+    {
+      "id": "TASK-d6b9f350-4a84-4e",
+      "agent": "knowledge",
+      "incident_id": "INC-4ea128ba-1176-41",
+      "message_id": "INC-4ea128ba-1176-41-knowledge-1",
+      "status": "completed",
+      "request_json": "{\"params\":{\"message\":{\"role\":\"user\",\"kind\":\"message\",\"messageId\":\"INC-4ea128ba-1176-41-knowledge-1\",\"parts\":[{\"data\":{\"incidentId\":\"INC-4ea128ba-1176-41\"},\"kind\":\"data\"}]}},\"jsonrpc\":\"2.0\",\"id\":\"INC-4ea128ba-1176-41-knowledge-1\",\"method\":\"message/send\"}",
+      "result_json": "{\"kind\":\"task\",\"id\":\"TASK-d6b9f350-4a84-4e\",\"contextId\":\"INC-4ea128ba-1176-41\",\"status\":{\"timestamp\":\"2026-10-10T09:04:52.360397Z\",\"state\":\"completed\"},\"artifacts\":[{\"artifactId\":\"TASK-d6b9f350-4a84-4e-result\",\"parts\":[{\"data\":{\"manuals\":[{\"id\":\"MAN-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 01\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 06\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 11\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 16\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-26\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 26\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"hermesConnected\":false,\"skills\":[{\"id\":\"SKL-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 01\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"},{\"id\":\"SKL-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 06\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"},{\"id\":\"SKL-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 11\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"},{\"id\":\"SKL-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 16\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"}],\"provider\":\"LOCAL_SKILL_STORE\"},\"kind\":\"data\"}]}]}",
+      "created_at": "2026-10-10T09:04:52.356+00:00",
+      "updated_at": "2026-10-10T09:04:52.364+00:00"
+    },
+    {
+      "id": "TASK-3dd15094-f811-41",
+      "agent": "recovery",
+      "incident_id": "INC-4ea128ba-1176-41",
+      "message_id": "INC-4ea128ba-1176-41-recovery-3",
+      "status": "completed",
+      "request_json": "{\"params\":{\"message\":{\"role\":\"user\",\"kind\":\"message\",\"messageId\":\"INC-4ea128ba-1176-41-recovery-3\",\"parts\":[{\"data\":{\"incidentId\":\"INC-4ea128ba-1176-41\"},\"kind\":\"data\"}]}},\"jsonrpc\":\"2.0\",\"id\":\"INC-4ea128ba-1176-41-recovery-3\",\"method\":\"message/send\"}",
+      "result_json": "{\"kind\":\"task\",\"id\":\"TASK-3dd15094-f811-41\",\"contextId\":\"INC-4ea128ba-1176-41\",\"status\":{\"timestamp\":\"2026-10-10T09:04:53.555058900Z\",\"state\":\"completed\"},\"artifacts\":[{\"artifactId\":\"TASK-3dd15094-f811-41-result\",\"parts\":[{\"data\":{\"guide\":\"승인 확인 → 가상 지표 정상화 → 지표와 의존성 검증\",\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"realChanges\":false},\"kind\":\"data\"}]}]}",
+      "created_at": "2026-10-10T09:04:53.539+00:00",
+      "updated_at": "2026-10-10T09:04:53.557+00:00"
+    },
+    {
+      "id": "TASK-60f1c8e0-a438-4c",
+      "agent": "report",
+      "incident_id": "INC-4ea128ba-1176-41",
+      "message_id": "INC-4ea128ba-1176-41-report-3",
+      "status": "completed",
+      "request_json": "{\"params\":{\"message\":{\"role\":\"user\",\"kind\":\"message\",\"messageId\":\"INC-4ea128ba-1176-41-report-3\",\"parts\":[{\"data\":{\"incidentId\":\"INC-4ea128ba-1176-41\"},\"kind\":\"data\"}]}},\"jsonrpc\":\"2.0\",\"id\":\"INC-4ea128ba-1176-41-report-3\",\"method\":\"message/send\"}",
+      "result_json": "{\"kind\":\"task\",\"id\":\"TASK-60f1c8e0-a438-4c\",\"contextId\":\"INC-4ea128ba-1176-41\",\"status\":{\"timestamp\":\"2026-10-10T09:04:54.722200900Z\",\"state\":\"completed\"},\"artifacts\":[{\"artifactId\":\"TASK-60f1c8e0-a438-4c-result\",\"parts\":[{\"data\":{\"summary\":\"가상 장애의 판단·영향 분석·승인·복구 검증을 완료했습니다.\",\"decision\":{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.6993419219260724,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3754,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"SECURITY\":0.018978849436787543,\"RESOURCE\":0.9256732491230714,\"DATABASE\":0.03166528239725354,\"APPLICATION\":0.015105002930920573,\"NETWORK\":0.008577616111967131},\"confidence\":0.9070915614038391},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P2\":0.010504000321120917,\"P1\":0.9849796838237399,\"P3\":0.004516315855139163},\"confidence\":0.9774695257356099},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"SECURITY\":0.05490701176659677,\"DATABASE\":0.09748994811560763,\"APPLICATION\":0.062333858351590825,\"NETWORK\":0.025795644225346814,\"PLATFORM\":0.759473537540858},\"confidence\":0.6993419219260724},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}},\"verification\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"fictional\":true,\"title\":\"가상 코어뱅킹 · RESOURCE\",\"impact\":{\"depth\":6,\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"root\":\"CMP-01\",\"engine\":\"NEO4J\"}},\"kind\":\"data\"}]}]}",
+      "created_at": "2026-10-10T09:04:54.719+00:00",
+      "updated_at": "2026-10-10T09:04:54.724+00:00"
+    }
+  ],
+  "audit": [
+    {
+      "id": 15,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "admin",
+      "action": "CREATE",
+      "data_json": "{\"requestedProvider\":\"LOCAL\",\"mode\":\"REAL\"}",
+      "created_at": "2026-10-10T09:04:47.484+00:00"
+    },
+    {
+      "id": 16,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "jev",
+      "action": "DECISION",
+      "data_json": "{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.6993419219260724,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3754,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"SECURITY\":0.018978849436787543,\"RESOURCE\":0.9256732491230714,\"DATABASE\":0.03166528239725354,\"APPLICATION\":0.015105002930920573,\"NETWORK\":0.008577616111967131},\"confidence\":0.9070915614038391},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P2\":0.010504000321120917,\"P1\":0.9849796838237399,\"P3\":0.004516315855139163},\"confidence\":0.9774695257356099},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"SECURITY\":0.05490701176659677,\"DATABASE\":0.09748994811560763,\"APPLICATION\":0.062333858351590825,\"NETWORK\":0.025795644225346814,\"PLATFORM\":0.759473537540858},\"confidence\":0.6993419219260724},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}}",
+      "created_at": "2026-10-10T09:04:51.314+00:00"
+    },
+    {
+      "id": 17,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "incident",
+      "action": "AGENT_RESULT",
+      "data_json": "{\"scope\":\"FICTIONAL_ONLY\",\"plan\":[\"incident\",\"diagnosis\",\"knowledge\",\"impact\",\"recovery\",\"report\"],\"incidentId\":\"INC-4ea128ba-1176-41\"}",
+      "created_at": "2026-10-10T09:04:51.925+00:00"
+    },
+    {
+      "id": 18,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "diagnosis",
+      "action": "AGENT_RESULT",
+      "data_json": "{\"candidates\":[\"RESOURCE 관측 패턴\",\"의존 시스템 장애 전파 가능성\"],\"similarIncidents\":[{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"},{\"id\":\"INC-SEED-191\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"},{\"id\":\"INC-SEED-186\",\"title\":\"가상 배치운영 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"}],\"observations\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\"}",
+      "created_at": "2026-10-10T09:04:51.964+00:00"
+    },
+    {
+      "id": 19,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "impact",
+      "action": "AGENT_RESULT",
+      "data_json": "{\"depth\":6,\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"root\":\"CMP-01\",\"engine\":\"NEO4J\"}",
+      "created_at": "2026-10-10T09:04:51.985+00:00"
+    },
+    {
+      "id": 20,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "knowledge",
+      "action": "AGENT_RESULT",
+      "data_json": "{\"manuals\":[{\"id\":\"MAN-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 01\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 06\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 11\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 16\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-26\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 26\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"hermesConnected\":false,\"skills\":[{\"id\":\"SKL-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 01\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"},{\"id\":\"SKL-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 06\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"},{\"id\":\"SKL-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 11\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"},{\"id\":\"SKL-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 16\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\"}],\"provider\":\"LOCAL_SKILL_STORE\"}",
+      "created_at": "2026-10-10T09:04:52.361+00:00"
+    },
+    {
+      "id": 21,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "harness",
+      "action": "POLICY_VALIDATED",
+      "data_json": "{\"realChanges\":false,\"approvalRequired\":true,\"passed\":true,\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"approvedSkills\":4}",
+      "created_at": "2026-10-10T09:04:52.743+00:00"
+    },
+    {
+      "id": 22,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "admin",
+      "action": "APPROVE",
+      "data_json": "{\"reason\":\"자동 통합 시연 테스트: 가상 자산과 조치 계획을 확인했습니다.\"}",
+      "created_at": "2026-10-10T09:04:53.168+00:00"
+    },
+    {
+      "id": 23,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "recovery",
+      "action": "AGENT_RESULT",
+      "data_json": "{\"guide\":\"승인 확인 → 가상 지표 정상화 → 지표와 의존성 검증\",\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"realChanges\":false}",
+      "created_at": "2026-10-10T09:04:53.555+00:00"
+    },
+    {
+      "id": 24,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "mcp",
+      "action": "SIMULATED_RECOVERY",
+      "data_json": "{\"realChanges\":false,\"metrics\":{\"latencyMs\":120,\"errorRate\":0.02,\"healthyDependencies\":true}}",
+      "created_at": "2026-10-10T09:04:53.937+00:00"
+    },
+    {
+      "id": 25,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "mcp",
+      "action": "RECOVERY_VERIFICATION",
+      "data_json": "{\"realChanges\":false,\"passed\":true,\"provider\":\"SIMULATED_METRICS\",\"before\":{\"latencyMs\":3200,\"errorRate\":12.5,\"healthyDependencies\":false},\"after\":{\"latencyMs\":120,\"errorRate\":0.02,\"healthyDependencies\":true}}",
+      "created_at": "2026-10-10T09:04:54.337+00:00"
+    },
+    {
+      "id": 26,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "report",
+      "action": "AGENT_RESULT",
+      "data_json": "{\"summary\":\"가상 장애의 판단·영향 분석·승인·복구 검증을 완료했습니다.\",\"decision\":{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.6993419219260724,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3754,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"SECURITY\":0.018978849436787543,\"RESOURCE\":0.9256732491230714,\"DATABASE\":0.03166528239725354,\"APPLICATION\":0.015105002930920573,\"NETWORK\":0.008577616111967131},\"confidence\":0.9070915614038391},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P2\":0.010504000321120917,\"P1\":0.9849796838237399,\"P3\":0.004516315855139163},\"confidence\":0.9774695257356099},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"SECURITY\":0.05490701176659677,\"DATABASE\":0.09748994811560763,\"APPLICATION\":0.062333858351590825,\"NETWORK\":0.025795644225346814,\"PLATFORM\":0.759473537540858},\"confidence\":0.6993419219260724},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}},\"verification\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"fictional\":true,\"title\":\"가상 코어뱅킹 · RESOURCE\",\"impact\":{\"depth\":6,\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"root\":\"CMP-01\",\"engine\":\"NEO4J\"}}",
+      "created_at": "2026-10-10T09:04:54.723+00:00"
+    },
+    {
+      "id": 27,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "harness",
+      "action": "RESOLVED",
+      "data_json": "{\"skillDraftId\":\"SKL-c45260ff-5469-4e\"}",
+      "created_at": "2026-10-10T09:04:54.737+00:00"
+    },
+    {
+      "id": 28,
+      "incident_id": "INC-4ea128ba-1176-41",
+      "actor": "admin",
+      "action": "CLOSE",
+      "data_json": "{}",
+      "created_at": "2026-10-10T09:04:54.879+00:00"
+    }
+  ]
+}

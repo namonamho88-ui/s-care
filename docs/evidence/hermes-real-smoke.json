@@ -1,0 +1,1095 @@
+{
+  "fictional": true,
+  "incident": {
+    "id": "INC-e069ac26-8d59-49",
+    "title": "가상 코어뱅킹 · RESOURCE",
+    "asset_id": "CMP-01",
+    "scenario_id": "SCN-01",
+    "owner_id": "OP-01",
+    "type": "RESOURCE",
+    "severity": "P1",
+    "status": "CLOSED",
+    "mode": "REAL",
+    "provider": "LOCAL",
+    "observations": "CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days",
+    "notes": "{\"after\":{\"healthyDependencies\":true,\"errorRate\":0.02,\"latencyMs\":120},\"before\":{\"healthyDependencies\":false,\"errorRate\":12.5,\"latencyMs\":3200},\"provider\":\"SIMULATED_METRICS\",\"passed\":true,\"realChanges\":false}",
+    "prevention": "반복 장애 알림 기준 및 주간 가상 부하 테스트 강화",
+    "created_at": "2026-10-10T10:38:49.019+00:00",
+    "resolved_at": "2026-10-10T10:40:10.431+00:00",
+    "version": 7,
+    "asset_name": "코어뱅킹 API-01",
+    "system_name": "가상 코어뱅킹",
+    "owner_name": "가상 담당자 01",
+    "department": "PLATFORM",
+    "decision": {
+      "type": "RESOURCE",
+      "severity": "P1",
+      "priority": 1,
+      "department": "PLATFORM",
+      "recurrence": true,
+      "confidence": 0.7738209062578496,
+      "evidenceScore": 0.8510380459434603,
+      "provider": "LOCAL_JEV",
+      "model": "jevos-v4",
+      "latencyMs": 3792,
+      "simulated": false,
+      "fallback": false,
+      "fallbackReason": "",
+      "needsReview": false,
+      "evidence": [
+        "Operator reviewed: 가상 통합 테스트의 관리자 검토: CPU 96%, 메모리 고갈과 대기열 포화 관측은 RESOURCE_PRESSURE 가설에 부합함을 확인했습니다. 모델 근거 점수 48.05%는 원본 그대로 보존하며, 확정 근본 원인이라고 주장하지 않습니다. 가상 지표 복구 검증만 진행합니다.",
+        "Original observations: CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days; Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+      ],
+      "answers": {
+        "type": {
+          "type": "choice",
+          "choice": "RESOURCE",
+          "probabilities": {
+            "NETWORK": 0.009294679171339115,
+            "APPLICATION": 0.012482977188175662,
+            "DATABASE": 0.042424760267317875,
+            "RESOURCE": 0.9153772641996997,
+            "SECURITY": 0.020420319173467587
+          },
+          "confidence": 0.8942215802496245
+        },
+        "severity": {
+          "type": "choice",
+          "choice": "P1",
+          "probabilities": {
+            "P1": 0.9788048817768452,
+            "P2": 0.013545184521869048,
+            "P3": 0.007649933701285796
+          },
+          "confidence": 0.9682073226652677
+        },
+        "department": {
+          "type": "choice",
+          "choice": "PLATFORM",
+          "probabilities": {
+            "PLATFORM": 0.8190567250062798,
+            "NETWORK": 0.022564466503237037,
+            "APPLICATION": 0.04431691694850809,
+            "DATABASE": 0.07612055898970037,
+            "SECURITY": 0.037941332552274755
+          },
+          "confidence": 0.7738209062578496
+        },
+        "recurrence": {
+          "type": "noul",
+          "noul": 0.9608086645576029
+        },
+        "evidence": {
+          "type": "noul",
+          "noul": 0.8510380459434603
+        }
+      }
+    },
+    "impact": {
+      "engine": "NEO4J",
+      "root": "CMP-01",
+      "affected": [
+        "CMP-01",
+        "CMP-05",
+        "CMP-07",
+        "CMP-23",
+        "CMP-32",
+        "CMP-33",
+        "CMP-39",
+        "SYS-01",
+        "SYS-03",
+        "SYS-05",
+        "SYS-07",
+        "SYS-08",
+        "SYS-09",
+        "SYS-11"
+      ],
+      "depth": 6
+    },
+    "report": {
+      "kind": "task",
+      "id": "TASK-95687bc0-8b92-43",
+      "contextId": "INC-e069ac26-8d59-49",
+      "status": {
+        "state": "completed",
+        "timestamp": "2026-10-10T10:40:07.456361300Z"
+      },
+      "artifacts": [
+        {
+          "parts": [
+            {
+              "kind": "data",
+              "data": {
+                "fictional": true,
+                "approvals": [
+                  {
+                    "incident_id": "INC-e069ac26-8d59-49",
+                    "approved": true,
+                    "actor": "admin",
+                    "reason": "실제 Provider 통합 테스트: 가상 관측·영향·승인 Skill 검토 완료",
+                    "created_at": "2026-10-10T10:40:06.741+00:00"
+                  }
+                ],
+                "agentResults": [
+                  {
+                    "agent": "incident",
+                    "status": "completed",
+                    "result_json": "{\"kind\":\"task\",\"id\":\"TASK-7d0be25b-3313-4b\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:38:53.222451900Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\",\"plan\":[\"incident\",\"diagnosis\",\"knowledge\",\"impact\",\"recovery\",\"report\"],\"scope\":\"FICTIONAL_ONLY\"}}],\"artifactId\":\"TASK-7d0be25b-3313-4b-result\"}]}"
+                  },
+                  {
+                    "agent": "diagnosis",
+                    "status": "completed",
+                    "result_json": "{\"kind\":\"task\",\"id\":\"TASK-4a23e24b-95db-41\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:38:55.590209300Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"causeCode\":\"RESOURCE_PRESSURE\",\"causeLabel\":\"CPU·메모리 자원 포화\",\"relatedType\":\"RESOURCE\",\"confidence\":0.7984801696830491,\"evidenceScore\":0.48045161049064217,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":2331,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"schemaValid\":true,\"needsReview\":true,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\"],\"answers\":{\"cause\":{\"type\":\"choice\",\"choice\":\"RESOURCE_PRESSURE\",\"probabilities\":{\"RESOURCE_PRESSURE\":0.823670148472668,\"DB_POOL_EXHAUSTION\":0.06230395392208965,\"DB_LOCK_CONTENTION\":0.029675167895527415,\"DNS_FAILURE\":0.012167248566016253,\"PACKET_LOSS\":0.015152977084189875,\"DEPLOYMENT_REGRESSION\":0.01802576451158972,\"AUTH_ANOMALY\":0.019600745658083507,\"UNKNOWN\":0.01940399388983561},\"confidence\":0.7984801696830491},\"support\":{\"type\":\"noul\",\"noul\":0.48045161049064217}},\"scope\":\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\",\"candidates\":[{\"label\":\"CPU·메모리 자원 포화\",\"code\":\"RESOURCE_PRESSURE\",\"probability\":0.823670148472668},{\"label\":\"DB 연결 풀 고갈\",\"code\":\"DB_POOL_EXHAUSTION\",\"probability\":0.06230395392208965},{\"label\":\"DB 잠금 경합\",\"code\":\"DB_LOCK_CONTENTION\",\"probability\":0.029675167895527415}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"}]}}],\"artifactId\":\"TASK-4a23e24b-95db-41-result\"}]}"
+                  },
+                  {
+                    "agent": "impact",
+                    "status": "completed",
+                    "result_json": "{\"kind\":\"task\",\"id\":\"TASK-7f2e020b-72c9-40\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:38:55.616914300Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6}}],\"artifactId\":\"TASK-7f2e020b-72c9-40-result\"}]}"
+                  },
+                  {
+                    "agent": "knowledge",
+                    "status": "completed",
+                    "result_json": "{\"kind\":\"task\",\"id\":\"TASK-0e296d98-8cd8-41\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:38:59.262685500Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":2706,\"completion_tokens\":163,\"total_tokens\":2869},\"latencyMs\":3461,\"hermesConnected\":true,\"content\":{\"skillIds\":[\"SKL-30388273-a422-40\"],\"manualIds\":[\"MAN-21\"],\"explanation\":\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"search\",\"fictional\":true,\"skills\":[{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"manuals\":[{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"prevention\":\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\",\"prevention\":\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\",\"prevention\":\"반복 장애 알림과 주간 점검 강화\"}],\"explanation\":\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\",\"approvedOnly\":true}}],\"artifactId\":\"TASK-0e296d98-8cd8-41-result\"}]}"
+                  },
+                  {
+                    "agent": "incident",
+                    "status": "completed",
+                    "result_json": "{\"kind\":\"task\",\"id\":\"TASK-8ff0c887-28f8-4a\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:00.306416200Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\",\"plan\":[\"incident\",\"diagnosis\",\"knowledge\",\"impact\",\"recovery\",\"report\"],\"scope\":\"FICTIONAL_ONLY\"}}],\"artifactId\":\"TASK-8ff0c887-28f8-4a-result\"}]}"
+                  },
+                  {
+                    "agent": "diagnosis",
+                    "status": "completed",
+                    "result_json": "{\"kind\":\"task\",\"id\":\"TASK-8487763f-9ec0-46\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:03.301219700Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"causeCode\":\"RESOURCE_PRESSURE\",\"causeLabel\":\"CPU·메모리 자원 포화\",\"relatedType\":\"RESOURCE\",\"confidence\":0.7984801696830491,\"evidenceScore\":0.48045161049064217,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":2967,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"schemaValid\":true,\"needsReview\":true,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\"],\"answers\":{\"cause\":{\"type\":\"choice\",\"choice\":\"RESOURCE_PRESSURE\",\"probabilities\":{\"RESOURCE_PRESSURE\":0.823670148472668,\"DB_POOL_EXHAUSTION\":0.06230395392208965,\"DB_LOCK_CONTENTION\":0.029675167895527415,\"DNS_FAILURE\":0.012167248566016253,\"PACKET_LOSS\":0.015152977084189875,\"DEPLOYMENT_REGRESSION\":0.01802576451158972,\"AUTH_ANOMALY\":0.019600745658083507,\"UNKNOWN\":0.01940399388983561},\"confidence\":0.7984801696830491},\"support\":{\"type\":\"noul\",\"noul\":0.48045161049064217}},\"scope\":\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\",\"candidates\":[{\"label\":\"CPU·메모리 자원 포화\",\"code\":\"RESOURCE_PRESSURE\",\"probability\":0.823670148472668},{\"label\":\"DB 연결 풀 고갈\",\"code\":\"DB_POOL_EXHAUSTION\",\"probability\":0.06230395392208965},{\"label\":\"DB 잠금 경합\",\"code\":\"DB_LOCK_CONTENTION\",\"probability\":0.029675167895527415}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"}]}}],\"artifactId\":\"TASK-8487763f-9ec0-46-result\"}]}"
+                  },
+                  {
+                    "agent": "impact",
+                    "status": "completed",
+                    "result_json": "{\"kind\":\"task\",\"id\":\"TASK-533da1f3-7b7e-45\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:03.318770Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6}}],\"artifactId\":\"TASK-533da1f3-7b7e-45-result\"}]}"
+                  },
+                  {
+                    "agent": "knowledge",
+                    "status": "completed",
+                    "result_json": "{\"kind\":\"task\",\"id\":\"TASK-cc85f035-3323-4e\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:06.293790200Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":2706,\"completion_tokens\":187,\"total_tokens\":2893},\"latencyMs\":2777,\"hermesConnected\":true,\"content\":{\"skillIds\":[\"SKL-30388273-a422-40\"],\"manualIds\":[\"MAN-21\"],\"explanation\":\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"search\",\"fictional\":true,\"skills\":[{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"manuals\":[{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"prevention\":\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\",\"prevention\":\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\",\"prevention\":\"반복 장애 알림과 주간 점검 강화\"}],\"explanation\":\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\",\"approvedOnly\":true}}],\"artifactId\":\"TASK-cc85f035-3323-4e-result\"}]}"
+                  },
+                  {
+                    "agent": "recovery",
+                    "status": "completed",
+                    "result_json": "{\"kind\":\"task\",\"id\":\"TASK-78e75d35-59f6-4d\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:06.918561900Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"approvedSkills\":[{\"id\":\"SKL-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 01\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 06\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 11\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 16\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"guideSource\":\"APPROVED_SKILLS\",\"manuals\":[{\"id\":\"MAN-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 01\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 06\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 11\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 16\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-26\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 26\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"realChanges\":false}}],\"artifactId\":\"TASK-78e75d35-59f6-4d-result\"}]}"
+                  }
+                ],
+                "summary": "가상 장애의 판단·영향 분석·승인·복구 검증을 완료했습니다.",
+                "impact": {
+                  "engine": "NEO4J",
+                  "root": "CMP-01",
+                  "affected": [
+                    "CMP-01",
+                    "CMP-05",
+                    "CMP-07",
+                    "CMP-23",
+                    "CMP-32",
+                    "CMP-33",
+                    "CMP-39",
+                    "SYS-01",
+                    "SYS-03",
+                    "SYS-05",
+                    "SYS-07",
+                    "SYS-08",
+                    "SYS-09",
+                    "SYS-11"
+                  ],
+                  "depth": 6
+                },
+                "title": "가상 코어뱅킹 · RESOURCE",
+                "verification": "{\"after\":{\"healthyDependencies\":true,\"errorRate\":0.02,\"latencyMs\":120},\"before\":{\"healthyDependencies\":false,\"errorRate\":12.5,\"latencyMs\":3200},\"provider\":\"SIMULATED_METRICS\",\"passed\":true,\"realChanges\":false}",
+                "decision": {
+                  "type": "RESOURCE",
+                  "severity": "P1",
+                  "priority": 1,
+                  "department": "PLATFORM",
+                  "recurrence": true,
+                  "confidence": 0.7738209062578496,
+                  "evidenceScore": 0.8510380459434603,
+                  "provider": "LOCAL_JEV",
+                  "model": "jevos-v4",
+                  "latencyMs": 3792,
+                  "simulated": false,
+                  "fallback": false,
+                  "fallbackReason": "",
+                  "needsReview": false,
+                  "evidence": [
+                    "Operator reviewed: 가상 통합 테스트의 관리자 검토: CPU 96%, 메모리 고갈과 대기열 포화 관측은 RESOURCE_PRESSURE 가설에 부합함을 확인했습니다. 모델 근거 점수 48.05%는 원본 그대로 보존하며, 확정 근본 원인이라고 주장하지 않습니다. 가상 지표 복구 검증만 진행합니다.",
+                    "Original observations: CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days; Choice/noul probabilities are model evidence; causal explanation is not returned by Jev."
+                  ],
+                  "answers": {
+                    "type": {
+                      "type": "choice",
+                      "choice": "RESOURCE",
+                      "probabilities": {
+                        "NETWORK": 0.009294679171339115,
+                        "APPLICATION": 0.012482977188175662,
+                        "DATABASE": 0.042424760267317875,
+                        "RESOURCE": 0.9153772641996997,
+                        "SECURITY": 0.020420319173467587
+                      },
+                      "confidence": 0.8942215802496245
+                    },
+                    "severity": {
+                      "type": "choice",
+                      "choice": "P1",
+                      "probabilities": {
+                        "P1": 0.9788048817768452,
+                        "P2": 0.013545184521869048,
+                        "P3": 0.007649933701285796
+                      },
+                      "confidence": 0.9682073226652677
+                    },
+                    "department": {
+                      "type": "choice",
+                      "choice": "PLATFORM",
+                      "probabilities": {
+                        "PLATFORM": 0.8190567250062798,
+                        "NETWORK": 0.022564466503237037,
+                        "APPLICATION": 0.04431691694850809,
+                        "DATABASE": 0.07612055898970037,
+                        "SECURITY": 0.037941332552274755
+                      },
+                      "confidence": 0.7738209062578496
+                    },
+                    "recurrence": {
+                      "type": "noul",
+                      "noul": 0.9608086645576029
+                    },
+                    "evidence": {
+                      "type": "noul",
+                      "noul": 0.8510380459434603
+                    }
+                  }
+                }
+              }
+            }
+          ],
+          "artifactId": "TASK-95687bc0-8b92-43-result"
+        }
+      ]
+    },
+    "events": [
+      {
+        "id": 67,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "INCIDENT",
+        "state": "COMPLETED",
+        "message": "가상 장애 접수 및 DB 저장",
+        "data_json": "{\"requestedProvider\":\"LOCAL\",\"mode\":\"REAL\"}",
+        "created_at": "2026-10-10T10:38:49.071+00:00"
+      },
+      {
+        "id": 68,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "JEV",
+        "state": "RUNNING",
+        "message": "Jev 판단 요청",
+        "data_json": "{\"provider\":\"LOCAL\"}",
+        "created_at": "2026-10-10T10:38:49.100+00:00"
+      },
+      {
+        "id": 69,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "JEV",
+        "state": "COMPLETED",
+        "message": "실제 Jev 모델 판단 완료",
+        "data_json": "{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.7738209062578496,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3792,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"NETWORK\":0.009294679171339115,\"APPLICATION\":0.012482977188175662,\"DATABASE\":0.042424760267317875,\"RESOURCE\":0.9153772641996997,\"SECURITY\":0.020420319173467587},\"confidence\":0.8942215802496245},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P1\":0.9788048817768452,\"P2\":0.013545184521869048,\"P3\":0.007649933701285796},\"confidence\":0.9682073226652677},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"PLATFORM\":0.8190567250062798,\"NETWORK\":0.022564466503237037,\"APPLICATION\":0.04431691694850809,\"DATABASE\":0.07612055898970037,\"SECURITY\":0.037941332552274755},\"confidence\":0.7738209062578496},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}}",
+        "created_at": "2026-10-10T10:38:52.941+00:00"
+      },
+      {
+        "id": 70,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "ONTOLOGY",
+        "state": "RUNNING",
+        "message": "Ontology 영향 분석",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:38:52.949+00:00"
+      },
+      {
+        "id": 71,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "ONTOLOGY",
+        "state": "COMPLETED",
+        "message": "Ontology 영향 분석 완료",
+        "data_json": "{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6}",
+        "created_at": "2026-10-10T10:38:53.151+00:00"
+      },
+      {
+        "id": 72,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_INCIDENT",
+        "state": "RUNNING",
+        "message": "incident Agent 작업 시작",
+        "data_json": "{\"taskId\":\"TASK-7d0be25b-3313-4b\"}",
+        "created_at": "2026-10-10T10:38:53.222+00:00"
+      },
+      {
+        "id": 73,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_INCIDENT",
+        "state": "COMPLETED",
+        "message": "incident Agent 작업 completed",
+        "data_json": "{\"taskId\":\"TASK-7d0be25b-3313-4b\"}",
+        "created_at": "2026-10-10T10:38:53.229+00:00"
+      },
+      {
+        "id": 74,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_DIAGNOSIS",
+        "state": "RUNNING",
+        "message": "diagnosis Agent 작업 시작",
+        "data_json": "{\"taskId\":\"TASK-4a23e24b-95db-41\"}",
+        "created_at": "2026-10-10T10:38:53.247+00:00"
+      },
+      {
+        "id": 75,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_DIAGNOSIS",
+        "state": "COMPLETED",
+        "message": "diagnosis Agent 작업 completed",
+        "data_json": "{\"taskId\":\"TASK-4a23e24b-95db-41\"}",
+        "created_at": "2026-10-10T10:38:55.602+00:00"
+      },
+      {
+        "id": 76,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_IMPACT",
+        "state": "RUNNING",
+        "message": "impact Agent 작업 시작",
+        "data_json": "{\"taskId\":\"TASK-7f2e020b-72c9-40\"}",
+        "created_at": "2026-10-10T10:38:55.614+00:00"
+      },
+      {
+        "id": 77,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_IMPACT",
+        "state": "COMPLETED",
+        "message": "impact Agent 작업 completed",
+        "data_json": "{\"taskId\":\"TASK-7f2e020b-72c9-40\"}",
+        "created_at": "2026-10-10T10:38:55.619+00:00"
+      },
+      {
+        "id": 78,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "HERMES",
+        "state": "RUNNING",
+        "message": "Hermes Adapter · 승인 Skill 검색",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:38:55.623+00:00"
+      },
+      {
+        "id": 79,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_KNOWLEDGE",
+        "state": "RUNNING",
+        "message": "knowledge Agent 작업 시작",
+        "data_json": "{\"taskId\":\"TASK-0e296d98-8cd8-41\"}",
+        "created_at": "2026-10-10T10:38:55.787+00:00"
+      },
+      {
+        "id": 80,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_KNOWLEDGE",
+        "state": "COMPLETED",
+        "message": "knowledge Agent 작업 completed",
+        "data_json": "{\"taskId\":\"TASK-0e296d98-8cd8-41\"}",
+        "created_at": "2026-10-10T10:38:59.271+00:00"
+      },
+      {
+        "id": 81,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "HERMES",
+        "state": "COMPLETED",
+        "message": "Hermes Adapter · 승인 Skill 검색 완료",
+        "data_json": "{\"kind\":\"task\",\"id\":\"TASK-0e296d98-8cd8-41\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:38:59.262685500Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":2706,\"completion_tokens\":163,\"total_tokens\":2869},\"latencyMs\":3461,\"hermesConnected\":true,\"content\":{\"skillIds\":[\"SKL-30388273-a422-40\"],\"manualIds\":[\"MAN-21\"],\"explanation\":\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"search\",\"fictional\":true,\"skills\":[{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"manuals\":[{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"prevention\":\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\",\"prevention\":\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\",\"prevention\":\"반복 장애 알림과 주간 점검 강화\"}],\"explanation\":\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\",\"approvedOnly\":true}}],\"artifactId\":\"TASK-0e296d98-8cd8-41-result\"}]}",
+        "created_at": "2026-10-10T10:38:59.278+00:00"
+      },
+      {
+        "id": 82,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "HARNESS",
+        "state": "RUNNING",
+        "message": "Harness 근거 교차 검증",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:38:59.285+00:00"
+      },
+      {
+        "id": 83,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "HARNESS",
+        "state": "COMPLETED",
+        "message": "Harness 근거 교차 검증 완료",
+        "data_json": "{\"needsReview\":true,\"blockReasons\":[],\"reviewReasons\":[\"원인 후보의 신뢰도 또는 근거가 부족합니다.\"],\"passed\":false,\"approvedSkills\":5,\"realChanges\":false,\"operatorReviewed\":false,\"blocked\":false,\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"approvalRequired\":true}",
+        "created_at": "2026-10-10T10:38:59.476+00:00"
+      },
+      {
+        "id": 84,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "REVIEW",
+        "state": "WAITING",
+        "message": "분류·원인 후보 교차 검증: 담당자 확인 필요",
+        "data_json": "{\"needsReview\":true,\"blockReasons\":[],\"reviewReasons\":[\"원인 후보의 신뢰도 또는 근거가 부족합니다.\"],\"passed\":false,\"approvedSkills\":5,\"realChanges\":false,\"operatorReviewed\":false,\"blocked\":false,\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"approvalRequired\":true}",
+        "created_at": "2026-10-10T10:38:59.481+00:00"
+      },
+      {
+        "id": 85,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "REVIEW",
+        "state": "COMPLETED",
+        "message": "담당자 판단 확인 완료",
+        "data_json": "{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.7738209062578496,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3792,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"Operator reviewed: 가상 통합 테스트의 관리자 검토: CPU 96%, 메모리 고갈과 대기열 포화 관측은 RESOURCE_PRESSURE 가설에 부합함을 확인했습니다. 모델 근거 점수 48.05%는 원본 그대로 보존하며, 확정 근본 원인이라고 주장하지 않습니다. 가상 지표 복구 검증만 진행합니다.\",\"Original observations: CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days; Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"NETWORK\":0.009294679171339115,\"APPLICATION\":0.012482977188175662,\"DATABASE\":0.042424760267317875,\"RESOURCE\":0.9153772641996997,\"SECURITY\":0.020420319173467587},\"confidence\":0.8942215802496245},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P1\":0.9788048817768452,\"P2\":0.013545184521869048,\"P3\":0.007649933701285796},\"confidence\":0.9682073226652677},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"PLATFORM\":0.8190567250062798,\"NETWORK\":0.022564466503237037,\"APPLICATION\":0.04431691694850809,\"DATABASE\":0.07612055898970037,\"SECURITY\":0.037941332552274755},\"confidence\":0.7738209062578496},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}}",
+        "created_at": "2026-10-10T10:39:59.915+00:00"
+      },
+      {
+        "id": 86,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "ONTOLOGY",
+        "state": "RUNNING",
+        "message": "Ontology 영향 분석",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:00.027+00:00"
+      },
+      {
+        "id": 87,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "ONTOLOGY",
+        "state": "COMPLETED",
+        "message": "Ontology 영향 분석 완료",
+        "data_json": "{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6}",
+        "created_at": "2026-10-10T10:40:00.280+00:00"
+      },
+      {
+        "id": 88,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_INCIDENT",
+        "state": "RUNNING",
+        "message": "incident Agent 작업 시작",
+        "data_json": "{\"taskId\":\"TASK-8ff0c887-28f8-4a\"}",
+        "created_at": "2026-10-10T10:40:00.304+00:00"
+      },
+      {
+        "id": 89,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_INCIDENT",
+        "state": "COMPLETED",
+        "message": "incident Agent 작업 completed",
+        "data_json": "{\"taskId\":\"TASK-8ff0c887-28f8-4a\"}",
+        "created_at": "2026-10-10T10:40:00.314+00:00"
+      },
+      {
+        "id": 90,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_DIAGNOSIS",
+        "state": "RUNNING",
+        "message": "diagnosis Agent 작업 시작",
+        "data_json": "{\"taskId\":\"TASK-8487763f-9ec0-46\"}",
+        "created_at": "2026-10-10T10:40:00.329+00:00"
+      },
+      {
+        "id": 91,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_DIAGNOSIS",
+        "state": "COMPLETED",
+        "message": "diagnosis Agent 작업 completed",
+        "data_json": "{\"taskId\":\"TASK-8487763f-9ec0-46\"}",
+        "created_at": "2026-10-10T10:40:03.307+00:00"
+      },
+      {
+        "id": 92,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_IMPACT",
+        "state": "RUNNING",
+        "message": "impact Agent 작업 시작",
+        "data_json": "{\"taskId\":\"TASK-533da1f3-7b7e-45\"}",
+        "created_at": "2026-10-10T10:40:03.317+00:00"
+      },
+      {
+        "id": 93,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_IMPACT",
+        "state": "COMPLETED",
+        "message": "impact Agent 작업 completed",
+        "data_json": "{\"taskId\":\"TASK-533da1f3-7b7e-45\"}",
+        "created_at": "2026-10-10T10:40:03.321+00:00"
+      },
+      {
+        "id": 94,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "HERMES",
+        "state": "RUNNING",
+        "message": "Hermes Adapter · 승인 Skill 검색",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:03.326+00:00"
+      },
+      {
+        "id": 95,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_KNOWLEDGE",
+        "state": "RUNNING",
+        "message": "knowledge Agent 작업 시작",
+        "data_json": "{\"taskId\":\"TASK-cc85f035-3323-4e\"}",
+        "created_at": "2026-10-10T10:40:03.500+00:00"
+      },
+      {
+        "id": 96,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_KNOWLEDGE",
+        "state": "COMPLETED",
+        "message": "knowledge Agent 작업 completed",
+        "data_json": "{\"taskId\":\"TASK-cc85f035-3323-4e\"}",
+        "created_at": "2026-10-10T10:40:06.303+00:00"
+      },
+      {
+        "id": 97,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "HERMES",
+        "state": "COMPLETED",
+        "message": "Hermes Adapter · 승인 Skill 검색 완료",
+        "data_json": "{\"kind\":\"task\",\"id\":\"TASK-cc85f035-3323-4e\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:06.293790200Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":2706,\"completion_tokens\":187,\"total_tokens\":2893},\"latencyMs\":2777,\"hermesConnected\":true,\"content\":{\"skillIds\":[\"SKL-30388273-a422-40\"],\"manualIds\":[\"MAN-21\"],\"explanation\":\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"search\",\"fictional\":true,\"skills\":[{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"manuals\":[{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"prevention\":\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\",\"prevention\":\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\",\"prevention\":\"반복 장애 알림과 주간 점검 강화\"}],\"explanation\":\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\",\"approvedOnly\":true}}],\"artifactId\":\"TASK-cc85f035-3323-4e-result\"}]}",
+        "created_at": "2026-10-10T10:40:06.307+00:00"
+      },
+      {
+        "id": 98,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "HARNESS",
+        "state": "RUNNING",
+        "message": "Harness 근거 교차 검증",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:06.309+00:00"
+      },
+      {
+        "id": 99,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "HARNESS",
+        "state": "COMPLETED",
+        "message": "Harness 근거 교차 검증 완료",
+        "data_json": "{\"needsReview\":false,\"blockReasons\":[],\"reviewReasons\":[\"원인 후보의 신뢰도 또는 근거가 부족합니다.\"],\"passed\":true,\"approvedSkills\":5,\"realChanges\":false,\"operatorReviewed\":true,\"blocked\":false,\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"approvalRequired\":true}",
+        "created_at": "2026-10-10T10:40:06.480+00:00"
+      },
+      {
+        "id": 100,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "APPROVAL",
+        "state": "WAITING",
+        "message": "가상 복구 대응 승인 대기",
+        "data_json": "{\"actor\":\"admin\"}",
+        "created_at": "2026-10-10T10:40:06.483+00:00"
+      },
+      {
+        "id": 101,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "APPROVAL",
+        "state": "COMPLETED",
+        "message": "실제 Provider 통합 테스트: 가상 관측·영향·승인 Skill 검토 완료",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:06.747+00:00"
+      },
+      {
+        "id": 102,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "RECOVERY",
+        "state": "RUNNING",
+        "message": "Recovery Agent 대응 가이드",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:06.750+00:00"
+      },
+      {
+        "id": 103,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_RECOVERY",
+        "state": "RUNNING",
+        "message": "recovery Agent 작업 시작",
+        "data_json": "{\"taskId\":\"TASK-78e75d35-59f6-4d\"}",
+        "created_at": "2026-10-10T10:40:06.915+00:00"
+      },
+      {
+        "id": 104,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_RECOVERY",
+        "state": "COMPLETED",
+        "message": "recovery Agent 작업 completed",
+        "data_json": "{\"taskId\":\"TASK-78e75d35-59f6-4d\"}",
+        "created_at": "2026-10-10T10:40:06.924+00:00"
+      },
+      {
+        "id": 105,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "RECOVERY",
+        "state": "COMPLETED",
+        "message": "Recovery Agent 대응 가이드 완료",
+        "data_json": "{\"kind\":\"task\",\"id\":\"TASK-78e75d35-59f6-4d\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:06.918561900Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"approvedSkills\":[{\"id\":\"SKL-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 01\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 06\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 11\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 16\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"guideSource\":\"APPROVED_SKILLS\",\"manuals\":[{\"id\":\"MAN-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 01\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 06\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 11\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 16\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-26\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 26\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"realChanges\":false}}],\"artifactId\":\"TASK-78e75d35-59f6-4d-result\"}]}",
+        "created_at": "2026-10-10T10:40:06.928+00:00"
+      },
+      {
+        "id": 106,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "MCP_ACTION",
+        "state": "RUNNING",
+        "message": "MCP 가상 복구 조치",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:06.931+00:00"
+      },
+      {
+        "id": 107,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "MCP_ACTION",
+        "state": "COMPLETED",
+        "message": "MCP 가상 복구 조치 완료",
+        "data_json": "{\"provider\":\"SIMULATED_METRICS\",\"applied\":true,\"realChanges\":false}",
+        "created_at": "2026-10-10T10:40:07.109+00:00"
+      },
+      {
+        "id": 108,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "VERIFY",
+        "state": "RUNNING",
+        "message": "가상 복구 지표 검증",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:07.110+00:00"
+      },
+      {
+        "id": 109,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "VERIFY",
+        "state": "COMPLETED",
+        "message": "가상 복구 지표 검증 완료",
+        "data_json": "{\"after\":{\"healthyDependencies\":true,\"errorRate\":0.02,\"latencyMs\":120},\"before\":{\"healthyDependencies\":false,\"errorRate\":12.5,\"latencyMs\":3200},\"provider\":\"SIMULATED_METRICS\",\"passed\":true,\"realChanges\":false}",
+        "created_at": "2026-10-10T10:40:07.282+00:00"
+      },
+      {
+        "id": 110,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "REPORT",
+        "state": "RUNNING",
+        "message": "Report Agent 보고서 생성",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:07.285+00:00"
+      },
+      {
+        "id": 111,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_REPORT",
+        "state": "RUNNING",
+        "message": "report Agent 작업 시작",
+        "data_json": "{\"taskId\":\"TASK-95687bc0-8b92-43\"}",
+        "created_at": "2026-10-10T10:40:07.449+00:00"
+      },
+      {
+        "id": 112,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "AGENT_REPORT",
+        "state": "COMPLETED",
+        "message": "report Agent 작업 completed",
+        "data_json": "{\"taskId\":\"TASK-95687bc0-8b92-43\"}",
+        "created_at": "2026-10-10T10:40:07.477+00:00"
+      },
+      {
+        "id": 113,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "REPORT",
+        "state": "COMPLETED",
+        "message": "Report Agent 보고서 생성 완료",
+        "data_json": "{\"kind\":\"task\",\"id\":\"TASK-95687bc0-8b92-43\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:07.456361300Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"fictional\":true,\"approvals\":[{\"incident_id\":\"INC-e069ac26-8d59-49\",\"approved\":true,\"actor\":\"admin\",\"reason\":\"실제 Provider 통합 테스트: 가상 관측·영향·승인 Skill 검토 완료\",\"created_at\":\"2026-10-10T10:40:06.741+00:00\"}],\"agentResults\":[{\"agent\":\"incident\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-7d0be25b-3313-4b\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:53.222451900Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"incidentId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"plan\\\":[\\\"incident\\\",\\\"diagnosis\\\",\\\"knowledge\\\",\\\"impact\\\",\\\"recovery\\\",\\\"report\\\"],\\\"scope\\\":\\\"FICTIONAL_ONLY\\\"}}],\\\"artifactId\\\":\\\"TASK-7d0be25b-3313-4b-result\\\"}]}\"},{\"agent\":\"diagnosis\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-4a23e24b-95db-41\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:55.590209300Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"causeCode\\\":\\\"RESOURCE_PRESSURE\\\",\\\"causeLabel\\\":\\\"CPU·메모리 자원 포화\\\",\\\"relatedType\\\":\\\"RESOURCE\\\",\\\"confidence\\\":0.7984801696830491,\\\"evidenceScore\\\":0.48045161049064217,\\\"provider\\\":\\\"LOCAL_JEV\\\",\\\"model\\\":\\\"jevos-v4\\\",\\\"latencyMs\\\":2331,\\\"simulated\\\":false,\\\"fallback\\\":false,\\\"fallbackReason\\\":\\\"\\\",\\\"schemaValid\\\":true,\\\"needsReview\\\":true,\\\"evidence\\\":[\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\"],\\\"answers\\\":{\\\"cause\\\":{\\\"type\\\":\\\"choice\\\",\\\"choice\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probabilities\\\":{\\\"RESOURCE_PRESSURE\\\":0.823670148472668,\\\"DB_POOL_EXHAUSTION\\\":0.06230395392208965,\\\"DB_LOCK_CONTENTION\\\":0.029675167895527415,\\\"DNS_FAILURE\\\":0.012167248566016253,\\\"PACKET_LOSS\\\":0.015152977084189875,\\\"DEPLOYMENT_REGRESSION\\\":0.01802576451158972,\\\"AUTH_ANOMALY\\\":0.019600745658083507,\\\"UNKNOWN\\\":0.01940399388983561},\\\"confidence\\\":0.7984801696830491},\\\"support\\\":{\\\"type\\\":\\\"noul\\\",\\\"noul\\\":0.48045161049064217}},\\\"scope\\\":\\\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\\\",\\\"candidates\\\":[{\\\"label\\\":\\\"CPU·메모리 자원 포화\\\",\\\"code\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probability\\\":0.823670148472668},{\\\"label\\\":\\\"DB 연결 풀 고갈\\\",\\\"code\\\":\\\"DB_POOL_EXHAUSTION\\\",\\\"probability\\\":0.06230395392208965},{\\\"label\\\":\\\"DB 잠금 경합\\\",\\\"code\\\":\\\"DB_LOCK_CONTENTION\\\",\\\"probability\\\":0.029675167895527415}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\"}]}}],\\\"artifactId\\\":\\\"TASK-4a23e24b-95db-41-result\\\"}]}\"},{\"agent\":\"impact\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-7f2e020b-72c9-40\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:55.616914300Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"engine\\\":\\\"NEO4J\\\",\\\"root\\\":\\\"CMP-01\\\",\\\"affected\\\":[\\\"CMP-01\\\",\\\"CMP-05\\\",\\\"CMP-07\\\",\\\"CMP-23\\\",\\\"CMP-32\\\",\\\"CMP-33\\\",\\\"CMP-39\\\",\\\"SYS-01\\\",\\\"SYS-03\\\",\\\"SYS-05\\\",\\\"SYS-07\\\",\\\"SYS-08\\\",\\\"SYS-09\\\",\\\"SYS-11\\\"],\\\"depth\\\":6}}],\\\"artifactId\\\":\\\"TASK-7f2e020b-72c9-40-result\\\"}]}\"},{\"agent\":\"knowledge\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-0e296d98-8cd8-41\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:59.262685500Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"simulated\\\":false,\\\"provider\\\":\\\"HERMES_AGENT\\\",\\\"fallback\\\":false,\\\"usage\\\":{\\\"prompt_tokens\\\":2706,\\\"completion_tokens\\\":163,\\\"total_tokens\\\":2869},\\\"latencyMs\\\":3461,\\\"hermesConnected\\\":true,\\\"content\\\":{\\\"skillIds\\\":[\\\"SKL-30388273-a422-40\\\"],\\\"manualIds\\\":[\\\"MAN-21\\\"],\\\"explanation\\\":\\\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\\\"},\\\"model\\\":\\\"hermes-agent\\\",\\\"requestedProvider\\\":\\\"HERMES_AGENT\\\",\\\"operation\\\":\\\"search\\\",\\\"fictional\\\":true,\\\"skills\\\":[{\\\"id\\\":\\\"SKL-30388273-a422-40\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE 해결 초안\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\",\\\"checks\\\":\\\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\\\",\\\"solution\\\":\\\"가상 조치 및 검증 결과: {\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"cautions\\\":\\\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\\\",\\\"incident_id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"approved_by\\\":\\\"admin\\\",\\\"created_at\\\":\\\"2026-10-10T09:00:24.666+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"}],\\\"manuals\\\":[{\\\"id\\\":\\\"MAN-21\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 21\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"prevention\\\":\\\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\",\\\"prevention\\\":\\\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\",\\\"prevention\\\":\\\"반복 장애 알림과 주간 점검 강화\\\"}],\\\"explanation\\\":\\\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\\\",\\\"approvedOnly\\\":true}}],\\\"artifactId\\\":\\\"TASK-0e296d98-8cd8-41-result\\\"}]}\"},{\"agent\":\"incident\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-8ff0c887-28f8-4a\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:00.306416200Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"incidentId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"plan\\\":[\\\"incident\\\",\\\"diagnosis\\\",\\\"knowledge\\\",\\\"impact\\\",\\\"recovery\\\",\\\"report\\\"],\\\"scope\\\":\\\"FICTIONAL_ONLY\\\"}}],\\\"artifactId\\\":\\\"TASK-8ff0c887-28f8-4a-result\\\"}]}\"},{\"agent\":\"diagnosis\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-8487763f-9ec0-46\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:03.301219700Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"causeCode\\\":\\\"RESOURCE_PRESSURE\\\",\\\"causeLabel\\\":\\\"CPU·메모리 자원 포화\\\",\\\"relatedType\\\":\\\"RESOURCE\\\",\\\"confidence\\\":0.7984801696830491,\\\"evidenceScore\\\":0.48045161049064217,\\\"provider\\\":\\\"LOCAL_JEV\\\",\\\"model\\\":\\\"jevos-v4\\\",\\\"latencyMs\\\":2967,\\\"simulated\\\":false,\\\"fallback\\\":false,\\\"fallbackReason\\\":\\\"\\\",\\\"schemaValid\\\":true,\\\"needsReview\\\":true,\\\"evidence\\\":[\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\"],\\\"answers\\\":{\\\"cause\\\":{\\\"type\\\":\\\"choice\\\",\\\"choice\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probabilities\\\":{\\\"RESOURCE_PRESSURE\\\":0.823670148472668,\\\"DB_POOL_EXHAUSTION\\\":0.06230395392208965,\\\"DB_LOCK_CONTENTION\\\":0.029675167895527415,\\\"DNS_FAILURE\\\":0.012167248566016253,\\\"PACKET_LOSS\\\":0.015152977084189875,\\\"DEPLOYMENT_REGRESSION\\\":0.01802576451158972,\\\"AUTH_ANOMALY\\\":0.019600745658083507,\\\"UNKNOWN\\\":0.01940399388983561},\\\"confidence\\\":0.7984801696830491},\\\"support\\\":{\\\"type\\\":\\\"noul\\\",\\\"noul\\\":0.48045161049064217}},\\\"scope\\\":\\\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\\\",\\\"candidates\\\":[{\\\"label\\\":\\\"CPU·메모리 자원 포화\\\",\\\"code\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probability\\\":0.823670148472668},{\\\"label\\\":\\\"DB 연결 풀 고갈\\\",\\\"code\\\":\\\"DB_POOL_EXHAUSTION\\\",\\\"probability\\\":0.06230395392208965},{\\\"label\\\":\\\"DB 잠금 경합\\\",\\\"code\\\":\\\"DB_LOCK_CONTENTION\\\",\\\"probability\\\":0.029675167895527415}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\"}]}}],\\\"artifactId\\\":\\\"TASK-8487763f-9ec0-46-result\\\"}]}\"},{\"agent\":\"impact\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-533da1f3-7b7e-45\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:03.318770Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"engine\\\":\\\"NEO4J\\\",\\\"root\\\":\\\"CMP-01\\\",\\\"affected\\\":[\\\"CMP-01\\\",\\\"CMP-05\\\",\\\"CMP-07\\\",\\\"CMP-23\\\",\\\"CMP-32\\\",\\\"CMP-33\\\",\\\"CMP-39\\\",\\\"SYS-01\\\",\\\"SYS-03\\\",\\\"SYS-05\\\",\\\"SYS-07\\\",\\\"SYS-08\\\",\\\"SYS-09\\\",\\\"SYS-11\\\"],\\\"depth\\\":6}}],\\\"artifactId\\\":\\\"TASK-533da1f3-7b7e-45-result\\\"}]}\"},{\"agent\":\"knowledge\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-cc85f035-3323-4e\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:06.293790200Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"simulated\\\":false,\\\"provider\\\":\\\"HERMES_AGENT\\\",\\\"fallback\\\":false,\\\"usage\\\":{\\\"prompt_tokens\\\":2706,\\\"completion_tokens\\\":187,\\\"total_tokens\\\":2893},\\\"latencyMs\\\":2777,\\\"hermesConnected\\\":true,\\\"content\\\":{\\\"skillIds\\\":[\\\"SKL-30388273-a422-40\\\"],\\\"manualIds\\\":[\\\"MAN-21\\\"],\\\"explanation\\\":\\\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\\\"},\\\"model\\\":\\\"hermes-agent\\\",\\\"requestedProvider\\\":\\\"HERMES_AGENT\\\",\\\"operation\\\":\\\"search\\\",\\\"fictional\\\":true,\\\"skills\\\":[{\\\"id\\\":\\\"SKL-30388273-a422-40\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE 해결 초안\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\",\\\"checks\\\":\\\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\\\",\\\"solution\\\":\\\"가상 조치 및 검증 결과: {\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"cautions\\\":\\\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\\\",\\\"incident_id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"approved_by\\\":\\\"admin\\\",\\\"created_at\\\":\\\"2026-10-10T09:00:24.666+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"}],\\\"manuals\\\":[{\\\"id\\\":\\\"MAN-21\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 21\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"prevention\\\":\\\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\",\\\"prevention\\\":\\\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\",\\\"prevention\\\":\\\"반복 장애 알림과 주간 점검 강화\\\"}],\\\"explanation\\\":\\\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\\\",\\\"approvedOnly\\\":true}}],\\\"artifactId\\\":\\\"TASK-cc85f035-3323-4e-result\\\"}]}\"},{\"agent\":\"recovery\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-78e75d35-59f6-4d\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:06.918561900Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"approvedSkills\\\":[{\\\"id\\\":\\\"SKL-01\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 01\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-06\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 06\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-11\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 11\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-16\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 16\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-30388273-a422-40\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE 해결 초안\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\",\\\"checks\\\":\\\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\\\",\\\"solution\\\":\\\"가상 조치 및 검증 결과: {\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"cautions\\\":\\\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\\\",\\\"incident_id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"approved_by\\\":\\\"admin\\\",\\\"created_at\\\":\\\"2026-10-10T09:00:24.666+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"}],\\\"tools\\\":[\\\"apply_simulated_recovery\\\",\\\"verify_simulated_recovery\\\"],\\\"guideSource\\\":\\\"APPROVED_SKILLS\\\",\\\"manuals\\\":[{\\\"id\\\":\\\"MAN-01\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 01\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-06\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 06\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-11\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 11\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-16\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 16\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-21\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 21\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-26\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 26\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"}],\\\"realChanges\\\":false}}],\\\"artifactId\\\":\\\"TASK-78e75d35-59f6-4d-result\\\"}]}\"}],\"summary\":\"가상 장애의 판단·영향 분석·승인·복구 검증을 완료했습니다.\",\"impact\":{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6},\"title\":\"가상 코어뱅킹 · RESOURCE\",\"verification\":\"{\\\"after\\\":{\\\"healthyDependencies\\\":true,\\\"errorRate\\\":0.02,\\\"latencyMs\\\":120},\\\"before\\\":{\\\"healthyDependencies\\\":false,\\\"errorRate\\\":12.5,\\\"latencyMs\\\":3200},\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"passed\\\":true,\\\"realChanges\\\":false}\",\"decision\":{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.7738209062578496,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3792,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"Operator reviewed: 가상 통합 테스트의 관리자 검토: CPU 96%, 메모리 고갈과 대기열 포화 관측은 RESOURCE_PRESSURE 가설에 부합함을 확인했습니다. 모델 근거 점수 48.05%는 원본 그대로 보존하며, 확정 근본 원인이라고 주장하지 않습니다. 가상 지표 복구 검증만 진행합니다.\",\"Original observations: CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days; Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"NETWORK\":0.009294679171339115,\"APPLICATION\":0.012482977188175662,\"DATABASE\":0.042424760267317875,\"RESOURCE\":0.9153772641996997,\"SECURITY\":0.020420319173467587},\"confidence\":0.8942215802496245},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P1\":0.9788048817768452,\"P2\":0.013545184521869048,\"P3\":0.007649933701285796},\"confidence\":0.9682073226652677},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"PLATFORM\":0.8190567250062798,\"NETWORK\":0.022564466503237037,\"APPLICATION\":0.04431691694850809,\"DATABASE\":0.07612055898970037,\"SECURITY\":0.037941332552274755},\"confidence\":0.7738209062578496},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}}}}],\"artifactId\":\"TASK-95687bc0-8b92-43-result\"}]}",
+        "created_at": "2026-10-10T10:40:07.486+00:00"
+      },
+      {
+        "id": 114,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "SKILL_DRAFT",
+        "state": "RUNNING",
+        "message": "Hermes Skill 초안 생성",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:07.490+00:00"
+      },
+      {
+        "id": 115,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "SKILL_DRAFT",
+        "state": "COMPLETED",
+        "message": "Hermes Skill 초안 생성 완료",
+        "data_json": "{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":3393,\"completion_tokens\":158,\"total_tokens\":3551},\"latencyMs\":2781,\"hermesConnected\":true,\"content\":{\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율 및 응답 시간 등 복구 상태를 재측정한다. 가상 자원에서 검증된 결과를 토대로 조치한다.\",\"cautions\":\"실제 운영 환경에서 명령 실행을 금지하며, 가상 자산에서만 적용한다. 관리자 검토 및 승인이 필수이며, 재발 방지를 위해 반복 장애 알림과 주간 가상 부하 테스트를 수행한다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"draft\",\"fictional\":true}",
+        "created_at": "2026-10-10T10:40:10.431+00:00"
+      },
+      {
+        "id": 116,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "HISTORY",
+        "state": "COMPLETED",
+        "message": "보고서·Skill 초안·장애 이력 저장 완료",
+        "data_json": "{\"skillId\":\"SKL-862d515d-2837-48\",\"persisted\":true}",
+        "created_at": "2026-10-10T10:40:10.447+00:00"
+      },
+      {
+        "id": 117,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "stage": "CLOSE",
+        "state": "COMPLETED",
+        "message": "장애 종료",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:11.954+00:00"
+      }
+    ],
+    "tasks": [
+      {
+        "id": "TASK-7d0be25b-3313-4b",
+        "agent": "incident",
+        "incident_id": "INC-e069ac26-8d59-49",
+        "message_id": "INC-e069ac26-8d59-49-incident-1",
+        "status": "completed",
+        "request_json": "{\"method\":\"message/send\",\"id\":\"INC-e069ac26-8d59-49-incident-1\",\"jsonrpc\":\"2.0\",\"params\":{\"configuration\":{\"blocking\":true},\"message\":{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\"}}],\"messageId\":\"INC-e069ac26-8d59-49-incident-1\",\"kind\":\"message\",\"role\":\"user\"}}}",
+        "result_json": "{\"kind\":\"task\",\"id\":\"TASK-7d0be25b-3313-4b\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:38:53.222451900Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\",\"plan\":[\"incident\",\"diagnosis\",\"knowledge\",\"impact\",\"recovery\",\"report\"],\"scope\":\"FICTIONAL_ONLY\"}}],\"artifactId\":\"TASK-7d0be25b-3313-4b-result\"}]}",
+        "created_at": "2026-10-10T10:38:53.206+00:00",
+        "updated_at": "2026-10-10T10:38:53.229+00:00"
+      },
+      {
+        "id": "TASK-4a23e24b-95db-41",
+        "agent": "diagnosis",
+        "incident_id": "INC-e069ac26-8d59-49",
+        "message_id": "INC-e069ac26-8d59-49-diagnosis-1",
+        "status": "completed",
+        "request_json": "{\"method\":\"message/send\",\"id\":\"INC-e069ac26-8d59-49-diagnosis-1\",\"jsonrpc\":\"2.0\",\"params\":{\"configuration\":{\"blocking\":true},\"message\":{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\"}}],\"messageId\":\"INC-e069ac26-8d59-49-diagnosis-1\",\"kind\":\"message\",\"role\":\"user\"}}}",
+        "result_json": "{\"kind\":\"task\",\"id\":\"TASK-4a23e24b-95db-41\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:38:55.590209300Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"causeCode\":\"RESOURCE_PRESSURE\",\"causeLabel\":\"CPU·메모리 자원 포화\",\"relatedType\":\"RESOURCE\",\"confidence\":0.7984801696830491,\"evidenceScore\":0.48045161049064217,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":2331,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"schemaValid\":true,\"needsReview\":true,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\"],\"answers\":{\"cause\":{\"type\":\"choice\",\"choice\":\"RESOURCE_PRESSURE\",\"probabilities\":{\"RESOURCE_PRESSURE\":0.823670148472668,\"DB_POOL_EXHAUSTION\":0.06230395392208965,\"DB_LOCK_CONTENTION\":0.029675167895527415,\"DNS_FAILURE\":0.012167248566016253,\"PACKET_LOSS\":0.015152977084189875,\"DEPLOYMENT_REGRESSION\":0.01802576451158972,\"AUTH_ANOMALY\":0.019600745658083507,\"UNKNOWN\":0.01940399388983561},\"confidence\":0.7984801696830491},\"support\":{\"type\":\"noul\",\"noul\":0.48045161049064217}},\"scope\":\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\",\"candidates\":[{\"label\":\"CPU·메모리 자원 포화\",\"code\":\"RESOURCE_PRESSURE\",\"probability\":0.823670148472668},{\"label\":\"DB 연결 풀 고갈\",\"code\":\"DB_POOL_EXHAUSTION\",\"probability\":0.06230395392208965},{\"label\":\"DB 잠금 경합\",\"code\":\"DB_LOCK_CONTENTION\",\"probability\":0.029675167895527415}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"}]}}],\"artifactId\":\"TASK-4a23e24b-95db-41-result\"}]}",
+        "created_at": "2026-10-10T10:38:53.247+00:00",
+        "updated_at": "2026-10-10T10:38:55.596+00:00"
+      },
+      {
+        "id": "TASK-7f2e020b-72c9-40",
+        "agent": "impact",
+        "incident_id": "INC-e069ac26-8d59-49",
+        "message_id": "INC-e069ac26-8d59-49-impact-1",
+        "status": "completed",
+        "request_json": "{\"method\":\"message/send\",\"id\":\"INC-e069ac26-8d59-49-impact-1\",\"jsonrpc\":\"2.0\",\"params\":{\"configuration\":{\"blocking\":true},\"message\":{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\"}}],\"messageId\":\"INC-e069ac26-8d59-49-impact-1\",\"kind\":\"message\",\"role\":\"user\"}}}",
+        "result_json": "{\"kind\":\"task\",\"id\":\"TASK-7f2e020b-72c9-40\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:38:55.616914300Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6}}],\"artifactId\":\"TASK-7f2e020b-72c9-40-result\"}]}",
+        "created_at": "2026-10-10T10:38:55.613+00:00",
+        "updated_at": "2026-10-10T10:38:55.617+00:00"
+      },
+      {
+        "id": "TASK-0e296d98-8cd8-41",
+        "agent": "knowledge",
+        "incident_id": "INC-e069ac26-8d59-49",
+        "message_id": "INC-e069ac26-8d59-49-knowledge-1",
+        "status": "completed",
+        "request_json": "{\"method\":\"message/send\",\"id\":\"INC-e069ac26-8d59-49-knowledge-1\",\"jsonrpc\":\"2.0\",\"params\":{\"configuration\":{\"blocking\":true},\"message\":{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\"}}],\"messageId\":\"INC-e069ac26-8d59-49-knowledge-1\",\"kind\":\"message\",\"role\":\"user\"}}}",
+        "result_json": "{\"kind\":\"task\",\"id\":\"TASK-0e296d98-8cd8-41\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:38:59.262685500Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":2706,\"completion_tokens\":163,\"total_tokens\":2869},\"latencyMs\":3461,\"hermesConnected\":true,\"content\":{\"skillIds\":[\"SKL-30388273-a422-40\"],\"manualIds\":[\"MAN-21\"],\"explanation\":\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"search\",\"fictional\":true,\"skills\":[{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"manuals\":[{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"prevention\":\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\",\"prevention\":\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\",\"prevention\":\"반복 장애 알림과 주간 점검 강화\"}],\"explanation\":\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\",\"approvedOnly\":true}}],\"artifactId\":\"TASK-0e296d98-8cd8-41-result\"}]}",
+        "created_at": "2026-10-10T10:38:55.785+00:00",
+        "updated_at": "2026-10-10T10:38:59.269+00:00"
+      },
+      {
+        "id": "TASK-8ff0c887-28f8-4a",
+        "agent": "incident",
+        "incident_id": "INC-e069ac26-8d59-49",
+        "message_id": "INC-e069ac26-8d59-49-incident-3",
+        "status": "completed",
+        "request_json": "{\"method\":\"message/send\",\"id\":\"INC-e069ac26-8d59-49-incident-3\",\"jsonrpc\":\"2.0\",\"params\":{\"configuration\":{\"blocking\":true},\"message\":{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\"}}],\"messageId\":\"INC-e069ac26-8d59-49-incident-3\",\"kind\":\"message\",\"role\":\"user\"}}}",
+        "result_json": "{\"kind\":\"task\",\"id\":\"TASK-8ff0c887-28f8-4a\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:00.306416200Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\",\"plan\":[\"incident\",\"diagnosis\",\"knowledge\",\"impact\",\"recovery\",\"report\"],\"scope\":\"FICTIONAL_ONLY\"}}],\"artifactId\":\"TASK-8ff0c887-28f8-4a-result\"}]}",
+        "created_at": "2026-10-10T10:40:00.303+00:00",
+        "updated_at": "2026-10-10T10:40:00.311+00:00"
+      },
+      {
+        "id": "TASK-8487763f-9ec0-46",
+        "agent": "diagnosis",
+        "incident_id": "INC-e069ac26-8d59-49",
+        "message_id": "INC-e069ac26-8d59-49-diagnosis-3",
+        "status": "completed",
+        "request_json": "{\"method\":\"message/send\",\"id\":\"INC-e069ac26-8d59-49-diagnosis-3\",\"jsonrpc\":\"2.0\",\"params\":{\"configuration\":{\"blocking\":true},\"message\":{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\"}}],\"messageId\":\"INC-e069ac26-8d59-49-diagnosis-3\",\"kind\":\"message\",\"role\":\"user\"}}}",
+        "result_json": "{\"kind\":\"task\",\"id\":\"TASK-8487763f-9ec0-46\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:03.301219700Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"causeCode\":\"RESOURCE_PRESSURE\",\"causeLabel\":\"CPU·메모리 자원 포화\",\"relatedType\":\"RESOURCE\",\"confidence\":0.7984801696830491,\"evidenceScore\":0.48045161049064217,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":2967,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"schemaValid\":true,\"needsReview\":true,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\"],\"answers\":{\"cause\":{\"type\":\"choice\",\"choice\":\"RESOURCE_PRESSURE\",\"probabilities\":{\"RESOURCE_PRESSURE\":0.823670148472668,\"DB_POOL_EXHAUSTION\":0.06230395392208965,\"DB_LOCK_CONTENTION\":0.029675167895527415,\"DNS_FAILURE\":0.012167248566016253,\"PACKET_LOSS\":0.015152977084189875,\"DEPLOYMENT_REGRESSION\":0.01802576451158972,\"AUTH_ANOMALY\":0.019600745658083507,\"UNKNOWN\":0.01940399388983561},\"confidence\":0.7984801696830491},\"support\":{\"type\":\"noul\",\"noul\":0.48045161049064217}},\"scope\":\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\",\"candidates\":[{\"label\":\"CPU·메모리 자원 포화\",\"code\":\"RESOURCE_PRESSURE\",\"probability\":0.823670148472668},{\"label\":\"DB 연결 풀 고갈\",\"code\":\"DB_POOL_EXHAUSTION\",\"probability\":0.06230395392208965},{\"label\":\"DB 잠금 경합\",\"code\":\"DB_LOCK_CONTENTION\",\"probability\":0.029675167895527415}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"}]}}],\"artifactId\":\"TASK-8487763f-9ec0-46-result\"}]}",
+        "created_at": "2026-10-10T10:40:00.327+00:00",
+        "updated_at": "2026-10-10T10:40:03.305+00:00"
+      },
+      {
+        "id": "TASK-533da1f3-7b7e-45",
+        "agent": "impact",
+        "incident_id": "INC-e069ac26-8d59-49",
+        "message_id": "INC-e069ac26-8d59-49-impact-3",
+        "status": "completed",
+        "request_json": "{\"method\":\"message/send\",\"id\":\"INC-e069ac26-8d59-49-impact-3\",\"jsonrpc\":\"2.0\",\"params\":{\"configuration\":{\"blocking\":true},\"message\":{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\"}}],\"messageId\":\"INC-e069ac26-8d59-49-impact-3\",\"kind\":\"message\",\"role\":\"user\"}}}",
+        "result_json": "{\"kind\":\"task\",\"id\":\"TASK-533da1f3-7b7e-45\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:03.318770Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6}}],\"artifactId\":\"TASK-533da1f3-7b7e-45-result\"}]}",
+        "created_at": "2026-10-10T10:40:03.316+00:00",
+        "updated_at": "2026-10-10T10:40:03.320+00:00"
+      },
+      {
+        "id": "TASK-cc85f035-3323-4e",
+        "agent": "knowledge",
+        "incident_id": "INC-e069ac26-8d59-49",
+        "message_id": "INC-e069ac26-8d59-49-knowledge-3",
+        "status": "completed",
+        "request_json": "{\"method\":\"message/send\",\"id\":\"INC-e069ac26-8d59-49-knowledge-3\",\"jsonrpc\":\"2.0\",\"params\":{\"configuration\":{\"blocking\":true},\"message\":{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\"}}],\"messageId\":\"INC-e069ac26-8d59-49-knowledge-3\",\"kind\":\"message\",\"role\":\"user\"}}}",
+        "result_json": "{\"kind\":\"task\",\"id\":\"TASK-cc85f035-3323-4e\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:06.293790200Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":2706,\"completion_tokens\":187,\"total_tokens\":2893},\"latencyMs\":2777,\"hermesConnected\":true,\"content\":{\"skillIds\":[\"SKL-30388273-a422-40\"],\"manualIds\":[\"MAN-21\"],\"explanation\":\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"search\",\"fictional\":true,\"skills\":[{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"manuals\":[{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"prevention\":\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\",\"prevention\":\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\",\"prevention\":\"반복 장애 알림과 주간 점검 강화\"}],\"explanation\":\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\",\"approvedOnly\":true}}],\"artifactId\":\"TASK-cc85f035-3323-4e-result\"}]}",
+        "created_at": "2026-10-10T10:40:03.498+00:00",
+        "updated_at": "2026-10-10T10:40:06.299+00:00"
+      },
+      {
+        "id": "TASK-78e75d35-59f6-4d",
+        "agent": "recovery",
+        "incident_id": "INC-e069ac26-8d59-49",
+        "message_id": "INC-e069ac26-8d59-49-recovery-5",
+        "status": "completed",
+        "request_json": "{\"method\":\"message/send\",\"id\":\"INC-e069ac26-8d59-49-recovery-5\",\"jsonrpc\":\"2.0\",\"params\":{\"configuration\":{\"blocking\":true},\"message\":{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\"}}],\"messageId\":\"INC-e069ac26-8d59-49-recovery-5\",\"kind\":\"message\",\"role\":\"user\"}}}",
+        "result_json": "{\"kind\":\"task\",\"id\":\"TASK-78e75d35-59f6-4d\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:06.918561900Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"approvedSkills\":[{\"id\":\"SKL-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 01\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 06\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 11\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 16\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"guideSource\":\"APPROVED_SKILLS\",\"manuals\":[{\"id\":\"MAN-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 01\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 06\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 11\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 16\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-26\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 26\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"realChanges\":false}}],\"artifactId\":\"TASK-78e75d35-59f6-4d-result\"}]}",
+        "created_at": "2026-10-10T10:40:06.914+00:00",
+        "updated_at": "2026-10-10T10:40:06.921+00:00"
+      },
+      {
+        "id": "TASK-95687bc0-8b92-43",
+        "agent": "report",
+        "incident_id": "INC-e069ac26-8d59-49",
+        "message_id": "INC-e069ac26-8d59-49-report-5",
+        "status": "completed",
+        "request_json": "{\"method\":\"message/send\",\"id\":\"INC-e069ac26-8d59-49-report-5\",\"jsonrpc\":\"2.0\",\"params\":{\"configuration\":{\"blocking\":true},\"message\":{\"parts\":[{\"kind\":\"data\",\"data\":{\"incidentId\":\"INC-e069ac26-8d59-49\"}}],\"messageId\":\"INC-e069ac26-8d59-49-report-5\",\"kind\":\"message\",\"role\":\"user\"}}}",
+        "result_json": "{\"kind\":\"task\",\"id\":\"TASK-95687bc0-8b92-43\",\"contextId\":\"INC-e069ac26-8d59-49\",\"status\":{\"state\":\"completed\",\"timestamp\":\"2026-10-10T10:40:07.456361300Z\"},\"artifacts\":[{\"parts\":[{\"kind\":\"data\",\"data\":{\"fictional\":true,\"approvals\":[{\"incident_id\":\"INC-e069ac26-8d59-49\",\"approved\":true,\"actor\":\"admin\",\"reason\":\"실제 Provider 통합 테스트: 가상 관측·영향·승인 Skill 검토 완료\",\"created_at\":\"2026-10-10T10:40:06.741+00:00\"}],\"agentResults\":[{\"agent\":\"incident\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-7d0be25b-3313-4b\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:53.222451900Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"incidentId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"plan\\\":[\\\"incident\\\",\\\"diagnosis\\\",\\\"knowledge\\\",\\\"impact\\\",\\\"recovery\\\",\\\"report\\\"],\\\"scope\\\":\\\"FICTIONAL_ONLY\\\"}}],\\\"artifactId\\\":\\\"TASK-7d0be25b-3313-4b-result\\\"}]}\"},{\"agent\":\"diagnosis\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-4a23e24b-95db-41\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:55.590209300Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"causeCode\\\":\\\"RESOURCE_PRESSURE\\\",\\\"causeLabel\\\":\\\"CPU·메모리 자원 포화\\\",\\\"relatedType\\\":\\\"RESOURCE\\\",\\\"confidence\\\":0.7984801696830491,\\\"evidenceScore\\\":0.48045161049064217,\\\"provider\\\":\\\"LOCAL_JEV\\\",\\\"model\\\":\\\"jevos-v4\\\",\\\"latencyMs\\\":2331,\\\"simulated\\\":false,\\\"fallback\\\":false,\\\"fallbackReason\\\":\\\"\\\",\\\"schemaValid\\\":true,\\\"needsReview\\\":true,\\\"evidence\\\":[\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\"],\\\"answers\\\":{\\\"cause\\\":{\\\"type\\\":\\\"choice\\\",\\\"choice\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probabilities\\\":{\\\"RESOURCE_PRESSURE\\\":0.823670148472668,\\\"DB_POOL_EXHAUSTION\\\":0.06230395392208965,\\\"DB_LOCK_CONTENTION\\\":0.029675167895527415,\\\"DNS_FAILURE\\\":0.012167248566016253,\\\"PACKET_LOSS\\\":0.015152977084189875,\\\"DEPLOYMENT_REGRESSION\\\":0.01802576451158972,\\\"AUTH_ANOMALY\\\":0.019600745658083507,\\\"UNKNOWN\\\":0.01940399388983561},\\\"confidence\\\":0.7984801696830491},\\\"support\\\":{\\\"type\\\":\\\"noul\\\",\\\"noul\\\":0.48045161049064217}},\\\"scope\\\":\\\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\\\",\\\"candidates\\\":[{\\\"label\\\":\\\"CPU·메모리 자원 포화\\\",\\\"code\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probability\\\":0.823670148472668},{\\\"label\\\":\\\"DB 연결 풀 고갈\\\",\\\"code\\\":\\\"DB_POOL_EXHAUSTION\\\",\\\"probability\\\":0.06230395392208965},{\\\"label\\\":\\\"DB 잠금 경합\\\",\\\"code\\\":\\\"DB_LOCK_CONTENTION\\\",\\\"probability\\\":0.029675167895527415}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\"}]}}],\\\"artifactId\\\":\\\"TASK-4a23e24b-95db-41-result\\\"}]}\"},{\"agent\":\"impact\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-7f2e020b-72c9-40\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:55.616914300Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"engine\\\":\\\"NEO4J\\\",\\\"root\\\":\\\"CMP-01\\\",\\\"affected\\\":[\\\"CMP-01\\\",\\\"CMP-05\\\",\\\"CMP-07\\\",\\\"CMP-23\\\",\\\"CMP-32\\\",\\\"CMP-33\\\",\\\"CMP-39\\\",\\\"SYS-01\\\",\\\"SYS-03\\\",\\\"SYS-05\\\",\\\"SYS-07\\\",\\\"SYS-08\\\",\\\"SYS-09\\\",\\\"SYS-11\\\"],\\\"depth\\\":6}}],\\\"artifactId\\\":\\\"TASK-7f2e020b-72c9-40-result\\\"}]}\"},{\"agent\":\"knowledge\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-0e296d98-8cd8-41\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:59.262685500Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"simulated\\\":false,\\\"provider\\\":\\\"HERMES_AGENT\\\",\\\"fallback\\\":false,\\\"usage\\\":{\\\"prompt_tokens\\\":2706,\\\"completion_tokens\\\":163,\\\"total_tokens\\\":2869},\\\"latencyMs\\\":3461,\\\"hermesConnected\\\":true,\\\"content\\\":{\\\"skillIds\\\":[\\\"SKL-30388273-a422-40\\\"],\\\"manualIds\\\":[\\\"MAN-21\\\"],\\\"explanation\\\":\\\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\\\"},\\\"model\\\":\\\"hermes-agent\\\",\\\"requestedProvider\\\":\\\"HERMES_AGENT\\\",\\\"operation\\\":\\\"search\\\",\\\"fictional\\\":true,\\\"skills\\\":[{\\\"id\\\":\\\"SKL-30388273-a422-40\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE 해결 초안\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\",\\\"checks\\\":\\\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\\\",\\\"solution\\\":\\\"가상 조치 및 검증 결과: {\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"cautions\\\":\\\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\\\",\\\"incident_id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"approved_by\\\":\\\"admin\\\",\\\"created_at\\\":\\\"2026-10-10T09:00:24.666+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"}],\\\"manuals\\\":[{\\\"id\\\":\\\"MAN-21\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 21\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"prevention\\\":\\\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\",\\\"prevention\\\":\\\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\",\\\"prevention\\\":\\\"반복 장애 알림과 주간 점검 강화\\\"}],\\\"explanation\\\":\\\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\\\",\\\"approvedOnly\\\":true}}],\\\"artifactId\\\":\\\"TASK-0e296d98-8cd8-41-result\\\"}]}\"},{\"agent\":\"incident\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-8ff0c887-28f8-4a\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:00.306416200Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"incidentId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"plan\\\":[\\\"incident\\\",\\\"diagnosis\\\",\\\"knowledge\\\",\\\"impact\\\",\\\"recovery\\\",\\\"report\\\"],\\\"scope\\\":\\\"FICTIONAL_ONLY\\\"}}],\\\"artifactId\\\":\\\"TASK-8ff0c887-28f8-4a-result\\\"}]}\"},{\"agent\":\"diagnosis\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-8487763f-9ec0-46\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:03.301219700Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"causeCode\\\":\\\"RESOURCE_PRESSURE\\\",\\\"causeLabel\\\":\\\"CPU·메모리 자원 포화\\\",\\\"relatedType\\\":\\\"RESOURCE\\\",\\\"confidence\\\":0.7984801696830491,\\\"evidenceScore\\\":0.48045161049064217,\\\"provider\\\":\\\"LOCAL_JEV\\\",\\\"model\\\":\\\"jevos-v4\\\",\\\"latencyMs\\\":2967,\\\"simulated\\\":false,\\\"fallback\\\":false,\\\"fallbackReason\\\":\\\"\\\",\\\"schemaValid\\\":true,\\\"needsReview\\\":true,\\\"evidence\\\":[\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\"],\\\"answers\\\":{\\\"cause\\\":{\\\"type\\\":\\\"choice\\\",\\\"choice\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probabilities\\\":{\\\"RESOURCE_PRESSURE\\\":0.823670148472668,\\\"DB_POOL_EXHAUSTION\\\":0.06230395392208965,\\\"DB_LOCK_CONTENTION\\\":0.029675167895527415,\\\"DNS_FAILURE\\\":0.012167248566016253,\\\"PACKET_LOSS\\\":0.015152977084189875,\\\"DEPLOYMENT_REGRESSION\\\":0.01802576451158972,\\\"AUTH_ANOMALY\\\":0.019600745658083507,\\\"UNKNOWN\\\":0.01940399388983561},\\\"confidence\\\":0.7984801696830491},\\\"support\\\":{\\\"type\\\":\\\"noul\\\",\\\"noul\\\":0.48045161049064217}},\\\"scope\\\":\\\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\\\",\\\"candidates\\\":[{\\\"label\\\":\\\"CPU·메모리 자원 포화\\\",\\\"code\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probability\\\":0.823670148472668},{\\\"label\\\":\\\"DB 연결 풀 고갈\\\",\\\"code\\\":\\\"DB_POOL_EXHAUSTION\\\",\\\"probability\\\":0.06230395392208965},{\\\"label\\\":\\\"DB 잠금 경합\\\",\\\"code\\\":\\\"DB_LOCK_CONTENTION\\\",\\\"probability\\\":0.029675167895527415}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\"}]}}],\\\"artifactId\\\":\\\"TASK-8487763f-9ec0-46-result\\\"}]}\"},{\"agent\":\"impact\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-533da1f3-7b7e-45\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:03.318770Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"engine\\\":\\\"NEO4J\\\",\\\"root\\\":\\\"CMP-01\\\",\\\"affected\\\":[\\\"CMP-01\\\",\\\"CMP-05\\\",\\\"CMP-07\\\",\\\"CMP-23\\\",\\\"CMP-32\\\",\\\"CMP-33\\\",\\\"CMP-39\\\",\\\"SYS-01\\\",\\\"SYS-03\\\",\\\"SYS-05\\\",\\\"SYS-07\\\",\\\"SYS-08\\\",\\\"SYS-09\\\",\\\"SYS-11\\\"],\\\"depth\\\":6}}],\\\"artifactId\\\":\\\"TASK-533da1f3-7b7e-45-result\\\"}]}\"},{\"agent\":\"knowledge\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-cc85f035-3323-4e\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:06.293790200Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"simulated\\\":false,\\\"provider\\\":\\\"HERMES_AGENT\\\",\\\"fallback\\\":false,\\\"usage\\\":{\\\"prompt_tokens\\\":2706,\\\"completion_tokens\\\":187,\\\"total_tokens\\\":2893},\\\"latencyMs\\\":2777,\\\"hermesConnected\\\":true,\\\"content\\\":{\\\"skillIds\\\":[\\\"SKL-30388273-a422-40\\\"],\\\"manualIds\\\":[\\\"MAN-21\\\"],\\\"explanation\\\":\\\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\\\"},\\\"model\\\":\\\"hermes-agent\\\",\\\"requestedProvider\\\":\\\"HERMES_AGENT\\\",\\\"operation\\\":\\\"search\\\",\\\"fictional\\\":true,\\\"skills\\\":[{\\\"id\\\":\\\"SKL-30388273-a422-40\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE 해결 초안\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\",\\\"checks\\\":\\\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\\\",\\\"solution\\\":\\\"가상 조치 및 검증 결과: {\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"cautions\\\":\\\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\\\",\\\"incident_id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"approved_by\\\":\\\"admin\\\",\\\"created_at\\\":\\\"2026-10-10T09:00:24.666+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"}],\\\"manuals\\\":[{\\\"id\\\":\\\"MAN-21\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 21\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"prevention\\\":\\\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\",\\\"prevention\\\":\\\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\",\\\"prevention\\\":\\\"반복 장애 알림과 주간 점검 강화\\\"}],\\\"explanation\\\":\\\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\\\",\\\"approvedOnly\\\":true}}],\\\"artifactId\\\":\\\"TASK-cc85f035-3323-4e-result\\\"}]}\"},{\"agent\":\"recovery\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-78e75d35-59f6-4d\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:06.918561900Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"approvedSkills\\\":[{\\\"id\\\":\\\"SKL-01\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 01\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-06\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 06\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-11\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 11\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-16\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 16\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-30388273-a422-40\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE 해결 초안\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\",\\\"checks\\\":\\\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\\\",\\\"solution\\\":\\\"가상 조치 및 검증 결과: {\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"cautions\\\":\\\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\\\",\\\"incident_id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"approved_by\\\":\\\"admin\\\",\\\"created_at\\\":\\\"2026-10-10T09:00:24.666+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"}],\\\"tools\\\":[\\\"apply_simulated_recovery\\\",\\\"verify_simulated_recovery\\\"],\\\"guideSource\\\":\\\"APPROVED_SKILLS\\\",\\\"manuals\\\":[{\\\"id\\\":\\\"MAN-01\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 01\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-06\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 06\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-11\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 11\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-16\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 16\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-21\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 21\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-26\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 26\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"}],\\\"realChanges\\\":false}}],\\\"artifactId\\\":\\\"TASK-78e75d35-59f6-4d-result\\\"}]}\"}],\"summary\":\"가상 장애의 판단·영향 분석·승인·복구 검증을 완료했습니다.\",\"impact\":{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6},\"title\":\"가상 코어뱅킹 · RESOURCE\",\"verification\":\"{\\\"after\\\":{\\\"healthyDependencies\\\":true,\\\"errorRate\\\":0.02,\\\"latencyMs\\\":120},\\\"before\\\":{\\\"healthyDependencies\\\":false,\\\"errorRate\\\":12.5,\\\"latencyMs\\\":3200},\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"passed\\\":true,\\\"realChanges\\\":false}\",\"decision\":{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.7738209062578496,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3792,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"Operator reviewed: 가상 통합 테스트의 관리자 검토: CPU 96%, 메모리 고갈과 대기열 포화 관측은 RESOURCE_PRESSURE 가설에 부합함을 확인했습니다. 모델 근거 점수 48.05%는 원본 그대로 보존하며, 확정 근본 원인이라고 주장하지 않습니다. 가상 지표 복구 검증만 진행합니다.\",\"Original observations: CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days; Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"NETWORK\":0.009294679171339115,\"APPLICATION\":0.012482977188175662,\"DATABASE\":0.042424760267317875,\"RESOURCE\":0.9153772641996997,\"SECURITY\":0.020420319173467587},\"confidence\":0.8942215802496245},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P1\":0.9788048817768452,\"P2\":0.013545184521869048,\"P3\":0.007649933701285796},\"confidence\":0.9682073226652677},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"PLATFORM\":0.8190567250062798,\"NETWORK\":0.022564466503237037,\"APPLICATION\":0.04431691694850809,\"DATABASE\":0.07612055898970037,\"SECURITY\":0.037941332552274755},\"confidence\":0.7738209062578496},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}}}}],\"artifactId\":\"TASK-95687bc0-8b92-43-result\"}]}",
+        "created_at": "2026-10-10T10:40:07.448+00:00",
+        "updated_at": "2026-10-10T10:40:07.462+00:00"
+      }
+    ],
+    "audit": [
+      {
+        "id": 53,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "admin",
+        "action": "CREATE",
+        "data_json": "{\"requestedProvider\":\"LOCAL\",\"mode\":\"REAL\"}",
+        "created_at": "2026-10-10T10:38:49.088+00:00"
+      },
+      {
+        "id": 54,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "jev",
+        "action": "DECISION",
+        "data_json": "{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.7738209062578496,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3792,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"NETWORK\":0.009294679171339115,\"APPLICATION\":0.012482977188175662,\"DATABASE\":0.042424760267317875,\"RESOURCE\":0.9153772641996997,\"SECURITY\":0.020420319173467587},\"confidence\":0.8942215802496245},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P1\":0.9788048817768452,\"P2\":0.013545184521869048,\"P3\":0.007649933701285796},\"confidence\":0.9682073226652677},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"PLATFORM\":0.8190567250062798,\"NETWORK\":0.022564466503237037,\"APPLICATION\":0.04431691694850809,\"DATABASE\":0.07612055898970037,\"SECURITY\":0.037941332552274755},\"confidence\":0.7738209062578496},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}}",
+        "created_at": "2026-10-10T10:38:52.947+00:00"
+      },
+      {
+        "id": 55,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "incident",
+        "action": "AGENT_RESULT",
+        "data_json": "{\"incidentId\":\"INC-e069ac26-8d59-49\",\"plan\":[\"incident\",\"diagnosis\",\"knowledge\",\"impact\",\"recovery\",\"report\"],\"scope\":\"FICTIONAL_ONLY\"}",
+        "created_at": "2026-10-10T10:38:53.222+00:00"
+      },
+      {
+        "id": 56,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "diagnosis",
+        "action": "AGENT_RESULT",
+        "data_json": "{\"causeCode\":\"RESOURCE_PRESSURE\",\"causeLabel\":\"CPU·메모리 자원 포화\",\"relatedType\":\"RESOURCE\",\"confidence\":0.7984801696830491,\"evidenceScore\":0.48045161049064217,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":2331,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"schemaValid\":true,\"needsReview\":true,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\"],\"answers\":{\"cause\":{\"type\":\"choice\",\"choice\":\"RESOURCE_PRESSURE\",\"probabilities\":{\"RESOURCE_PRESSURE\":0.823670148472668,\"DB_POOL_EXHAUSTION\":0.06230395392208965,\"DB_LOCK_CONTENTION\":0.029675167895527415,\"DNS_FAILURE\":0.012167248566016253,\"PACKET_LOSS\":0.015152977084189875,\"DEPLOYMENT_REGRESSION\":0.01802576451158972,\"AUTH_ANOMALY\":0.019600745658083507,\"UNKNOWN\":0.01940399388983561},\"confidence\":0.7984801696830491},\"support\":{\"type\":\"noul\",\"noul\":0.48045161049064217}},\"scope\":\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\",\"candidates\":[{\"label\":\"CPU·메모리 자원 포화\",\"code\":\"RESOURCE_PRESSURE\",\"probability\":0.823670148472668},{\"label\":\"DB 연결 풀 고갈\",\"code\":\"DB_POOL_EXHAUSTION\",\"probability\":0.06230395392208965},{\"label\":\"DB 잠금 경합\",\"code\":\"DB_LOCK_CONTENTION\",\"probability\":0.029675167895527415}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"}]}",
+        "created_at": "2026-10-10T10:38:55.591+00:00"
+      },
+      {
+        "id": 57,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "impact",
+        "action": "AGENT_RESULT",
+        "data_json": "{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6}",
+        "created_at": "2026-10-10T10:38:55.616+00:00"
+      },
+      {
+        "id": 58,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "hermes",
+        "action": "HERMES_SEARCH",
+        "data_json": "{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":2706,\"completion_tokens\":163,\"total_tokens\":2869},\"latencyMs\":3461,\"hermesConnected\":true,\"content\":{\"skillIds\":[\"SKL-30388273-a422-40\"],\"manualIds\":[\"MAN-21\"],\"explanation\":\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"search\",\"fictional\":true}",
+        "created_at": "2026-10-10T10:38:59.260+00:00"
+      },
+      {
+        "id": 59,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "knowledge",
+        "action": "AGENT_RESULT",
+        "data_json": "{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":2706,\"completion_tokens\":163,\"total_tokens\":2869},\"latencyMs\":3461,\"hermesConnected\":true,\"content\":{\"skillIds\":[\"SKL-30388273-a422-40\"],\"manualIds\":[\"MAN-21\"],\"explanation\":\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"search\",\"fictional\":true,\"skills\":[{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"manuals\":[{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"prevention\":\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\",\"prevention\":\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\",\"prevention\":\"반복 장애 알림과 주간 점검 강화\"}],\"explanation\":\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\",\"approvedOnly\":true}",
+        "created_at": "2026-10-10T10:38:59.263+00:00"
+      },
+      {
+        "id": 60,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "harness",
+        "action": "POLICY_REVIEW_REQUIRED",
+        "data_json": "{\"needsReview\":true,\"blockReasons\":[],\"reviewReasons\":[\"원인 후보의 신뢰도 또는 근거가 부족합니다.\"],\"passed\":false,\"approvedSkills\":5,\"realChanges\":false,\"operatorReviewed\":false,\"blocked\":false,\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"approvalRequired\":true}",
+        "created_at": "2026-10-10T10:38:59.475+00:00"
+      },
+      {
+        "id": 61,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "admin",
+        "action": "REVIEW_DECISION",
+        "data_json": "{\"reviewedDiagnosis\":\"RESOURCE_PRESSURE|RESOURCE|true\",\"reason\":\"가상 통합 테스트의 관리자 검토: CPU 96%, 메모리 고갈과 대기열 포화 관측은 RESOURCE_PRESSURE 가설에 부합함을 확인했습니다. 모델 근거 점수 48.05%는 원본 그대로 보존하며, 확정 근본 원인이라고 주장하지 않습니다. 가상 지표 복구 검증만 진행합니다.\",\"decision\":{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.7738209062578496,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3792,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"Operator reviewed: 가상 통합 테스트의 관리자 검토: CPU 96%, 메모리 고갈과 대기열 포화 관측은 RESOURCE_PRESSURE 가설에 부합함을 확인했습니다. 모델 근거 점수 48.05%는 원본 그대로 보존하며, 확정 근본 원인이라고 주장하지 않습니다. 가상 지표 복구 검증만 진행합니다.\",\"Original observations: CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days; Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"NETWORK\":0.009294679171339115,\"APPLICATION\":0.012482977188175662,\"DATABASE\":0.042424760267317875,\"RESOURCE\":0.9153772641996997,\"SECURITY\":0.020420319173467587},\"confidence\":0.8942215802496245},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P1\":0.9788048817768452,\"P2\":0.013545184521869048,\"P3\":0.007649933701285796},\"confidence\":0.9682073226652677},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"PLATFORM\":0.8190567250062798,\"NETWORK\":0.022564466503237037,\"APPLICATION\":0.04431691694850809,\"DATABASE\":0.07612055898970037,\"SECURITY\":0.037941332552274755},\"confidence\":0.7738209062578496},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}}}",
+        "created_at": "2026-10-10T10:39:59.910+00:00"
+      },
+      {
+        "id": 62,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "incident",
+        "action": "AGENT_RESULT",
+        "data_json": "{\"incidentId\":\"INC-e069ac26-8d59-49\",\"plan\":[\"incident\",\"diagnosis\",\"knowledge\",\"impact\",\"recovery\",\"report\"],\"scope\":\"FICTIONAL_ONLY\"}",
+        "created_at": "2026-10-10T10:40:00.306+00:00"
+      },
+      {
+        "id": 84,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "diagnosis",
+        "action": "AGENT_RESULT",
+        "data_json": "{\"causeCode\":\"RESOURCE_PRESSURE\",\"causeLabel\":\"CPU·메모리 자원 포화\",\"relatedType\":\"RESOURCE\",\"confidence\":0.7984801696830491,\"evidenceScore\":0.48045161049064217,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":2967,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"schemaValid\":true,\"needsReview\":true,\"evidence\":[\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\"],\"answers\":{\"cause\":{\"type\":\"choice\",\"choice\":\"RESOURCE_PRESSURE\",\"probabilities\":{\"RESOURCE_PRESSURE\":0.823670148472668,\"DB_POOL_EXHAUSTION\":0.06230395392208965,\"DB_LOCK_CONTENTION\":0.029675167895527415,\"DNS_FAILURE\":0.012167248566016253,\"PACKET_LOSS\":0.015152977084189875,\"DEPLOYMENT_REGRESSION\":0.01802576451158972,\"AUTH_ANOMALY\":0.019600745658083507,\"UNKNOWN\":0.01940399388983561},\"confidence\":0.7984801696830491},\"support\":{\"type\":\"noul\",\"noul\":0.48045161049064217}},\"scope\":\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\",\"candidates\":[{\"label\":\"CPU·메모리 자원 포화\",\"code\":\"RESOURCE_PRESSURE\",\"probability\":0.823670148472668},{\"label\":\"DB 연결 풀 고갈\",\"code\":\"DB_POOL_EXHAUSTION\",\"probability\":0.06230395392208965},{\"label\":\"DB 잠금 경합\",\"code\":\"DB_LOCK_CONTENTION\",\"probability\":0.029675167895527415}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\"}]}",
+        "created_at": "2026-10-10T10:40:03.302+00:00"
+      },
+      {
+        "id": 85,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "impact",
+        "action": "AGENT_RESULT",
+        "data_json": "{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6}",
+        "created_at": "2026-10-10T10:40:03.318+00:00"
+      },
+      {
+        "id": 86,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "hermes",
+        "action": "HERMES_SEARCH",
+        "data_json": "{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":2706,\"completion_tokens\":187,\"total_tokens\":2893},\"latencyMs\":2777,\"hermesConnected\":true,\"content\":{\"skillIds\":[\"SKL-30388273-a422-40\"],\"manualIds\":[\"MAN-21\"],\"explanation\":\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"search\",\"fictional\":true}",
+        "created_at": "2026-10-10T10:40:06.291+00:00"
+      },
+      {
+        "id": 87,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "knowledge",
+        "action": "AGENT_RESULT",
+        "data_json": "{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":2706,\"completion_tokens\":187,\"total_tokens\":2893},\"latencyMs\":2777,\"hermesConnected\":true,\"content\":{\"skillIds\":[\"SKL-30388273-a422-40\"],\"manualIds\":[\"MAN-21\"],\"explanation\":\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"search\",\"fictional\":true,\"skills\":[{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"manuals\":[{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"similarIncidents\":[{\"id\":\"INC-4ea128ba-1176-41\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"{\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"prevention\":\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\"},{\"id\":\"INC-a21bdc49-8c43-48\",\"title\":\"가상 코어뱅킹 · RESOURCE\",\"notes\":\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\",\"prevention\":\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\"},{\"id\":\"INC-SEED-196\",\"title\":\"가상 대외계 · RESOURCE\",\"notes\":\"가상 복구 후 정상 지표 확인\",\"prevention\":\"반복 장애 알림과 주간 점검 강화\"}],\"explanation\":\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\",\"approvedOnly\":true}",
+        "created_at": "2026-10-10T10:40:06.293+00:00"
+      },
+      {
+        "id": 88,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "harness",
+        "action": "POLICY_VALIDATED",
+        "data_json": "{\"needsReview\":false,\"blockReasons\":[],\"reviewReasons\":[\"원인 후보의 신뢰도 또는 근거가 부족합니다.\"],\"passed\":true,\"approvedSkills\":5,\"realChanges\":false,\"operatorReviewed\":true,\"blocked\":false,\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"approvalRequired\":true}",
+        "created_at": "2026-10-10T10:40:06.477+00:00"
+      },
+      {
+        "id": 89,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "admin",
+        "action": "APPROVE",
+        "data_json": "{\"reason\":\"실제 Provider 통합 테스트: 가상 관측·영향·승인 Skill 검토 완료\"}",
+        "created_at": "2026-10-10T10:40:06.746+00:00"
+      },
+      {
+        "id": 90,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "recovery",
+        "action": "AGENT_RESULT",
+        "data_json": "{\"approvedSkills\":[{\"id\":\"SKL-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 01\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 06\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 11\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 복구 절차 16\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation\",\"checks\":\"관측 지표·의존성·승인 증적을 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\",\"cautions\":\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\",\"incident_id\":null,\"approved_by\":\"seed-admin\",\"created_at\":\"2026-09-30T15:00:00.000+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"},{\"id\":\"SKL-30388273-a422-40\",\"type\":\"RESOURCE\",\"title\":\"가상 코어뱅킹 · RESOURCE 해결 초안\",\"status\":\"APPROVED\",\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"가상 조치 및 검증 결과: {\\\"realChanges\\\":false,\\\"passed\\\":true,\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"before\\\":{\\\"latencyMs\\\":3200,\\\"errorRate\\\":12.5,\\\"healthyDependencies\\\":false},\\\"after\\\":{\\\"latencyMs\\\":120,\\\"errorRate\\\":0.02,\\\"healthyDependencies\\\":true}}\",\"cautions\":\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\",\"incident_id\":\"INC-a21bdc49-8c43-48\",\"approved_by\":\"admin\",\"created_at\":\"2026-10-10T09:00:24.666+00:00\",\"source_provider\":\"LOCAL_SKILL_STORE\",\"source_model\":\"seed-or-legacy-template\",\"simulated\":true,\"provenance_json\":\"{}\",\"export_status\":\"EXPORTED\"}],\"tools\":[\"apply_simulated_recovery\",\"verify_simulated_recovery\"],\"guideSource\":\"APPROVED_SKILLS\",\"manuals\":[{\"id\":\"MAN-01\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 01\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-06\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 06\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-11\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 11\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-16\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 16\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-21\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 21\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"},{\"id\":\"MAN-26\",\"type\":\"RESOURCE\",\"title\":\"RESOURCE 가상 대응 매뉴얼 26\",\"procedure_text\":\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\"}],\"realChanges\":false}",
+        "created_at": "2026-10-10T10:40:06.918+00:00"
+      },
+      {
+        "id": 91,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "mcp",
+        "action": "SIMULATED_RECOVERY",
+        "data_json": "{\"realChanges\":false,\"metrics\":{\"healthyDependencies\":true,\"errorRate\":0.02,\"latencyMs\":120}}",
+        "created_at": "2026-10-10T10:40:07.104+00:00"
+      },
+      {
+        "id": 92,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "mcp",
+        "action": "RECOVERY_VERIFICATION",
+        "data_json": "{\"after\":{\"healthyDependencies\":true,\"errorRate\":0.02,\"latencyMs\":120},\"before\":{\"healthyDependencies\":false,\"errorRate\":12.5,\"latencyMs\":3200},\"provider\":\"SIMULATED_METRICS\",\"passed\":true,\"realChanges\":false}",
+        "created_at": "2026-10-10T10:40:07.278+00:00"
+      },
+      {
+        "id": 93,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "report",
+        "action": "AGENT_RESULT",
+        "data_json": "{\"fictional\":true,\"approvals\":[{\"incident_id\":\"INC-e069ac26-8d59-49\",\"approved\":true,\"actor\":\"admin\",\"reason\":\"실제 Provider 통합 테스트: 가상 관측·영향·승인 Skill 검토 완료\",\"created_at\":\"2026-10-10T10:40:06.741+00:00\"}],\"agentResults\":[{\"agent\":\"incident\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-7d0be25b-3313-4b\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:53.222451900Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"incidentId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"plan\\\":[\\\"incident\\\",\\\"diagnosis\\\",\\\"knowledge\\\",\\\"impact\\\",\\\"recovery\\\",\\\"report\\\"],\\\"scope\\\":\\\"FICTIONAL_ONLY\\\"}}],\\\"artifactId\\\":\\\"TASK-7d0be25b-3313-4b-result\\\"}]}\"},{\"agent\":\"diagnosis\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-4a23e24b-95db-41\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:55.590209300Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"causeCode\\\":\\\"RESOURCE_PRESSURE\\\",\\\"causeLabel\\\":\\\"CPU·메모리 자원 포화\\\",\\\"relatedType\\\":\\\"RESOURCE\\\",\\\"confidence\\\":0.7984801696830491,\\\"evidenceScore\\\":0.48045161049064217,\\\"provider\\\":\\\"LOCAL_JEV\\\",\\\"model\\\":\\\"jevos-v4\\\",\\\"latencyMs\\\":2331,\\\"simulated\\\":false,\\\"fallback\\\":false,\\\"fallbackReason\\\":\\\"\\\",\\\"schemaValid\\\":true,\\\"needsReview\\\":true,\\\"evidence\\\":[\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\"],\\\"answers\\\":{\\\"cause\\\":{\\\"type\\\":\\\"choice\\\",\\\"choice\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probabilities\\\":{\\\"RESOURCE_PRESSURE\\\":0.823670148472668,\\\"DB_POOL_EXHAUSTION\\\":0.06230395392208965,\\\"DB_LOCK_CONTENTION\\\":0.029675167895527415,\\\"DNS_FAILURE\\\":0.012167248566016253,\\\"PACKET_LOSS\\\":0.015152977084189875,\\\"DEPLOYMENT_REGRESSION\\\":0.01802576451158972,\\\"AUTH_ANOMALY\\\":0.019600745658083507,\\\"UNKNOWN\\\":0.01940399388983561},\\\"confidence\\\":0.7984801696830491},\\\"support\\\":{\\\"type\\\":\\\"noul\\\",\\\"noul\\\":0.48045161049064217}},\\\"scope\\\":\\\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\\\",\\\"candidates\\\":[{\\\"label\\\":\\\"CPU·메모리 자원 포화\\\",\\\"code\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probability\\\":0.823670148472668},{\\\"label\\\":\\\"DB 연결 풀 고갈\\\",\\\"code\\\":\\\"DB_POOL_EXHAUSTION\\\",\\\"probability\\\":0.06230395392208965},{\\\"label\\\":\\\"DB 잠금 경합\\\",\\\"code\\\":\\\"DB_LOCK_CONTENTION\\\",\\\"probability\\\":0.029675167895527415}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\"}]}}],\\\"artifactId\\\":\\\"TASK-4a23e24b-95db-41-result\\\"}]}\"},{\"agent\":\"impact\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-7f2e020b-72c9-40\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:55.616914300Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"engine\\\":\\\"NEO4J\\\",\\\"root\\\":\\\"CMP-01\\\",\\\"affected\\\":[\\\"CMP-01\\\",\\\"CMP-05\\\",\\\"CMP-07\\\",\\\"CMP-23\\\",\\\"CMP-32\\\",\\\"CMP-33\\\",\\\"CMP-39\\\",\\\"SYS-01\\\",\\\"SYS-03\\\",\\\"SYS-05\\\",\\\"SYS-07\\\",\\\"SYS-08\\\",\\\"SYS-09\\\",\\\"SYS-11\\\"],\\\"depth\\\":6}}],\\\"artifactId\\\":\\\"TASK-7f2e020b-72c9-40-result\\\"}]}\"},{\"agent\":\"knowledge\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-0e296d98-8cd8-41\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:38:59.262685500Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"simulated\\\":false,\\\"provider\\\":\\\"HERMES_AGENT\\\",\\\"fallback\\\":false,\\\"usage\\\":{\\\"prompt_tokens\\\":2706,\\\"completion_tokens\\\":163,\\\"total_tokens\\\":2869},\\\"latencyMs\\\":3461,\\\"hermesConnected\\\":true,\\\"content\\\":{\\\"skillIds\\\":[\\\"SKL-30388273-a422-40\\\"],\\\"manualIds\\\":[\\\"MAN-21\\\"],\\\"explanation\\\":\\\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\\\"},\\\"model\\\":\\\"hermes-agent\\\",\\\"requestedProvider\\\":\\\"HERMES_AGENT\\\",\\\"operation\\\":\\\"search\\\",\\\"fictional\\\":true,\\\"skills\\\":[{\\\"id\\\":\\\"SKL-30388273-a422-40\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE 해결 초안\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\",\\\"checks\\\":\\\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\\\",\\\"solution\\\":\\\"가상 조치 및 검증 결과: {\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"cautions\\\":\\\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\\\",\\\"incident_id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"approved_by\\\":\\\"admin\\\",\\\"created_at\\\":\\\"2026-10-10T09:00:24.666+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"}],\\\"manuals\\\":[{\\\"id\\\":\\\"MAN-21\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 21\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"prevention\\\":\\\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\",\\\"prevention\\\":\\\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\",\\\"prevention\\\":\\\"반복 장애 알림과 주간 점검 강화\\\"}],\\\"explanation\\\":\\\"본 사고는 CPU 활용도 96%, 메모리 고갈, 프로세스 대기 포화 상태와 고객 장애, 서비스 불가 문제, 최근 7일 내 반복 발생이 관찰되어 여러 유사 조건을 만족하는 SKL-30388273-a422-40 복구 절차가 적합합니다. 해당 절차는 가상 조치 및 결과 검증을 통한 오류율 및 지연 시간 정상화를 포함하며, 실제 시스템 변경 금지 및 관리자 승인 필요조건과 일치합니다. 매뉴얼 MAN-21은 이와 동일한 절차 흐름을 제시하여 대응에 적합합니다.\\\",\\\"approvedOnly\\\":true}}],\\\"artifactId\\\":\\\"TASK-0e296d98-8cd8-41-result\\\"}]}\"},{\"agent\":\"incident\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-8ff0c887-28f8-4a\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:00.306416200Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"incidentId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"plan\\\":[\\\"incident\\\",\\\"diagnosis\\\",\\\"knowledge\\\",\\\"impact\\\",\\\"recovery\\\",\\\"report\\\"],\\\"scope\\\":\\\"FICTIONAL_ONLY\\\"}}],\\\"artifactId\\\":\\\"TASK-8ff0c887-28f8-4a-result\\\"}]}\"},{\"agent\":\"diagnosis\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-8487763f-9ec0-46\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:03.301219700Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"causeCode\\\":\\\"RESOURCE_PRESSURE\\\",\\\"causeLabel\\\":\\\"CPU·메모리 자원 포화\\\",\\\"relatedType\\\":\\\"RESOURCE\\\",\\\"confidence\\\":0.7984801696830491,\\\"evidenceScore\\\":0.48045161049064217,\\\"provider\\\":\\\"LOCAL_JEV\\\",\\\"model\\\":\\\"jevos-v4\\\",\\\"latencyMs\\\":2967,\\\"simulated\\\":false,\\\"fallback\\\":false,\\\"fallbackReason\\\":\\\"\\\",\\\"schemaValid\\\":true,\\\"needsReview\\\":true,\\\"evidence\\\":[\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\"],\\\"answers\\\":{\\\"cause\\\":{\\\"type\\\":\\\"choice\\\",\\\"choice\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probabilities\\\":{\\\"RESOURCE_PRESSURE\\\":0.823670148472668,\\\"DB_POOL_EXHAUSTION\\\":0.06230395392208965,\\\"DB_LOCK_CONTENTION\\\":0.029675167895527415,\\\"DNS_FAILURE\\\":0.012167248566016253,\\\"PACKET_LOSS\\\":0.015152977084189875,\\\"DEPLOYMENT_REGRESSION\\\":0.01802576451158972,\\\"AUTH_ANOMALY\\\":0.019600745658083507,\\\"UNKNOWN\\\":0.01940399388983561},\\\"confidence\\\":0.7984801696830491},\\\"support\\\":{\\\"type\\\":\\\"noul\\\",\\\"noul\\\":0.48045161049064217}},\\\"scope\\\":\\\"CAUSE_HYPOTHESIS_NOT_CONFIRMED_ROOT_CAUSE\\\",\\\"candidates\\\":[{\\\"label\\\":\\\"CPU·메모리 자원 포화\\\",\\\"code\\\":\\\"RESOURCE_PRESSURE\\\",\\\"probability\\\":0.823670148472668},{\\\"label\\\":\\\"DB 연결 풀 고갈\\\",\\\"code\\\":\\\"DB_POOL_EXHAUSTION\\\",\\\"probability\\\":0.06230395392208965},{\\\"label\\\":\\\"DB 잠금 경합\\\",\\\"code\\\":\\\"DB_LOCK_CONTENTION\\\",\\\"probability\\\":0.029675167895527415}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\"}]}}],\\\"artifactId\\\":\\\"TASK-8487763f-9ec0-46-result\\\"}]}\"},{\"agent\":\"impact\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-533da1f3-7b7e-45\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:03.318770Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"engine\\\":\\\"NEO4J\\\",\\\"root\\\":\\\"CMP-01\\\",\\\"affected\\\":[\\\"CMP-01\\\",\\\"CMP-05\\\",\\\"CMP-07\\\",\\\"CMP-23\\\",\\\"CMP-32\\\",\\\"CMP-33\\\",\\\"CMP-39\\\",\\\"SYS-01\\\",\\\"SYS-03\\\",\\\"SYS-05\\\",\\\"SYS-07\\\",\\\"SYS-08\\\",\\\"SYS-09\\\",\\\"SYS-11\\\"],\\\"depth\\\":6}}],\\\"artifactId\\\":\\\"TASK-533da1f3-7b7e-45-result\\\"}]}\"},{\"agent\":\"knowledge\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-cc85f035-3323-4e\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:06.293790200Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"simulated\\\":false,\\\"provider\\\":\\\"HERMES_AGENT\\\",\\\"fallback\\\":false,\\\"usage\\\":{\\\"prompt_tokens\\\":2706,\\\"completion_tokens\\\":187,\\\"total_tokens\\\":2893},\\\"latencyMs\\\":2777,\\\"hermesConnected\\\":true,\\\"content\\\":{\\\"skillIds\\\":[\\\"SKL-30388273-a422-40\\\"],\\\"manualIds\\\":[\\\"MAN-21\\\"],\\\"explanation\\\":\\\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\\\"},\\\"model\\\":\\\"hermes-agent\\\",\\\"requestedProvider\\\":\\\"HERMES_AGENT\\\",\\\"operation\\\":\\\"search\\\",\\\"fictional\\\":true,\\\"skills\\\":[{\\\"id\\\":\\\"SKL-30388273-a422-40\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE 해결 초안\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\",\\\"checks\\\":\\\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\\\",\\\"solution\\\":\\\"가상 조치 및 검증 결과: {\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"cautions\\\":\\\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\\\",\\\"incident_id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"approved_by\\\":\\\"admin\\\",\\\"created_at\\\":\\\"2026-10-10T09:00:24.666+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"}],\\\"manuals\\\":[{\\\"id\\\":\\\"MAN-21\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 21\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"}],\\\"similarIncidents\\\":[{\\\"id\\\":\\\"INC-4ea128ba-1176-41\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"{\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"prevention\\\":\\\"반복 장애 알림 기준 및 주간 가상 부하 테스트 강화\\\"},{\\\"id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE\\\",\\\"notes\\\":\\\"Local jevos 분석과 Neo4j 영향 범위 확인 후 승인된 가상 조치를 적용했습니다. 오류율 0.02%, 응답 시간 120ms와 정상 의존성을 확인했습니다.\\\",\\\"prevention\\\":\\\"자원 포화 경보 기준을 점검하고 주간 가상 부하 테스트와 재발 패턴 검토를 수행합니다.\\\"},{\\\"id\\\":\\\"INC-SEED-196\\\",\\\"title\\\":\\\"가상 대외계 · RESOURCE\\\",\\\"notes\\\":\\\"가상 복구 후 정상 지표 확인\\\",\\\"prevention\\\":\\\"반복 장애 알림과 주간 점검 강화\\\"}],\\\"explanation\\\":\\\"사고의 CPU 96%, 메모리 포화 및 프로세스 큐 포화 상태, 고객 장애 및 서비스 불가 상태와 최근 7일 반복 서명이 사고 관측 조건과 정확히 일치하여 SKL-30388273-a422-40이 가장 적합한 복구 절차입니다. 해당 스킬은 판단 근거, 의존 관계, 승인 증적과 복구 지표 검증을 포함하며, 가상 조치 후 검증 결과도 승인되어 있으므로 본 사고 대응에 직접 적용 가능합니다. MAN-21 매뉴얼은 기본 절차인 로그 확인, 영향 범위 확인, 승인 요청, 가상 조치, 검증의 흐름을 포함하여 대응 프로세스를 보조합니다.\\\",\\\"approvedOnly\\\":true}}],\\\"artifactId\\\":\\\"TASK-cc85f035-3323-4e-result\\\"}]}\"},{\"agent\":\"recovery\",\"status\":\"completed\",\"result_json\":\"{\\\"kind\\\":\\\"task\\\",\\\"id\\\":\\\"TASK-78e75d35-59f6-4d\\\",\\\"contextId\\\":\\\"INC-e069ac26-8d59-49\\\",\\\"status\\\":{\\\"state\\\":\\\"completed\\\",\\\"timestamp\\\":\\\"2026-10-10T10:40:06.918561900Z\\\"},\\\"artifacts\\\":[{\\\"parts\\\":[{\\\"kind\\\":\\\"data\\\",\\\"data\\\":{\\\"approvedSkills\\\":[{\\\"id\\\":\\\"SKL-01\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 01\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-06\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 06\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-11\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 11\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-16\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 복구 절차 16\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation\\\",\\\"checks\\\":\\\"관측 지표·의존성·승인 증적을 확인한다.\\\",\\\"solution\\\":\\\"승인된 시연에서 가상 지표를 정상화하고 오류율을 재측정한다.\\\",\\\"cautions\\\":\\\"가상 자산에만 적용. 실제 운영 명령은 실행하지 않는다.\\\",\\\"incident_id\\\":null,\\\"approved_by\\\":\\\"seed-admin\\\",\\\"created_at\\\":\\\"2026-09-30T15:00:00.000+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"},{\\\"id\\\":\\\"SKL-30388273-a422-40\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"가상 코어뱅킹 · RESOURCE 해결 초안\\\",\\\"status\\\":\\\"APPROVED\\\",\\\"conditions\\\":\\\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\\\",\\\"checks\\\":\\\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\\\",\\\"solution\\\":\\\"가상 조치 및 검증 결과: {\\\\\\\"realChanges\\\\\\\":false,\\\\\\\"passed\\\\\\\":true,\\\\\\\"provider\\\\\\\":\\\\\\\"SIMULATED_METRICS\\\\\\\",\\\\\\\"before\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":3200,\\\\\\\"errorRate\\\\\\\":12.5,\\\\\\\"healthyDependencies\\\\\\\":false},\\\\\\\"after\\\\\\\":{\\\\\\\"latencyMs\\\\\\\":120,\\\\\\\"errorRate\\\\\\\":0.02,\\\\\\\"healthyDependencies\\\\\\\":true}}\\\",\\\"cautions\\\":\\\"실제 시스템 변경 금지. 관리자 검토 후 승인해야 검색된다.\\\",\\\"incident_id\\\":\\\"INC-a21bdc49-8c43-48\\\",\\\"approved_by\\\":\\\"admin\\\",\\\"created_at\\\":\\\"2026-10-10T09:00:24.666+00:00\\\",\\\"source_provider\\\":\\\"LOCAL_SKILL_STORE\\\",\\\"source_model\\\":\\\"seed-or-legacy-template\\\",\\\"simulated\\\":true,\\\"provenance_json\\\":\\\"{}\\\",\\\"export_status\\\":\\\"EXPORTED\\\"}],\\\"tools\\\":[\\\"apply_simulated_recovery\\\",\\\"verify_simulated_recovery\\\"],\\\"guideSource\\\":\\\"APPROVED_SKILLS\\\",\\\"manuals\\\":[{\\\"id\\\":\\\"MAN-01\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 01\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-06\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 06\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-11\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 11\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-16\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 16\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-21\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 21\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"},{\\\"id\\\":\\\"MAN-26\\\",\\\"type\\\":\\\"RESOURCE\\\",\\\"title\\\":\\\"RESOURCE 가상 대응 매뉴얼 26\\\",\\\"procedure_text\\\":\\\"관측 로그 확인 → 영향 범위 확인 → 승인 요청 → 가상 조치 → 검증\\\"}],\\\"realChanges\\\":false}}],\\\"artifactId\\\":\\\"TASK-78e75d35-59f6-4d-result\\\"}]}\"}],\"summary\":\"가상 장애의 판단·영향 분석·승인·복구 검증을 완료했습니다.\",\"impact\":{\"engine\":\"NEO4J\",\"root\":\"CMP-01\",\"affected\":[\"CMP-01\",\"CMP-05\",\"CMP-07\",\"CMP-23\",\"CMP-32\",\"CMP-33\",\"CMP-39\",\"SYS-01\",\"SYS-03\",\"SYS-05\",\"SYS-07\",\"SYS-08\",\"SYS-09\",\"SYS-11\"],\"depth\":6},\"title\":\"가상 코어뱅킹 · RESOURCE\",\"verification\":\"{\\\"after\\\":{\\\"healthyDependencies\\\":true,\\\"errorRate\\\":0.02,\\\"latencyMs\\\":120},\\\"before\\\":{\\\"healthyDependencies\\\":false,\\\"errorRate\\\":12.5,\\\"latencyMs\\\":3200},\\\"provider\\\":\\\"SIMULATED_METRICS\\\",\\\"passed\\\":true,\\\"realChanges\\\":false}\",\"decision\":{\"type\":\"RESOURCE\",\"severity\":\"P1\",\"priority\":1,\"department\":\"PLATFORM\",\"recurrence\":true,\"confidence\":0.7738209062578496,\"evidenceScore\":0.8510380459434603,\"provider\":\"LOCAL_JEV\",\"model\":\"jevos-v4\",\"latencyMs\":3792,\"simulated\":false,\"fallback\":false,\"fallbackReason\":\"\",\"needsReview\":false,\"evidence\":[\"Operator reviewed: 가상 통합 테스트의 관리자 검토: CPU 96%, 메모리 고갈과 대기열 포화 관측은 RESOURCE_PRESSURE 가설에 부합함을 확인했습니다. 모델 근거 점수 48.05%는 원본 그대로 보존하며, 확정 근본 원인이라고 주장하지 않습니다. 가상 지표 복구 검증만 진행합니다.\",\"Original observations: CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days; Choice/noul probabilities are model evidence; causal explanation is not returned by Jev.\"],\"answers\":{\"type\":{\"type\":\"choice\",\"choice\":\"RESOURCE\",\"probabilities\":{\"NETWORK\":0.009294679171339115,\"APPLICATION\":0.012482977188175662,\"DATABASE\":0.042424760267317875,\"RESOURCE\":0.9153772641996997,\"SECURITY\":0.020420319173467587},\"confidence\":0.8942215802496245},\"severity\":{\"type\":\"choice\",\"choice\":\"P1\",\"probabilities\":{\"P1\":0.9788048817768452,\"P2\":0.013545184521869048,\"P3\":0.007649933701285796},\"confidence\":0.9682073226652677},\"department\":{\"type\":\"choice\",\"choice\":\"PLATFORM\",\"probabilities\":{\"PLATFORM\":0.8190567250062798,\"NETWORK\":0.022564466503237037,\"APPLICATION\":0.04431691694850809,\"DATABASE\":0.07612055898970037,\"SECURITY\":0.037941332552274755},\"confidence\":0.7738209062578496},\"recurrence\":{\"type\":\"noul\",\"noul\":0.9608086645576029},\"evidence\":{\"type\":\"noul\",\"noul\":0.8510380459434603}}}}",
+        "created_at": "2026-10-10T10:40:07.457+00:00"
+      },
+      {
+        "id": 94,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "hermes",
+        "action": "HERMES_DRAFT",
+        "data_json": "{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":3393,\"completion_tokens\":158,\"total_tokens\":3551},\"latencyMs\":2781,\"hermesConnected\":true,\"content\":{\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율 및 응답 시간 등 복구 상태를 재측정한다. 가상 자원에서 검증된 결과를 토대로 조치한다.\",\"cautions\":\"실제 운영 환경에서 명령 실행을 금지하며, 가상 자산에서만 적용한다. 관리자 검토 및 승인이 필수이며, 재발 방지를 위해 반복 장애 알림과 주간 가상 부하 테스트를 수행한다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"draft\",\"fictional\":true}",
+        "created_at": "2026-10-10T10:40:10.428+00:00"
+      },
+      {
+        "id": 95,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "harness",
+        "action": "RESOLVED",
+        "data_json": "{\"skillDraftId\":\"SKL-862d515d-2837-48\"}",
+        "created_at": "2026-10-10T10:40:10.449+00:00"
+      },
+      {
+        "id": 98,
+        "incident_id": "INC-e069ac26-8d59-49",
+        "actor": "admin",
+        "action": "CLOSE",
+        "data_json": "{}",
+        "created_at": "2026-10-10T10:40:11.953+00:00"
+      }
+    ]
+  },
+  "skill": {
+    "id": "SKL-862d515d-2837-48",
+    "type": "RESOURCE",
+    "title": "가상 코어뱅킹 · RESOURCE 해결 초안",
+    "status": "APPROVED",
+    "conditions": "CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days",
+    "checks": "판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.",
+    "solution": "승인된 시연에서 가상 지표를 정상화하고 오류율 및 응답 시간 등 복구 상태를 재측정한다. 가상 자원에서 검증된 결과를 토대로 조치한다.",
+    "cautions": "실제 운영 환경에서 명령 실행을 금지하며, 가상 자산에서만 적용한다. 관리자 검토 및 승인이 필수이며, 재발 방지를 위해 반복 장애 알림과 주간 가상 부하 테스트를 수행한다.",
+    "incident_id": "INC-e069ac26-8d59-49",
+    "approved_by": "admin",
+    "created_at": "2026-10-10T10:40:10.445+00:00",
+    "source_provider": "HERMES_AGENT",
+    "source_model": "hermes-agent",
+    "simulated": false,
+    "provenance_json": "{\"simulated\":false,\"provider\":\"HERMES_AGENT\",\"fallback\":false,\"usage\":{\"prompt_tokens\":3393,\"completion_tokens\":158,\"total_tokens\":3551},\"latencyMs\":2781,\"hermesConnected\":true,\"content\":{\"conditions\":\"CPU utilization 96%, memory exhaustion and process queue saturation; customer outage, service unavailable; repeated signature in last 7 days\",\"checks\":\"판단 근거, 의존 관계, 승인 증적과 복구 지표를 확인한다.\",\"solution\":\"승인된 시연에서 가상 지표를 정상화하고 오류율 및 응답 시간 등 복구 상태를 재측정한다. 가상 자원에서 검증된 결과를 토대로 조치한다.\",\"cautions\":\"실제 운영 환경에서 명령 실행을 금지하며, 가상 자산에서만 적용한다. 관리자 검토 및 승인이 필수이며, 재발 방지를 위해 반복 장애 알림과 주간 가상 부하 테스트를 수행한다.\"},\"model\":\"hermes-agent\",\"requestedProvider\":\"HERMES_AGENT\",\"operation\":\"draft\",\"fictional\":true}",
+    "export_status": "EXPORTED"
+  },
+  "hermesCatalogEntry": {
+    "name": "incident-brain-skl-862d515d-2837-48",
+    "description": "가상 코어뱅킹 · RESOURCE 해결 초안",
+    "category": null
+  },
+  "config": {
+    "fictional": true,
+    "a2a": "0.3.0",
+    "defaultProvider": "LOCAL",
+    "cloudConfigured": false,
+    "hermes": {
+      "apiReachable": true,
+      "reason": "",
+      "configured": true,
+      "toolsDisabled": true,
+      "provider": "HERMES_AGENT",
+      "lastResult": {
+        "provider": "HERMES_AGENT",
+        "fallback": false,
+        "hermesConnected": true,
+        "fictional": true,
+        "usage": {
+          "prompt_tokens": 3393,
+          "completion_tokens": 158,
+          "total_tokens": 3551
+        },
+        "simulated": false,
+        "at": "2026-10-10T10:40:10.428043200Z",
+        "model": "hermes-agent",
+        "requestedProvider": "HERMES_AGENT",
+        "latencyMs": 2781,
+        "operation": "draft"
+      },
+      "llmVerified": true,
+      "knowledgeStore": "POSTGRESQL_APPROVED_SKILLS"
+    },
+    "hermesExportConfigured": true,
+    "database": "POSTGRESQL",
+    "graph": "NEO4J"
+  },
+  "draftAbsentBeforeApproval": true,
+  "publishedAfterApproval": true
+}

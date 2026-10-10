@@ -1,0 +1,14 @@
+{
+  "incidentId": "INC-a21bdc49-8c43-48",
+  "status": "CLOSED",
+  "provider": "LOCAL_JEV",
+  "model": "jevos-v4",
+  "graph": "NEO4J",
+  "agents": 6,
+  "skillApproved": "SKL-30388273-a422-40",
+  "bffSession": "HttpOnly",
+  "crossOriginDenied": true,
+  "seedSimulated": true,
+  "pdfDownloaded": true,
+  "excelSheets": 4
+}

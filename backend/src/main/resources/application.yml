@@ -1,0 +1,38 @@
+server:
+  port: ${PORT:8080}
+spring:
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/brain}
+    username: ${DB_USER:brain}
+    password: ${DB_PASSWORD:brain_demo_only}
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:5}
+      minimum-idle: ${DB_POOL_MIN_IDLE:1}
+  jackson:
+    time-zone: UTC
+brain:
+  admin-token: ${ADMIN_TOKEN:local-demo-admin-change-me}
+  internal-url: ${INTERNAL_URL:http://127.0.0.1:${server.port}}
+  agent-base-url: ${AGENT_BASE_URL:${brain.internal-url}}
+  sse-timeout-ms: ${SSE_TIMEOUT_MS:240000}
+  step-ms: ${STEP_MS:500}
+  graph-required: ${GRAPH_REQUIRED:true}
+  neo4j-uri: ${NEO4J_URI:bolt://localhost:7687}
+  neo4j-password: ${NEO4J_PASSWORD:neo4j_demo_only}
+  neo4j-user: ${NEO4J_USER:neo4j}
+  neo4j-database: ${NEO4J_DATABASE:neo4j}
+  jev:
+    provider: ${JEV_PROVIDER:LOCAL}
+    local-url: ${LOCAL_JEV_URL:http://localhost:8017/v1/systemone}
+    local-key: ${LOCAL_JEV_KEY:}
+    typesafe-url: ${TYPESAFE_JEV_URL:https://api.typesafe.ai/v1/systemone}
+    typesafe-key: ${TYPESAFE_API_KEY:}
+    timeout-seconds: ${JEV_TIMEOUT_SECONDS:30}
+  hermes-url: ${HERMES_URL:http://127.0.0.1:8642/v1}
+  hermes-key: ${HERMES_API_KEY:}
+  hermes-model: ${HERMES_MODEL:hermes-agent}
+  hermes-timeout-seconds: ${HERMES_TIMEOUT_SECONDS:90}
+  hermes-skills-dir: ${HERMES_SKILLS_DIR:}
+  hermes-publish-mode: ${HERMES_PUBLISH_MODE:filesystem}
+  hermes-publish-url: ${HERMES_PUBLISH_URL:}
+  hermes-publish-key: ${HERMES_PUBLISH_KEY:}
