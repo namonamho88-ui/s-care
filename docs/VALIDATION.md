@@ -2,7 +2,7 @@
 
 검증일: 2026-10-10 (KST). 모든 장애·관측·담당자·자산은 가상 데이터다.
 
-이 문서는 단계별 검증 이력이다. **최신 결과는 아래 실제 Railway/Supabase 부분 배포 절**을 기준으로 한다. 전체 클라우드 시연과 Vercel 연결은 아직 완료하지 않았다.
+이 문서는 단계별 검증 이력이다. **각 절의 날짜와 범위를 구분해 읽는다.** 초기 부분 배포의 미완료 사항은 후속 ‘Vercel · Supabase · Railway 전체 통합 검증 완료’ 절에서 해소했다. 이후 UI·계정 변경 검증은 말미의 최신 절을 기준으로 한다.
 
 ## 실제 Railway/Supabase 부분 배포 (최신)
 
@@ -162,3 +162,13 @@ Mock 시연 점수와 실제 모델 점수를 섞지 않는다. 정답은 모델
 - 최초 배포의 실제 브라우저 검증에서 닫힌 dialog의 0 크기가 초기 그래프 배율에 사용되는 문제를 발견했다. 수동 맞춤 버튼을 누르기 **전**의 노드 위치·크기 검사를 추가해 수정 전 실패를 재현했고, dialog를 `useLayoutEffect`에서 먼저 연 후 측정하도록 수정해 통과했다. 런타임 최종 수정 커밋은 `d5bde391bcdcfabfffecfff022289ef3b77d6cbe`다.
 - 이번 UI 검증에서는 기존 종료 장애를 읽어서 그래프를 확인했다. 사용자가 진행 중인 장애의 승인·수정·종료나 DB 초기화·백엔드 재시작은 수행하지 않았다.
 - 최종 커밋의 [verify](https://github.com/namonamho88-ui/s-care/actions/runs/38057458996)와 [container verification](https://github.com/namonamho88-ui/s-care/actions/runs/38057459000)가 모두 성공했다. Vercel `57wZPqpTdz5mxa4KDasAW8sR2dBq` Ready 및 실제 시연 주소의 52/80 전체화면 자동 맞춤·14/13 영향 필터·노드 정보·Esc·포커스 복귀·역할별 매뉴얼을 확인했다. 인쇄용 HTML 두 파일은 HTTP 200과 원본 SHA-256 일치를 확인했다. `evidence/usability-cloud.json`.
+
+
+## 개인 계정·권한 분리 (2026-10-11)
+
+- Flyway V5가 app_users/app_sessions를 추가한다. 기존 장애·시드 마이그레이션은 변경하지 않았다. ADMIN/USER, 담당자별 후기 수정, 일반 사용자용 Excel의 감사 시트 제외, 개인 행위자 감사 기록을 적용했다.
+- 24시간/1회용 초대, PBKDF2 비밀번호 해시, 8시간 서버 세션, 5회 실패 잠금, 재발급·비활성화·비밀번호 변경·로그아웃 후 세션 폐기를 실제 HTTP/SQL로 검증했다.
+- 로컬 Java 21/H2 백엔드 44개 테스트 전부 통과(건너뜀 없음). 실제 Python Hermes Skill bridge 검증은 기존 전용 가상환경의 aiohttp로 실행했다. 새로운 모델 추론 정확도 측정은 하지 않았다.
+- 프론트엔드 단위 12개, UI 12개, Next.js production build 통과. 계정 UI 외에도 전체화면 그래프, 매뉴얼, 등록 실패 안내, 후기 초안 저장 회귀를 포함한다.
+- 별도 로컬 Spring Boot + 실제 Next.js BFF로 HttpOnly/SameSite 쿠키, 초대 1회 사용, 직접 API 권한 거부, 로그아웃/비활성화 검증을 통과했다. 이 결과는 클라우드 배포 결과와 구분한다.
+- 컨테이너 CI에 동일 BFF 계정 검증을 추가했다. 해당 검증 계정은 종료 후 비활성화하고 기존 장애는 변경하지 않는다. 최신 클라우드/CI 결과는 후속 증적을 참조한다.

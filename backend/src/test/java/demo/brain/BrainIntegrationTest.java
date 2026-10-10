@@ -48,6 +48,10 @@ class BrainIntegrationTest {
   assertThat(post("/api/hermes/sync?limit=6",Map.of()).getStatusCode().value()).isEqualTo(400);
   assertThatThrownBy(()->publisher.sync("../draft",5)).isInstanceOf(IllegalArgumentException.class);
  }
+ @Test @Order(11) void personalAccountInvitationSessionsAndRevocation(){new AccountChecks(s,http,token).invitationAndSessionLifecycle();}
+ @Test @Order(12) void userCannotBypassServerRolesOrOwnership()throws Exception{new AccountChecks(s,http,token).rolesAndOwnership();}
+ @Test @Order(13) void accountAdminActionsRecordIndividualIdentity()throws Exception{new AccountChecks(s,http,token).adminIdentityAndRecovery();}
+ @Test @Order(14) void expiredInvitationsResetAndPersistentLockout(){new AccountChecks(s,http,token).resetsAndLockout();}
  String create(String mode){var response=post("/api/simulate",Map.of("scenarioId","SCN-01","mode",mode,"provider","LOCAL"));assertThat(response.getStatusCode().value()).isEqualTo(200);return response.getBody().get("id").toString();}
  void waitFor(String id,String expected)throws Exception{long end=System.nanoTime()+15_000_000_000L;while(System.nanoTime()<end){String state=s.incident(id).get("status").toString();if(state.equals(expected))return;if(state.equals("FAILED"))fail(s.db.queryForList("SELECT * FROM events WHERE incident_id=?",id).toString());Thread.sleep(30);}fail("Timeout waiting for "+expected);}
 }

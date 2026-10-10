@@ -30,6 +30,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AccountCenter from "@/components/account-center";
 import ManualCenter from "@/components/manual-center";
 import { recoveryNotesDraft } from "@/lib/recovery-notes.mjs";
 const ImpactGraph = dynamic(() => import("@/components/impact-graph"), {
@@ -125,6 +126,7 @@ async function api(path: string, method = "GET", body?: any) {
     body: body ? JSON.stringify(body) : undefined,
   });
   const data = await res.json();
+  if (res.status === 401 && path !== "/session") window.dispatchEvent(new Event("brain-session-expired"));
   if (!res.ok)
     throw new Error(
       data.error || data.message || "요청을 처리하지 못했습니다.",
@@ -317,6 +319,9 @@ export default function Home() {
     [token, setToken] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
+  const [user, setUser] = useState<Row>({});
+  const isAdmin = user.role === "ADMIN";
+  const [loginMode, setLoginMode] = useState("login"), [loginName, setLoginName] = useState(""), [password, setPassword] = useState(""), [inviteCode, setInviteCode] = useState("");
   const [syncProgress, setSyncProgress] = useState("");
   const [notice, setNotice] = useState("");
   const [view, setView] = useState("dashboard"),
@@ -378,8 +383,8 @@ export default function Home() {
       api("/dashboard?" + q),
       api("/incidents?" + q),
       api("/skills"),
-      api("/audit"),
-      api("/evaluations"),
+      isAdmin ? api("/audit") : Promise.resolve([]),
+      isAdmin ? api("/evaluations") : Promise.resolve([]),
       api("/config"),
     ]);
     if (version !== refreshVersion.current) return;
@@ -390,7 +395,7 @@ export default function Home() {
     setEvaluations(e);
     setConfig(c);
     setOnline(true);
-  }, [filterType, filterSystem, from, to]);
+  }, [filterType, filterSystem, from, to, isAdmin]);
   const loadDetail = useCallback(async (id: string) => {
     const d = await api("/incidents/" + id);
     if (selectedRef.current === id) setDetail(d);
@@ -415,10 +420,19 @@ export default function Home() {
       setBusy(false);
     }
   };
+  const clearSession = useCallback(() => {
+    ++refreshVersion.current; setAuth(false); setUser({}); setToken(""); setPassword(""); setInviteCode(""); setSelected(null); setDetail(null); setDrawer(false); setCreateOpen(false); setView("dashboard"); setIncidents([]); setSkills([]); setAudit([]); setEvaluations([]);
+  }, []);
+  useEffect(() => {
+    const expired = () => { clearSession(); setError("세션이 만료되었거나 폐기되었습니다. 다시 로그인하세요."); };
+    window.addEventListener("brain-session-expired", expired);
+    return () => window.removeEventListener("brain-session-expired", expired);
+  }, [clearSession]);
   useEffect(() => {
     api("/config")
       .then((c) => {
         setConfig(c);
+        setUser(c.user || {});
         setProvider(c.defaultProvider);
         setAuth(true);
       })
@@ -527,7 +541,8 @@ export default function Home() {
     e.preventDefault();
     setBusy(true);
     try {
-      await api("/session", "POST", { token });
+      const result = await api("/session", "POST", loginMode === "admin" ? { mode: "admin", token } : { mode: loginMode, login: loginName, password, inviteCode });
+      setUser(result.user); setToken(""); setPassword(""); setInviteCode("");
       setAuth(true);
       setError("");
     } catch (e) {
@@ -571,6 +586,7 @@ export default function Home() {
     knowledge: "지식 & Skill · 해결 절차 관리",
     harness: "Harness · 실행 통제와 평가",
     guide: "사용 안내 · 역할별 매뉴얼",
+    accounts: isAdmin ? "계정 & 권한 관리" : "내 계정",
   };
   const descriptions: Row = {
     dashboard: "현재 장애와 처리 진행 상황을 확인합니다. 장애를 선택하면 판단·영향 분석·Agent 결과가 표시됩니다.",
@@ -579,7 +595,9 @@ export default function Home() {
     knowledge: "해결 방법을 재사용하는 공간입니다. 검토한 Skill만 승인하고 Hermes 게시 상태를 확인하세요.",
     harness: "AI의 실행 제한과 승인 기록을 확인하고 가상 시나리오로 판단 정확도를 평가합니다.",
     guide: "처음 사용하는 분은 사용자용부터, 승인과 환경 운영 담당자는 관리자용을 확인하세요.",
+    accounts: "개인 계정과 로그인 정보를 관리합니다. 권한은 서버에서도 검사합니다.",
   };
+  const canEdit = !!detail && (isAdmin || (user.operatorId && user.operatorId === detail.owner_id));
   const reportDirty = !!detail && (editTitle !== detail.title || notes !== detail.notes || prevention !== detail.prevention || owner !== detail.owner_id);
   const generatedNotes = detail ? recoveryNotesDraft(detail.notes) : null;
   const recoveryProof = generatedNotes ? detail?.notes : [...(detail?.events || [])].reverse().find((event: Row) => event.stage === "VERIFY" && event.state === "COMPLETED")?.data_json;
@@ -604,30 +622,17 @@ export default function Home() {
           <h1>
             AI Incident Brain <span className="muted">3.0</span>
           </h1>
-          <p>
-            가상 금융 IT 환경에서 장애 판단부터 복구 검증까지.
-            <br />
-            관리자 시연 세션을 시작하세요.
-          </p>
-          <label>
-            관리자 토큰
-            <input
-              aria-label="관리자 토큰"
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              autoComplete="current-password"
-            />
-          </label>
-          <Button className="w-full mt-5" disabled={busy}>
-            {busy ? "연결 중…" : "Command Center 시작"}
-            <ArrowUpRight size={16} />
-          </Button>
-          <p className="small" style={{ margin: "20px 0 0" }}>
-            이 환경에 설정된 관리자 토큰을 입력하세요.
-            <br />
-            모든 자산·담당자·장애·지표는 100% 가상 데이터입니다.
-          </p>
+          <p>가상 금융 IT 환경에서 장애 판단부터 복구 검증까지.<br />개인 계정으로 업무를 시작하세요.</p>
+          <div className="tabs mb-4" role="tablist" aria-label="로그인 방식">
+            {[["login", "개인 계정"], ["activate", "초대 활성화"], ["admin", "관리자 초기 설정"]].map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={loginMode === id} className={"tab " + (loginMode === id ? "active" : "")} onClick={() => { setLoginMode(id); setError(""); setToken(""); setPassword(""); setInviteCode(""); }}>{label}</button>)}
+          </div>
+          {loginMode === "admin" ? <label>관리자 토큰<input aria-label="관리자 토큰" type="password" required value={token} onChange={e => setToken(e.target.value)} autoComplete="off" /></label> : <>
+            <label>아이디<input required value={loginName} maxLength={60} onChange={e => setLoginName(e.target.value)} autoComplete="username" autoCapitalize="none" /></label>
+            {loginMode === "activate" && <label className="mt-3">초대 코드<input required value={inviteCode} maxLength={100} onChange={e => setInviteCode(e.target.value)} autoComplete="off" /></label>}
+            <label className="mt-3">{loginMode === "activate" ? "새 비밀번호" : "비밀번호"}<input type="password" required minLength={loginMode === "activate" ? 12 : undefined} maxLength={128} value={password} onChange={e => setPassword(e.target.value)} autoComplete={loginMode === "activate" ? "new-password" : "current-password"} /></label>
+          </>}
+          <Button className="w-full mt-5" disabled={busy}>{busy ? "연결 중…" : loginMode === "activate" ? "계정 활성화 & 시작" : "Command Center 시작"}<ArrowUpRight size={16} /></Button>
+          <p className="small" style={{ margin: "20px 0 0" }}>{loginMode === "admin" ? "첫 관리자 계정 생성 또는 계정 복구 시에만 토큰을 사용하세요." : loginMode === "activate" ? "관리자에게 받은 24시간 유효한 1회용 코드와 새 비밀번호(12~128자)를 입력하세요." : "계정이 없거나 비밀번호를 잊으셨다면 관리자에게 초대 코드 발급을 요청하세요."}<br />모든 업무 자산·담당자·장애·지표는 가상 데이터입니다.</p>
           {error && (
             <div role="alert" className="banner error mt-4">
               {error}
@@ -657,7 +662,8 @@ export default function Home() {
             ["knowledge", BookOpen, "지식 & Skill"],
             ["harness", ShieldCheck, "Harness & 평가"],
             ["guide", FileText, "사용 안내"],
-          ].map(([id, Icon, label]) => (
+            ["accounts", ShieldCheck, isAdmin ? "계정 관리" : "내 계정"],
+          ].filter(([id]) => isAdmin || id !== "harness").map(([id, Icon, label]) => (
             <button
               key={id as string}
               className={"nav-button " + (view === id ? "active" : "")}
@@ -691,7 +697,7 @@ export default function Home() {
           <p className="small muted mt-3">
             금융 IT 혁신 서비스 시연
             <br />
-            관리자 시연 환경 · v3.0
+            {isAdmin ? "관리자" : "일반 사용자"} 시연 환경 · v3.0
           </p>
         </div>
       </aside>
@@ -709,13 +715,12 @@ export default function Home() {
           </div>
           <div className="flex-row">
             <span className="mono small muted">ASIA / SEOUL</span>
-            <Chip>ADMIN</Chip>
+            <span className="small">{user.displayName}</span><Chip>{isAdmin ? "ADMIN" : "USER"}</Chip>
             <button
               aria-label="로그아웃"
               className="p-2 muted"
               onClick={async () => {
-                await api("/session", "DELETE");
-                setAuth(false);
+                try { await api("/session", "DELETE"); clearSession(); } catch (e) { setError((e as Error).message); }
               }}
             >
               <LogOut size={15} />
@@ -734,7 +739,7 @@ export default function Home() {
               장애 직접 등록
             </Button>
           </div>
-          {view !== "guide" && <><div className="simulation-bar">
+          {isAdmin && !["guide", "accounts"].includes(view) && <><div className="simulation-bar">
             <div className="flex-row">
               <div className="brand-icon">
                 <Zap size={19} />
@@ -794,6 +799,7 @@ export default function Home() {
           )}
           </>}
           {filtered && ["dashboard", "incidents", "ontology"].includes(view) && <div className="filter-notice" role="status"><span>집계 필터 적용 중 · {typeLabels[filterType] || "모든 유형"} · {catalog.assets.find((a: Row) => a.id === filterSystem)?.name || "모든 시스템"} · {from || "처음"} ~ {to || "현재 이후 포함"}</span><Button size="sm" variant="outline" onClick={resetFilters}>집계 필터 초기화</Button></div>}
+          {view === "accounts" && <AccountCenter user={user} operators={catalog.operators} api={api} onPasswordChanged={() => { clearSession(); setError("비밀번호를 변경하고 모든 세션을 폐기했습니다. 새 비밀번호로 로그인하세요."); }} />}
           {view === "guide" && <ManualCenter />}
           {view === "ontology" && <>
             <div className="ontology-context"><label>분석 기준 장애<select value={selected || ""} onChange={e => setSelected(e.target.value || null)}><option value="">선택 안 함 · 전체 구조</option>{incidents.map(i => <option key={i.id} value={i.id}>{i.id} · {i.title} · {statusLabels[i.status]}</option>)}</select></label><p className="small muted">저장된 분석 결과를 조회합니다. 영향도 분석 전 장애는 전체 구조만 표시됩니다.</p>{current && <Button size="sm" variant="outline" onClick={() => openIncident(current.id)}>선택 장애 상세 보기</Button>}</div>
@@ -1178,7 +1184,7 @@ export default function Home() {
                   검토 대기 {skills.filter((s) => s.status === "DRAFT").length}
                 </Chip>
                 <Chip>대응 매뉴얼 {catalog.manuals.length}</Chip>
-                <Button size="sm" variant="outline" disabled={busy || !config.hermesExportConfigured} onClick={() => action(async () => {
+                <Button size="sm" variant="outline" disabled={!isAdmin || busy || !config.hermesExportConfigured} onClick={() => action(async () => {
                   let cursor = "", processed = 0, failed = 0;
                   setSyncProgress("승인 Skill 동기화 시작…");
                   try {
@@ -1239,7 +1245,7 @@ export default function Home() {
                       ))}
                     </dl>
                     <p className="mono">{s.id}</p>
-                    {s.status === "DRAFT" && (
+                    {isAdmin && s.status === "DRAFT" && (
                       <div className="flex-row mt-4">
                         <Button
                           size="sm"
@@ -1502,7 +1508,7 @@ export default function Home() {
             <div className="drawer-body">
               {detail && (
                 <>
-                  <div className="banner next-step"><strong>다음 할 일</strong><p>{nextSteps[detail.status]}</p></div>
+                  <div className="banner next-step"><strong>다음 할 일</strong><p>{!isAdmin && ["NEEDS_REVIEW", "WAITING_APPROVAL", "FAILED"].includes(detail.status) ? "관리자의 검토·승인 또는 재시도를 기다리고 있습니다. 분석 결과와 실행 타임라인을 확인하세요." : !isAdmin && detail.status === "RESOLVED" ? "본인 담당 장애이면 후기와 예방 대책을 저장하세요. 최종 종료는 관리자가 수행합니다." : nextSteps[detail.status]}</p></div>
                   {detailTab === "analysis" && (
                     <>
                       <Panel title="관측 정보">
@@ -1519,7 +1525,7 @@ export default function Home() {
                       {detail.tasks?.some((t: Row) => t.agent === "diagnosis") && <Panel title="Diagnosis 원인 후보 · 확정 근본 원인 아님">
                         <AgentResult task={detail.tasks.filter((t: Row) => t.agent === "diagnosis").at(-1)} />
                       </Panel>}
-                      {detail.status === "NEEDS_REVIEW" && (
+                      {isAdmin && detail.status === "NEEDS_REVIEW" && (
                         <Panel title="담당자 판단 확인">
                           <div className="banner">
                             모델 근거가 부족합니다. 원본 관측과 모델 응답을
@@ -1621,7 +1627,7 @@ export default function Home() {
                           </div>
                         </Panel>
                       )}
-                      {detail.status === "WAITING_APPROVAL" && (
+                      {isAdmin && detail.status === "WAITING_APPROVAL" && (
                         <Panel title="가상 대응 승인">
                           <div className="banner">
                             Harness 검증이 완료되었습니다. 승인 후 가상 복구
@@ -1671,7 +1677,7 @@ export default function Home() {
                           </div>
                         </Panel>
                       )}
-                      {detail.status === "FAILED" && (
+                      {isAdmin && detail.status === "FAILED" && (
                         <div className="banner error">
                           <p>
                             실행 오류가 기록되었습니다. 타임라인에서 원인을
@@ -1737,11 +1743,13 @@ export default function Home() {
                   {detailTab === "report" && (
                     <>
                       <Panel title="장애 정보 & 조치 후기">
+                        {!canEdit && <div className="banner mb-4">다른 담당자의 장애는 조회만 가능합니다. 담당자 변경이 필요하면 관리자에게 요청하세요.</div>}
                         {generatedNotes && <div className="banner mb-4">가상 복구 검증 결과를 한국어 후기 초안으로 정리했습니다. 내용을 검토하고 필요한 조치 설명을 추가한 뒤 ‘수정 내용 저장’을 누르세요. 저장 전에는 보고서에 반영되지 않습니다.</div>}
                         <div className="form-grid">
                           <label className="full">
                             장애 제목
                             <input
+                              disabled={!isAdmin}
                               value={editTitle}
                               onChange={(e) => setEditTitle(e.target.value)}
                             />
@@ -1749,6 +1757,8 @@ export default function Home() {
                           <label className="full">
                             담당자
                             <select
+                              aria-label="담당자"
+                              disabled={!isAdmin}
                               value={owner}
                               onChange={(e) => setOwner(e.target.value)}
                             >
@@ -1763,6 +1773,7 @@ export default function Home() {
                             조치 후기
                             <textarea
                               rows={6}
+                              readOnly={!canEdit}
                               value={notes}
                               onChange={(e) => setNotes(e.target.value)}
                             />
@@ -1770,6 +1781,7 @@ export default function Home() {
                           <label className="full">
                             재발 방지 대책
                             <textarea
+                              readOnly={!canEdit}
                               value={prevention}
                               onChange={(e) => setPrevention(e.target.value)}
                             />
@@ -1779,7 +1791,7 @@ export default function Home() {
                           <Button
                             variant="outline"
                             disabled={
-                              busy ||
+                              !canEdit || busy ||
                               [
                                 "REGISTERED",
                                 "ANALYZING",
@@ -1789,17 +1801,16 @@ export default function Home() {
                             onClick={() =>
                               action(() =>
                                 api("/incidents/" + selected, "PATCH", {
-                                  title: editTitle,
+                                  ...(isAdmin ? { title: editTitle, ownerId: owner } : {}),
                                   notes,
                                   prevention,
-                                  ownerId: owner,
                                 }),
                               )
                             }
                           >
                             수정 내용 저장
                           </Button>
-                          {detail.status === "RESOLVED" && (
+                          {isAdmin && detail.status === "RESOLVED" && (
                             <Button
                               disabled={busy || reportDirty || !notes.trim() || !prevention.trim()}
                               onClick={() =>
@@ -1816,7 +1827,7 @@ export default function Home() {
                             </Button>
                           )}
                         </div>
-                        {detail.status === "RESOLVED" && <p className="small muted mt-3">{reportDirty ? "수정한 내용을 먼저 저장하면 장애를 종료할 수 있습니다." : !notes.trim() || !prevention.trim() ? "조치 후기와 재발 방지 대책을 입력하고 저장하세요." : "저장된 후기와 예방 대책을 확인한 후 종료하세요."}</p>}
+                        {isAdmin && detail.status === "RESOLVED" && <p className="small muted mt-3">{reportDirty ? "수정한 내용을 먼저 저장하면 장애를 종료할 수 있습니다." : !notes.trim() || !prevention.trim() ? "조치 후기와 재발 방지 대책을 입력하고 저장하세요." : "저장된 후기와 예방 대책을 확인한 후 종료하세요."}</p>}
                         {recoveryProof && <details className="mt-4"><summary>복구 검증 원본 보기</summary><pre>{JSON.stringify(parse(recoveryProof), null, 2)}</pre></details>}
                       </Panel>
                       <Panel title="보고서 다운로드">
@@ -1926,6 +1937,7 @@ export default function Home() {
                 데이터만 사용합니다.
               </div>
               <div className="space-y-5">
+                <label>등록 실행 모드<select value={mode} onChange={e => setMode(e.target.value)}><option value="REAL">실제 AI 모드</option><option value="DEMO">시연 모드 · Mock</option></select></label>
                 <label>
                   장애 제목
                   <input

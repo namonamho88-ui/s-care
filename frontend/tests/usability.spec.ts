@@ -8,15 +8,16 @@ const rows = [
   { id: 'INC-UI-CLOSED', title: '가상 네트워크 장애', type: 'NETWORK', status: 'CLOSED' },
 ].map(row => ({ ...row, asset_id: 'ASSET-12', asset_name: '가상 자산 12', system_name: '가상 업무', severity: 'P1', owner_id: 'OP-01', owner_name: '가상 담당자', department: 'PLATFORM', created_at: '2026-10-10T12:00:00Z', notes: '저장된 조치 후기', prevention: '저장된 예방 대책', observations: 'Fictional CPU usage 96%', decision: null, tasks: [], events: [], audit: [], impact: { root: 'ASSET-12', affected: ['ASSET-12','ASSET-13','ASSET-14'], engine: 'NEO4J' } }));
 
-async function setup(page: Page, recoveryNotes?: string) {
+async function setup(page: Page, recoveryNotes?: string, role = "ADMIN") {
   const records = structuredClone(rows);
+  records[1].owner_id="OP-02";
   if (recoveryNotes !== undefined) Object.assign(records[0], {notes:recoveryNotes,events:[{id:1,stage:'VERIFY',state:'COMPLETED',message:'가상 복구 검증',data_json:recoveryNotes,created_at:'2026-10-10T12:01:00Z'}]});
   const mutations: string[] = [];
   await page.route('**/api/**', async route => {
     const request = route.request(), url = new URL(request.url()), path = url.pathname;
     let data: unknown = {};
     if (request.method() !== 'GET') mutations.push(path);
-    if (path === '/api/config') data = { database: 'POSTGRESQL', graph: 'NEO4J', defaultProvider: 'LOCAL', a2a: '0.3.0', hermes: { apiReachable: false }, fictional: true };
+    if (path === '/api/config') data = { user: { id:'bootstrap-admin', role, kind:role === 'ADMIN' ? 'BOOTSTRAP' : 'ACCOUNT', displayName:'가상 검증 사용자', operatorId:'OP-01' }, database: 'POSTGRESQL', graph: 'NEO4J', defaultProvider: 'LOCAL', a2a: '0.3.0', hermes: { apiReachable: false }, fictional: true };
     else if (path === '/api/catalog') data = { assets, operators: [{ id:'OP-01', name:'가상 담당자', department:'PLATFORM' }], scenarios:[{id:'SCN-01',title:'가상 시나리오'}], manuals:[] };
     else if (path === '/api/graph') data = { nodes:assets, edges, engine:'NEO4J' };
     else if (path === '/api/skills' || path === '/api/audit') data=[];
@@ -190,4 +191,79 @@ test('raw recovery JSON becomes a reviewable Korean draft and saves through the 
   await expect(page.getByRole('button',{name:'장애 종료',exact:true})).toBeEnabled();
   await expect(page.getByText('가상 복구 검증 결과를 한국어 후기 초안으로 정리했습니다.',{exact:false})).toHaveCount(0);
   await expect(page.getByRole('dialog',{name:'장애 상세'}).locator('details[open] pre')).toContainText('SIMULATED_METRICS');
+});
+
+
+test('user role hides administrator controls and allows only owned incident notes', async ({page}) => {
+  const mutations=await setup(page, undefined, 'USER');
+  await expect(page.getByRole('button',{name:'Harness & 평가',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'계정 관리',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'가상 장애 발생',exact:true})).toHaveCount(0);
+  await page.getByRole('button',{name:'장애 이력',exact:true}).click();
+  await page.getByRole('button',{name:/P1 가상 자원 부족 장애/}).click();
+  await page.getByRole('button',{name:'후기 & 보고서',exact:true}).click();
+  await expect(page.getByLabel('장애 제목',{exact:true})).toBeDisabled();
+  await expect(page.getByLabel('담당자',{exact:true})).toBeDisabled();
+  await expect(page.getByRole('button',{name:'장애 종료',exact:true})).toHaveCount(0);
+  await page.getByRole('textbox',{name:'조치 후기',exact:true}).fill('가상 사용자 후기');
+  const patch=page.waitForRequest(r=>r.method()==='PATCH');
+  await page.getByRole('button',{name:'수정 내용 저장',exact:true}).click();
+  expect((await patch).postDataJSON()).toEqual({notes:'가상 사용자 후기',prevention:'저장된 예방 대책'});
+  await page.getByRole('button',{name:'상세 닫기'}).click();
+  await page.getByRole('button',{name:/P1 가상 네트워크 장애/}).click();
+  await page.getByRole('button',{name:'후기 & 보고서',exact:true}).click();
+  await expect(page.getByRole('button',{name:'수정 내용 저장',exact:true})).toBeDisabled();
+  await expect(page.getByRole('textbox',{name:'조치 후기',exact:true})).toHaveAttribute('readonly','');
+  expect(mutations).toEqual(['/api/incidents/INC-UI-RESOLVED']);
+});
+
+test('login defaults to a personal account and keeps bootstrap and activation separate', async ({page}) => {
+  const calls: any[]=[];
+  await page.route('**/api/**',async route=>{
+    if(new URL(route.request().url()).pathname==='/api/session') calls.push(route.request().postDataJSON());
+    await route.fulfill({status:401,json:{error:'가상 인증 검증 오류'}});
+  });
+  await page.goto('/');
+  await expect(page.getByRole('tab',{name:'개인 계정',exact:true})).toHaveAttribute('aria-selected','true');
+  await expect(page.getByLabel('관리자 토큰')).toHaveCount(0);
+  await page.getByLabel('아이디',{exact:true}).fill('fictional.user');
+  await page.getByLabel('비밀번호',{exact:true}).fill('fictional-password-2026');
+  await page.getByRole('button',{name:'Command Center 시작'}).click();
+  await expect(page.getByRole('alert').filter({hasText:'가상 인증 검증 오류'})).toContainText('가상 인증 검증 오류');
+  expect(calls[0]).toMatchObject({mode:'login',login:'fictional.user',password:'fictional-password-2026'});
+  await page.getByRole('tab',{name:'초대 활성화',exact:true}).click();
+  await page.getByLabel('초대 코드',{exact:true}).fill('fictional-one-use-code');
+  await page.getByLabel('새 비밀번호',{exact:true}).fill('fictional-new-password-2026');
+  await page.getByRole('button',{name:'계정 활성화 & 시작'}).click();
+  await expect.poll(()=>calls.length).toBe(2);
+  expect(calls[1]).toMatchObject({mode:'activate',inviteCode:'fictional-one-use-code'});
+  await page.getByRole('tab',{name:'관리자 초기 설정',exact:true}).click();
+  await expect(page.getByLabel('관리자 토큰')).toBeVisible();
+  await expect(page.getByLabel('아이디',{exact:true})).toHaveCount(0);
+});
+
+test('admin invites an account and confirms session-revoking changes', async ({page}) => {
+  await setup(page);
+  const users:any[]=[];
+  await page.route('**/api/auth/users**',async route=>{
+    const req=route.request();
+    if(req.method()==='GET') return route.fulfill({json:users});
+    if(req.method()==='POST') {
+      const b=req.postDataJSON();users.push({id:'USR-UI',login:b.login,display_name:b.displayName,role:b.role,operator_id:b.operatorId,operator_name:'가상 담당자',enabled:true,account_status:'PENDING'});
+      return route.fulfill({json:{id:'USR-UI',inviteCode:'fictional-ui-code',expiresAt:'2026-10-12T00:00:00Z'}});
+    }
+    users[0].enabled=req.postDataJSON().enabled;return route.fulfill({json:{ok:true}});
+  });
+  await page.getByRole('button',{name:'계정 관리',exact:true}).click();
+  await page.getByLabel('초대할 아이디').fill('fictional.user');
+  await page.getByLabel('가상 표시 이름').fill('가상 사용자');
+  await page.getByLabel('연결할 가상 담당자').selectOption('OP-01');
+  await page.getByRole('button',{name:'초대 코드 발급',exact:true}).click();
+  await expect(page.getByLabel('1회용 초대 코드')).toHaveValue('fictional-ui-code');
+  await page.getByRole('button',{name:'비활성화',exact:true}).click();
+  await expect(page.getByRole('alert').filter({hasText:'기존 로그인 세션을 폐기'})).toContainText('기존 로그인 세션을 폐기');
+  expect(users[0].enabled).toBe(true);
+  await page.getByRole('button',{name:'확인 후 적용',exact:true}).click();
+  await expect(page.getByRole('button',{name:'활성화',exact:true})).toBeVisible();
+  expect(users[0].enabled).toBe(false);
 });

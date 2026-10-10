@@ -22,11 +22,17 @@ jobs:
           docker compose restart backend
           docker compose up -d --wait --wait-timeout 120 backend
           docker compose exec -T postgres psql -U brain -d brain -tAc "SELECT count(*) FROM incidents WHERE status='CLOSED' AND id NOT LIKE 'INC-SEED%';" | grep -x 1
+      - name: Verify personal accounts, cookies, and server permissions
+        run: python frontend/scripts/account_smoke.py --url http://127.0.0.1:3100 --output work/container-accounts.json
+        env:
+          ADMIN_TOKEN: local-demo-admin-change-me
       - uses: actions/upload-artifact@v4
         if: success()
         with:
           name: container-demo-evidence
-          path: work/container-demo.json
+          path: |
+            work/container-demo.json
+            work/container-accounts.json
       - if: failure()
         run: docker compose logs --tail 100
       - if: always()

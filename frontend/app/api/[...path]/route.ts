@@ -10,6 +10,9 @@ async function proxy(
   { params }: { params: Promise<{ path: string[] }> },
 ) {
   const { path } = await params;
+  // Session secrets may only be exchanged by /api/session into an HttpOnly cookie.
+  if (path[0] === "auth" && ["login", "activate"].includes(path[1]))
+    return Response.json({ error: "Use the session endpoint" }, { status: 404 });
   if (path.some((p) => p === ".." || p.includes("/")))
     return Response.json({ error: "Invalid path" }, { status: 400 });
   if (
