@@ -31,6 +31,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import ManualCenter from "@/components/manual-center";
+import { recoveryNotesDraft } from "@/lib/recovery-notes.mjs";
 const ImpactGraph = dynamic(() => import("@/components/impact-graph"), {
   ssr: false,
 });
@@ -470,7 +471,7 @@ export default function Home() {
   useEffect(() => {
     if (detail) {
       setEditTitle(detail.title);
-      setNotes(detail.notes);
+      setNotes(recoveryNotesDraft(detail.notes) ?? detail.notes);
       setPrevention(detail.prevention);
       setOwner(detail.owner_id);
       if (detail.decision) {
@@ -580,6 +581,8 @@ export default function Home() {
     guide: "처음 사용하는 분은 사용자용부터, 승인과 환경 운영 담당자는 관리자용을 확인하세요.",
   };
   const reportDirty = !!detail && (editTitle !== detail.title || notes !== detail.notes || prevention !== detail.prevention || owner !== detail.owner_id);
+  const generatedNotes = detail ? recoveryNotesDraft(detail.notes) : null;
+  const recoveryProof = generatedNotes ? detail?.notes : [...(detail?.events || [])].reverse().find((event: Row) => event.stage === "VERIFY" && event.state === "COMPLETED")?.data_json;
   if (auth === null)
     return (
       <div className="login">
@@ -1734,6 +1737,7 @@ export default function Home() {
                   {detailTab === "report" && (
                     <>
                       <Panel title="장애 정보 & 조치 후기">
+                        {generatedNotes && <div className="banner mb-4">가상 복구 검증 결과를 한국어 후기 초안으로 정리했습니다. 내용을 검토하고 필요한 조치 설명을 추가한 뒤 ‘수정 내용 저장’을 누르세요. 저장 전에는 보고서에 반영되지 않습니다.</div>}
                         <div className="form-grid">
                           <label className="full">
                             장애 제목
@@ -1758,6 +1762,7 @@ export default function Home() {
                           <label className="full">
                             조치 후기
                             <textarea
+                              rows={6}
                               value={notes}
                               onChange={(e) => setNotes(e.target.value)}
                             />
@@ -1812,6 +1817,7 @@ export default function Home() {
                           )}
                         </div>
                         {detail.status === "RESOLVED" && <p className="small muted mt-3">{reportDirty ? "수정한 내용을 먼저 저장하면 장애를 종료할 수 있습니다." : !notes.trim() || !prevention.trim() ? "조치 후기와 재발 방지 대책을 입력하고 저장하세요." : "저장된 후기와 예방 대책을 확인한 후 종료하세요."}</p>}
+                        {recoveryProof && <details className="mt-4"><summary>복구 검증 원본 보기</summary><pre>{JSON.stringify(parse(recoveryProof), null, 2)}</pre></details>}
                       </Panel>
                       <Panel title="보고서 다운로드">
                         {["RESOLVED", "CLOSED"].includes(detail.status) ? (

@@ -8,8 +8,9 @@ const rows = [
   { id: 'INC-UI-CLOSED', title: '가상 네트워크 장애', type: 'NETWORK', status: 'CLOSED' },
 ].map(row => ({ ...row, asset_id: 'ASSET-12', asset_name: '가상 자산 12', system_name: '가상 업무', severity: 'P1', owner_id: 'OP-01', owner_name: '가상 담당자', department: 'PLATFORM', created_at: '2026-10-10T12:00:00Z', notes: '저장된 조치 후기', prevention: '저장된 예방 대책', observations: 'Fictional CPU usage 96%', decision: null, tasks: [], events: [], audit: [], impact: { root: 'ASSET-12', affected: ['ASSET-12','ASSET-13','ASSET-14'], engine: 'NEO4J' } }));
 
-async function setup(page: Page) {
+async function setup(page: Page, recoveryNotes?: string) {
   const records = structuredClone(rows);
+  if (recoveryNotes !== undefined) Object.assign(records[0], {notes:recoveryNotes,events:[{id:1,stage:'VERIFY',state:'COMPLETED',message:'가상 복구 검증',data_json:recoveryNotes,created_at:'2026-10-10T12:01:00Z'}]});
   const mutations: string[] = [];
   await page.route('**/api/**', async route => {
     const request = route.request(), url = new URL(request.url()), path = url.pathname;
@@ -169,4 +170,24 @@ test('an uncertain registration response preserves the form and does not automat
   await expect(form.getByRole('textbox',{name:'장애 제목',exact:true})).toHaveValue('가상 입력 보존 검증');
   await expect(form.getByRole('textbox',{name:'가상 관측 내용',exact:true})).toHaveValue('Fictional database connection timeout');
   expect(registrations).toBe(1);
+});
+
+test('raw recovery JSON becomes a reviewable Korean draft and saves through the incident API',async({page})=>{
+  const raw=JSON.stringify({before:{healthyDependencies:false,latencyMs:3200,errorRate:12.5},after:{healthyDependencies:true,latencyMs:120,errorRate:0.02},realChanges:false,passed:true,provider:'SIMULATED_METRICS'});
+  await setup(page,raw);
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  await page.getByRole('button',{name:'후기 & 보고서',exact:true}).click();
+  const notes=page.getByRole('textbox',{name:'조치 후기',exact:true});
+  await expect(notes).toHaveValue(/오류율: 12.5% → 0.02%/);
+  await expect(notes).toHaveValue(/실제 운영 시스템은 변경하지 않았습니다/);
+  await expect(page.getByRole('button',{name:'장애 종료',exact:true})).toBeDisabled();
+  await page.getByText('복구 검증 원본 보기',{exact:true}).click();
+  await expect(page.getByRole('dialog',{name:'장애 상세'}).locator('details[open] pre')).toContainText('SIMULATED_METRICS');
+  await notes.fill((await notes.inputValue())+'\n담당자 확인: 가상 관측과 검증 결과를 대조했습니다.');
+  const saved=page.waitForRequest(request=>request.method()==='PATCH');
+  await page.getByRole('button',{name:'수정 내용 저장'}).click();
+  expect((await saved).postDataJSON().notes).toContain('담당자 확인: 가상 관측과 검증 결과를 대조했습니다.');
+  await expect(page.getByRole('button',{name:'장애 종료',exact:true})).toBeEnabled();
+  await expect(page.getByText('가상 복구 검증 결과를 한국어 후기 초안으로 정리했습니다.',{exact:false})).toHaveCount(0);
+  await expect(page.getByRole('dialog',{name:'장애 상세'}).locator('details[open] pre')).toContainText('SIMULATED_METRICS');
 });

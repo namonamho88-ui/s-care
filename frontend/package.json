@@ -10,7 +10,8 @@
     "manuals": "node scripts/generate-manuals.mjs",
     "manuals:check": "node scripts/generate-manuals.mjs --check",
     "test:ui": "playwright test",
-    "test:proxy": "node --test test-unit/*.test.mjs"
+    "test:proxy": "node --test test-unit/backend-proxy.test.mjs",
+    "test:unit": "node --test test-unit/*.test.mjs"
   },
   "dependencies": {
     "@radix-ui/react-slot": "^1.2.3",
