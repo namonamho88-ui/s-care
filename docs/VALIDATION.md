@@ -176,3 +176,5 @@ Mock 시연 점수와 실제 모델 점수를 섞지 않는다. 정답은 모델
 - Vercel `CzdLYmeNyA9uhq8pHZkWfU6roRG1`과 Railway backend `dd5efc19-c99a-4ac1-99c7-dc41b33fa2de` 배포 성공. 공개 주소에서 초대 활성화, 로그인, Secure/HttpOnly/SameSite 쿠키, 권한 거부, 로그아웃·계정 비활성화 후 접근 거부를 실제 검증했다. 검증 계정 `USR-c73eeffe-1029-4d`는 비활성 상태로 남겨 감사 이력을 보존한다.
 - 배포 전후 전체 장애 목록의 SHA-256이 동일하며 207건과 판단 확인 대기 기록이 보존됐다. 운영 중인 장애의 승인·후기·종료를 테스트 목적으로 변경하지 않았다. `evidence/accounts-cloud.json`에 원문 비밀 없이 결과를 저장했다.
 - 배포 화면의 개인 로그인/초대 활성화/관리자 초기 설정 탭, 계정 관리 안내와 비활성 검증 계정 표시를 확인했다. 첫 방문의 정상적인 미인증 응답이 세션 만료 경고로 표시되지 않도록 보완하고 UI 회귀 테스트를 추가했다.
+
+- 첫 방문 경고 보완 `f42e5ff`도 Vercel `CSdhN13DsZiNNs4bysu3SpNCzRv8` Ready 및 GitHub verify `38062604841` / container verification `38062604846` 성공을 확인했다. 새 배포 URL의 첫 로그인에서 불필요한 세션 만료 경고 0건을 확인했다. 백엔드는 변경 없이 위 배포를 유지했다.

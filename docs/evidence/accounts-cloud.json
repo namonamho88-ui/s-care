@@ -63,5 +63,25 @@
       "matchesSource": true,
       "sha256": "02bd90b7ce4ad02a5e54ebe4584eab38e2a1bec09a235249eb297e7162edb67e"
     }
+  },
+  "frontendFollowup": {
+    "sourceCommit": "f42e5ff55d23b552defd5858f58d9c24eb77776d",
+    "vercelDeployment": "CSdhN13DsZiNNs4bysu3SpNCzRv8",
+    "status": "READY",
+    "firstVisitExpiryWarningCount": 0,
+    "backendUnchanged": true,
+    "ci": [
+      {
+        "id": 38062604841,
+        "name": "verify",
+        "conclusion": "success"
+      },
+      {
+        "id": 38062604846,
+        "name": "container verification",
+        "conclusion": "success"
+      }
+    ],
+    "verifiedAt": "2026-10-10T15:14:42.449971+00:00"
   }
 }
