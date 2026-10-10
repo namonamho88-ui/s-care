@@ -153,3 +153,12 @@ Mock 시연 점수와 실제 모델 점수를 섞지 않는다. 정답은 모델
 - **정리:** 진단용 Neo4j 시작 명령과 healthcheck를 정상값으로 복원하고 실패 재시도 3회로 되돌렸다. 임시 Railway SSH 키는 계정에서 해제하고 로컬 키 파일도 제거했다. 유료 요금제로 전환하지 않았다.
 
 현재 환경은 실제 클라우드 **기능 시연 검증을 통과한 Trial 구성**이다. 0.5GB 영구 Free 운영, 지속/동시 부하, 고가용성, SSO, 운영 보안 인증 또는 공식 A2A/MCP 적합성 인증을 의미하지 않는다. TypeSafe 실제 호출은 키가 없어 검증하지 않았으며 향후 설정 가능한 Provider 계약 테스트만 포함한다. 최종 발표 전에 요금제·자원 확인과 부하 리허설을 수행한다.
+
+## 사용자·관리자 매뉴얼 및 화면 사용성 검증 (2026-10-10)
+
+- 사용자/관리자 각 8개 장을 `frontend/content/manuals.json`에서 웹 화면·인쇄용 HTML·저장소 Markdown으로 생성한다. `npm run manuals:check`로 산출물 일치를 검사한다. 별도 사용자 권한이 구현됐다고 설명하지 않는다.
+- 전체화면 dialog, 독립 온톨로지 메뉴, 장애 선택과 영향 필터, 노드 설명, 메뉴별 목적과 상태별 다음 행동, 필터 초기화, 저장하지 않은 후기의 종료 차단, 실패 평가 오류 표시를 보완했다. 자세한 항목은 `USABILITY_REVIEW.md`에 기록했다.
+- Next.js production build·TypeScript 검사·Chromium UI 테스트 **6개**가 통과했다. 1440×960 데스크톱과 390×844 모바일, 전체화면/최초 자동 맞춤/수동 맞춤/영향 필터/Esc/포커스 복귀, 역할별 매뉴얼, 실패 표시, 필터 초기화, 저장 후 종료 순서를 검사한다. API fixture를 사용한 격리 테스트이며 실제 AI 품질 평가와 구분한다.
+- 최초 배포의 실제 브라우저 검증에서 닫힌 dialog의 0 크기가 초기 그래프 배율에 사용되는 문제를 발견했다. 수동 맞춤 버튼을 누르기 **전**의 노드 위치·크기 검사를 추가해 수정 전 실패를 재현했고, dialog를 `useLayoutEffect`에서 먼저 연 후 측정하도록 수정해 통과했다. 런타임 최종 수정 커밋은 `d5bde391bcdcfabfffecfff022289ef3b77d6cbe`다.
+- 이번 UI 검증에서는 기존 종료 장애를 읽어서 그래프를 확인했다. 사용자가 진행 중인 장애의 승인·수정·종료나 DB 초기화·백엔드 재시작은 수행하지 않았다.
+- 최종 커밋의 [verify](https://github.com/namonamho88-ui/s-care/actions/runs/38057458996)와 [container verification](https://github.com/namonamho88-ui/s-care/actions/runs/38057459000)가 모두 성공했다. Vercel `57wZPqpTdz5mxa4KDasAW8sR2dBq` Ready 및 실제 시연 주소의 52/80 전체화면 자동 맞춤·14/13 영향 필터·노드 정보·Esc·포커스 복귀·역할별 매뉴얼을 확인했다. 인쇄용 HTML 두 파일은 HTTP 200과 원본 SHA-256 일치를 확인했다. `evidence/usability-cloud.json`.

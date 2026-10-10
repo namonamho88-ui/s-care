@@ -41,6 +41,16 @@ Next.js production build와 TypeScript 검사를 통과했다. `npm run test:ui`
 
 UI 테스트는 독립 가상 API fixture를 사용하며 실제 클라우드 DB·모델 테스트를 대신하지 않는다. GitHub frontend CI에도 매뉴얼 동일성 및 이 회귀 테스트를 추가했다. 실제 Jev/Hermes/DB 통합 검증 범위는 `VALIDATION.md`의 기존 클라우드 결과와 구분한다.
 
+## 배포 화면 최종 확인
+
+런타임 커밋 `d5bde391bcdcfabfffecfff022289ef3b77d6cbe`를 Vercel 배포 `57wZPqpTdz5mxa4KDasAW8sR2dBq`로 반영했고 Ready 상태를 확인했다.
+
+- [시연 주소](https://s-care-mu.vercel.app/)의 1280×720 브라우저에서 최초 전체화면 크기가 1280×720이며 52개 자산·80개 관계가 수동 맞춤 없이 가시 영역 안에 들어오는 것을 확인했다.
+- 기존 종료 장애 `INC-b6b3504a-d150-4d`를 선택해 실제 저장된 영향 14개 자산·13개 관계, 필터 후 자동 맞춤, 자산 연결 수 설명, Esc 닫기와 원래 버튼 포커스를 확인했다.
+- 사용자/관리자 매뉴얼의 화면 전환과 인쇄용 HTML 레이아웃을 확인했다. 공개 다운로드 두 파일은 HTTP 200이며 저장소 원본과 SHA-256이 같다.
+- 해당 커밋의 [verify](https://github.com/namonamho88-ui/s-care/actions/runs/38057458996) 및 [container verification](https://github.com/namonamho88-ui/s-care/actions/runs/38057459000)가 모두 통과했다. frontend·backend·PostgreSQL/Neo4j·컨테이너 DEMO/재시작·공식 모델 이미지 검증을 포함한다.
+- 증적: `evidence/usability-cloud.json`. 이번 검증에서 실제 클라우드 장애를 새로 만들거나 변경하지 않았다.
+
 ## 남은 범위
 
 공통 관리자 토큰, 단일 backend replica, Skill 초안 수정·재생성 UI 미지원, 실제 TypeSafe API 미검증은 기존 제한이다. 지속 부하·실운영 보안 인증은 이번 화면 사용성 검토로 충족됐다고 주장하지 않는다. 관리자의 의미 검토가 여전히 필요하다.

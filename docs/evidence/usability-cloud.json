@@ -1,0 +1,75 @@
+{
+  "sourceCommit": "d5bde391bcdcfabfffecfff022289ef3b77d6cbe",
+  "frontendUrl": "https://s-care-mu.vercel.app/",
+  "vercelDeployment": "57wZPqpTdz5mxa4KDasAW8sR2dBq",
+  "fictional": true,
+  "manualDownloads": {
+    "user": {
+      "status": 200,
+      "bytes": 13097,
+      "sha256": "8135d128261ad2038cad3e122c20bdbf868325ed74095381ce151b1fac21e76a",
+      "matchesSource": true
+    },
+    "admin": {
+      "status": 200,
+      "bytes": 14636,
+      "sha256": "b718934b2b41a1b887b45c70c5b5e5f5e81af219c410d2c047311891a8dffd3f",
+      "matchesSource": true
+    }
+  },
+  "ci": [
+    {
+      "id": 38057458996,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d5bde391bcdcfabfffecfff022289ef3b77d6cbe",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38057458996"
+    },
+    {
+      "id": 38057459000,
+      "name": "container verification",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d5bde391bcdcfabfffecfff022289ef3b77d6cbe",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38057459000"
+    }
+  ],
+  "vercelStatus": "READY",
+  "browserChecks": {
+    "url": "https://s-care-mu.vercel.app/",
+    "viewport": [
+      1280,
+      720
+    ],
+    "incidentReadOnly": "INC-b6b3504a-d150-4d",
+    "fullscreenMatchesViewport": true,
+    "initialAutomaticFit": {
+      "nodes": 52,
+      "edges": 80,
+      "allNodesInside": true,
+      "minimumNodeWidth": 88.2177
+    },
+    "affectedOnly": {
+      "nodes": 14,
+      "edges": 13,
+      "allNodesInside": true,
+      "minimumNodeWidth": 154.0284
+    },
+    "assetDetails": true,
+    "escapeCloses": true,
+    "focusRestored": true,
+    "manualRoleSwitch": true,
+    "printableHtmlVisuallyChecked": true,
+    "liveIncidentMutations": false
+  },
+  "localTests": {
+    "productionBuild": "PASS",
+    "manualSourceParity": "PASS",
+    "playwrightUi": {
+      "passed": 6,
+      "failed": 0,
+      "scope": "Isolated fictional API fixtures; desktop and mobile; initial fit regression failed before fix and passed after fix"
+    }
+  }
+}
