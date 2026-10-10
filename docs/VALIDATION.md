@@ -129,3 +129,11 @@ Mock 시연 점수와 실제 모델 점수를 섞지 않는다. 정답은 모델
 - 공식 jevos Linux CPU 이미지 빌드와 health 기동 확인 성공. 공식 Hermes pinned source 이미지 빌드·비-root gateway 기동·HTTP Skill bridge health·전체 API tool 비활성화 확인 성공. Hermes는 upstream이 지원하는 editable 설치를 사용하며, 앱 볼륨 소유권 초기화 후 전용 UID 10001로 실행한다.
 - 이 CI에는 OpenAI 실제 비밀키를 제공하지 않았다. 컨테이너 health 검증을 실제 LLM 판단 성공으로 표시하지 않는다. 실제 Jev/Hermes 모델 호출 결과는 앞선 PC 시연 증적과 구별한다.
 - 최신 UI의 클릭·시각 검증은 Codex 내장 브라우저 URL 보안 정책으로 막혀 수행하지 못했다. 로컬 서버의 HTTP 200과 빌드는 확인했으며 테스트용 서버는 종료했다. 실제 클라우드 도메인·네트워크·인증·볼륨 재시작 시연은 배포 후 검증한다.
+
+## Railway 무료 체험 자원 검증 (2026-10-10)
+
+- 실제 Railway backend와 Supabase `brain` schema 연결, 203건의 이전 장애 보존, 인증, A2A 카드, PDF/Excel 다운로드, SSE 재연결, Hermes 승인 Skill 22건 게시를 확인했다. 당시의 부분 검증 증적은 `evidence/railway-cloud.json`이다.
+- Jev 공식 모델을 교체하지 않고 유휴 사전 컴파일/상태 캐시/요청 병합을 끈 설정으로 재배포했다. 컨테이너 내부에서 인증된 `/v1/systemone`에 가상 증상을 보내 RESOURCE/P1/PLATFORM 판단을 받았다. 입력 1,176 토큰, 최고 메모리 약 671MiB, OOM kill 0이다. `evidence/railway-jev-trial.json`에 실제 응답을 기록했다. Dockerfile에도 동일한 실행 옵션을 반영했다.
+- 이는 Trial 1GB 환경의 단일 요청 검증이며, 0.5GB Free 플랜 성공 또는 backend에서 전체 REAL 시연 완료를 의미하지 않는다. 최초 반복 종료의 OS 수준 원인은 확정하지 않았다.
+- Neo4j는 트랜잭션 로그 할당을 줄인 뒤에도 `No space left on device`가 남았다. 보고된 볼륨 사용량은 약 36MB/500MB여서 영구 볼륨 용량 소진이라고 확정하지 않는다. 진단용 배포는 취소하고 원래 healthcheck와 시작 설정을 복원했다. 임시 SSH 키는 계정에서 해제하고 로컬 파일도 제거했다.
+- 유료 전환은 수행하지 않았다. Neo4j 정상 실행, 전체 hosted REAL 장애 처리·재시작 보존, Vercel 연결은 남아 있다.

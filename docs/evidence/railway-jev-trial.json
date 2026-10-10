@@ -1,0 +1,66 @@
+{
+  "date": "2026-10-10",
+  "fictional": true,
+  "platform": "Railway Trial",
+  "actualModelInference": true,
+  "deploymentId": "78635182-cfe1-40c7-95f9-025528cc7a80",
+  "model": "jevos-v4",
+  "startCommand": "/opt/jev/jev serve --host 0.0.0.0 --port 8017 --threads 2 --warmup 0 --batch-tokens 0 --state-cache 0 --state-cache-tokens 0",
+  "inputTokens": 1176,
+  "result": {
+    "type": {
+      "type": "choice",
+      "choice": "RESOURCE",
+      "probabilities": {
+        "RESOURCE": 0.9461591770068654,
+        "DATABASE": 0.022726589327643026,
+        "NETWORK": 0.0073965578572346025,
+        "APPLICATION": 0.012732974227732043,
+        "SECURITY": 0.010984701580525096
+      },
+      "confidence": 0.9326989712585817
+    },
+    "severity": {
+      "type": "choice",
+      "choice": "P1",
+      "probabilities": {
+        "P1": 0.9840228919503167,
+        "P2": 0.009852634625823828,
+        "P3": 0.006124473423859517
+      },
+      "confidence": 0.976034337925475
+    },
+    "department": {
+      "type": "choice",
+      "choice": "PLATFORM",
+      "probabilities": {
+        "PLATFORM": 0.7996363224745123,
+        "DATABASE": 0.09091003364056895,
+        "NETWORK": 0.026473750872535243,
+        "APPLICATION": 0.05914794681878397,
+        "SECURITY": 0.02383194619359957
+      },
+      "confidence": 0.7495454030931403
+    },
+    "recurrence": {
+      "type": "noul",
+      "noul": 0.974460087584029
+    },
+    "evidence": {
+      "type": "noul",
+      "noul": 0.8731424063291857
+    }
+  },
+  "cgroup": {
+    "memoryCurrentBytes": 701648896,
+    "memoryPeakBytes": 703369216,
+    "oom": 0,
+    "oomKill": 0
+  },
+  "scope": "Direct authenticated call within hosted jevos container; not a complete backend workflow, load test, or 0.5 GB Free verification",
+  "pending": [
+    "Neo4j disk error diagnosis",
+    "Full hosted incident and persistence verification",
+    "Vercel connection"
+  ]
+}

@@ -13,4 +13,6 @@ RUN curl -fL --retry 3 https://github.com/feder-cr/jev/releases/download/${RELEA
 WORKDIR /opt/jev
 USER brain
 EXPOSE 8017
-ENTRYPOINT ["./jev","serve","--host","0.0.0.0","--port","8017","--threads","4","--state-cache","2","--state-cache-tokens","1024"]
+# Avoid compiling all prompt lengths while idle and retaining state snapshots.
+# This keeps a single-user demo smaller; first requests may take longer.
+ENTRYPOINT ["./jev","serve","--host","0.0.0.0","--port","8017","--threads","2","--warmup","0","--batch-tokens","0","--state-cache","0","--state-cache-tokens","0"]

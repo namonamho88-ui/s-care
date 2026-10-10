@@ -82,9 +82,11 @@ Neo4j Aura를 쓰면 neo4j 서비스 대신 실제 Aura의 URI/사용자/DB명�
 
 ### 자원 한도와 빌드 범위
 
-Railway Trial의 서비스당 RAM 1GB, 영구 볼륨 0.5GB 한도는 실제 모델을 포함한 최종 시연의 검증된 실행 사양이 아니다. 2026-10-10 실제 배포에서 backend/Supabase와 Hermes gateway/승인 Skill 게시까지 성공했지만, Jev는 반복 종료됐고 Neo4j는 디스크 공간 부족으로 시작하지 못했다. Jev 종료의 구체적인 원인은 별도 확인이 필요하며, RAM 2GB 증설 요청은 Trial 한도로 거부됐다. 건강 확인용 `/health` 성공만으로 모델 추론이나 전체 시연 성공을 판정하지 않는다.
+Railway Trial은 서비스당 RAM 1GB, 영구 볼륨 0.5GB이며, 종료 후 Free 플랜은 RAM 0.5GB와 월 $1 크레딧으로 한도가 줄어든다. Trial에서 성공했다고 지속 무료 운영이 가능하다고 표시하지 않는다. 2026-10-10 backend/Supabase, Hermes gateway/승인 Skill 게시, 경량 설정의 **실제 Jev 추론**까지 확인했다. Neo4j는 `No space left on device` 오류가 남아 전체 클라우드 시연은 미완료다. 볼륨 지표는 약 36MB/500MB였으므로 오류만으로 영구 볼륨 전체가 찼다고 단정하지 않는다. 실제 파일시스템/할당 문제의 추가 진단이 필요하다.
 
-유료 요금제 전환과 결제는 프로젝트 소유자가 수행한다. 전환 후 서비스 한도와 기존 볼륨 크기를 다시 확인하고, 자원을 조정한 뒤 실제 추론·그래프·복구·재시작 보존을 검증한다. Hobby의 월 $5는 포함 사용량과 최소 요금이며 전체 구성의 월 요금 상한이 아니다. [Railway 공식 요금제](https://docs.railway.com/pricing/plans).
+Jev Dockerfile은 `--threads 2 --warmup 0 --batch-tokens 0 --state-cache 0 --state-cache-tokens 0`을 사용한다. 공식 jevos의 모델과 `/v1/systemone` 계약을 유지하면서 유휴 시간의 모든 입력 길이 사전 컴파일, 요청 병합, 상태 캐시를 끈다. 첫 요청 지연과 반복 요청 성능은 달라질 수 있다. Railway에서 동일한 Start Command로 가상 장애를 RESOURCE/P1/PLATFORM으로 분류했고 입력 1,176 토큰, cgroup 최고 메모리 703,369,216 bytes(약 671MiB), OOM kill 0을 확인했다. 이 한 건의 검증은 부하 테스트나 0.5GB Free 실행 보장이 아니다. 증적: `evidence/railway-jev-trial.json`.
+
+계속 무료로 개발하려면 Jev/Neo4j 등 자원 소모가 큰 서비스를 PC에서 실행하는 구성을 사용할 수 있다. 이는 모든 서비스를 클라우드에서 실행하는 최종 시연과 구분한다. 전체 클라우드 운영의 자원을 늘리기로 선택할 경우 요금제 전환과 결제는 프로젝트 소유자가 수행한다. Hobby의 월 $5는 포함 사용량과 최소 요금이며 전체 구성의 월 요금 상한이 아니다. [Railway 공식 요금제](https://docs.railway.com/pricing/plans).
 
 작은 시연 볼륨에서는 Neo4j의 트랜잭션 로그 사전 할당을 끄고 16MB 단위, 2개 파일 보존으로 설정한다. `deploy/railway/neo4j.env.example`에 포함되어 있다. 이미 디스크가 가득 찬 볼륨을 이 설정만으로 복구했다고 가정하거나 기존 데이터를 삭제하지 않는다. 필요한 경우 용량을 늘리고 재검증한다. [Neo4j 설정](https://neo4j.com/docs/operations-manual/current/configuration/configuration-settings/).
 
