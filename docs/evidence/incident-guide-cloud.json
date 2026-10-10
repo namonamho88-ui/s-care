@@ -1,0 +1,95 @@
+{
+  "verifiedAt": "2026-10-10T16:11:05.532253+00:00",
+  "sourceCommit": "bd9a12c414728f9ddc9fc08ffc5e5bb4b6da75ca",
+  "vercelDeployment": "4rBh3AZpPbo17qxhJeeYEWX5aA3r",
+  "vercelStatus": "READY",
+  "backendUnchanged": true,
+  "local": {
+    "nextProductionBuild": "PASS",
+    "frontendUnitTests": 22,
+    "frontendUiTests": 18,
+    "manualsConsistency": "PASS",
+    "backendH2TestsEarlierInChange": 44
+  },
+  "ci": [
+    {
+      "id": 38066419650,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38066419650"
+    },
+    {
+      "id": 38066419662,
+      "name": "container verification",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38066419662"
+    }
+  ],
+  "cloud": {
+    "url": "https://s-care-mu.vercel.app/",
+    "fictional": true,
+    "validationScope": "Read-only browser verification of existing incident details; lifecycle mutations verified in isolated UI fixtures and fresh container CI.",
+    "existingIncidentsModified": false,
+    "pendingIncident": {
+      "id": "INC-60e304df-469f-49",
+      "stage": 2,
+      "percent": 17,
+      "provider": "LOCAL_JEV",
+      "actualAiLabel": true,
+      "reviewInputsVisible": true
+    },
+    "resolvedIncident": {
+      "id": "INC-8ba39653-0e3f-4e",
+      "stage": 5,
+      "percent": 67,
+      "provider": "MOCK",
+      "simulationLabel": true,
+      "koreanDraftVisible": true,
+      "closeDisabledBeforeSaving": true
+    },
+    "topSixStageTabs": true,
+    "dashboardOperationalDetailsCollapsed": true,
+    "progressBasis": "Completed stages / six stages, not a prediction of request time",
+    "screenshots": [
+      "Incident-Stepper.png",
+      "Incident-Stepper-Notes.png"
+    ],
+    "backendHealth": {
+      "status": "UP",
+      "graph": "NEO4J",
+      "fictional": true
+    }
+  },
+  "incidentSnapshotComparison": {
+    "countBefore": 208,
+    "countAfter": 209,
+    "sha256Before": "f23c1bfb78070846781d97d05e63fb35e3870fd1ebb19b51368f814519458e9f",
+    "sha256After": "dfa72788dcd7f52f5c2402505075c574b44cec3bae49f3091204a2e6e880b75f",
+    "identical": false,
+    "interpretation": "The shared live list changed during this task. This task used GET-only cloud incident verification and does not claim whole-list immutability.",
+    "previouslySelectedStatuses": [
+      {
+        "id": "INC-60e304df-469f-49",
+        "status": "NEEDS_REVIEW"
+      },
+      {
+        "id": "INC-2cfd8fe7-c77c-48",
+        "status": "RESOLVED"
+      }
+    ]
+  },
+  "manuals": {
+    "user": {
+      "httpStatus": 200,
+      "matchesSource": true,
+      "sha256": "21c84d72e91da0c1a9edea9aaded8a680e92b32ddb349fc2c8d70d2ca13fe734"
+    },
+    "admin": {
+      "httpStatus": 200,
+      "matchesSource": true,
+      "sha256": "cdc764ff42c51cb5d7a6bd979bbc08a04b516db48b1930b13fb7e1a49b9acb4b"
+    }
+  }
+}

@@ -198,3 +198,5 @@ Mock 시연 점수와 실제 모델 점수를 섞지 않는다. 정답은 모델
 - 매뉴얼을 단계 탭과 별도 요청 표시 기준으로 갱신했다. 데이터와 모델의 실제/Mock 출처 표시는 새 처리 화면 상단에 유지한다.
 - `bf00e89`의 verify `38065821323` / container verification `38065821396` 모두 성공했고 Vercel `9UMCdBLq1xUyApmqcX2CfhWF8Ykb` Ready를 확인했다. 실제 기존 판단 대기 장애의 2단계/17%, 복구 완료 장애의 5단계/67%와 한국어 초안, 저장 전 종료 차단을 조회만으로 확인했다.
 - 마지막으로 같은 장애를 닫았다 다시 열거나 영향 그래프를 확인하고 돌아왔을 때 미저장 입력을 유지하도록 보완했다. 기존 UI 17개 통과 후 신규 검증의 버튼 선택자 오기를 수정하여 해당 검증 1개도 통과했다(총 18개). Next.js production build/TypeScript와 단위 22개도 통과했다. 최종 CI와 배포 결과는 `evidence/incident-guide-cloud.json`을 참조한다.
+- 최종 런타임 `bd9a12c414728f9ddc9fc08ffc5e5bb4b6da75ca`의 [verify](https://github.com/namonamho88-ui/s-care/actions/runs/38066419650)와 [container verification](https://github.com/namonamho88-ui/s-care/actions/runs/38066419662)가 모두 성공했다. 전체 UI 18개와 실제 PostgreSQL/Neo4j, 컨테이너 DEMO/재시작/계정 BFF, 공식 Jev/Hermes 이미지 기동 검증을 포함한다. Vercel `4rBh3AZpPbo17qxhJeeYEWX5aA3r` Ready 및 운영 주소의 2단계/17%, 5단계/67%를 확인했다. 배포된 매뉴얼 두 파일은 HTTP 200이며 소스와 SHA-256이 일치한다.
+- 공유 시연 환경의 전체 목록은 작업 중 208→209건으로 변했다. 이번 화면 검증은 기존 장애를 조회만 했으며, 전체 목록의 불변성을 주장하지 않는다. 이전 선택 장애의 판단 확인/복구 완료 상태는 유지됐다. 증적에 전후 해시와 이 한계를 함께 기록했다.
