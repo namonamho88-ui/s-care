@@ -4,9 +4,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends git ca-certific
 RUN git init /opt/hermes && git -C /opt/hermes remote add origin https://github.com/NousResearch/hermes-agent.git && git -C /opt/hermes fetch --depth 1 origin ${HERMES_REVISION} && git -C /opt/hermes checkout --detach FETCH_HEAD
 COPY scripts/patch_hermes_api.py scripts/configure_hermes.py /opt/brain/
 COPY scripts/hermes_skill_bridge.py scripts/run_hermes_service.py /opt/brain/
-RUN python -m pip install --no-cache-dir /opt/hermes aiohttp==3.14.3 && python /opt/brain/patch_hermes_api.py /opt/hermes
-# Use editable source so the pinned compatibility patch is the imported code.
-RUN python -m pip install --no-deps -e /opt/hermes
+# Upstream deliberately rejects ordinary wheel builds; use its supported editable install.
+RUN python /opt/brain/patch_hermes_api.py /opt/hermes \
+ && python -m pip install --no-cache-dir -e /opt/hermes aiohttp==3.14.3
 COPY infra/hermes/start.sh /opt/brain/start.sh
 ENV HERMES_HOME=/data/hermes PYTHONUNBUFFERED=1 PYTHONIOENCODING=utf-8 HERMES_PUBLISH_HOST=0.0.0.0
 WORKDIR /data/hermes
