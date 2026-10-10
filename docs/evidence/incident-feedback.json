@@ -1,0 +1,71 @@
+{
+  "frontendUrl": "https://s-care-mu.vercel.app",
+  "fictional": true,
+  "authenticatedReadChecks": [
+    {
+      "path": "/api/health",
+      "httpStatus": 200,
+      "status": "UP",
+      "fictional": true
+    },
+    {
+      "path": "/api/config",
+      "httpStatus": 200,
+      "status": null,
+      "fictional": true
+    },
+    {
+      "path": "/api/dashboard",
+      "httpStatus": 200,
+      "status": null,
+      "fictional": null
+    },
+    {
+      "path": "/api/incidents/INC-60e304df-469f-49",
+      "httpStatus": 200,
+      "status": "NEEDS_REVIEW",
+      "fictional": null
+    },
+    {
+      "path": "/api/incidents/INC-2cfd8fe7-c77c-48",
+      "httpStatus": 200,
+      "status": "RESOLVED",
+      "fictional": null
+    }
+  ],
+  "incidentMutations": false,
+  "sourceCommit": "d2c803b73197565c109beafbdc622598c8bbcd23",
+  "vercelDeployment": "A5p3doKUN3Rrg3hi61JTjtVBooSJ",
+  "vercelStatus": "READY",
+  "tests": {
+    "unitPassed": 12,
+    "uiPassed": 9,
+    "build": "PASS"
+  },
+  "browser": {
+    "incident": "INC-2cfd8fe7-c77c-48",
+    "recoveryStatus": "RESOLVED",
+    "koreanDraftVisible": true,
+    "rawProofDisclosureVisible": true,
+    "unsavedDraftBlocksClosure": true,
+    "originalRecordNotModified": true
+  },
+  "ci": [
+    {
+      "id": 38059604901,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d2c803b73197565c109beafbdc622598c8bbcd23",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38059604901"
+    },
+    {
+      "id": 38059604771,
+      "name": "container verification",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "d2c803b73197565c109beafbdc622598c8bbcd23",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38059604771"
+    }
+  ]
+}

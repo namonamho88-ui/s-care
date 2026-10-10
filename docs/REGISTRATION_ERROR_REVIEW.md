@@ -31,3 +31,9 @@
 - 초안은 관리자가 검토·편집하고 **수정 내용 저장**을 눌러 기존 PATCH API로 저장한다. 저장 전 종료는 차단하며, 보고서는 저장된 후기로 생성된다는 안내를 표시한다.
 - **복구 검증 원본 보기**에서 구조화된 원문을 확인할 수 있다. 후기를 저장해도 VERIFY 이벤트의 원문 증적은 유지된다. 기존 DB 기록을 일괄 덮어쓰거나 사용자의 진행 중 작업을 승인하지 않았다.
 - 후속 검증: 단위 테스트 **12개**(통신 7 + 후기 변환 5), UI 테스트 **9개**, production build 통과. UI에는 실제 PATCH 저장·초안 검토·원본 보존 검사를 추가했다.
+
+## 배포 확인
+
+최종 코드 `d2c803b73197565c109beafbdc622598c8bbcd23`의 [verify](https://github.com/namonamho88-ui/s-care/actions/runs/38059604901) 및 [container verification](https://github.com/namonamho88-ui/s-care/actions/runs/38059604771)가 모두 성공했다. Vercel `A5p3doKUN3Rrg3hi61JTjtVBooSJ` Ready를 확인했다.
+
+인증된 BFF에서 health/config/dashboard와 기존 두 장애 상세가 HTTP 200으로 응답했다. 배포 화면에서 사용자의 복구 완료 장애 `INC-2cfd8fe7-c77c-48`를 조회해 한국어 초안, 원본 펼치기, 저장 전 종료 차단을 확인했다. 화면 검증 중 후기 저장·승인·종료 요청은 보내지 않았다. 증적은 `evidence/incident-feedback.json`이다.
