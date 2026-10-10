@@ -46,6 +46,9 @@ test('fullscreen fills the viewport, fit keeps every node visible, Escape return
   await expect(dialog).toBeVisible();
   await expect.poll(async()=>{const b=await dialog.boundingBox();return b && Math.round(b.width)===1440 && Math.round(b.height)===960;}).toBe(true);
   await expect(dialog.locator('.react-flow__node')).toHaveCount(52);
+  // Opening must fit automatically, before the user touches zoom/fit controls.
+  // A zero-sized initial viewport used to leave the graph clipped at zoom 0.1.
+  await expect.poll(()=>dialog.locator('.react-flow').evaluate(el=>{const box=el.getBoundingClientRect();return [...el.querySelectorAll('.react-flow__node')].every(n=>{const r=n.getBoundingClientRect();return r.width>50&&r.left>=box.left-1&&r.right<=box.right+1&&r.top>=box.top-1&&r.bottom<=box.bottom+1;});})).toBe(true);
   await dialog.getByRole('button',{name:'그래프 확대',exact:true}).click();
   await dialog.getByRole('button',{name:'전체 맞춤',exact:true}).click();
   await expect.poll(()=>dialog.locator('.react-flow').evaluate(el=>{const box=el.getBoundingClientRect();return [...el.querySelectorAll('.react-flow__node')].every(n=>{const r=n.getBoundingClientRect();return r.left>=box.left-1&&r.right<=box.right+1&&r.top>=box.top-1&&r.bottom<=box.bottom+1;});})).toBe(true);
@@ -64,6 +67,7 @@ test('ontology selection filters impact and clearing it removes stale highlights
   const dialog=page.getByRole('dialog',{name:'온톨로지 전체화면'});
   await dialog.getByRole('button',{name:'영향 자산만',exact:true}).click();
   await expect(dialog.locator('.react-flow__node')).toHaveCount(3);
+  await expect.poll(()=>dialog.locator('.react-flow__node').first().evaluate(el=>el.getBoundingClientRect().width>100)).toBe(true);
   await dialog.locator('.react-flow__node[data-id="ASSET-12"]').click();
   await expect(dialog.locator('.graph-info')).toContainText('장애 발생 지점');
   await dialog.getByRole('button',{name:'전체화면 닫기 · Esc'}).click();

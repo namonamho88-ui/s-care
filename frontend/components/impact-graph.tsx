@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ReactFlow, ReactFlowProvider, Background, Controls, MarkerType, Position, useNodesInitialized, useReactFlow, useStore, type Node, type Edge } from "@xyflow/react";
 import { Maximize2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -87,7 +87,9 @@ export default function ImpactGraph(props: Props) {
   const [open, setOpen] = useState(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
+  // Open before React Flow's passive measurement effects. Measuring children of
+  // a closed dialog can otherwise lock its initial fit to a zero-sized viewport.
+  useLayoutEffect(() => {
     if (!open || !dialog.current) return;
     const element = dialog.current;
     const previousOverflow = document.body.style.overflow;
