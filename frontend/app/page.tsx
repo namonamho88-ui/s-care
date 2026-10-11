@@ -34,6 +34,7 @@ import AccountCenter from "@/components/account-center";
 import ManualCenter from "@/components/manual-center";
 import IncidentProgress from "@/components/incident-progress";
 import IncidentWorkflow from "@/components/incident-workflow";
+import MessageIntake from "@/components/message-intake";
 import { incidentGuide, stageLabel, eventStateLabel } from "@/lib/incident-guide.mjs";
 const ImpactGraph = dynamic(() => import("@/components/impact-graph"), {
   ssr: false,
@@ -341,6 +342,7 @@ export default function Home() {
     [live, setLive] = useState(false),
     [online, setOnline] = useState(true),
     [createOpen, setCreateOpen] = useState(false),
+    [messageOpen, setMessageOpen] = useState(false),
     [search, setSearch] = useState(""),
     [filterType, setFilterType] = useState(""),
     [filterSystem, setFilterSystem] = useState(""),
@@ -419,7 +421,7 @@ export default function Home() {
     }
   };
   const clearSession = useCallback(() => {
-    ++refreshVersion.current; setAuth(false); setUser({}); setToken(""); setPassword(""); setInviteCode(""); setSelected(null); setDetail(null); setDrawer(false); setCreateOpen(false); setView("dashboard"); setIncidents([]); setSkills([]); setAudit([]); setEvaluations([]);
+    ++refreshVersion.current; setAuth(false); setUser({}); setToken(""); setPassword(""); setInviteCode(""); setSelected(null); setDetail(null); setDrawer(false); setCreateOpen(false); setMessageOpen(false); setView("dashboard"); setIncidents([]); setSkills([]); setAudit([]); setEvaluations([]);
   }, []);
   useEffect(() => {
     const expired = () => { if (auth !== true) return; clearSession(); setError("세션이 만료되었거나 폐기되었습니다. 다시 로그인하세요."); };
@@ -496,7 +498,7 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, [error]);
   useEffect(() => {
-    if (!drawer && !createOpen) return;
+    if (!drawer && !createOpen && !messageOpen) return;
     const previous = document.activeElement as HTMLElement | null;
     const dialog = document.querySelector('[role="dialog"]');
     const controls = () =>
@@ -512,6 +514,7 @@ export default function Home() {
       if (e.key === "Escape") {
         setDrawer(false);
         setCreateOpen(false);
+        setMessageOpen(false);
       }
       if (e.key === "Tab") {
         const items = controls(),
@@ -531,7 +534,7 @@ export default function Home() {
       document.removeEventListener("keydown", handle);
       previous?.focus();
     };
-  }, [drawer, createOpen]);
+  }, [drawer, createOpen, messageOpen]);
   function navigateGuide(target: string) {
     if (target === "register") { setCreateOpen(true); return; }
     if (detail) setDrawer(true);
@@ -728,10 +731,11 @@ export default function Home() {
               <h1>{title[view]}</h1>
               <p>{descriptions[view]}</p>
             </div>
+            <div className="flex-row" style={{flexWrap:"wrap"}}><Button variant="outline" onClick={() => setMessageOpen(true)}>문자 붙여넣기</Button>
             <Button variant="outline" onClick={() => setCreateOpen(true)}>
               <Plus size={16} />
               장애 직접 등록
-            </Button>
+            </Button></div>
           </div>
           {isAdmin && !["guide", "accounts"].includes(view) && <><div className="simulation-bar">
             <div className="flex-row">
@@ -1437,6 +1441,11 @@ export default function Home() {
           onRefresh={async () => { const result = await loadDetail(selected, true); await refresh(); return result; }}
           renderDecision={d => <Decision d={d} />} renderTimeline={events => <Timeline events={events} />} renderAgent={task => <AgentResult task={task} />} />
       </div>}
+      {messageOpen && <MessageIntake assets={catalog.assets} initialMode={mode} provider={provider} api={api} onClose={() => setMessageOpen(false)} onRegistered={(id, duplicate) => {
+        setMessageOpen(false); setSelected(id); setDrawer(true); setView("dashboard");
+        setNotice(duplicate ? "이미 등록된 문자의 장애 처리 화면을 열었습니다." : "문자 관측값을 저장했습니다. 현재 장애 처리 단계로 이동합니다.");
+        void refresh().catch(() => setError("장애는 등록됐지만 목록 갱신에 실패했습니다. 잠시 후 다시 확인해 주세요."));
+      }} />}
       {createOpen && (
         <div
           className="modal-backdrop"

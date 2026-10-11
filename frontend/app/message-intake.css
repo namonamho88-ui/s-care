@@ -1,0 +1,24 @@
+.message-intake.drawer{width:min(860px,100vw)}
+.message-intake h2{display:flex;align-items:center;gap:10px}
+.message-intake .drawer-body{display:flex;flex-direction:column;gap:18px}
+.message-intake label{display:flex;flex-direction:column;gap:8px}
+.message-intake textarea{min-height:160px;resize:vertical;font-family:inherit}
+.message-intake .banner{margin:0}
+.message-steps{display:flex;list-style:none;gap:8px;padding:0;margin:0}
+.message-steps li{flex:1;padding:12px 8px;border-bottom:2px solid var(--line);color:var(--muted);font-size:12px}
+.message-steps .active{color:var(--cyan);border-color:var(--cyan);font-weight:700}
+.message-steps .done{color:#86efac;border-color:#86efac}
+.message-examples,.message-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.message-actions{justify-content:space-between}
+.message-preview{display:flex;flex-direction:column;gap:16px;border-top:1px solid var(--line);padding-top:24px}
+.message-fields{margin:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.message-fields>div{display:grid;grid-template-columns:175px 1fr;gap:12px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.message-fields>div:last-child{border-bottom:0}
+.message-fields dt{color:var(--muted)}
+.message-fields dd{margin:0;overflow-wrap:anywhere}
+.message-normal,.message-pending{display:flex;align-items:flex-start;gap:12px;padding:15px;background:#103531;border:1px solid #267165;border-radius:10px;color:#a7f3d0}
+.message-normal svg,.message-pending svg{flex-shrink:0}
+.message-warning{border-left:2px solid #d1a64e;padding-left:12px;color:#e6c98c}
+.message-submit,.message-duplicate{padding:18px;border-radius:10px;background:#16263a;display:flex;flex-direction:column;gap:12px}
+.message-intake pre{white-space:pre-wrap;overflow-wrap:anywhere}
+@media(max-width:600px){.message-intake .drawer-body{padding:18px 14px}.message-intake .drawer-head{padding:18px 14px}.message-fields>div{grid-template-columns:1fr;gap:4px}.message-steps li{font-size:11px;padding:10px 2px}.message-actions>button,.message-submit>button{width:100%}}

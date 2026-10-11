@@ -40,6 +40,52 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
   return mutations;
 }
 
+const smsPreview = (normal=false, existing="") => ({ parsed: {kind:'BATCH',status:normal?'END_OK':'ABEND',eligible:!normal,title:'가상 배치 알림',fields:{배치ID:'DEMO_BATCH_001',배치명:'가상정산배치..',발생일시:'2026-10-07 14:57:40'},warnings:['배치명이 생략되어 있습니다. 대상 구성요소를 확인하세요.']},observations:'가상 배치 관측값',existingIncidentId:existing,suggestedAssetId:'',matchReason:'대상 구성요소를 선택해 주세요.'});
+test('normal SMS is displayed but cannot register or call incident analysis',async({page})=>{
+  const mutations=await setup(page);let previews=0;
+  await page.route('**/api/message-intake/preview',async route=>{previews++;await route.fulfill({json:smsPreview(true)});});
+  await page.getByRole('button',{name:'문자 붙여넣기',exact:true}).click();
+  const dialog=page.getByRole('dialog',{name:'문자로 장애 등록'});
+  await dialog.getByRole('button',{name:'정상 종료 · 등록 제외'}).click();await dialog.getByRole('button',{name:'내용 분석',exact:true}).click();
+  await expect(dialog.getByText('END_OK는 정상 종료입니다.',{exact:false})).toBeVisible();
+  await expect(dialog.getByRole('button',{name:'등록 & 분석 시작'})).toHaveCount(0);
+  expect(previews).toBe(1);expect(mutations).toEqual([]);
+});
+test('SMS requires explicit asset choice and opens the incident stepper after server registration',async({page})=>{
+  await setup(page,undefined,'USER',{status:'NEEDS_REVIEW'});let registrations=0;
+  await page.route('**/api/message-intake/preview',route=>route.fulfill({json:smsPreview()}));
+  await page.route('**/api/message-intake/register',async route=>{registrations++;expect(route.request().postDataJSON()).toMatchObject({assetId:'ASSET-12',mode:'DEMO',provider:'MOCK'});await route.fulfill({json:{id:'INC-UI-RESOLVED',duplicate:false}});});
+  await page.getByRole('button',{name:'문자 붙여넣기',exact:true}).click();const dialog=page.getByRole('dialog',{name:'문자로 장애 등록'});
+  await dialog.getByRole('button',{name:'배치 비정상 종료',exact:true}).click();await dialog.getByRole('button',{name:'내용 분석',exact:true}).click();
+  const submit=dialog.getByRole('button',{name:'등록 & 분석 시작',exact:true});await expect(submit).toBeDisabled();
+  await dialog.getByRole('combobox',{name:'대상 구성요소',exact:true}).selectOption('ASSET-12');await dialog.getByRole('combobox',{name:'문자 등록 실행 모드',exact:true}).selectOption('DEMO');await submit.click();
+  await expect(dialog).toHaveCount(0);await expect(page.getByRole('dialog',{name:'장애 상세'})).toBeVisible();await expect(page.getByRole('tab',{name:/2\. 분석/})).toHaveAttribute('aria-selected','true');expect(registrations).toBe(1);
+});
+test('duplicate SMS opens its existing incident without registering again',async({page})=>{
+  const mutations=await setup(page);await page.route('**/api/message-intake/preview',route=>route.fulfill({json:smsPreview(false,'INC-UI-RESOLVED')}));
+  await page.getByRole('button',{name:'문자 붙여넣기',exact:true}).click();const dialog=page.getByRole('dialog',{name:'문자로 장애 등록'});
+  await dialog.getByLabel('수신 문자').fill('가상 중복 문자');await dialog.getByRole('button',{name:'내용 분석',exact:true}).click();
+  await expect(dialog.getByText('이미 등록된 문자입니다')).toBeVisible();await dialog.getByRole('button',{name:'기존 장애 열기'}).click();await expect(page.getByRole('dialog',{name:'장애 상세'})).toBeVisible();expect(mutations).toEqual([]);
+});
+test('mobile SMS preview is readable and editing invalidates a stale result',async({page})=>{
+  await page.setViewportSize({width:390,height:844});await setup(page);await page.route('**/api/message-intake/preview',route=>route.fulfill({json:smsPreview()}));
+  const trigger=page.getByRole('button',{name:'문자 붙여넣기',exact:true});await trigger.click();const dialog=page.getByRole('dialog',{name:'문자로 장애 등록'});
+  await dialog.getByRole('button',{name:'배치 종료 지연',exact:true}).click();await dialog.getByRole('button',{name:'내용 분석',exact:true}).click();
+  await expect(dialog.getByRole('region',{name:'문자 분석 결과'})).toBeVisible();expect(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+  await dialog.getByLabel('수신 문자').fill('다른 가상 문자');await expect(dialog.getByRole('region',{name:'문자 분석 결과'})).toHaveCount(0);
+  await page.keyboard.press('Escape');await expect(dialog).toHaveCount(0);await expect(trigger).toBeFocused();
+});
+test('SMS request failure retains the message and selected asset with a named pending state',async({page})=>{
+  await setup(page);await page.route('**/api/message-intake/preview',route=>route.fulfill({json:smsPreview()}));
+  let release!:()=>void;const gate=new Promise<void>(resolve=>{release=resolve;});
+  await page.route('**/api/message-intake/register',async route=>{await gate;await route.fulfill({status:502,json:{error:'가상 서버 응답 실패'}});});
+  await page.getByRole('button',{name:'문자 붙여넣기',exact:true}).click();const dialog=page.getByRole('dialog',{name:'문자로 장애 등록'});
+  await dialog.getByRole('button',{name:'배치 비정상 종료',exact:true}).click();const text=await dialog.getByLabel('수신 문자').inputValue();await dialog.getByRole('button',{name:'내용 분석',exact:true}).click();
+  await dialog.getByRole('combobox',{name:'대상 구성요소',exact:true}).selectOption('ASSET-12');await dialog.getByRole('button',{name:'등록 & 분석 시작',exact:true}).click();
+  await expect(dialog.getByRole('status')).toContainText('관측값과 장애 이력 저장');await page.keyboard.press('Escape');await expect(dialog).toBeVisible();release();
+  await expect(dialog.getByRole('alert')).toContainText('가상 서버 응답 실패');await expect(dialog.getByLabel('수신 문자')).toHaveValue(text);await expect(dialog.getByRole('combobox',{name:'대상 구성요소',exact:true})).toHaveValue('ASSET-12');
+});
+
 test('fullscreen fills the viewport, fit keeps every node visible, Escape returns focus', async ({page}) => {
   await page.setViewportSize({width:1440,height:960});
   const mutations=await setup(page);

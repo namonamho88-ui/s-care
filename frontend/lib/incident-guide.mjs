@@ -10,7 +10,7 @@ export const incidentSteps = [
 ];
 
 const stageNames = {
-  INCIDENT: '장애 접수', JEV: 'AI 장애 판단 · Jev', ONTOLOGY: '영향 범위 분석 · Ontology',
+  INCIDENT: '장애 접수', MESSAGE_INTAKE: '문자 관측값 확인', JEV: 'AI 장애 판단 · Jev', ONTOLOGY: '영향 범위 분석 · Ontology',
   AGENT_INCIDENT: '업무 조정 · Incident Agent', AGENT_DIAGNOSIS: '원인 후보 분석 · Diagnosis Agent',
   AGENT_IMPACT: '영향 분석 · Impact Agent', AGENT_KNOWLEDGE: '해결 지식 검색 · Knowledge Agent',
   AGENT_RECOVERY: '복구 가이드 · Recovery Agent', AGENT_REPORT: '보고서 작성 · Report Agent',

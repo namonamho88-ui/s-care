@@ -14,11 +14,26 @@ public class Harness {
  public Harness(Store s,JevRouter jev,Ontology graph,RpcClient rpc,LocalSkillStore skills,EvidencePolicy policy,KnowledgeEngine knowledge,@Value("${brain.step-ms}") long delay){this.s=s;this.jev=jev;this.graph=graph;this.rpc=rpc;this.skills=skills;this.policy=policy;this.knowledge=knowledge;this.delay=delay;}
  @EventListener(ApplicationReadyEvent.class) public void recoverStartup(){for(var row:s.db.queryForList("SELECT id FROM incidents WHERE status IN ('REGISTERED','ANALYZING','RECOVERING')"))fail(row.get("id").toString(),"Application restarted; retry required");s.db.update("UPDATE evaluations SET status='FAILED' WHERE status='RUNNING'");try{graph.sync();}catch(Exception e){s.audit(null,"system","GRAPH_UNAVAILABLE",Map.of("reason",e.getMessage()));}}
  public synchronized String create(String scenarioId,String mode,String provider,String title,String asset,String observations,String owner){
+  return createInternal(scenarioId,mode,provider,title,asset,observations,owner,null);
+ }
+ public synchronized Map<String,Object> createMessage(SmsParser.Parsed parsed,String mode,String provider,String asset,String owner){
+  if(!parsed.eligible())throw new IllegalArgumentException("장애 등록 대상 알림이 아닙니다.");
+  var existing=s.db.queryForList("SELECT incident_id FROM message_intakes WHERE fingerprint=?",String.class,parsed.fingerprint());
+  if(!existing.isEmpty())return Map.of("id",existing.get(0),"duplicate",true);
+  try{return Map.of("id",createInternal(null,mode,provider,parsed.title(),asset,parsed.observations(),owner,parsed),"duplicate",false);}
+  catch(org.springframework.dao.DuplicateKeyException race){
+   var saved=s.db.queryForList("SELECT incident_id FROM message_intakes WHERE fingerprint=?",String.class,parsed.fingerprint());
+   if(saved.isEmpty())throw race;return Map.of("id",saved.get(0),"duplicate",true);
+  }
+ }
+ private String createInternal(String scenarioId,String mode,String provider,String title,String asset,String observations,String owner,SmsParser.Parsed message){
   validateMode(mode,provider);if(s.db.queryForObject("SELECT COUNT(*) FROM incidents WHERE status IN ('REGISTERED','ANALYZING','NEEDS_REVIEW','WAITING_APPROVAL','RECOVERING')",Integer.class)>=4)throw new IllegalStateException("활성 장애는 최대 4개입니다. 기존 장애를 먼저 처리하세요.");
   if(scenarioId!=null){var sc=s.one("SELECT * FROM scenarios WHERE id=?",scenarioId);title=sc.get("title").toString();asset=sc.get("asset_id").toString();observations=sc.get("observations").toString();}
   text(title,200,"제목");text(observations,4000,"관측 내용");s.one("SELECT id FROM assets WHERE id=? AND kind<>'SYSTEM'",asset);s.one("SELECT id FROM operators WHERE id=?",owner);
   String id=Store.id("INC-");final String t=title,a=asset,o=observations;
-  s.tx(()->{s.db.update("INSERT INTO incidents(id,title,asset_id,scenario_id,owner_id,type,severity,status,mode,provider,observations,created_at) VALUES (?,?,?,?,?,'PENDING','P2','REGISTERED',?,?,?,?)",id,t,a,scenarioId,owner,mode,provider,o,Store.now());String metrics=s.encode(Map.of("errorRate",12.5,"latencyMs",3200,"healthyDependencies",false));s.db.update("INSERT INTO simulated_metrics VALUES (?,?,?,FALSE)",id,metrics,metrics);s.event(id,"INCIDENT","COMPLETED","가상 장애 접수 및 DB 저장",Map.of("mode",mode,"requestedProvider",provider));s.audit(id,Access.actor(),"CREATE",Map.of("mode",mode,"requestedProvider",provider));return null;});run(id,()->analyze(id));return id;
+  s.tx(()->{s.db.update("INSERT INTO incidents(id,title,asset_id,scenario_id,owner_id,type,severity,status,mode,provider,observations,created_at) VALUES (?,?,?,?,?,'PENDING','P2','REGISTERED',?,?,?,?)",id,t,a,scenarioId,owner,mode,provider,o,Store.now());String metrics=s.encode(Map.of("errorRate",12.5,"latencyMs",3200,"healthyDependencies",false));s.db.update("INSERT INTO simulated_metrics VALUES (?,?,?,FALSE)",id,metrics,metrics);s.event(id,"INCIDENT","COMPLETED","가상 장애 접수 및 DB 저장",Map.of("mode",mode,"requestedProvider",provider));s.audit(id,Access.actor(),"CREATE",Map.of("mode",mode,"requestedProvider",provider));
+   if(message!=null){s.db.update("INSERT INTO message_intakes(fingerprint,incident_id,source_key,parsed_json,created_by,created_at) VALUES (?,?,?,?,?,?)",message.fingerprint(),id,message.sourceKey(),s.encode(message),Access.actor(),Store.now());s.event(id,"MESSAGE_INTAKE","COMPLETED","문자 관측값 확인 및 저장",message);s.audit(id,Access.actor(),"MESSAGE_INTAKE",Map.of("kind",message.kind(),"sourceKey",message.sourceKey()));}
+   return null;});run(id,()->analyze(id));return id;
  }
  public void validateMode(String mode,String provider){if(!List.of("DEMO","REAL").contains(mode)||!List.of("LOCAL","TYPESAFE","MOCK").contains(provider)||mode.equals("REAL")&&provider.equals("MOCK"))throw new IllegalArgumentException("Invalid mode/provider");if(mode.equals("REAL")&&provider.equals("TYPESAFE")&&!jev.cloudConfigured())throw new IllegalStateException("TypeSafe API 키가 설정되지 않았습니다.");}
  public static void text(String value,int max,String label){if(value==null||value.isBlank()||value.length()>max)throw new IllegalArgumentException(label+"을 1~"+max+"자로 입력하세요.");}

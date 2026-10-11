@@ -38,7 +38,7 @@ public class SecurityFilter extends OncePerRequestFilter {
  }
  private static boolean userAllowed(String method,String path){
   if(method.equals("GET"))return java.util.List.of("/api/auth/me","/api/config","/api/catalog","/api/graph","/api/dashboard","/api/incidents","/api/skills").contains(path)||path.matches("/api/incidents/[A-Za-z0-9_-]+(?:/events|/report/(?:pdf|xlsx))?");
-  if(method.equals("POST"))return java.util.List.of("/api/incidents","/api/auth/logout","/api/auth/password").contains(path);
+  if(method.equals("POST"))return java.util.List.of("/api/incidents","/api/message-intake/preview","/api/message-intake/register","/api/auth/logout","/api/auth/password").contains(path);
   return method.equals("PATCH")&&path.matches("/api/incidents/[A-Za-z0-9_-]+");
  }
  private static void deny(HttpServletResponse response,int status,String message)throws IOException{response.setStatus(status);response.setCharacterEncoding("UTF-8");response.setContentType("application/json");response.getWriter().write("{\"error\":\""+message+"\"}");}

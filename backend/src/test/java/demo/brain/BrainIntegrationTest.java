@@ -52,6 +52,34 @@ class BrainIntegrationTest {
  @Test @Order(12) void userCannotBypassServerRolesOrOwnership()throws Exception{new AccountChecks(s,http,token).rolesAndOwnership();}
  @Test @Order(13) void accountAdminActionsRecordIndividualIdentity()throws Exception{new AccountChecks(s,http,token).adminIdentityAndRecovery();}
  @Test @Order(14) void expiredInvitationsResetAndPersistentLockout(){new AccountChecks(s,http,token).resetsAndLockout();}
+ @Test @Order(15) void normalSmsPreviewCannotCreateIncidentOrEvents(){
+  int before=s.db.queryForObject("SELECT COUNT(*) FROM incidents",Integer.class),events=s.db.queryForObject("SELECT COUNT(*) FROM events",Integer.class);
+  var preview=post("/api/message-intake/preview",Map.of("message",SmsParserTest.NORMAL));assertThat(preview.getStatusCode().value()).isEqualTo(200);assertThat(s.json.valueToTree(preview.getBody()).path("parsed").path("eligible").asBoolean()).isFalse();
+  assertThat(post("/api/message-intake/register",Map.of("message",SmsParserTest.NORMAL,"assetId","CMP-01","eligible","true")).getStatusCode().value()).isEqualTo(400);
+  assertThat(s.db.queryForObject("SELECT COUNT(*) FROM incidents",Integer.class)).isEqualTo(before);assertThat(s.db.queryForObject("SELECT COUNT(*) FROM events",Integer.class)).isEqualTo(events);
+ }
+ @Test @Order(16) void smsRegistrationPersistsOnceAndSuggestsOnlyConfirmedAsset()throws Exception{
+  var before=post("/api/message-intake/preview",Map.of("message",SmsParserTest.ABEND)).getBody();assertThat(before).containsEntry("suggestedAssetId","");
+  int count=s.db.queryForObject("SELECT COUNT(*) FROM incidents",Integer.class);
+  var body=Map.of("message",SmsParserTest.ABEND,"assetId","CMP-01","mode","DEMO","provider","MOCK");
+  var futures=java.util.stream.IntStream.range(0,4).mapToObj(n->java.util.concurrent.CompletableFuture.supplyAsync(()->post("/api/message-intake/register",body))).toList();
+  var replies=new ArrayList<Map>();for(var future:futures){var r=future.get(15,java.util.concurrent.TimeUnit.SECONDS);assertThat(r.getStatusCode().value()).isEqualTo(200);replies.add(r.getBody());}
+  assertThat(replies.stream().map(r->r.get("id")).distinct().count()).isEqualTo(1);assertThat(replies.stream().filter(r->Boolean.FALSE.equals(r.get("duplicate"))).count()).isEqualTo(1);
+  String id=replies.get(0).get("id").toString();waitFor(id,"NEEDS_REVIEW");
+  assertThat(s.db.queryForObject("SELECT COUNT(*) FROM incidents",Integer.class)).isEqualTo(count+1);assertThat(s.one("SELECT * FROM message_intakes WHERE incident_id=?",id)).containsEntry("created_by","bootstrap-admin");
+  assertThat(s.db.queryForObject("SELECT COUNT(*) FROM events WHERE incident_id=? AND stage='MESSAGE_INTAKE'",Integer.class,id)).isEqualTo(1);
+  assertThat(post("/api/message-intake/preview",Map.of("message",SmsParserTest.ABEND)).getBody()).containsEntry("existingIncidentId",id).containsEntry("suggestedAssetId","CMP-01");
+ }
+ @Test @Order(17) void userCanRegisterTmsAndNoRawRecipientsReachStoredEvidence()throws Exception{
+  var accounts=new AccountChecks(s,http,token);var inv=accounts.invite("fictional.sms","USER","OP-15");String personal=accounts.activate("fictional.sms",inv.get("inviteCode")).get("token").toString();
+  assertThat(accounts.post(personal,"/api/message-intake/preview",Map.of("message",SmsParserTest.TMS)).getStatusCode().value()).isEqualTo(200);
+  assertThat(accounts.post(null,"/api/message-intake/preview",Map.of("message",SmsParserTest.TMS)).getStatusCode().value()).isEqualTo(401);
+  var response=accounts.post(personal,"/api/message-intake/register",Map.of("message",SmsParserTest.TMS,"assetId","CMP-02","mode","DEMO","provider","MOCK","ownerId","OP-01"));assertThat(response.getStatusCode().value()).isEqualTo(200);
+  String id=response.getBody().get("id").toString();waitFor(id,"NEEDS_REVIEW");
+  assertThat(s.one("SELECT * FROM message_intakes WHERE incident_id=?",id)).containsEntry("created_by",inv.get("id"));
+  assertThat(s.incident(id).get("observations").toString()).contains("95.65","0.65%p","[개인]").doesNotContain("가상수신자","가상금융회사");
+  assertThat(s.encode(get("/api/incidents/"+id).getBody())).doesNotContain("가상수신자","가상금융회사","[Web발신]");
+ }
  String create(String mode){var response=post("/api/simulate",Map.of("scenarioId","SCN-01","mode",mode,"provider","LOCAL"));assertThat(response.getStatusCode().value()).isEqualTo(200);return response.getBody().get("id").toString();}
  void waitFor(String id,String expected)throws Exception{long end=System.nanoTime()+15_000_000_000L;while(System.nanoTime()<end){String state=s.incident(id).get("status").toString();if(state.equals(expected))return;if(state.equals("FAILED"))fail(s.db.queryForList("SELECT * FROM events WHERE incident_id=?",id).toString());Thread.sleep(30);}fail("Timeout waiting for "+expected);}
 }
