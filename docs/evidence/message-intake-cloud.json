@@ -1,0 +1,65 @@
+{
+  "runtimeCommit": "f98dda7ea133b9455432ae44eac4df52433668af",
+  "ci": [
+    {
+      "id": 38130916168,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38130916168"
+    },
+    {
+      "id": 38130916152,
+      "name": "container verification",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38130916152"
+    }
+  ],
+  "vercel": {
+    "state": "success",
+    "context": "Vercel – s-care",
+    "target_url": "https://vercel.com/namonamho88-uis-projects/s-care/623cQCBbBqV6tuYBQ3BdPURn75h9",
+    "description": "Deployment has completed"
+  },
+  "railwayBackendDeployment": "9c527694-3190-4cff-ada5-b305a5e5b1be",
+  "backend": "https://backend-production-0eb45.up.railway.app",
+  "site": "https://s-care-mu.vercel.app/",
+  "normalExcluded": true,
+  "normalRegistrationHttp": 400,
+  "normalNoIncidentCreated": true,
+  "delayDeadlineSeparated": true,
+  "testIncidentId": "INC-ec1b9302-56ff-46",
+  "mode": "DEMO",
+  "initialStatus": "NEEDS_REVIEW",
+  "finalStatus": "REJECTED",
+  "duplicateReturnsSameIncident": true,
+  "persistedSourceLookup": true,
+  "confirmedAssetSuggestion": "CMP-01",
+  "messageIntakeEvents": 1,
+  "realRecoveryExecuted": false,
+  "beforeCount": 209,
+  "afterCount": 210,
+  "ui": {
+    "normalPreview": true,
+    "tmsPreview": true,
+    "nestedNamePreserved": true,
+    "thresholdDifference": "0.65%p",
+    "explicitAssetRequired": true
+  },
+  "manuals": [
+    {
+      "audience": "user",
+      "httpStatus": 200,
+      "sha256": "0423b53dd43c2ff590027b57fa56c1f50d2d6943187634e43ca92fd01ac5ebb3",
+      "matchesSource": true
+    },
+    {
+      "audience": "admin",
+      "httpStatus": 200,
+      "sha256": "81bc99fca10566de30cc48b05cd0c54f7b2a25be6659ca39c37094eb3f1ca029",
+      "matchesSource": true
+    }
+  ],
+  "note": "New fictional QA incident only; it was reviewed and rejected without recovery. No existing incident was intentionally modified. The initial verification completed all assertions, but saving its evidence failed due to an incorrect directory; this file is reconstructed from those checks and fresh read-only verification. No before/after hash identity claim is made."
+}
