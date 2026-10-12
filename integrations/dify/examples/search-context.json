@@ -1,0 +1,27 @@
+{
+  "fictional": true,
+  "incidentId": "DIFY-DEMO-001",
+  "type": "DATABASE",
+  "observations": "가상 국제정산 DB의 연결 대기 시간이 증가했습니다. 가상 관측 지연 3200ms, 오류율 12.5%입니다. 근본 원인은 아직 확정하지 않았습니다.",
+  "approvedSkills": [
+    {
+      "id": "DEMO-SKILL-DB-01",
+      "type": "DATABASE",
+      "status": "APPROVED",
+      "title": "가상 DB 연결 대기 확인",
+      "conditions": "가상 DB 연결 지연이 관측된 경우",
+      "checks": "연결 대기와 영향 시스템을 읽기 전용 관측 자료로 확인합니다.",
+      "solution": "담당자 승인 후 가상 복구 시나리오를 실행하고 지표를 비교합니다.",
+      "cautions": "실제 DB 설정을 변경하지 않습니다. 원인 후보를 확정 원인으로 기록하지 않습니다."
+    }
+  ],
+  "manuals": [
+    {
+      "id": "DEMO-MANUAL-DB-01",
+      "type": "DATABASE",
+      "title": "가상 DB 장애 대응 매뉴얼",
+      "procedure_text": "관측 확인 → 의존 관계 확인 → 담당자 검토 → 승인 → 가상 복구 검증 → 후기 작성"
+    }
+  ],
+  "similarIncidents": []
+}

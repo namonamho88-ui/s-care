@@ -1,0 +1,19 @@
+name: Dify workflow contracts
+on:
+  push:
+    paths: ['integrations/dify/**', '.github/workflows/dify.yml']
+  pull_request:
+    paths: ['integrations/dify/**', '.github/workflows/dify.yml']
+permissions:
+  contents: read
+jobs:
+  offline-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.12'}
+      - run: python -m pip install -r integrations/dify/requirements-dev.txt
+      - run: python integrations/dify/generate_dsl.py --check
+      - run: python -m unittest discover -s integrations/dify -p test_workflow.py -v
+      - run: python integrations/dify/run_workflow.py --context integrations/dify/examples/search-context.json --dry-run

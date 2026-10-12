@@ -10,6 +10,8 @@ Supabase와 Railway의 서비스별 구성은 **[배포 가이드](docs/DEPLOYME
 
 **클라우드 시연: [s-care-mu.vercel.app](https://s-care-mu.vercel.app/)**. 2026-10-10 Vercel → Railway → Supabase에서 DEMO와 실제 Local Jev/Hermes 시연을 모두 장애 종료까지 검증했습니다. 실제 Jev 분류, Neo4j 영향 탐색, 여섯 A2A Agent, 담당자 검토·승인, 가상 복구, 보고서와 이력 저장이 동작합니다. 실제 모델 50건 평가는 47/50(94%), Mock 대체 0건입니다. [클라우드 검증 결과와 한계](docs/VALIDATION.md)를 확인하세요. Railway는 현재 Trial이며 최종 시연 전 요금제·자원 확인과 부하 리허설이 필요합니다.
 
+선택형 **Dify Cloud 연결**을 준비한다면 [가져오기용 YAML·설정 가이드](integrations/dify/README.md)를 참고하세요. Knowledge Agent와 Hermes 사이에서 승인 지식 선택·Skill 초안 생성을 편집하는 워크플로와 가상 예제, API 실행 도구를 제공합니다. 현재 앱의 자동 연결은 활성화하지 않았으며 기존 Jev·Ontology·A2A·Harness·승인 흐름을 유지합니다.
+
 ## 개인 계정 시작하기
 
 1. 최초 관리자는 로그인 화면 → **관리자 초기 설정** → 환경의 `ADMIN_TOKEN` 입력.

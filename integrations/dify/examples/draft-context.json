@@ -1,0 +1,20 @@
+{
+  "fictional": true,
+  "incidentId": "DIFY-DEMO-002",
+  "type": "DATABASE",
+  "observations": "가상 정산 DB 연결 대기를 확인했습니다. 담당자가 승인한 가상 복구 검증이 통과했습니다. 실제 시스템 변경은 없으며 근본 원인은 확정하지 않았습니다.",
+  "approvedSkills": [],
+  "manuals": [],
+  "similarIncidents": [],
+  "decision": {
+    "type": "DATABASE",
+    "severity": "HIGH",
+    "department": "가상 DB 운영팀",
+    "provider": "MOCK",
+    "model": "fictional-example",
+    "simulated": true
+  },
+  "impact": {"engine": "FICTIONAL_EXAMPLE", "root": "DEMO-DB-01", "affected": []},
+  "approvals": [{"approved": true}],
+  "verification": {"passed": true, "realChanges": false}
+}

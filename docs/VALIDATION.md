@@ -222,6 +222,13 @@ Mock 시연 점수와 실제 모델 점수를 섞지 않는다. 정답은 모델
 - 런타임 `79ae90aa5410a03d218e4dbb36e84dd822845474`의 [verify](https://github.com/namonamho88-ui/s-care/actions/runs/38187558417)와 [container verification](https://github.com/namonamho88-ui/s-care/actions/runs/38187558378)가 모두 성공했다. Vercel `4c835mXN7EhJPYKDAikDUf1mXsFD` 및 Railway backend `afd288a8-f8c3-45ae-8290-600e4c43add5` 배포 완료를 확인했다.
 - 호스팅 화면에서 장애 211건의 2페이지 10건/마지막 22페이지 1건, 검색 시 첫 페이지 이동, Skill 29건 중 2페이지 10건, 매뉴얼 30건 중 마지막 3페이지와 독립 페이지 유지를 확인했다. 평가 2건과 감사 304건의 서버 조회도 성공했으며 감사 2페이지 10건/마지막 31페이지 4건을 화면과 API에서 확인했다. 배포된 두 매뉴얼은 소스 SHA-256과 일치한다. 검증은 조회만 수행했으며 다건 평가 경계는 로컬/CI의 가상 fixture로 검증했다. `evidence/pagination-cloud.json` 참조.
 
+## Dify Cloud 선택형 워크플로 패키지 (2026-10-12)
+
+- `integrations/dify`에 공식 Dify 1.17.1 / DSL 0.7.0 스키마를 참고한 가져오기용 YAML을 추가했다. Knowledge Agent→Dify→Hermes의 승인 지식 선택·Skill 초안 경로이며 기존 Spring 런타임의 자동 연결은 구현/활성화하지 않았다.
+- 오프라인 Python 테스트 **26개** 통과. YAML에 내장된 코드와 분기·변수 연결을 실행하고 HTTP 경계만 가상 응답으로 대체했다. DEMO의 Hermes/LLM 무호출, REAL 검색·초안의 응답 계약, JSON escaping, 출처, 승인 ID, 복구 검증/승인 누락, 활성 도구, HTTP/응답 오류 차단과 API 클라이언트·한글 UTF-8 출력을 검사했다. 생성 원본과 YAML의 일치도 확인했다.
+- 가상 입력 예제 두 개, 키를 포함하지 않는 API 실행 도구와 Dify Cloud 설정/후속 Spring 어댑터 계약을 작성했다. 자동 POST 재시도와 REAL 오류의 숨은 Mock 전환은 하지 않는다. OpenAI 키는 Hermes에만 유지하고 Dify에는 별도 Hermes 인증 키를 Secret으로 설정한다.
+- 실제 Dify Cloud 가져오기·게시·샌드박스 실행·LLM 호출과 Spring→Dify→DB 전체 연동은 **미검증**이다. Cloud의 DEMO 실행 자체는 외부 서비스 이용이며 기존 앱의 독립 DEMO 모드와 구분한다. 현재 Hermes 내부 주소를 공개 주소로 전환하거나 운영 데이터·프론트엔드·백엔드 코드를 변경하지 않았다.
+
 ## 기술·모델 사용 지점 안내 (2026-10-12)
 
 - 사용자/관리자 공통 `기술 & 모델` 메뉴에 6단계 지도, 기술 8종의 사용 지점·역할·구현 방식, 6개 Agent의 실제 모델 연결 범위를 추가했다. 업무 메뉴에 관련 기술 설명과 안내 바로가기를 표시한다.
