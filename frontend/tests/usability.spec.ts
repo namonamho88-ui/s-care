@@ -45,6 +45,49 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
 }
 
 const smsPreview = (normal=false, existing="") => ({ parsed: {kind:'BATCH',status:normal?'END_OK':'ABEND',eligible:!normal,title:'가상 배치 알림',fields:{배치ID:'DEMO_BATCH_001',배치명:'가상정산배치..',발생일시:'2026-10-07 14:57:40'},warnings:['배치명이 생략되어 있습니다. 대상 구성요소를 확인하세요.']},observations:'가상 배치 관측값',existingIncidentId:existing,suggestedAssetId:'',matchReason:'대상 구성요소를 선택해 주세요.'});
+test('technology map explains implementation to normal users without exposing admin actions',async({page})=>{
+  const mutations=await setup(page,undefined,'USER');
+  await page.getByRole('button',{name:'기술별 역할 보기',exact:true}).click();
+  const guide=page.getByRole('region',{name:'기술과 모델 안내'});
+  await expect(guide.getByRole('table')).toBeVisible();await expect(guide.getByRole('row')).toHaveCount(9);
+  await expect(guide.getByRole('list',{name:'단계별 기술 지도'}).getByRole('listitem')).toHaveCount(6);
+  await guide.getByText('6개 Agent의 역할과 모델 연결 보기',{exact:true}).click();
+  await expect(guide.getByRole('heading',{name:'Diagnosis Agent · 원인 후보 분석'})).toBeVisible();
+  await expect(guide.getByRole('heading',{name:'Report Agent · 보고서 구성'})).toBeVisible();
+  await expect(page.getByRole('button',{name:'Mock 50건 평가',exact:true})).toHaveCount(0);expect(mutations).toEqual([]);
+});
+
+test('stage technology evidence separates real Jev, Hermes Mock fallback and unexecuted work',async({page})=>{
+  const mutations=await setup(page,undefined,'ADMIN',{status:'NEEDS_REVIEW',mode:'REAL',
+    decision:{provider:'LOCAL_JEV',model:'fictional-model-v1',simulated:false,confidence:.5,evidenceScore:.4,latencyMs:82,type:'RESOURCE',severity:'P1',department:'PLATFORM'},
+    tasks:[{agent:'knowledge',status:'completed',result_json:JSON.stringify({artifacts:[{parts:[{data:{provider:'MOCK_HERMES_FALLBACK',model:'fictional-template',simulated:true,fallback:true,fallbackReason:'test-timeout'}}]}]})}],
+    events:[{id:1,stage:'HARNESS',state:'COMPLETED',data_json:'{"needsReview":true,"passed":false}',message:'가상 검증',created_at:'2026-10-10T12:00:00Z'}],
+  });
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();const dialog=page.getByRole('dialog',{name:'장애 상세'});
+  const stage=dialog.getByRole('region',{name:'이 단계의 기술과 역할'});
+  await expect(stage).toContainText('2단계에서 사용하는 기술');await expect(stage).toContainText('Jev');
+  await stage.getByText('역할과 이 장애의 실행 근거 보기',{exact:true}).click();
+  await expect(stage.getByRole('article',{name:'Jev 실행 근거'})).toContainText('실제 AI 응답 기록 · Provider: LOCAL_JEV · 응답 모델: fictional-model-v1');
+  await expect(stage.getByRole('article',{name:'Hermes · 에르메스 실행 근거'})).toContainText('시뮬레이션 · 실제 AI 아님');
+  await expect(stage.getByRole('article',{name:'Hermes · 에르메스 실행 근거'})).toContainText('test-timeout');
+  await expect(stage.getByRole('article',{name:'Harness Engineering 실행 근거'})).toContainText('정책 결과: 담당자 확인 필요');
+  await dialog.getByRole('tab',{name:/4\. 복구 검증/}).click();await stage.getByText('역할과 이 장애의 실행 근거 보기',{exact:true}).click();
+  await expect(stage.getByRole('article',{name:'MCP 실행 근거'})).toContainText('실행 기록 없음');expect(mutations).toEqual([]);
+});
+
+test('mobile technology map and step evidence fit without horizontal overflow or invoking AI',async({page})=>{
+  await page.setViewportSize({width:390,height:844});const mutations=await setup(page,undefined,'ADMIN',{status:'REGISTERED',mode:'REAL',impact:null});
+  await page.getByRole('button',{name:'기술 & 모델',exact:true}).click();
+  const guide=page.getByRole('region',{name:'기술과 모델 안내'});expect(await guide.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+  await guide.getByText('실제 AI · Mock · 모델명은 어떻게 읽나요?',{exact:true}).click();await expect(guide).toContainText('hermes-agent 별칭');
+  await page.getByRole('button',{name:'장애 이력',exact:true}).click();await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();
+  const dialog=page.getByRole('dialog',{name:'장애 상세'});await dialog.getByRole('tab',{name:/2\. 분석/}).click();
+  const stage=dialog.getByRole('region',{name:'이 단계의 기술과 역할'});await stage.getByText('역할과 이 장애의 실행 근거 보기',{exact:true}).click();
+  await expect(stage.getByRole('article',{name:'Jev 실행 근거'})).toContainText('실행 기록 없음');
+  await expect(stage.getByRole('article',{name:'Ontology · 온톨로지 실행 근거'})).toContainText('실행 기록 없음');
+  expect(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);expect(mutations).toEqual([]);
+});
+
 test('normal SMS is displayed but cannot register or call incident analysis',async({page})=>{
   const mutations=await setup(page);let previews=0;
   await page.route('**/api/message-intake/preview',async route=>{previews++;await route.fulfill({json:smsPreview(true)});});

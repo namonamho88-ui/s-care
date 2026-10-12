@@ -36,6 +36,8 @@ import IncidentProgress from "@/components/incident-progress";
 import IncidentWorkflow from "@/components/incident-workflow";
 import MessageIntake from "@/components/message-intake";
 import PaginatedList, { RemoteList, useRemotePage } from "@/components/pagination";
+import TechnologyGuide, { TechnologyContext } from "@/components/technology-guide";
+import { stageTechnologyLabel } from "@/lib/technology-guide.mjs";
 import { incidentGuide, stageLabel, eventStateLabel } from "@/lib/incident-guide.mjs";
 const ImpactGraph = dynamic(() => import("@/components/impact-graph"), {
   ssr: false,
@@ -213,6 +215,7 @@ function Timeline({ events }: { events: Row[] }) {
                 {formatTime(e.created_at).slice(-8)}
               </small>
             </div>
+            {stageTechnologyLabel(e.stage) && <small className="event-technology">사용 기술 · {stageTechnologyLabel(e.stage)}</small>}
             <p>{e.message}</p>
             <Json value={e.data_json} />
           </div>
@@ -584,6 +587,7 @@ export default function Home() {
     knowledge: "지식 & Skill · 해결 절차 관리",
     harness: "Harness · 실행 통제와 평가",
     guide: "사용 안내 · 역할별 매뉴얼",
+    technology: "기술 & 모델 · 역할 안내",
     accounts: isAdmin ? "계정 & 권한 관리" : "내 계정",
   };
   const descriptions: Row = {
@@ -593,6 +597,7 @@ export default function Home() {
     knowledge: "해결 방법을 재사용하는 공간입니다. 검토한 Skill만 승인하고 Hermes 게시 상태를 확인하세요.",
     harness: "AI의 실행 제한과 승인 기록을 확인하고 가상 시나리오로 판단 정확도를 평가합니다.",
     guide: "처음 사용하는 분은 사용자용부터, 승인과 환경 운영 담당자는 관리자용을 확인하세요.",
+    technology: "각 기술이 쓰이는 단계와 역할, 실제 AI와 내부 기능의 차이를 확인합니다.",
     accounts: "개인 계정과 로그인 정보를 관리합니다. 권한은 서버에서도 검사합니다.",
   };
   const canEdit = !!detail && (isAdmin || (user.operatorId && user.operatorId === detail.owner_id));
@@ -657,6 +662,7 @@ export default function Home() {
             ["incidents", History, "장애 이력"],
             ["knowledge", BookOpen, "지식 & Skill"],
             ["harness", ShieldCheck, "Harness & 평가"],
+            ["technology", BrainCircuit, "기술 & 모델"],
             ["guide", FileText, "사용 안내"],
             ["accounts", ShieldCheck, isAdmin ? "계정 관리" : "내 계정"],
           ].filter(([id]) => isAdmin || id !== "harness").map(([id, Icon, label]) => (
@@ -736,7 +742,8 @@ export default function Home() {
               장애 직접 등록
             </Button></div>
           </div>
-          {isAdmin && !["guide", "accounts"].includes(view) && <><div className="simulation-bar">
+          <TechnologyContext view={view} onOpen={() => setView("technology")} />
+          {isAdmin && !["guide", "accounts", "technology"].includes(view) && <><div className="simulation-bar">
             <div className="flex-row">
               <div className="brand-icon">
                 <Zap size={19} />
@@ -798,6 +805,7 @@ export default function Home() {
           {filtered && ["dashboard", "incidents", "ontology"].includes(view) && <div className="filter-notice" role="status"><span>집계 필터 적용 중 · {typeLabels[filterType] || "모든 유형"} · {catalog.assets.find((a: Row) => a.id === filterSystem)?.name || "모든 시스템"} · {from || "처음"} ~ {to || "현재 이후 포함"}</span><Button size="sm" variant="outline" onClick={resetFilters}>집계 필터 초기화</Button></div>}
           {view === "accounts" && <AccountCenter user={user} operators={catalog.operators} api={api} onPasswordChanged={() => { clearSession(); setError("비밀번호를 변경하고 모든 세션을 폐기했습니다. 새 비밀번호로 로그인하세요."); }} />}
           {view === "guide" && <ManualCenter />}
+          {view === "technology" && <TechnologyGuide config={config} />}
           {view === "ontology" && <>
             <div className="ontology-context"><label>분석 기준 장애<select value={selected || ""} onChange={e => setSelected(e.target.value || null)}><option value="">선택 안 함 · 전체 구조</option>{incidents.map(i => <option key={i.id} value={i.id}>{i.id} · {i.title} · {statusLabels[i.status]}</option>)}</select></label><p className="small muted">저장된 분석 결과를 조회합니다. 영향도 분석 전 장애는 전체 구조만 표시됩니다.</p>{current && <Button size="sm" variant="outline" onClick={() => openIncident(current.id)}>선택 장애 상세 보기</Button>}</div>
             <Panel title="자산 의존 관계" body={false} extra={<Chip tone="cyan">{current?.impact?.engine || graph.engine}</Chip>}><ImpactGraph assets={graph.nodes} edges={graph.edges} root={current?.impact?.root} affected={current?.impact?.affected || NO_AFFECTED} expanded /></Panel>

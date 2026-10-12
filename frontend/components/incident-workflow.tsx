@@ -4,6 +4,8 @@ import { ArrowLeft, ArrowRight, Check, LoaderCircle, Download } from "lucide-rea
 import { Button } from "@/components/ui/button";
 import { incidentGuide, incidentSteps, stageLabel, eventStateLabel } from "@/lib/incident-guide.mjs";
 import { recoveryNotesDraft } from "@/lib/recovery-notes.mjs";
+import { StageTechnologies } from "@/components/technology-guide";
+import { stepTechnologyLabels } from "@/lib/technology-guide.mjs";
 
 type Row = Record<string, any>;
 const types = ["RESOURCE", "DATABASE", "NETWORK", "APPLICATION", "SECURITY"];
@@ -117,7 +119,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
           {guide.steps.map((item, index) => <button key={item.label} id={`workflow-tab-${index}`} role="tab" aria-controls="workflow-stage" aria-selected={step === index} aria-current={item.state === "current" ? "step" : undefined} tabIndex={step === index ? 0 : -1} disabled={busy}
             className={`${item.state} ${step === index ? "selected" : ""}`} onClick={() => selectStep(index)}
             onKeyDown={e => { const next = e.key === "ArrowRight" ? (index + 1) % 6 : e.key === "ArrowLeft" ? (index + 5) % 6 : e.key === "Home" ? 0 : e.key === "End" ? 5 : null; if (next !== null) { e.preventDefault(); keyboardStep.current = true; selectStep(next); } }}>
-            <span className="step-point" aria-hidden="true">{item.state === "complete" ? <Check size={14} /> : index + 1}</span><span><strong>{index + 1}. {item.label}</strong><small>{item.state === "complete" ? "완료" : item.state === "current" ? "현재 단계" : "예정"}</small></span>
+            <span className="step-point" aria-hidden="true">{item.state === "complete" ? <Check size={14} /> : index + 1}</span><span><strong>{index + 1}. {item.label}</strong><small>{item.state === "complete" ? "완료" : item.state === "current" ? "현재 단계" : "예정"}</small><small>{stepTechnologyLabels[index]}</small></span>
           </button>)}
         </div>
         <div className="workflow-progress-info"><strong>전체 처리 {percent}%</strong><span>6단계 중 {completed}단계 완료 · 완료된 단계 수 기준</span>{(!follow || evidence) && <button onClick={returnToCurrent}>현재 단계로 돌아가기 <ArrowRight size={12} /></button>}</div>
@@ -134,6 +136,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
         <p>{step === activeStep ? guide.text : step > activeStep ? "앞 단계를 완료하면 이 단계로 자동 이동합니다. 현재 단계에서 필요한 확인과 입력을 먼저 진행하세요." : "이미 처리한 단계의 기록을 확인하고 있습니다."}</p>
       </div>
       {evidence ? <section className="workflow-card"><Button size="sm" variant="outline" className="mb-4" onClick={() => setEvidence("")}>단계 입력 화면으로 돌아가기</Button>{evidence === "timeline" ? renderTimeline(incident.events || []) : (incident.tasks || []).map((t: Row) => <div key={t.id} className="mb-5"><h3>{t.agent} Agent</h3>{renderAgent(t)}</div>)}</section> : <>
+        <StageTechnologies step={step} incident={incident} />
         {step === 0 && <section className="workflow-card"><h3>접수된 장애 정보</h3>{observed}<p>담당자: {incident.owner_name} · {incident.id}</p>{status === "REGISTERED" && automatic}</section>}
         {step === 1 && <>
           {status === "ANALYZING" && automatic}

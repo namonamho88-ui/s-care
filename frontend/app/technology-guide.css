@@ -1,0 +1,38 @@
+.technology-context { display:flex; align-items:center; gap:16px; padding:14px 18px; margin:0 0 20px; background:#102330; border:1px solid #244657; border-radius:10px; }
+.technology-context p { flex:1; color:#bacbd8; font-size:12px; line-height:1.8; margin:0; }
+.technology-context strong { color:#8be9f4; margin-right:8px; }
+.technology-context button { flex-shrink:0; }
+.technology-intro { padding:24px; border:1px solid #275062; background:linear-gradient(120deg,#142c3b,#111c2b); border-radius:12px; }
+.technology-intro h2 { font-size:21px; margin:12px 0; }
+.technology-intro p,.technology-more p,.technology-more li { color:#b7c7d7; line-height:1.8; }
+.technology-flow { list-style:none; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; margin:18px 0 24px; }
+.technology-flow li { border:1px solid var(--line); border-radius:8px; padding:14px; background:var(--panel); }
+.technology-flow span { display:block; color:#a1b3c7; font-size:12px; margin-bottom:8px; }
+.technology-flow strong { font-size:12px; color:#82e1f0; }
+.technology-table-wrap { border:1px solid var(--line); border-radius:10px; overflow:hidden; }
+.technology-table { border-collapse:collapse; width:100%; text-align:left; table-layout:fixed; }
+.technology-table caption { text-align:left; padding:18px; background:#142131; font-size:16px; font-weight:700; }
+.technology-table th,.technology-table td { padding:18px; border-top:1px solid var(--line); vertical-align:top; overflow-wrap:anywhere; line-height:1.7; }
+.technology-table thead { color:var(--muted); font-size:12px; }
+.technology-table th:nth-child(1) { width:23%; }.technology-table th:nth-child(2) { width:26%; }
+.technology-table tbody th { font-weight:400; }.technology-table small { display:block; color:#98adc2; font-size:12px; margin-top:6px; }.technology-table p { margin:0 0 7px; }
+.technology-more,.stage-technologies { padding:18px; margin:18px 0; border:1px solid var(--line); border-radius:10px; background:#101b29; }
+.technology-more summary,.stage-technologies summary { cursor:pointer; color:#b6e6f2; font-size:12px; line-height:1.8; }
+.technology-more ul { padding-left:20px; }
+.technology-agent-grid,.technology-evidence { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; margin-top:14px; }
+.technology-agent-grid article,.technology-evidence article { padding:16px; background:#152333; border-radius:8px; min-width:0; overflow-wrap:anywhere; }
+.technology-agent-grid small,.technology-evidence h4 small { color:var(--muted); font-weight:400; }
+.stage-technologies h3 { font-size:12px; margin:0 0 10px; color:#acbdce; }
+.technology-chips { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
+.technology-chips span { border:1px solid #284456; background:#152938; border-radius:6px; padding:6px 9px; font-size:11px; color:#a9c2d2; }
+.technology-chips b { color:#91e5ef; }.technology-evidence h4 { margin:0 0 10px; }.technology-evidence h4 small { display:block; margin-top:4px; }.technology-evidence p { line-height:1.7; font-size:12px; }
+.technology-proof { border-left:2px solid #33586d; padding-left:10px; color:#c5dce6; }
+.event-technology { display:block; color:#83c5d7; margin:6px 0; font-size:11px; }
+@media(max-width:700px) {
+  .technology-context { align-items:flex-start; flex-direction:column; gap:10px; }
+  .technology-flow { grid-template-columns:repeat(2,minmax(0,1fr)); }.technology-flow li { padding:10px; }
+  .technology-intro { padding:18px; }.technology-intro h2 { font-size:18px; }
+  .technology-table,.technology-table tbody,.technology-table tr,.technology-table th,.technology-table td { display:block; width:100%!important; }
+  .technology-table thead { display:none; }.technology-table caption { display:block; }.technology-table td { border:0; padding:5px 16px 14px; }.technology-table tbody th { padding:16px 16px 8px; }.technology-table td::before { content:attr(data-label); display:block; color:#80cbdc; font-size:11px; margin-bottom:4px; }
+  .technology-agent-grid,.technology-evidence { grid-template-columns:1fr; }.stage-technologies { padding:14px; }.technology-more { padding:16px; }
+}
