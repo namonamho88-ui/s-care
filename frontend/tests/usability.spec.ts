@@ -23,7 +23,7 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
     else if (path === '/api/graph') data = { nodes:assets, edges, engine:'NEO4J' };
     else if (path === '/api/skills' || path === '/api/audit') data=lists[path.slice(5)]||[];
     else if (path === '/api/evaluations') data=lists.evaluations||[{id:'EVAL-FAILED',status:'FAILED',mode:'REAL',provider:'LOCAL',created_at:'2026-10-10T12:00:00Z',result_json:JSON.stringify({error:'테스트용 연결 오류'})}];
-    else if (path === '/api/incidents') data=records.filter(r => !url.searchParams.get('type') || r.type === url.searchParams.get('type'));
+    else if (path === '/api/incidents') data=records.filter(r => (!url.searchParams.get('type') || r.type === url.searchParams.get('type')) && !!r.deleted_at === (url.searchParams.get('deleted') === 'true'));
     else if (path === '/api/dashboard') data={total:url.searchParams.get('type') ? 1 : 2,active:0,critical:0,mttrMinutes:12,recurrenceRate:0,byDay:{},byType:{RESOURCE:1,NETWORK:1},bySystem:{},systemStatus:[]};
     else if (path.endsWith('/events')) { await route.fulfill({ contentType:'text/event-stream', body:': heartbeat\n\n' }); return; }
     else if (path.startsWith('/api/incidents/')) {
@@ -31,6 +31,7 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
       if (!row) throw new Error('Unexpected incident in UI test');
       if (request.method()==='PATCH') Object.assign(row,request.postDataJSON());
       if (path.endsWith('/close')) row.status='CLOSED';
+      if(path.includes('/manage/')){const action=path.split('/').at(-1);if(action==='stop'||(action==='delete'&&!['CLOSED','REJECTED','CANCELLED'].includes(row.status))){row.status='CANCELLED';row.stop_reason=request.postDataJSON().reason;}if(action==='delete')row.deleted_at='2026-10-12T12:00:00Z';if(action==='restore')row.deleted_at=null;}
       data=row;
     } else throw new Error('Unexpected API path: '+path);
     if(['/api/evaluations','/api/audit'].includes(path)&&url.searchParams.has('page')&&Array.isArray(data)){
@@ -629,4 +630,43 @@ test('briefing does not invent recovery results before verification and fits mob
   const brief=page.locator('.incident-briefing');await brief.locator('summary').first().click();
   await expect(brief).toContainText('확인 가능한 가상 복구 비교 기록이 아직 없습니다');await expect(brief).toContainText('관리자가 AI 판단을 확인해야 합니다');
   expect(await brief.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);expect(mutations).toEqual([]);
+});
+
+
+test('admin stop requires reason and exact ID and never presents recovery completion',async({page})=>{
+ const mutations=await setup(page,undefined,'ADMIN',{status:'ANALYZING',notes:'',prevention:''});
+ await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();const dialog=page.getByRole('dialog',{name:'장애 상세'});
+ await dialog.getByText('관리자 작업 · 강제 종료 / 삭제 / 복원',{exact:true}).click();
+ const execute=dialog.getByRole('button',{name:'강제 종료 실행',exact:true});await expect(execute).toBeDisabled();
+ await dialog.getByLabel('처리 사유',{exact:true}).fill('가상 시연 중단');await dialog.getByLabel('확인용 장애 번호').fill('wrong');await expect(execute).toBeDisabled();
+ await dialog.getByLabel('확인용 장애 번호').fill('INC-UI-RESOLVED');await execute.click();
+ await expect(dialog.getByRole('heading',{name:'관리자가 장애 처리를 강제 종료했습니다',exact:true})).toBeVisible();
+ await expect(dialog.getByRole('progressbar')).toHaveCount(0);await expect(dialog.getByRole('button',{name:'장애 종료',exact:true})).toHaveCount(0);
+ await expect(dialog).toContainText('가상 시연 중단');expect(mutations).toEqual(['/api/incidents/INC-UI-RESOLVED/manage/stop']);
+});
+
+test('delete removes from the list and admin can restore without resuming work',async({page})=>{
+ const mutations=await setup(page,undefined,'ADMIN',{status:'NEEDS_REVIEW'});await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();
+ const dialog=page.getByRole('dialog',{name:'장애 상세'});await dialog.getByText('관리자 작업 · 강제 종료 / 삭제 / 복원',{exact:true}).click();
+ await dialog.getByLabel('관리 작업',{exact:true}).selectOption('delete');await dialog.getByLabel('처리 사유',{exact:true}).fill('가상 중복 접수');await dialog.getByLabel('확인용 장애 번호').fill('INC-UI-RESOLVED');await dialog.getByRole('button',{name:'장애 삭제 실행'}).click();
+ await expect(dialog.getByRole('heading',{name:'목록에서 삭제된 장애입니다'})).toBeVisible();await dialog.getByRole('button',{name:'상세 닫기'}).click();
+ await page.getByRole('button',{name:'장애 이력',exact:true}).click();const list=page.getByRole('region',{name:'장애 이력 목록',exact:true});await expect(list).not.toContainText('INC-UI-RESOLVED');
+ await page.getByLabel('삭제된 장애 보기').check();await list.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+ await dialog.getByText('관리자 작업 · 강제 종료 / 삭제 / 복원',{exact:true}).click();await dialog.getByLabel('처리 사유',{exact:true}).fill('가상 복원');await dialog.getByLabel('확인용 장애 번호').fill('INC-UI-RESOLVED');await dialog.getByRole('button',{name:'삭제 복원 실행'}).click();
+ await expect(dialog.getByRole('heading',{name:'관리자가 장애 처리를 강제 종료했습니다',exact:true})).toBeVisible();expect(mutations).toEqual(['/api/incidents/INC-UI-RESOLVED/manage/delete','/api/incidents/INC-UI-RESOLVED/manage/restore']);
+});
+
+test('users cannot see management controls and canceled records stay out of pending queue',async({page})=>{
+ const mutations=await setup(page,undefined,'USER',{status:'CANCELLED',stop_reason:'가상 중단'});
+ await expect(page.getByRole('region',{name:'처리할 장애 목록'})).not.toContainText('INC-UI-RESOLVED');
+ await page.getByRole('button',{name:'장애 이력',exact:true}).click();await expect(page.getByLabel('삭제된 장애 보기')).toHaveCount(0);
+ await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();await expect(page.getByText('관리자 작업 · 강제 종료 / 삭제 / 복원',{exact:true})).toHaveCount(0);expect(mutations).toEqual([]);
+});
+
+test('management failure keeps confirmation and reason without retrying automatically',async({page})=>{
+ const mutations=await setup(page,undefined,'ADMIN',{status:'WAITING_APPROVAL'});let calls=0;
+ await page.route('**/api/incidents/*/manage/stop',async route=>{calls++;await route.fulfill({status:409,json:{error:'가상 충돌 · 상태를 다시 확인하세요'}});});
+ await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();const dialog=page.getByRole('dialog',{name:'장애 상세'});
+ await dialog.getByText('관리자 작업 · 강제 종료 / 삭제 / 복원',{exact:true}).click();await dialog.getByLabel('처리 사유',{exact:true}).fill('가상 사유');await dialog.getByLabel('확인용 장애 번호').fill('INC-UI-RESOLVED');await dialog.getByRole('button',{name:'강제 종료 실행'}).click();
+ await expect(dialog.getByRole('alert')).toContainText('가상 충돌');await expect(dialog.getByLabel('처리 사유',{exact:true})).toHaveValue('가상 사유');await expect(dialog.getByLabel('확인용 장애 번호')).toHaveValue('INC-UI-RESOLVED');expect(calls).toBe(1);expect(mutations).toEqual([]);
 });

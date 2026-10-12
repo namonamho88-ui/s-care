@@ -74,6 +74,7 @@ const statusLabels: Row = {
   RECOVERING: "복구 검증",
   RESOLVED: "복구 완료",
   CLOSED: "종료",
+  CANCELLED: "강제 종료",
   FAILED: "실행 실패",
   REJECTED: "승인 거부",
 };
@@ -141,7 +142,7 @@ function Status({ value }: { value: string }) {
   return (
     <Chip
       tone={
-        ["FAILED", "REJECTED"].includes(value)
+        ["FAILED", "REJECTED", "CANCELLED"].includes(value)
           ? "red"
           : ["NEEDS_REVIEW", "WAITING_APPROVAL"].includes(value)
             ? "amber"
@@ -336,6 +337,7 @@ export default function Home() {
     [incidents, setIncidents] = useState<Row[]>([]),
     [skills, setSkills] = useState<Row[]>([]);
   const [historyRevision,setHistoryRevision]=useState(0);
+  const [showDeleted,setShowDeleted]=useState(false);
   const evaluationPage=useRemotePage("/evaluations",api,auth===true&&isAdmin&&view==="harness",historyRevision,user.id||"");
   const auditPage=useRemotePage("/audit",api,auth===true&&isAdmin&&view==="harness",historyRevision,user.id||"");
   const [mode, setMode] = useState("REAL"),
@@ -374,7 +376,7 @@ export default function Home() {
     });
     const [d, i, k, c] = await Promise.all([
       api("/dashboard?" + q),
-      api("/incidents?" + q),
+      api("/incidents?" + q + (isAdmin && view === "incidents" && showDeleted ? "&deleted=true" : "")),
       api("/skills"),
       api("/config"),
     ]);
@@ -384,7 +386,9 @@ export default function Home() {
     setSkills(k);
     setConfig(c);
     setOnline(true);
-  }, [filterType, filterSystem, from, to, isAdmin]);
+  }, [filterType, filterSystem, from, to, isAdmin, view, showDeleted]);
+  const refreshRef = useRef(refresh);
+  refreshRef.current = refresh;
   const loadDetail = useCallback(async (id: string, fresh = false) => {
     // Replayed SSE events can arrive in a burst. Share a pending read instead of
     // queuing many requests that delay the first visible result.
@@ -423,7 +427,7 @@ export default function Home() {
     }
   };
   const clearSession = useCallback(() => {
-    ++refreshVersion.current; setAuth(false); setUser({}); setToken(""); setPassword(""); setInviteCode(""); setSelected(null); setDetail(null); setDrawer(false); setCreateOpen(false); setMessageOpen(false); setView("dashboard"); setIncidents([]); setSkills([]);
+    ++refreshVersion.current; setAuth(false); setUser({}); setToken(""); setPassword(""); setInviteCode(""); setSelected(null); setDetail(null); setDrawer(false); setCreateOpen(false); setMessageOpen(false); setView("dashboard"); setIncidents([]); setSkills([]); setShowDeleted(false);
   }, []);
   useEffect(() => {
     const expired = () => { if (auth !== true) return; clearSession(); setError("세션이 만료되었거나 폐기되었습니다. 다시 로그인하세요."); };
@@ -477,7 +481,7 @@ export default function Home() {
       clearTimeout(stageTimer);
       stageTimer = setTimeout(() => {
         loadDetail(selected).catch((e) => setError("장애 상세 갱신 실패: " + e.message));
-        refresh().catch((e) => {
+        refreshRef.current().catch((e) => {
           setOnline(false);
           setError("실시간 화면 갱신 실패: " + e.message);
         });
@@ -493,7 +497,7 @@ export default function Home() {
       source.close();
       setLive(false);
     };
-  }, [selected, loadDetail, refresh]);
+  }, [selected, loadDetail]);
   useEffect(() => {
     if (!error) return;
     const timer = setTimeout(() => setError(""), 12000);
@@ -1056,6 +1060,7 @@ export default function Home() {
           {view === "incidents" && (
             <>
               <div className="filters">
+                {isAdmin && <label className="flex-row small"><input type="checkbox" checked={showDeleted} onChange={e=>setShowDeleted(e.target.checked)}/>삭제된 장애 보기</label>}
                 <div className="relative flex-1">
                   <Search
                     size={15}
@@ -1113,7 +1118,7 @@ export default function Home() {
                 <Button variant="outline" onClick={resetFilters}>검색 초기화</Button>
               </div>
               <div className="flex-row muted small mb-4">
-                필터 결과 {visible.length}건 · 평균 복구 {dashboard.mttrMinutes}
+                필터 결과 {visible.filter(i=>!!i.deleted_at === (isAdmin && showDeleted)).length}건 · {showDeleted ? "삭제 기록 조회 · 운영 지표는 삭제하지 않은 장애 기준" : "일반 이력 조회"} · 평균 복구 {dashboard.mttrMinutes}
                 분 · 재발 의심 {dashboard.recurrenceRate}%
               </div>
               <Panel
@@ -1121,7 +1126,7 @@ export default function Home() {
                 extra={<Chip>{config.database} · PERSISTED</Chip>}
                 body={false}
               >
-                <PaginatedList key={JSON.stringify([search,filterType,filterSystem,from,to])} label="장애 이력" items={visible} empty="조건에 맞는 장애가 없습니다.">{pageItems=>pageItems.map((i) => (
+                <PaginatedList key={JSON.stringify([search,filterType,filterSystem,from,to,showDeleted])} label="장애 이력" items={visible.filter(i=>!!i.deleted_at === (isAdmin && showDeleted))} empty="조건에 맞는 장애가 없습니다.">{pageItems=>pageItems.map((i) => (
                     <IncidentRow
                       key={i.id}
                       i={i}

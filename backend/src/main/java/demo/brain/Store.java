@@ -15,6 +15,9 @@ public class Store {
  public final JdbcTemplate db;public final ObjectMapper json;private final TransactionTemplate transaction;
  public Store(JdbcTemplate db,ObjectMapper json,PlatformTransactionManager manager){this.db=db;this.json=json;transaction=new TransactionTemplate(manager);}
  public <T>T tx(Supplier<T> work){return transaction.execute(status->work.get());}
+ public void ensureActive(String id){checkActive(one("SELECT status,deleted_at FROM incidents WHERE id=?",id));}
+ private void checkActive(Map<String,Object> row){if("CANCELLED".equals(row.get("status"))||row.get("deleted_at")!=null)throw new java.util.concurrent.CancellationException("관리자가 중단 또는 삭제한 장애입니다.");}
+ public <T>T active(String id,Supplier<T> work){return tx(()->{checkActive(one("SELECT status,deleted_at FROM incidents WHERE id=? FOR UPDATE",id));return work.get();});}
  public String encode(Object v){try{return json.writeValueAsString(v);}catch(Exception e){throw new IllegalArgumentException(e);}}
  public Object decode(Object v){if(v==null)return null;try{return json.readValue(v.toString(),Object.class);}catch(Exception e){throw new IllegalArgumentException(e);}}
  public Map<String,Object> one(String sql,Object...args){var rows=db.queryForList(sql,args);if(rows.isEmpty())throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Record not found");return rows.get(0);}

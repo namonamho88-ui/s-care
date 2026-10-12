@@ -14,7 +14,7 @@ public class KnowledgeEngine {
   var approved=store.search(incident.get("type").toString());
   var result=new LinkedHashMap<String,Object>();result.put("fictional",true);result.put("incidentId",incident.get("id"));result.put("type",incident.get("type"));result.put("observations",incident.get("observations"));
   result.put("approvedSkills",approved.get("skills"));result.put("manuals",approved.get("manuals"));
-  result.put("similarIncidents",s.db.queryForList("SELECT id,title,notes,prevention FROM incidents WHERE type=? AND status='CLOSED' AND id<>? ORDER BY created_at DESC LIMIT 3",incident.get("type"),incident.get("id")));
+  result.put("similarIncidents",s.db.queryForList("SELECT id,title,notes,prevention FROM incidents WHERE type=? AND status='CLOSED' AND deleted_at IS NULL AND id<>? ORDER BY created_at DESC LIMIT 3",incident.get("type"),incident.get("id")));
   return result;
  }
  public Map<String,Object> search(Map<String,Object> incident){
@@ -37,7 +37,7 @@ public class KnowledgeEngine {
   result.put("requestedProvider","DEMO".equals(incident.get("mode"))?"MOCK_HERMES":"HERMES_AGENT");result.put("operation",operation);result.put("fictional",true);
   validate(operation,result,context);
   var metadata=new LinkedHashMap<>(result);metadata.remove("content");metadata.put("at",java.time.Instant.now().toString());last=Map.copyOf(metadata);
-  s.audit(incident.get("id").toString(),"hermes","HERMES_"+operation.toUpperCase(Locale.ROOT),result);return result;
+  var recorded=result;s.active(incident.get("id").toString(),()->{s.audit(incident.get("id").toString(),"hermes","HERMES_"+operation.toUpperCase(Locale.ROOT),recorded);return null;});return result;
  }
  private void validate(String op,Map<String,Object> result,Map<String,Object> context){
   var c=s.json.valueToTree(result.get("content"));

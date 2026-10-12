@@ -32,3 +32,8 @@ test('recovery metrics remain a draft requiring review and missing roles do not 
   assert.equal(dashboardQueue([row],{})[0].actionable,false);
   assert.equal(dashboardQueue([incident('unknown','FUTURE_STATUS')],{role:'ADMIN'})[0].guide.step,-1);
 });
+
+test('canceled and logically deleted records never appear in actionable work',()=>{
+ const rows=[incident('stopped','CANCELLED'),incident('deleted','CLOSED',{deleted_at:'2026-10-12'}),incident('old-visible','RESOLVED',{deleted_at:'2026-10-12'}),incident('waiting','NEEDS_REVIEW')];
+ assert.deepEqual(dashboardQueue(rows,{role:'ADMIN'}).map(x=>x.incident.id),['waiting']);
+});

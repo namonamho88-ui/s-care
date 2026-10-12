@@ -5,7 +5,7 @@ import { incidentGuide } from './incident-guide.mjs';
  * @param {Record<string, any>} user */
 export function dashboardQueue(incidents, user) {
   const isAdmin = user.role === 'ADMIN';
-  return incidents.filter(i => !['CLOSED', 'REJECTED'].includes(i.status)).map(incident => {
+  return incidents.filter(i => !i.deleted_at && !['CLOSED', 'REJECTED', 'CANCELLED'].includes(i.status)).map(incident => {
     const canEdit = isAdmin || !!(user.operatorId && user.operatorId === incident.owner_id);
     const guide = incidentGuide(incident, { isAdmin, canEdit });
     const actionable = isAdmin

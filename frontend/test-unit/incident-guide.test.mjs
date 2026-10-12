@@ -67,3 +67,9 @@ test('closed and unknown states never invent pending automatic work', () => {
   const unknown=incidentGuide({...base,status:'UNKNOWN'},admin);
   assert.equal(unknown.step,-1);assert.ok(unknown.steps.every(s=>s.state==='pending'));
 });
+
+test('canceled and deleted incidents cannot claim completed recovery or closure',()=>{
+ for(const row of [{...base,status:'CANCELLED'},{...base,status:'CLOSED',deleted_at:'2026-10-12'}]){
+  const guide=incidentGuide(row,admin);assert.equal(guide.tone,'stopped');assert.equal(guide.target,'timeline');assert.equal(guide.steps.filter(s=>s.state==='complete').length,0);
+ }
+});

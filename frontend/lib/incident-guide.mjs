@@ -10,7 +10,7 @@ export const incidentSteps = [
 ];
 
 const stageNames = {
-  INCIDENT: '장애 접수', MESSAGE_INTAKE: '문자 관측값 확인', JEV: 'AI 장애 판단 · Jev', ONTOLOGY: '영향 범위 분석 · Ontology',
+  FORCE_STOP: '강제 종료', MANAGEMENT: '관리자 처리', INCIDENT: '장애 접수', MESSAGE_INTAKE: '문자 관측값 확인', JEV: 'AI 장애 판단 · Jev', ONTOLOGY: '영향 범위 분석 · Ontology',
   AGENT_INCIDENT: '업무 조정 · Incident Agent', AGENT_DIAGNOSIS: '원인 후보 분석 · Diagnosis Agent',
   AGENT_IMPACT: '영향 분석 · Impact Agent', AGENT_KNOWLEDGE: '해결 지식 검색 · Knowledge Agent',
   AGENT_RECOVERY: '복구 가이드 · Recovery Agent', AGENT_REPORT: '보고서 작성 · Report Agent',
@@ -75,6 +75,9 @@ export function incidentGuide(incident, options = {}) {
         action = isAdmin ? '최종 확인 위치로 이동' : '저장된 후기 보기'; target = isAdmin ? 'close' : 'report';
       }
       break;
+    case 'CANCELLED':
+      step = -1; tone = 'stopped'; badge = '강제 종료'; title = '관리자가 장애 처리를 강제 종료했습니다';
+      text = '복구 완료가 아닙니다. 실행은 중단되었으며 기존 처리 기록과 사유를 확인할 수 있습니다.'; action = '중단 기록 보기'; target = 'timeline'; break;
     case 'CLOSED':
       step = 6; tone = 'complete'; badge = '전체 단계 완료'; title = '종료된 장애입니다 · 보고서를 확인하세요';
       text = dirty ? '화면에 저장되지 않은 수정 내용이 있습니다. 보고서는 DB에 저장된 내용을 사용합니다.' : '장애 처리가 마감되었습니다. 저장된 후기와 PDF·Excel 보고서를 확인할 수 있습니다. 해결 절차 초안은 관리자가 별도로 승인합니다.';
@@ -95,6 +98,7 @@ export function incidentGuide(incident, options = {}) {
       step = -1; tone = 'stopped'; badge = '상태 확인 필요'; title = '처리 상태를 확인할 수 없습니다';
       text = '실행 기록을 확인하고 관리자에게 문의하세요.'; action = '실행 기록 보기'; target = 'timeline';
   }
+  if (incident?.deleted_at) { step=-1; tone='stopped'; badge='삭제된 장애'; title='목록에서 삭제된 장애입니다'; text='기록은 보존되어 있습니다. 관리자가 복원할 수 있으며 중단한 작업은 자동으로 재개되지 않습니다.'; action='삭제 기록 보기'; target='timeline'; }
   const activeLatest = ['ANALYZING', 'RECOVERING'].includes(incident?.status) && latest && latest.stage !== 'FAILURE' && latest.state !== 'WAITING';
   return { step, tone, badge, title, text, action, target,
     phase: activeLatest ? `${stageLabel(latest.stage)} · ${eventStateLabel(latest.state)}` : null,

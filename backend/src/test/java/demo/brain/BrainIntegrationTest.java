@@ -98,6 +98,67 @@ class BrainIntegrationTest {
   var account=new AccountChecks(s,http,token);String user=account.login("fictional.sms",AccountChecks.PASSWORD);
   for(String resource:List.of("evaluations","audit"))assertThat(account.get(user,"/api/"+resource+"?page=2").getStatusCode().value()).isEqualTo(403);
  }
+
+ String lifecycleFixture(String status){String id=Store.id("INC-LIFE-");s.db.update("INSERT INTO incidents(id,title,asset_id,owner_id,type,severity,status,mode,provider,observations,created_at) VALUES (?,'가상 중단 검증','CMP-01','OP-01','RESOURCE','P2',?,'DEMO','MOCK','fictional cpu 96%',?)",id,status,Store.now());return id;}
+ Map<String,String> management(String id){return Map.of("reason","가상 테스트 중단 사유","confirmation",id);}
+ @Test @Order(19) void adminStopsEveryNonterminalStateAndDeletionIsReversible(){
+  for(String status:List.of("REGISTERED","ANALYZING","NEEDS_REVIEW","WAITING_APPROVAL","RECOVERING","FAILED","RESOLVED")){
+   String id=lifecycleFixture(status);assertThat(post("/api/incidents/"+id+"/manage/stop",management(id)).getStatusCode().value()).isEqualTo(200);
+   assertThat(s.incident(id)).containsEntry("status","CANCELLED").containsEntry("resolved_at",null).containsEntry("stop_reason","가상 테스트 중단 사유");
+   assertThat(post("/api/incidents/"+id+"/retry",Map.of()).getStatusCode().value()).isEqualTo(409);
+   assertThat(post("/api/incidents/"+id+"/close",Map.of()).getStatusCode().value()).isEqualTo(409);
+   assertThat(post("/api/incidents/"+id+"/approval",Map.of("approved",true,"reason","가상 승인")).getStatusCode().value()).isEqualTo(409);
+   assertThatThrownBy(()->tools.apply(id)).isInstanceOf(java.util.concurrent.CancellationException.class);
+   assertThat(post("/api/incidents/"+id+"/manage/delete",management(id)).getStatusCode().value()).isEqualTo(200);
+   assertThat(http.exchange("/api/incidents",HttpMethod.GET,new HttpEntity<>(headers()),String.class).getBody()).doesNotContain(id);
+   assertThat(http.exchange("/api/incidents?deleted=true",HttpMethod.GET,new HttpEntity<>(headers()),String.class).getBody()).contains(id);
+   assertThat(post("/api/incidents/"+id+"/manage/restore",management(id)).getStatusCode().value()).isEqualTo(200);
+   assertThat(s.incident(id)).containsEntry("status","CANCELLED").containsEntry("deleted_at",null);
+   assertThat(s.db.queryForObject("SELECT COUNT(*) FROM audit WHERE incident_id=? AND action LIKE 'INCIDENT_%'",Integer.class,id)).isEqualTo(3);
+  }
+ }
+ @Test @Order(20) void managementRequiresAdminReasonAndExactIdAndHidesDeletedRecords(){
+  String id=lifecycleFixture("WAITING_APPROVAL");var account=new AccountChecks(s,http,token);String user=account.login("fictional.sms",AccountChecks.PASSWORD);
+  for(String action:List.of("stop","delete","restore"))assertThat(account.post(user,"/api/incidents/"+id+"/manage/"+action,management(id)).getStatusCode().value()).isEqualTo(403);
+  assertThat(post("/api/incidents/"+id+"/manage/stop",Map.of("reason"," ","confirmation",id)).getStatusCode().value()).isEqualTo(400);
+  assertThat(post("/api/incidents/"+id+"/manage/delete",Map.of("reason","가상 사유","confirmation","wrong")).getStatusCode().value()).isEqualTo(400);
+  assertThat(s.incident(id).get("status")).isEqualTo("WAITING_APPROVAL");
+  int total=((Number)get("/api/dashboard").getBody().get("total")).intValue();
+  assertThat(post("/api/incidents/"+id+"/manage/delete",management(id)).getStatusCode().value()).isEqualTo(200);
+  assertThat(((Number)get("/api/dashboard").getBody().get("total")).intValue()).isEqualTo(total-1);
+  assertThat(s.incident(id).get("status")).isEqualTo("CANCELLED");
+  assertThat(account.get(user,"/api/incidents?deleted=true").getStatusCode().value()).isEqualTo(403);
+  for(String suffix:List.of("","/events","/report/xlsx")){var requestHeaders=new HttpHeaders();requestHeaders.setBearerAuth(user);requestHeaders.setAccept(List.of(MediaType.ALL));assertThat(http.exchange("/api/incidents/"+id+suffix,HttpMethod.GET,new HttpEntity<>(requestHeaders),String.class).getStatusCode().value()).isEqualTo(404);}
+ }
+ @Test @Order(21) void lateJevSuccessOrFailureNeverResurrectsStoppedWork()throws Exception{
+  for(boolean fail:List.of(false,true)){
+   var entered=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);
+   var router=org.mockito.Mockito.mock(JevRouter.class);
+   org.mockito.Mockito.when(router.decide(org.mockito.ArgumentMatchers.anyString(),org.mockito.ArgumentMatchers.anyString(),org.mockito.ArgumentMatchers.anyString())).thenAnswer(inv->{entered.countDown();if(!release.await(5,java.util.concurrent.TimeUnit.SECONDS))throw new IllegalStateException("test timeout");if(fail)throw new IllegalStateException("late fictional failure");return new MockJevProvider().decide("cpu 96%");});
+   var graphMock=org.mockito.Mockito.mock(Ontology.class);
+   var harness=new Harness(s,router,graphMock,org.mockito.Mockito.mock(RpcClient.class),org.mockito.Mockito.mock(LocalSkillStore.class),org.mockito.Mockito.mock(EvidencePolicy.class),org.mockito.Mockito.mock(KnowledgeEngine.class),0);
+   var executor=(java.util.concurrent.ExecutorService)org.springframework.test.util.ReflectionTestUtils.getField(harness,"workers");
+   try{
+    String id=harness.create(null,"DEMO","MOCK","가상 지연 응답","CMP-01","cpu 96%","OP-01");assertThat(entered.await(5,java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+    assertThat(post("/api/incidents/"+id+"/manage/stop",management(id)).getStatusCode().value()).isEqualTo(200);
+    release.countDown();executor.shutdown();assertThat(executor.awaitTermination(5,java.util.concurrent.TimeUnit.SECONDS)).isTrue();
+    assertThat(s.incident(id)).containsEntry("status","CANCELLED").containsEntry("decision_json",null);
+    assertThat(s.db.queryForObject("SELECT COUNT(*) FROM events WHERE incident_id=? AND stage IN ('FAILURE','ONTOLOGY','HISTORY')",Integer.class,id)).isZero();org.mockito.Mockito.verifyNoInteractions(graphMock);
+   }finally{release.countDown();executor.shutdownNow();}
+  }
+ }
+ @Test @Order(22) void lateAgentResponseCannotOverwriteCanceledTask()throws Exception{
+  String id=lifecycleFixture("ANALYZING");var entered=new java.util.concurrent.CountDownLatch(1);var release=new java.util.concurrent.CountDownLatch(1);
+  var diagnosis=org.mockito.Mockito.mock(DiagnosisEngine.class);
+  org.mockito.Mockito.when(diagnosis.assess(org.mockito.ArgumentMatchers.anyMap())).thenAnswer(inv->{entered.countDown();if(!release.await(5,java.util.concurrent.TimeUnit.SECONDS))throw new IllegalStateException("test timeout");return new LinkedHashMap<String,Object>(Map.of("causeCode","FICTIONAL"));});
+  var controller=new AgentController(s,org.mockito.Mockito.mock(LocalSkillStore.class),diagnosis,org.mockito.Mockito.mock(KnowledgeEngine.class),"http://localhost:18080");
+  var request=s.json.valueToTree(Map.of("jsonrpc","2.0","id",1,"method","message/send","params",Map.of("message",Map.of("kind","message","role","user","messageId",Store.id("cancel-message-"),"parts",List.of(Map.of("kind","data","data",Map.of("incidentId",id)))))));
+  var future=java.util.concurrent.CompletableFuture.supplyAsync(()->controller.rpc("diagnosis",request));
+  try{assertThat(entered.await(5,java.util.concurrent.TimeUnit.SECONDS)).isTrue();assertThat(post("/api/incidents/"+id+"/manage/stop",management(id)).getStatusCode().value()).isEqualTo(200);release.countDown();future.get(5,java.util.concurrent.TimeUnit.SECONDS);
+   var task=s.one("SELECT * FROM agent_tasks WHERE incident_id=?",id);assertThat(task.get("status")).isEqualTo("canceled");assertThat(s.json.valueToTree(s.decode(task.get("result_json"))).path("status").path("state").asText()).isEqualTo("canceled");
+   assertThat(s.db.queryForObject("SELECT COUNT(*) FROM audit WHERE incident_id=? AND action='AGENT_RESULT'",Integer.class,id)).isZero();
+  }finally{release.countDown();}
+ }
  String create(String mode){var response=post("/api/simulate",Map.of("scenarioId","SCN-01","mode",mode,"provider","LOCAL"));assertThat(response.getStatusCode().value()).isEqualTo(200);return response.getBody().get("id").toString();}
  void waitFor(String id,String expected)throws Exception{long end=System.nanoTime()+15_000_000_000L;while(System.nanoTime()<end){String state=s.incident(id).get("status").toString();if(state.equals(expected))return;if(state.equals("FAILED"))fail(s.db.queryForList("SELECT * FROM events WHERE incident_id=?",id).toString());Thread.sleep(30);}fail("Timeout waiting for "+expected);}
 }

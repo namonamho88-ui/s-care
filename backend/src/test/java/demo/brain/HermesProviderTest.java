@@ -18,6 +18,7 @@ class HermesProviderTest {
  Map<String,Object> incident=Map.of("id","INC-TEST","type","RESOURCE","mode","REAL","observations","Fictional CPU 98%","notes","errorRate=0.01 verified","decision_json","{}","impact_json","{}");
  @BeforeEach void setup()throws Exception{
   db=mock(JdbcTemplate.class);s=new Store(db,new ObjectMapper(),mock(PlatformTransactionManager.class));local=mock(LocalSkillStore.class);
+  when(db.queryForList("SELECT status,deleted_at FROM incidents WHERE id=? FOR UPDATE","INC-TEST")).thenReturn(List.of(Map.of("status","ANALYZING")));
   when(local.search("RESOURCE")).thenReturn(Map.of("skills",List.of(Map.of("id","SKL-01","status","APPROVED")),"manuals",List.of(Map.of("id","MAN-01"))));
   server=HttpServer.create(new InetSocketAddress("127.0.0.1",0),0);
   server.createContext("/v1/toolsets",e->{byte[] b=s.encode(Map.of("data",List.of(Map.of("name","terminal","enabled",toolsEnabled)))).getBytes(StandardCharsets.UTF_8);e.sendResponseHeaders(200,b.length);e.getResponseBody().write(b);e.close();});

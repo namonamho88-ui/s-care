@@ -66,6 +66,6 @@ class HermesRemotePublicationTest {
    assertThat(publisher.publish("SKL-TEST")).containsEntry("status","EXPORTED");
    assertThat(publisher.publish("SKL-TEST")).containsEntry("status","EXPORTED");
    assertThat(Files.readString(root.resolve("skills/incident-brain-skl-test/SKILL.md"))).contains("관리자 승인","## 적용 조건","## 주의사항");
-  }finally{process.destroy();if(!process.waitFor(10,java.util.concurrent.TimeUnit.SECONDS))process.destroyForcibly();}
+  }finally{var children=process.descendants().toList();for(var child:children)child.destroy();process.destroy();if(!process.waitFor(10,java.util.concurrent.TimeUnit.SECONDS)){process.destroyForcibly();process.waitFor(5,java.util.concurrent.TimeUnit.SECONDS);}for(var child:children)if(child.isAlive()){child.destroyForcibly();child.onExit().get(5,java.util.concurrent.TimeUnit.SECONDS);}}
  }
 }

@@ -32,10 +32,12 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
   const [operation, setOperation] = useState<{ label: string; since: number } | null>(null);
   const [seconds, setSeconds] = useState(0), [message, setMessage] = useState(""), [error, setError] = useState("");
   const [evidence, setEvidence] = useState("");
+  const [manageAction,setManageAction]=useState("stop"), [manageReason,setManageReason]=useState(""), [confirmation,setConfirmation]=useState("");
   const content = useRef<HTMLDivElement>(null);
   const initialized = useRef("");
   const keyboardStep = useRef(false);
   const id = incident?.id, status = incident?.status;
+  const stopped = status === "CANCELLED" || !!incident?.deleted_at;
   const dirty = !!incident && (notes !== incident.notes || prevention !== incident.prevention || title !== incident.title || owner !== incident.owner_id);
   const guide = incidentGuide(incident, { isAdmin, canEdit, dirty, notes, prevention });
   const activeStep = Math.min(5, Math.max(0, guide.step));
@@ -43,20 +45,21 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
   const percent = Math.round(completed / 6 * 100);
   const busy = !!operation;
   const running = ["REGISTERED", "ANALYZING", "RECOVERING"].includes(status);
-  const canWriteNotes = canEdit && ["RESOLVED", "CLOSED"].includes(status);
+  const canWriteNotes = !stopped && canEdit && ["RESOLVED", "CLOSED"].includes(status);
   const draft = recoveryNotesDraft(incident?.notes);
   const proof = draft ? incident?.notes : [...(incident?.events || [])].reverse().find((e: Row) => e.stage === "VERIFY" && e.state === "COMPLETED")?.data_json;
 
   useEffect(() => {
     if (!incident) return;
     setNotes(recoveryNotesDraft(incident.notes) ?? incident.notes ?? ""); setPrevention(incident.prevention ?? "");
+    setManageReason("");setConfirmation("");setManageAction(incident.deleted_at ? "restore" : ["CLOSED","CANCELLED","REJECTED"].includes(incident.status) ? "delete" : "stop");
     setTitle(incident.title); setOwner(incident.owner_id); setReason("");
     const suggestedType = incident.decision?.type || incident.type;
     setType(types.includes(suggestedType) ? suggestedType : "RESOURCE");
     setSeverity(incident.decision?.severity || incident.severity || "P1");
     setDepartment(incident.decision?.department || incident.department || "PLATFORM");
     if (initialized.current !== incident.id) { initialized.current = incident.id; setFollow(true); setMessage(""); setError(""); }
-  }, [id, status]);
+  }, [id, status, incident?.deleted_at]);
   useEffect(() => {
     if (!incident || !follow) return;
     setStep(activeStep); setEvidence("");
@@ -118,14 +121,14 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
       <div className="workflow-title"><div><span className="small muted">장애 처리 · {id || "조회 중"}</span><h2>{incident?.title || "장애 정보를 불러오고 있습니다…"}</h2>{incident && <p className="workflow-provider">{decisionSource}{incident.decision && ` · ${incident.decision.provider} · ${Number.isFinite(incident.decision.latencyMs) ? incident.decision.latencyMs + "ms" : "소요 시간 미기록"}`}{incident.decision?.fallback && " · 연결 실패 후 모의 판단으로 대체"}</p>}</div><Button variant="outline" size="sm" aria-label="상세 닫기" onClick={onClose} disabled={busy}><ArrowLeft size={14} />관제로 돌아가기</Button></div>
       {incident && <>
         <div className="workflow-stepper" role="tablist" aria-label="장애 처리 단계">
-          {guide.steps.map((item, index) => <button key={item.label} id={`workflow-tab-${index}`} role="tab" aria-controls="workflow-stage" aria-selected={step === index} aria-current={item.state === "current" ? "step" : undefined} tabIndex={step === index ? 0 : -1} disabled={busy}
+          {guide.steps.map((item, index) => <button key={item.label} id={`workflow-tab-${index}`} role="tab" aria-controls="workflow-stage" aria-selected={step === index} aria-current={item.state === "current" ? "step" : undefined} tabIndex={step === index ? 0 : -1} disabled={busy || stopped}
             className={`${item.state} ${step === index ? "selected" : ""}`} onClick={() => selectStep(index)}
             onKeyDown={e => { const next = e.key === "ArrowRight" ? (index + 1) % 6 : e.key === "ArrowLeft" ? (index + 5) % 6 : e.key === "Home" ? 0 : e.key === "End" ? 5 : null; if (next !== null) { e.preventDefault(); keyboardStep.current = true; selectStep(next); } }}>
             <span className="step-point" aria-hidden="true">{item.state === "complete" ? <Check size={14} /> : index + 1}</span><span><strong>{index + 1}. {item.label}</strong><small>{item.state === "complete" ? "완료" : item.state === "current" ? "현재 단계" : "예정"}</small><small>{stepTechnologyLabels[index]}</small></span>
           </button>)}
         </div>
-        <div className="workflow-progress-info"><strong>전체 처리 {percent}%</strong><span>6단계 중 {completed}단계 완료 · 완료된 단계 수 기준</span>{(!follow || evidence) && <button onClick={returnToCurrent}>현재 단계로 돌아가기 <ArrowRight size={12} /></button>}</div>
-        <div className="workflow-progress-bar" role="progressbar" aria-label="전체 처리 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-valuetext={`${percent}%, 6단계 중 ${completed}단계 완료`}><i style={{width:`${percent}%`}} /></div>
+        {!stopped && <><div className="workflow-progress-info"><strong>전체 처리 {percent}%</strong><span>6단계 중 {completed}단계 완료 · 완료된 단계 수 기준</span>{(!follow || evidence) && <button onClick={returnToCurrent}>현재 단계로 돌아가기 <ArrowRight size={12} /></button>}</div>
+        <div className="workflow-progress-bar" role="progressbar" aria-label="전체 처리 진행률" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent} aria-valuetext={`${percent}%, 6단계 중 ${completed}단계 완료`}><i style={{width:`${percent}%`}} /></div></>}
         {operation && <div className="workflow-request" role="status"><LoaderCircle size={16} className="working-spinner" /><strong>{operation.label}</strong><span>서버 응답 대기 중 · <span aria-hidden="true">{seconds}초 경과</span></span></div>}
       </>}
     </header>
@@ -133,12 +136,22 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
       {error && <div className="banner error" role="alert">{error}<Button size="sm" variant="outline" className="mt-2" disabled={busy} onClick={() => { void onRefresh().then(() => setError("")).catch(e => setError(e.message)); }}>상태 다시 확인</Button></div>}
       {message && <p className="workflow-success" role="status"><Check size={15} />{message}</p>}
       <div className={`workflow-instruction ${guide.tone}`} aria-live="polite">
-        <span>{step === activeStep ? guide.badge : `${step + 1}단계 ${step < activeStep ? "기록 확인" : "미리 보기"}`}</span>
-        <h2>{step === activeStep ? guide.title : `${step + 1}. ${incidentSteps[step].label}`}</h2>
-        <p>{step === activeStep ? guide.text : step > activeStep ? "앞 단계를 완료하면 이 단계로 자동 이동합니다. 현재 단계에서 필요한 확인과 입력을 먼저 진행하세요." : "이미 처리한 단계의 기록을 확인하고 있습니다."}</p>
+        <span>{stopped || step === activeStep ? guide.badge : `${step + 1}단계 ${step < activeStep ? "기록 확인" : "미리 보기"}`}</span>
+        <h2>{stopped || step === activeStep ? guide.title : `${step + 1}. ${incidentSteps[step].label}`}</h2>
+        <p>{stopped || step === activeStep ? guide.text : step > activeStep ? "앞 단계를 완료하면 이 단계로 자동 이동합니다. 현재 단계에서 필요한 확인과 입력을 먼저 진행하세요." : "이미 처리한 단계의 기록을 확인하고 있습니다."}</p>
       </div>
+      {isAdmin && <details className="workflow-evidence incident-management" key={`${id}-${status}-${incident.deleted_at || "visible"}`}><summary>관리자 작업 · 강제 종료 / 삭제 / 복원</summary>
+        <p className="small muted">강제 종료는 복구 완료가 아닙니다. 삭제하면 목록·집계에서 제외하며 기록은 보존해 복원할 수 있습니다. 이미 전송한 AI 요청은 도착할 수 있지만 후속 처리에는 반영하지 않습니다.</p>
+        <label>관리 작업<select aria-label="관리 작업" value={manageAction} disabled={busy} onChange={e=>{setManageAction(e.target.value);setConfirmation("");}}>
+          {incident.deleted_at ? <option value="restore">삭제 복원</option> : <>{!["CLOSED","CANCELLED","REJECTED"].includes(status) && <option value="stop">강제 종료</option>}<option value="delete">삭제 · 복원 가능</option></>}
+        </select></label>
+        <label>처리 사유<textarea aria-label="처리 사유" maxLength={1000} value={manageReason} readOnly={busy} onChange={e=>setManageReason(e.target.value)} placeholder="중복 등록, 시연 종료 등 처리 사유를 작성하세요." /></label>
+        <label>확인용 장애 번호<input aria-label="확인용 장애 번호" value={confirmation} readOnly={busy} onChange={e=>setConfirmation(e.target.value)} placeholder={id} autoComplete="off" /></label>
+        <p className="small">위 장애 번호 {id}를 그대로 입력하세요. {manageAction === "restore" ? "복원해도 강제 종료한 작업은 다시 실행되지 않습니다." : "진행 중인 작업이 있으면 중단됩니다. 저장하지 않은 입력 내용은 처리에 포함되지 않습니다."}</p>
+        <Button className="mt-3" variant={manageAction === "restore" ? "outline" : "danger"} disabled={busy || !manageReason.trim() || confirmation !== id} onClick={()=>perform(`/incidents/${id}/manage/${manageAction}`,"POST",{reason:manageReason,confirmation},"관리자 작업 처리 중",manageAction === "restore" ? "삭제한 장애를 복원했습니다. 작업은 자동 재개되지 않습니다." : manageAction === "delete" ? "목록에서 삭제했습니다. 장애 이력의 삭제된 장애 보기에서 복원할 수 있습니다." : "강제 종료했습니다. 복구 완료로 기록하지 않습니다.")}>{manageAction === "restore" ? "삭제 복원 실행" : manageAction === "delete" ? "장애 삭제 실행" : "강제 종료 실행"}</Button>
+      </details>}
       <IncidentBriefing incident={incident} nextAction={guide.title} />
-      {evidence ? <section className="workflow-card"><Button size="sm" variant="outline" className="mb-4" onClick={() => setEvidence("")}>단계 입력 화면으로 돌아가기</Button>{evidence === "timeline" ? renderTimeline(incident.events || []) : (incident.tasks || []).map((t: Row) => <div key={t.id} className="mb-5"><h3>{t.agent} Agent</h3>{renderAgent(t)}</div>)}</section> : <>
+      {stopped ? <section className="workflow-card"><h3>{incident.deleted_at ? "삭제된 장애 · 기록 보존" : "강제 종료 · 복구 완료 아님"}</h3><p>중단 사유: {incident.stop_reason || "강제 종료 기록 없음"}</p>{observed}{renderTimeline(incident.events || [])}</section> : evidence ? <section className="workflow-card"><Button size="sm" variant="outline" className="mb-4" onClick={() => setEvidence("")}>단계 입력 화면으로 돌아가기</Button>{evidence === "timeline" ? renderTimeline(incident.events || []) : (incident.tasks || []).map((t: Row) => <div key={t.id} className="mb-5"><h3>{t.agent} Agent</h3>{renderAgent(t)}</div>)}</section> : <>
         <StageTechnologies step={step} incident={incident} />
         {step === 0 && <section className="workflow-card"><h3>접수된 장애 정보</h3>{observed}<p>담당자: {incident.owner_name} · {incident.id}</p>{status === "REGISTERED" && automatic}</section>}
         {step === 1 && <>

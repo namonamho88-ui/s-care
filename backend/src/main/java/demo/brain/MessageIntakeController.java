@@ -11,6 +11,8 @@ public class MessageIntakeController {
   var parsed=parser.parse(body.get("message"));var result=new LinkedHashMap<String,Object>();
   result.put("parsed",parsed);result.put("observations",parsed.observations());
   var existing=s.db.queryForList("SELECT incident_id FROM message_intakes WHERE fingerprint=?",String.class,parsed.fingerprint());
+  boolean deleted=!existing.isEmpty()&&s.incident(existing.get(0)).get("deleted_at")!=null;
+  if(deleted)throw new IllegalStateException("삭제된 장애에 등록된 문자입니다. 관리자에게 복원을 요청하세요.");
   result.put("existingIncidentId",existing.isEmpty()?"":existing.get(0));
   var assets=s.db.queryForList("SELECT DISTINCT i.asset_id FROM message_intakes m JOIN incidents i ON i.id=m.incident_id WHERE m.source_key=?",String.class,parsed.sourceKey());
   // A code becomes a suggestion only after a human has explicitly selected it at registration.

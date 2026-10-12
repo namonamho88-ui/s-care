@@ -212,6 +212,12 @@ python scripts/smoke.py --mode REAL --provider LOCAL
 
 ## 구성 및 구현 범위
 
+### 장애 강제 종료·삭제·복원
+
+관리자로 장애 상세의 **관리자 작업 · 강제 종료 / 삭제 / 복원**을 펼치고 처리 사유와 장애 번호를 입력합니다. 강제 종료는 `CANCELLED`로 기록하며 복구 성공으로 계산하지 않습니다. 이미 호출된 외부 AI 요청은 끝날 수 있지만 이후 결과 저장과 단계 진행은 차단합니다.
+
+삭제는 DB 기록과 감사 증적을 보존하고 기본 목록·집계에서 제외합니다. **장애 이력 → 삭제된 장애 보기**에서 복원할 수 있으며, 중단한 작업은 자동 재개하지 않습니다. 승인 지식은 유지되며 같은 문자는 기존 장애를 복원해서 확인합니다. V7 Flyway 마이그레이션은 기존 기록을 삭제하지 않고 관리 상태 컬럼만 추가합니다.
+
 - `backend/`: Spring Boot API, Flyway, Jev Providers, A2A, MCP, Harness, 평가, 보고서
 - `frontend/`: Next.js/React/Tailwind/shadcn Button, React Flow, BFF와 HttpOnly 관리자 세션
 - `scripts/`: 고정 seed 생성, jevos 설치, API smoke
