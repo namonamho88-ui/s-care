@@ -1,0 +1,76 @@
+{
+  "verifiedOn": "2026-10-12",
+  "runtimeCommit": "5d0ce15c5982694d832c36cdae9e50bcab13f2dc",
+  "site": "https://s-care-mu.vercel.app/",
+  "vercelDeployment": "9eH8FSaDsf7NBx9r2PWgWp4vrkMy",
+  "deploymentStatus": "success",
+  "ci": [
+    {
+      "id": 38194639501,
+      "name": "verify",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38194639501"
+    },
+    {
+      "id": 38194639477,
+      "name": "container verification",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38194639477"
+    }
+  ],
+  "localChecks": {
+    "backendJava21H2": 66,
+    "frontendUnit": 28,
+    "frontendUI": 34,
+    "nextProductionBuild": "PASS",
+    "manualGeneration": "PASS"
+  },
+  "cloudUI": {
+    "role": "ADMIN",
+    "intakeActions": [
+      "문자 붙여넣기",
+      "장애 직접 등록"
+    ],
+    "bothFormsOpenedWithoutSubmission": true,
+    "pendingIncidents": 3,
+    "myAttention": 3,
+    "automatic": 0,
+    "finishing": 2,
+    "finishingFilterRows": 2,
+    "reviewIncidentStep": 2,
+    "reviewInputVisible": true,
+    "reviewIncident": "INC-60e304df-469f-49",
+    "technologyBelowQueue": true,
+    "simulationInitiallyCollapsed": true,
+    "mobile": {
+      "viewportWidth": 390,
+      "viewportHeight": 844,
+      "documentWidth": 375,
+      "intakeButtonBottoms": [
+        516,
+        634
+      ],
+      "overrideReset": true
+    },
+    "incidentMutationsPerformed": false,
+    "modelCallsPerformed": false,
+    "limits": "Cloud checks use existing fictional records and an administrator session. User ownership and 10-item boundary cases use isolated UI fixtures."
+  },
+  "manuals": [
+    {
+      "name": "user",
+      "http": 200,
+      "sourceSha256Matches": true
+    },
+    {
+      "name": "admin",
+      "http": 200,
+      "sourceSha256Matches": true
+    }
+  ],
+  "screenshots": {
+    "Dashboard-Redesign-Cloud.jpg": "a5b6e537320eb9600eaa0391c30f6e95134f1c0b35a4d02e097723c4c1e0d385",
+    "Dashboard-Redesign-Mobile.jpg": "78d647053a7f8b4c3876cf3e13b3d231f0335548e5527b60cf7a314fa6df5256",
+    "Dashboard-Redesign-Local.png": "5ca061529d3126c82bc6f2dafae81db32fc8c5a8222d0d80295bce9b1273c7a4"
+  }
+}
