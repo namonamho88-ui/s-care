@@ -1,0 +1,102 @@
+{
+  "runtimeCommit": "20e3435ea22ceeb2c89cc1805a23ac4626010aed",
+  "validatedOn": "2026-10-12",
+  "site": "https://s-care-mu.vercel.app/",
+  "readOnly": true,
+  "existingIncident": {
+    "id": "INC-7c6af4d4-35ac-49",
+    "status": "CLOSED",
+    "decision": {
+      "provider": "MOCK",
+      "model": "deterministic-rules-300",
+      "simulated": true,
+      "fallback": false,
+      "latencyMs": 0
+    },
+    "graphEngine": "NEO4J",
+    "agentStates": {
+      "incident": "completed",
+      "diagnosis": "completed",
+      "impact": "completed",
+      "knowledge": "completed",
+      "recovery": "completed",
+      "report": "completed"
+    },
+    "knowledgeSearch": {
+      "provider": "MOCK_HERMES",
+      "model": "deterministic-template-v1",
+      "simulated": true,
+      "fallback": false,
+      "latencyMs": 0
+    },
+    "skillDraft": {
+      "provider": "MOCK_HERMES",
+      "model": "deterministic-template-v1",
+      "simulated": true,
+      "fallback": false,
+      "latencyMs": 0
+    }
+  },
+  "manuals": [
+    {
+      "audience": "user",
+      "matchesSource": true,
+      "sha256": "074f9ef89e1b913c7b3f6064152f81209d375e044e931a1a00dd53123420b1b1"
+    },
+    {
+      "audience": "admin",
+      "matchesSource": true,
+      "sha256": "1e96078eedda9b24abaeabb4dc358d146e128bd860a79a84ea09a6c38abd3bf1"
+    }
+  ],
+  "existingRealIncident": {
+    "id": "INC-e069ac26-8d59-49",
+    "status": "CLOSED",
+    "decision": {
+      "provider": "LOCAL_JEV",
+      "model": "jevos-v4",
+      "simulated": false,
+      "fallback": false,
+      "latencyMs": 3792
+    }
+  },
+  "ci": [
+    {
+      "id": 38188556732,
+      "name": "container verification",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38188556732"
+    },
+    {
+      "id": 38188556740,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38188556740"
+    }
+  ],
+  "vercel": [
+    {
+      "state": "success",
+      "context": "Vercel – s-care",
+      "target_url": "https://vercel.com/namonamho88-uis-projects/s-care/FHSFjrPnwKRv76k3XVapp3YPuPmP",
+      "description": "Deployment has completed"
+    }
+  ],
+  "ui": {
+    "roleTableRows": 8,
+    "workflowSteps": 6,
+    "mockProvenanceVerified": true,
+    "realJevModelVerified": "jevos-v4",
+    "hermesResponseAliasVerified": "hermes-agent",
+    "hermesSearchAndDraftShownSeparately": true,
+    "graphAndAgentAndHarnessEvidenceVerified": true,
+    "screenshots": [
+      "outputs/Technology-Guide.png",
+      "outputs/Technology-Stage-Evidence.png",
+      "outputs/Technology-Real-Evidence.png"
+    ],
+    "limitations": "Live checks read existing records only, without new model calls or incident mutations. Mobile layout and fallback/missing evidence cases were verified using isolated fictional UI fixtures."
+  }
+}
