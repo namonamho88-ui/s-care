@@ -592,13 +592,15 @@ export default function Home() {
     ontology: "시스템 연결과 영향 분석",
     incidents: "장애 이력 & 보고서",
     knowledge: "해결 지식 · 해결 절차 관리",
-    harness: "안전 점검 · 실행 관리와 평가",
+    harness: "AI 품질 관리",
+    operations: "관리자 운영 현황",
     guide: "사용 안내 · 역할별 매뉴얼",
     technology: "사용 기술 · 역할 안내",
     accounts: isAdmin ? "계정 & 권한 관리" : "내 계정",
   };
   const descriptions: Row = {
-    dashboard: "장애를 접수하고, 지금 필요한 확인과 조치를 이어가세요.",
+    dashboard: "문자 한 통에서 분석·승인·복구까지, 안내에 따라 장애 대응을 경험하세요.",
+    operations: "상세 운영 지표와 처리 시간, 알림, 저장된 작업을 확인합니다.",
     ontology: "시스템이 무엇에 의존하는지 확인하고, 선택한 장애의 영향 가능성을 전체화면으로 살펴봅니다.",
     incidents: "장애를 검색하고 조치 후기·재발 방지 대책·보고서를 확인합니다.",
     knowledge: "해결 방법을 재사용하는 공간입니다. 검토한 해결 절차만 승인하고 Hermes 게시 상태를 확인하세요.",
@@ -667,10 +669,9 @@ export default function Home() {
             ["ontology", Network, "시스템 영향도"],
             ["incidents", History, "장애 이력"],
             ["knowledge", BookOpen, "해결 지식"],
-            ["harness", ShieldCheck, "안전 점검·평가"],
             ["technology", BrainCircuit, "사용 기술"],
             ["guide", FileText, "사용 안내"],
-            ["accounts", ShieldCheck, isAdmin ? "계정 관리" : "내 계정"],
+            ...(!isAdmin ? [["accounts", ShieldCheck, "내 계정"]] : []),
           ].filter(([id]) => isAdmin || id !== "harness").map(([id, Icon, label]) => (
             <button
               key={id as string}
@@ -683,6 +684,10 @@ export default function Home() {
             </button>
           ))}
         </nav>
+        {isAdmin && <details className="admin-navigation" open={['harness','operations','accounts'].includes(view) || undefined}>
+          <summary>관리자 메뉴</summary>
+          <nav aria-label="관리자 메뉴">{[['operations','운영 현황'],['harness','AI 품질 관리'],['accounts','계정 관리']].map(([id,label])=><button key={id} className={'nav-button '+(view===id?'active':'')} aria-current={view===id?'page':undefined} onClick={()=>setView(id)}><ShieldCheck size={16}/><span>{label}</span></button>)}</nav>
+        </details>}
         <div className="nav-label" style={{ marginTop: 30 }}>
           연결된 기술
         </div>
@@ -760,8 +765,7 @@ export default function Home() {
             <>
               <DashboardWorkbench incidents={incidents} user={user} ready={typeof dashboard.total === "number"} online={online}
                 filterKey={`${filterType}:${filterSystem}:${from}:${to}`} onMessage={() => setMessageOpen(true)} onCreate={() => setCreateOpen(true)}
-                onOpen={openIncident} onHistory={() => setView("incidents")} onGuide={() => setView("guide")} />
-          {isAdmin && <details className="dashboard-simulation"><summary>시연용 가상 장애 만들기 · 관리자</summary><p>알림 문자나 관측 내용 없이 미리 준비된 시나리오로 처리 과정을 연습합니다. 버튼을 누르면 장애 이력이 저장됩니다.</p><div className="simulation-bar">
+                onOpen={openIncident} onHistory={() => setView("incidents")} onGuide={() => setView("guide")} selectedId={selected} demoControls={isAdmin ? (<details className="dashboard-simulation"><summary>가상 장애로 체험하기</summary><p>알림 문자나 관측 내용 없이 미리 준비된 시나리오로 처리 과정을 연습합니다. 버튼을 누르면 장애 이력이 저장됩니다.</p><div className="simulation-bar">
             <div className="flex-row">
               <div className="brand-icon">
                 <Zap size={19} />
@@ -819,7 +823,10 @@ export default function Home() {
               기다립니다.
             </div>
           )}
-          </details>}
+          </details>) : null} />
+            </>
+          )}
+          {isAdmin && view === "operations" && <>
               <details className="operations-details"><summary>운영 현황 펼치기 · 지표 / 시스템 연결 / AI 도우미</summary>
               <div className="stats">
                 {[
@@ -1063,9 +1070,8 @@ export default function Home() {
                 </div>
               </Panel>
               </details>
-            </>
-          )}
-          {isAdmin && (view==="dashboard"||view==="harness") && <OperationsPanel api={api} onOpen={openIncident} revision={historyRevision}/> }
+            </>}
+          {isAdmin && view==="operations" && <OperationsPanel api={api} onOpen={openIncident} revision={historyRevision}/> }
           {view === "incidents" && (
             <>
               <div className="filters">

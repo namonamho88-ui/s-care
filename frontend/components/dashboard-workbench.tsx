@@ -1,18 +1,21 @@
 "use client";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ArrowRight, ClipboardPaste, FilePlus2, CheckCircle2, CircleDot, Clock, ListChecks } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PaginatedList from "@/components/pagination";
+import { incidentSteps } from "@/lib/incident-guide.mjs";
 import { dashboardQueue } from "@/lib/dashboard-queue.mjs";
 
 type Row = Record<string, any>;
 
-export default function DashboardWorkbench({incidents,user,ready,online,filterKey,onMessage,onCreate,onOpen,onHistory,onGuide}:{
+export default function DashboardWorkbench({incidents,user,ready,online,filterKey,onMessage,onCreate,onOpen,onHistory,onGuide,selectedId,demoControls}:{
+  selectedId:string|null; demoControls?:ReactNode;
   incidents:Row[]; user:Row; ready:boolean; online:boolean; filterKey:string;
   onMessage:()=>void; onCreate:()=>void; onOpen:(id:string)=>void; onHistory:()=>void; onGuide:()=>void;
 }) {
   const [filter,setFilter]=useState('all');
   const queue=dashboardQueue(incidents,user);
+  const focus=queue.find(item=>item.incident.id===selectedId) || queue[0];
   const groups=[
     {id:'all',label:'전체 미종료',icon:ListChecks,items:queue},
     {id:'action',label:'내 확인 필요',icon:CircleDot,items:queue.filter(item=>item.actionable)},
@@ -22,7 +25,7 @@ export default function DashboardWorkbench({incidents,user,ready,online,filterKe
   const current=groups.find(group=>group.id===filter)!;
   return <div className="dashboard-workbench">
     <section className="intake-section" aria-labelledby="intake-title">
-      <div className="intake-heading"><h2 id="intake-title">장애가 발생했나요?</h2><span>접수 방법을 선택하세요</span></div>
+      <div className="intake-heading"><h2 id="intake-title">장애가 발생했나요?</h2><span>여기서 시작하세요</span></div>
       <div className="intake-actions">
         <button type="button" className="intake-action primary" aria-label="문자 붙여넣기" onClick={onMessage}>
           <span className="intake-icon"><ClipboardPaste size={25} aria-hidden="true" /></span>
@@ -35,7 +38,14 @@ export default function DashboardWorkbench({incidents,user,ready,online,filterKe
           <ArrowRight size={22} aria-hidden="true" />
         </button>
       </div>
+      {demoControls}
       <div className="intake-help"><span>가상·비식별 데이터만 입력하세요. 정상 종료(END_OK)는 장애 등록에서 제외됩니다.</span><button type="button" onClick={onGuide}>처음 이용하시나요? <ArrowRight size={13} aria-hidden="true" /></button></div>
+    </section>
+
+    <section className="demo-journey" aria-labelledby="journey-title">
+      <div className="journey-heading"><div><span className="journey-eyebrow">{focus ? '이 장애는 지금' : '한눈에 보는 처리 순서'}</span><h2 id="journey-title">{focus ? focus.incident.title : '접수하면 분석부터 보고서까지 이어집니다'}</h2></div>{focus && <span className="journey-badge">{focus.guide.badge}</span>}</div>
+      <ol className="journey-steps" aria-label="장애 처리 순서">{incidentSteps.map((step,index)=><li key={step.label} aria-current={focus?.guide.step===index?'step':undefined} className={focus && index<focus.guide.step?'done':''}><span>{focus && index<focus.guide.step?<CheckCircle2 size={16}/>:index+1}</span><strong>{step.label}</strong><small>{step.who}</small></li>)}</ol>
+      {focus ? <div className="journey-next"><div><strong>{focus.guide.title}</strong><p>{focus.guide.text}</p><small>{focus.incident.id} · 목록에서 다른 장애를 선택할 수 있습니다.</small></div><Button onClick={()=>onOpen(focus.incident.id)}>{focus.guide.action}<ArrowRight size={16}/></Button></div> : <p className="journey-empty">위에서 문자를 붙여넣거나 장애를 등록하세요. 현재 단계와 다음에 할 일이 이곳에 표시됩니다.</p>}
     </section>
 
     <section className="work-queue" aria-labelledby="queue-title">
