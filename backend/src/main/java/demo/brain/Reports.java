@@ -14,7 +14,7 @@ public class Reports {
  public byte[] xlsx(String id)throws IOException{return xlsx(id,true);}
  public byte[] xlsx(String id,boolean includeAudit)throws IOException{var data=content(id);try(var book=new XSSFWorkbook();var out=new ByteArrayOutputStream()){
   var sheet=book.createSheet("장애 보고서");var header=book.createCellStyle();header.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());header.setFillPattern(FillPatternType.SOLID_FOREGROUND);var font=book.createFont();font.setColor(IndexedColors.WHITE.getIndex());font.setBold(true);header.setFont(font);var wrap=book.createCellStyle();wrap.setWrapText(true);wrap.setVerticalAlignment(VerticalAlignment.TOP);
-  var title=sheet.createRow(0);title.createCell(0).setCellValue("AI Incident Brain 3.0");title.createCell(1).setCellValue("100% 가상 데이터 · 실제 시스템 변경 없음");for(var cell:title)cell.setCellStyle(header);int n=1;for(var e:data.entrySet()){var r=sheet.createRow(n++);r.createCell(0).setCellValue(e.getKey());r.createCell(1).setCellValue(e.getValue());r.getCell(1).setCellStyle(wrap);r.setHeightInPoints(Math.min(300,30+e.getValue().length()/60*14));}sheet.setColumnWidth(0,24*256);sheet.setColumnWidth(1,100*256);sheet.createFreezePane(0,1);
+  var title=sheet.createRow(0);title.createCell(0).setCellValue("S-CARE");title.createCell(1).setCellValue("100% 가상 데이터 · 실제 시스템 변경 없음");for(var cell:title)cell.setCellStyle(header);int n=1;for(var e:data.entrySet()){var r=sheet.createRow(n++);r.createCell(0).setCellValue(e.getKey());r.createCell(1).setCellValue(e.getValue());r.getCell(1).setCellStyle(wrap);r.setHeightInPoints(Math.min(300,30+e.getValue().length()/60*14));}sheet.setColumnWidth(0,24*256);sheet.setColumnWidth(1,100*256);sheet.createFreezePane(0,1);
   for(String table:includeAudit?List.of("events","audit","agent_tasks"):List.of("events","agent_tasks")){var tab=book.createSheet(table);var rows=s.db.queryForList("SELECT * FROM "+table+" WHERE incident_id=? ORDER BY created_at",id);if(rows.isEmpty())continue;var keys=new ArrayList<>(rows.get(0).keySet());var head=tab.createRow(0);for(int c=0;c<keys.size();c++){head.createCell(c).setCellValue(keys.get(c));head.getCell(c).setCellStyle(header);tab.setColumnWidth(c,32*256);}n=1;for(var row:rows){var r=tab.createRow(n++);for(int c=0;c<keys.size();c++)r.createCell(c).setCellValue(Objects.toString(row.get(keys.get(c)),""));}tab.createFreezePane(0,1);}
   book.write(out);return out.toByteArray();}}
  public byte[] pdf(String id) throws IOException {
@@ -101,7 +101,7 @@ public class Reports {
    var page = new PDPage(org.apache.pdfbox.pdmodel.common.PDRectangle.A4); doc.addPage(page);
    canvas = new PDPageContentStream(doc, page);
    canvas.setNonStrokingColor(navy); canvas.addRect(0, 746, 596, 96); canvas.fill();
-   text("AI INCIDENT BRAIN 3.0", 10, 48, 812, java.awt.Color.WHITE);
+   text("S-CARE", 10, 48, 812, java.awt.Color.WHITE);
    text("장애 보고서", 24, 48, 777, java.awt.Color.WHITE);
    text("FICTIONAL DATA / " + id, 8, 48, 727, ink);
    y = 700;

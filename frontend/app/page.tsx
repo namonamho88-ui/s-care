@@ -576,7 +576,7 @@ export default function Home() {
     number,
   ][];
   const title: Row = {
-    dashboard: "AI 장애 대응 관제센터",
+    dashboard: "S-CARE · AI 장애 대응 관제센터",
     ontology: "시스템 연결과 영향 분석",
     incidents: "장애 이력 & 보고서",
     knowledge: "해결 지식 · 해결 절차 관리",
@@ -615,7 +615,7 @@ export default function Home() {
             S-CARE · AI 장애 대응
           </div>
           <h1>
-            AI Incident Brain <span className="muted">3.0</span>
+            S-CARE
           </h1>
           <p>가상 금융 IT 환경에서 장애 판단부터 복구 검증까지.<br />개인 계정으로 업무를 시작하세요.</p>
           <div className="tabs mb-4" role="tablist" aria-label="로그인 방식">
@@ -644,7 +644,7 @@ export default function Home() {
             <BrainCircuit size={23} />
           </div>
           <div>
-            <strong>Incident Brain</strong>
+            <strong>S-CARE</strong>
             <small>AI 장애 대응 플랫폼</small>
           </div>
         </div>
@@ -1420,7 +1420,7 @@ export default function Home() {
           )}
           <TechnologyContext view={view} onOpen={() => setView("technology")} />
           <div className="footer-note">
-            <span>AI INCIDENT BRAIN 3.0 · 모든 데이터는 가상입니다.</span>
+            <span>S-CARE · 모든 데이터는 가상입니다.</span>
             <span>Jev / Ontology / A2A / Hermes Adapter / Harness</span>
           </div>
         </main>

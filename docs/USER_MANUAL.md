@@ -1,4 +1,4 @@
-# AI Incident Brain 3.0 — 사용자 매뉴얼
+# S-CARE — 사용자 매뉴얼
 
 장애를 접수하고 AI 분석 결과를 읽는 방법
 

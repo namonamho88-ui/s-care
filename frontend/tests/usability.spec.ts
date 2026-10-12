@@ -40,7 +40,7 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
     await route.fulfill({json:data});
   });
   await page.goto('/');
-  await expect(page.getByRole('heading',{name:'AI 장애 대응 관제센터'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'S-CARE · AI 장애 대응 관제센터'})).toBeVisible();
   return mutations;
 }
 

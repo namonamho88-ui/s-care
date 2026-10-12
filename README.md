@@ -1,4 +1,4 @@
-# AI Incident Brain 3.0
+# S-CARE
 
 금융 IT 운영관제 시연을 위한 실제 풀스택 애플리케이션입니다. **모든 자산·담당자·장애·관측값은 100% 가상 데이터**입니다. 실제 운영 시스템을 변경하는 도구는 없습니다.
 
@@ -40,7 +40,7 @@ docker compose ps
 
 Windows PowerShell에서는 첫 줄을 `Copy-Item .env.example .env`로 실행하세요.
 
-- Command Center: http://localhost:3100
+- S-CARE 관제센터: http://localhost:3100
 - 기본 관리자 토큰: `local-demo-admin-change-me` (`ADMIN_TOKEN`으로 변경)
 - 백엔드 health: http://localhost:8080/api/health
 - jevos health: http://localhost:8017/health

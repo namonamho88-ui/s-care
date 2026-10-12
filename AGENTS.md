@@ -1,4 +1,4 @@
-# AI Incident Brain 3.0 개발 규칙
+# S-CARE 개발 규칙
 
 - 모든 시스템, 담당자, 관측값과 장애 기록은 가상이다. UI·API·보고서에 표시한다.
 - Next.js/React/TypeScript/Tailwind/shadcn, Java Spring Boot, PostgreSQL, Neo4j, React Flow를 사용한다.
