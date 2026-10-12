@@ -7,6 +7,8 @@ import { recoveryNotesDraft } from "@/lib/recovery-notes.mjs";
 import { StageTechnologies } from "@/components/technology-guide";
 import { stepTechnologyLabels } from "@/lib/technology-guide.mjs";
 
+import IncidentBriefing from "@/components/incident-briefing";
+
 type Row = Record<string, any>;
 const types = ["RESOURCE", "DATABASE", "NETWORK", "APPLICATION", "SECURITY"];
 const typeNames = ["자원 부족", "데이터베이스", "네트워크", "애플리케이션", "보안"];
@@ -94,26 +96,26 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
   function returnToCurrent() { setFollow(true); setStep(activeStep); setEvidence(""); }
   const command = (suffix: string, body: any, label: string, success: string) => perform(`/incidents/${id}/${suffix}`, "POST", body, label, success);
   const latest = incident?.events?.at(-1);
-  const decisionSource = incident?.decision ? incident.decision.simulated ? "시뮬레이션 결과 · 실제 AI 판단 아님" : incident.decision.provider === "OPERATOR" ? "담당자가 확인한 판단" : "실제 AI 모델 판단" : ["REGISTERED", "ANALYZING"].includes(status) ? incident?.mode === "DEMO" ? "시연 모드 · Mock 판단 대기" : "모델 판단 결과 대기" : "저장된 모델 판단 기록 없음";
+  const decisionSource = incident?.decision ? incident.decision.simulated ? "시뮬레이션 결과 · 실제 AI 판단 아님" : incident.decision.provider === "OPERATOR" ? "담당자가 확인한 판단" : "실제 AI 모델 판단" : ["REGISTERED", "ANALYZING"].includes(status) ? incident?.mode === "DEMO" ? "시연 모드 · 모의 판단 판단 대기" : "모델 판단 결과 대기" : "저장된 모델 판단 기록 없음";
   const reviewReasons = readJson(incident?.events?.filter((e: Row) => e.stage === "HARNESS" && e.state === "COMPLETED").at(-1)?.data_json)?.reviewReasons || [];
   const diagnosis = incident?.tasks?.filter((t: Row) => t.agent === "diagnosis").at(-1);
   const automatic = <div className="workflow-auto">
     <LoaderCircle size={22} className={running ? "working-spinner" : ""} />
     <div><h3>{guide.title}</h3><p>{guide.phase || (latest ? `${stageLabel(latest.stage)} · ${eventStateLabel(latest.state)}` : "백엔드 실행 이벤트를 기다리고 있습니다.")}</p><small>입력 없이 자동으로 진행됩니다. 확인이 필요하거나 다음 단계가 준비되면 화면이 전환됩니다.</small></div>
   </div>;
-  const observed = <div className="workflow-context"><h3>확인할 관측</h3><p>{incident?.observations}</p><small>{incident?.system_name} / {incident?.asset_name}</small></div>;
-  const evidenceDetails = <details className="workflow-evidence"><summary>AI 판단·원인 후보·실행 증적 더보기</summary>
+  const observed = <div className="workflow-context"><h3>발생한 현상</h3><p>{incident?.observations}</p><small>{incident?.system_name} / {incident?.asset_name}</small></div>;
+  const evidenceDetails = <details className="workflow-evidence"><summary>AI 판단·원인 후보·처리 근거 더보기</summary>
     {renderDecision(incident?.decision || null)}
     {diagnosis && <div className="mt-4">{renderAgent(diagnosis)}</div>}
     <div className="flex-row mt-4">
       <Button size="sm" variant="outline" onClick={() => setEvidence("timeline")}>실행 타임라인</Button>
-      <Button size="sm" variant="outline" onClick={() => setEvidence("agents")}>Agent 협업</Button>
+      <Button size="sm" variant="outline" onClick={() => setEvidence("agents")}>AI 도우미 협업</Button>
       <Button size="sm" variant="outline" onClick={() => { selectStep(4); }}>후기 & 보고서</Button>
     </div>
   </details>;
   return <div className="drawer workflow-drawer" onKeyDownCapture={e => { if (busy && e.key === "Escape") e.stopPropagation(); }}>
     <header className="workflow-head">
-      <div className="workflow-title"><div><span className="small muted">장애 처리 · {id || "조회 중"}</span><h2>{incident?.title || "장애 정보를 불러오고 있습니다…"}</h2>{incident && <p className="workflow-provider">{decisionSource}{incident.decision && ` · ${incident.decision.provider} · ${Number.isFinite(incident.decision.latencyMs) ? incident.decision.latencyMs + "ms" : "소요 시간 미기록"}`}{incident.decision?.fallback && " · 연결 실패 후 Mock 대체"}</p>}</div><Button variant="outline" size="sm" aria-label="상세 닫기" onClick={onClose} disabled={busy}><ArrowLeft size={14} />관제로 돌아가기</Button></div>
+      <div className="workflow-title"><div><span className="small muted">장애 처리 · {id || "조회 중"}</span><h2>{incident?.title || "장애 정보를 불러오고 있습니다…"}</h2>{incident && <p className="workflow-provider">{decisionSource}{incident.decision && ` · ${incident.decision.provider} · ${Number.isFinite(incident.decision.latencyMs) ? incident.decision.latencyMs + "ms" : "소요 시간 미기록"}`}{incident.decision?.fallback && " · 연결 실패 후 모의 판단으로 대체"}</p>}</div><Button variant="outline" size="sm" aria-label="상세 닫기" onClick={onClose} disabled={busy}><ArrowLeft size={14} />관제로 돌아가기</Button></div>
       {incident && <>
         <div className="workflow-stepper" role="tablist" aria-label="장애 처리 단계">
           {guide.steps.map((item, index) => <button key={item.label} id={`workflow-tab-${index}`} role="tab" aria-controls="workflow-stage" aria-selected={step === index} aria-current={item.state === "current" ? "step" : undefined} tabIndex={step === index ? 0 : -1} disabled={busy}
@@ -135,6 +137,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
         <h2>{step === activeStep ? guide.title : `${step + 1}. ${incidentSteps[step].label}`}</h2>
         <p>{step === activeStep ? guide.text : step > activeStep ? "앞 단계를 완료하면 이 단계로 자동 이동합니다. 현재 단계에서 필요한 확인과 입력을 먼저 진행하세요." : "이미 처리한 단계의 기록을 확인하고 있습니다."}</p>
       </div>
+      <IncidentBriefing incident={incident} nextAction={guide.title} />
       {evidence ? <section className="workflow-card"><Button size="sm" variant="outline" className="mb-4" onClick={() => setEvidence("")}>단계 입력 화면으로 돌아가기</Button>{evidence === "timeline" ? renderTimeline(incident.events || []) : (incident.tasks || []).map((t: Row) => <div key={t.id} className="mb-5"><h3>{t.agent} Agent</h3>{renderAgent(t)}</div>)}</section> : <>
         <StageTechnologies step={step} incident={incident} />
         {step === 0 && <section className="workflow-card"><h3>접수된 장애 정보</h3>{observed}<p>담당자: {incident.owner_name} · {incident.id}</p>{status === "REGISTERED" && automatic}</section>}
@@ -167,7 +170,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
           {(dirty || draft || !notes.trim() || !prevention.trim()) && status !== "CLOSED" && <div className="banner">5단계에서 후기와 재발 방지 대책을 검토하고 먼저 저장하세요.</div>}
           <div className="flex-row mt-4"><Button variant="outline" disabled={busy} onClick={() => selectStep(4)}>후기 수정으로 돌아가기</Button>{isAdmin && status === "RESOLVED" && <Button disabled={busy || dirty || !!draft || !notes.trim() || !prevention.trim()} onClick={() => command("close",{},"장애 종료와 이력 저장 확인 중","장애가 종료되었습니다. 전체 6단계를 완료했습니다.")}>장애 종료<Check size={14}/></Button>}{!isAdmin && status === "RESOLVED" && <p>최종 종료는 관리자가 수행합니다.</p>}</div>
           {["RESOLVED","CLOSED"].includes(status) && <div className="flex-row mt-5"><Button asChild size="sm" variant="outline"><a href={`/api/incidents/${id}/report/pdf`} download><Download size={14}/>PDF 보고서</a></Button><Button asChild size="sm" variant="outline"><a href={`/api/incidents/${id}/report/xlsx`} download><Download size={14}/>Excel 보고서</a></Button></div>}
-          <p className="small muted mt-4">Skill 초안은 장애 종료와 별도로 지식 & Skill 메뉴에서 관리자가 검토·승인합니다.</p>
+          <p className="small muted mt-4">해결 절차 초안은 장애 종료와 별도로 해결 지식 메뉴에서 관리자가 검토·승인합니다.</p>
         </section>}
         {status === "FAILED" && <section className="workflow-card guide-target" id="guide-retry" tabIndex={-1}><h3>실행 중단 · 원인 확인</h3>{renderTimeline((incident.events || []).filter((e: Row) => e.stage === "FAILURE").slice(-1))}<p>오류 원인을 해결한 후 재시도하세요.</p>{isAdmin && <Button disabled={busy} className="mt-3" onClick={() => command("retry",{},"실패 작업 재시도 요청 중","재시도를 요청했습니다. 실행 상태에 따라 단계가 갱신됩니다.")}>실패 작업 재시도</Button>}</section>}
         {status === "REJECTED" && <section className="workflow-card">{renderTimeline((incident.events || []).filter((e: Row) => e.stage === "APPROVAL"))}</section>}

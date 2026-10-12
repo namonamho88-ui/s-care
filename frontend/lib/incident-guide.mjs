@@ -14,10 +14,10 @@ const stageNames = {
   AGENT_INCIDENT: '업무 조정 · Incident Agent', AGENT_DIAGNOSIS: '원인 후보 분석 · Diagnosis Agent',
   AGENT_IMPACT: '영향 분석 · Impact Agent', AGENT_KNOWLEDGE: '해결 지식 검색 · Knowledge Agent',
   AGENT_RECOVERY: '복구 가이드 · Recovery Agent', AGENT_REPORT: '보고서 작성 · Report Agent',
-  HERMES: '승인된 해결 Skill 검색 · Hermes', HARNESS: '판단 근거·실행 정책 검증 · Harness',
+  HERMES: '승인된 해결 절차 검색 · Hermes', HARNESS: '판단 근거·실행 정책 검증 · Harness',
   REVIEW: '관리자 판단 확인', APPROVAL: '관리자 대응 승인', RECOVERY: '가상 복구 가이드',
   MCP_ACTION: '가상 복구 조치 · MCP', VERIFY: '가상 지표 검증', REPORT: '보고서 생성',
-  SKILL_DRAFT: '해결 Skill 초안 생성', HISTORY: '보고서·장애 이력 저장', CLOSE: '장애 종료', FAILURE: '실행 중단',
+  SKILL_DRAFT: '해결 해결 절차 초안 생성', HISTORY: '보고서·장애 이력 저장', CLOSE: '장애 종료', FAILURE: '실행 중단',
 };
 export const stageLabel = stage => stageNames[String(stage).toUpperCase()] || stage;
 export const eventStateLabel = state => ({ RUNNING: '진행 중', COMPLETED: '완료', WAITING: '확인 대기', NEEDS_REVIEW: '확인 필요', FAILED: '실패', REJECTED: '거부' }[state] || state);
@@ -45,7 +45,7 @@ export function incidentGuide(incident, options = {}) {
       action = '실행 기록 보기'; target = 'timeline'; break;
     case 'ANALYZING':
       step = 1; badge = '자동 진행'; title = 'AI가 원인과 영향 범위를 분석하고 있어요';
-      text = 'Jev 판단 → Ontology 영향 분석 → Agent 협업·Hermes 검색 → Harness 검증이 진행됩니다. 확인이 필요하면 이곳에 안내됩니다.';
+      text = '장애 판단 → 영향 분석 → AI 도우미 협업·해결 방법 검색 → 안전 점검이 진행됩니다. 확인이 필요하면 이곳에 안내됩니다.';
       action = '실행 기록 보기'; target = 'timeline'; break;
     case 'NEEDS_REVIEW':
       step = 1; tone = 'attention'; badge = isAdmin ? '지금 관리자 확인' : '관리자 확인 대기';
@@ -55,11 +55,11 @@ export function incidentGuide(incident, options = {}) {
     case 'WAITING_APPROVAL':
       step = 2; tone = 'attention'; badge = isAdmin ? '지금 관리자 승인' : '관리자 승인 대기';
       title = isAdmin ? '영향 범위를 검토하고 대응 여부를 결정하세요' : '관리자의 대응 승인을 기다리고 있어요';
-      text = '분석과 Harness 검증이 끝났습니다. 관리자가 사유를 작성해 승인하면 가상 복구를 시작합니다. 거부하면 이 흐름은 중단됩니다.';
+      text = '분석과 안전 점검이 끝났습니다. 관리자가 사유를 작성해 승인하면 가상 복구를 시작합니다. 거부하면 이 흐름은 중단됩니다.';
       action = isAdmin ? '대응 승인 위치로 이동' : '분석 결과 보기'; target = isAdmin ? 'approval' : 'analysis'; break;
     case 'RECOVERING':
       step = 3; badge = '자동 진행'; title = '가상 복구를 검증하고 보고서를 만들고 있어요';
-      text = '승인된 가상 지표를 변경·검증한 뒤 보고서, Skill 초안, 이력을 저장합니다. 실제 운영 시스템은 변경하지 않습니다.';
+      text = '승인된 가상 지표를 변경·검증한 뒤 보고서, 해결 절차 초안, 이력을 저장합니다. 실제 운영 시스템은 변경하지 않습니다.';
       action = '실행 기록 보기'; target = 'timeline'; break;
     case 'RESOLVED':
       step = needsSave ? 4 : 5; tone = 'attention';
@@ -71,13 +71,13 @@ export function incidentGuide(incident, options = {}) {
       } else {
         badge = isAdmin ? '지금 최종 확인' : '관리자 종료 대기';
         title = isAdmin ? '저장된 후기를 검토하고 장애를 종료하세요' : '후기가 저장되었습니다 · 관리자 종료를 기다려 주세요';
-        text = '후기와 재발 방지 대책이 DB에 저장되어 있습니다. 내용을 최종 검토한 뒤 관리자가 종료합니다. Skill 초안 승인은 지식 & Skill 메뉴의 별도 절차입니다.';
+        text = '후기와 재발 방지 대책이 DB에 저장되어 있습니다. 내용을 최종 검토한 뒤 관리자가 종료합니다. 해결 절차 초안 승인은 해결 지식 메뉴의 별도 절차입니다.';
         action = isAdmin ? '최종 확인 위치로 이동' : '저장된 후기 보기'; target = isAdmin ? 'close' : 'report';
       }
       break;
     case 'CLOSED':
       step = 6; tone = 'complete'; badge = '전체 단계 완료'; title = '종료된 장애입니다 · 보고서를 확인하세요';
-      text = dirty ? '화면에 저장되지 않은 수정 내용이 있습니다. 보고서는 DB에 저장된 내용을 사용합니다.' : '장애 처리가 마감되었습니다. 저장된 후기와 PDF·Excel 보고서를 확인할 수 있습니다. Skill 초안은 관리자가 별도로 승인합니다.';
+      text = dirty ? '화면에 저장되지 않은 수정 내용이 있습니다. 보고서는 DB에 저장된 내용을 사용합니다.' : '장애 처리가 마감되었습니다. 저장된 후기와 PDF·Excel 보고서를 확인할 수 있습니다. 해결 절차 초안은 관리자가 별도로 승인합니다.';
       action = '보고서 위치로 이동'; target = 'downloads'; break;
     case 'REJECTED':
       step = 2; tone = 'stopped'; badge = '대응 거부 · 중단'; title = '대응이 거부되어 복구를 실행하지 않았어요';

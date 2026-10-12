@@ -40,7 +40,7 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
     await route.fulfill({json:data});
   });
   await page.goto('/');
-  await expect(page.getByRole('heading',{name:'AI Incident Command Center'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'AI 장애 대응 관제센터'})).toBeVisible();
   return mutations;
 }
 
@@ -98,7 +98,7 @@ test('technology map explains implementation to normal users without exposing ad
   await guide.getByText('6개 Agent의 역할과 모델 연결 보기',{exact:true}).click();
   await expect(guide.getByRole('heading',{name:'Diagnosis Agent · 원인 후보 분석'})).toBeVisible();
   await expect(guide.getByRole('heading',{name:'Report Agent · 보고서 구성'})).toBeVisible();
-  await expect(page.getByRole('button',{name:'Mock 50건 평가',exact:true})).toHaveCount(0);expect(mutations).toEqual([]);
+  await expect(page.getByRole('button',{name:'모의 판단 50건 평가',exact:true})).toHaveCount(0);expect(mutations).toEqual([]);
 });
 
 test('stage technology evidence separates real Jev, Hermes Mock fallback and unexecuted work',async({page})=>{
@@ -121,7 +121,7 @@ test('stage technology evidence separates real Jev, Hermes Mock fallback and une
 
 test('mobile technology map and step evidence fit without horizontal overflow or invoking AI',async({page})=>{
   await page.setViewportSize({width:390,height:844});const mutations=await setup(page,undefined,'ADMIN',{status:'REGISTERED',mode:'REAL',impact:null});
-  await page.getByRole('button',{name:'기술 & 모델',exact:true}).click();
+  await page.getByRole('button',{name:'사용 기술',exact:true}).click();
   const guide=page.getByRole('region',{name:'기술과 모델 안내'});expect(await guide.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
   await guide.getByText('실제 AI · Mock · 모델명은 어떻게 읽나요?',{exact:true}).click();await expect(guide).toContainText('hermes-agent 별칭');
   await page.getByRole('button',{name:'장애 이력',exact:true}).click();await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();
@@ -159,8 +159,8 @@ test('skills and manuals have independent ten-item pages on mobile',async({page}
   await page.setViewportSize({width:390,height:844});
   const skills=Array.from({length:25},(_,i)=>({id:`SKL-PAGE-${i+1}`,title:`가상 Skill ${i+1}`,status:'APPROVED',type:'RESOURCE',simulated:true,conditions:'가상 조건',checks:'점검',solution:'가상 해결',cautions:'주의'}));
   const manuals=Array.from({length:21},(_,i)=>({id:`MAN-PAGE-${i+1}`,title:`가상 매뉴얼 ${i+1}`,procedure_text:'가상 점검 절차'}));
-  const mutations=await setup(page,undefined,'ADMIN',{}, {skills,manuals});await page.getByRole('button',{name:'지식 & Skill',exact:true}).click();
-  const skillList=page.getByRole('region',{name:'해결 Skill 목록',exact:true}), manualList=page.getByRole('region',{name:'대응 매뉴얼 목록',exact:true});
+  const mutations=await setup(page,undefined,'ADMIN',{}, {skills,manuals});await page.getByRole('button',{name:'해결 지식',exact:true}).click();
+  const skillList=page.getByRole('region',{name:'해결 절차 목록',exact:true}), manualList=page.getByRole('region',{name:'대응 매뉴얼 목록',exact:true});
   await expect(skillList.locator('article')).toHaveCount(10);await expect(manualList.locator('details')).toHaveCount(10);
   await skillList.getByRole('navigation').last().getByRole('button',{name:'다음 페이지',exact:true}).click();await expect(skillList.getByRole('heading',{name:'가상 Skill 11',exact:true})).toBeVisible();
   await expect(skillList).toBeFocused();expect(await skillList.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
@@ -170,9 +170,9 @@ test('skills and manuals have independent ten-item pages on mobile',async({page}
 test('Harness pages reach older evaluations and audit logs while running state covers all pages',async({page})=>{
   const evaluations=Array.from({length:35},(_,i)=>({id:`EVAL-PAGE-${i+1}`,status:i===34?'RUNNING':'COMPLETED',mode:'DEMO',provider:`MOCK-PAGE-${i+1}`,created_at:'2026-10-10T12:00:00Z',result_json:'{}'}));
   const audit=Array.from({length:321},(_,i)=>({id:i+1,actor:'가상 감사 주체',action:`PAGE-ACTION-${i+1}`,data_json:'{}',created_at:'2026-10-10T12:00:00Z'}));
-  const mutations=await setup(page,undefined,'ADMIN',{}, {evaluations,audit});await page.getByRole('button',{name:'Harness & 평가',exact:true}).click();
+  const mutations=await setup(page,undefined,'ADMIN',{}, {evaluations,audit});await page.getByRole('button',{name:'안전 점검·평가',exact:true}).click();
   const ev=page.getByRole('region',{name:'Harness 평가 목록',exact:true}), logs=page.getByRole('region',{name:'감사 로그 목록',exact:true});
-  await expect(ev.locator('.system')).toHaveCount(10);await expect(logs.locator('tbody tr')).toHaveCount(10);await expect(page.getByRole('button',{name:'Mock 50건 평가',exact:true})).toBeDisabled();
+  await expect(ev.locator('.system')).toHaveCount(10);await expect(logs.locator('tbody tr')).toHaveCount(10);await expect(page.getByRole('button',{name:'모의 판단 50건 평가',exact:true})).toBeDisabled();
   await ev.getByRole('navigation').first().getByRole('button',{name:'마지막 페이지',exact:true}).click();await expect(ev).toContainText('MOCK-PAGE-35');await expect(ev.locator('.system')).toHaveCount(5);
   await logs.getByRole('navigation').first().getByRole('button',{name:'마지막 페이지',exact:true}).click();await expect(logs).toContainText('PAGE-ACTION-321');await expect(logs.locator('tbody tr')).toHaveCount(1);
   await expect(ev.getByRole('navigation').first()).toContainText('4/4페이지');expect(mutations).toEqual([]);
@@ -182,7 +182,7 @@ test('a failed page read retains the successful page and retry loads the request
   const audit=Array.from({length:21},(_,i)=>({id:i+1,actor:'가상 감사 주체',action:`RETRY-PAGE-${i+1}`,data_json:'{}',created_at:'2026-10-10T12:00:00Z'}));
   const mutations=await setup(page,undefined,'ADMIN',{}, {audit});let failed=false;
   await page.route('**/api/audit?page=2',async route=>{if(failed)return route.fallback();failed=true;await route.fulfill({status:503,json:{error:'가상 페이지 조회 실패'}});});
-  await page.getByRole('button',{name:'Harness & 평가',exact:true}).click();const logs=page.getByRole('region',{name:'감사 로그 목록',exact:true});
+  await page.getByRole('button',{name:'안전 점검·평가',exact:true}).click();const logs=page.getByRole('region',{name:'감사 로그 목록',exact:true});
   await expect(logs.locator('tbody tr')).toHaveCount(10);await logs.getByRole('navigation').first().getByRole('button',{name:'다음 페이지',exact:true}).click();
   await expect(logs.getByRole('alert')).toContainText('가상 페이지 조회 실패');await expect(logs.getByRole('navigation').first()).toContainText('1/3페이지');await expect(logs).toContainText('RETRY-PAGE-1');
   await logs.getByRole('button',{name:'다시 조회',exact:true}).click();await expect(logs.getByRole('navigation').first()).toContainText('2/3페이지');await expect(logs).toContainText('RETRY-PAGE-11');await expect(logs.getByRole('alert')).toHaveCount(0);expect(mutations).toEqual([]);
@@ -225,7 +225,7 @@ test('SMS request failure retains the message and selected asset with a named pe
 test('fullscreen fills the viewport, fit keeps every node visible, Escape returns focus', async ({page}) => {
   await page.setViewportSize({width:1440,height:960});
   const mutations=await setup(page);
-  await page.getByText('운영 현황 펼치기 · 지표 / 온톨로지 / Agent',{exact:true}).click();
+  await page.getByText('운영 현황 펼치기 · 지표 / 시스템 연결 / AI 도우미',{exact:true}).click();
   const trigger=page.getByRole('button',{name:'전체화면',exact:true});
   await trigger.click();
   const dialog=page.getByRole('dialog',{name:'온톨로지 전체화면'});
@@ -246,7 +246,7 @@ test('fullscreen fills the viewport, fit keeps every node visible, Escape return
 
 test('ontology selection filters impact and clearing it removes stale highlights',async({page})=>{
   await setup(page);
-  await page.getByRole('button',{name:'온톨로지',exact:true}).click();
+  await page.getByRole('button',{name:'시스템 영향도',exact:true}).click();
   await page.getByLabel('분석 기준 장애').selectOption('INC-UI-CLOSED');
   await expect(page.getByText('분석 기준: 가상 자산 12',{exact:true})).toBeVisible();
   await page.getByRole('button',{name:'전체화면',exact:true}).click();
@@ -265,7 +265,7 @@ test('ontology selection filters impact and clearing it removes stale highlights
 test('mobile fullscreen closes without horizontal page overflow',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await setup(page);
-  await page.getByText('운영 현황 펼치기 · 지표 / 온톨로지 / Agent',{exact:true}).click();
+  await page.getByText('운영 현황 펼치기 · 지표 / 시스템 연결 / AI 도우미',{exact:true}).click();
   await page.getByRole('button',{name:'전체화면',exact:true}).click();
   const dialog=page.getByRole('dialog',{name:'온톨로지 전체화면'});
   await expect(dialog.getByRole('button',{name:'전체화면 닫기 · Esc'})).toBeVisible();
@@ -284,7 +284,7 @@ test('manuals match roles, printed downloads load, and failed evaluations show u
   await expect(page.getByRole('heading',{name:'관리자 매뉴얼',exact:true})).toBeVisible();
   await expect(page.getByRole('link',{name:'HTML 다운로드'})).toHaveAttribute('href','/manuals/admin.html');
   for(const audience of ['user','admin']) {const response=await page.request.get(`/manuals/${audience}.html`);expect(response.ok()).toBe(true);expect(await response.text()).toContain('인쇄 / PDF로 저장');}
-  await page.getByRole('button',{name:'Harness & 평가',exact:true}).click();
+  await page.getByRole('button',{name:'안전 점검·평가',exact:true}).click();
   await expect(page.getByRole('alert').filter({hasText:'평가 실패:'})).toContainText('평가 실패: 테스트용 연결 오류');
   await expect(page.locator('body')).not.toContainText('undefined/50');
 });
@@ -390,7 +390,7 @@ test('raw recovery JSON becomes a reviewable Korean draft and saves through the 
 
 test('user role hides administrator controls and allows only owned incident notes', async ({page}) => {
   const mutations=await setup(page, undefined, 'USER');
-  await expect(page.getByRole('button',{name:'Harness & 평가',exact:true})).toHaveCount(0);
+  await expect(page.getByRole('button',{name:'안전 점검·평가',exact:true})).toHaveCount(0);
   await expect(page.getByRole('button',{name:'계정 관리',exact:true})).toHaveCount(0);
   await expect(page.getByRole('button',{name:'가상 장애 발생',exact:true})).toHaveCount(0);
   await page.getByRole('button',{name:'장애 이력',exact:true}).click();
@@ -424,7 +424,7 @@ test('login defaults to a personal account and keeps bootstrap and activation se
   await expect(page.getByLabel('관리자 토큰')).toHaveCount(0);
   await page.getByLabel('아이디',{exact:true}).fill('fictional.user');
   await page.getByLabel('비밀번호',{exact:true}).fill('fictional-password-2026');
-  await page.getByRole('button',{name:'Command Center 시작'}).click();
+  await page.getByRole('button',{name:'관제센터 시작'}).click();
   await expect(page.getByRole('alert').filter({hasText:'가상 인증 검증 오류'})).toContainText('가상 인증 검증 오류');
   expect(calls[0]).toMatchObject({mode:'login',login:'fictional.user',password:'fictional-password-2026'});
   await page.getByRole('tab',{name:'초대 활성화',exact:true}).click();
@@ -611,4 +611,22 @@ test('checking the impact graph preserves an unsaved approval reason and hidden 
   await expect(registration).toBeVisible();
   await expect.poll(()=>registration.evaluate(el=>el.contains(document.activeElement))).toBe(true);
   expect(mutations).toEqual([]);
+});
+
+
+test('briefing shows verified fictional before and after without mutating the incident',async({page})=>{
+  const proof=JSON.stringify({before:{healthyDependencies:false,latencyMs:3200,errorRate:12.5},after:{healthyDependencies:true,latencyMs:120,errorRate:0.02},realChanges:false,passed:true,provider:'SIMULATED_METRICS'});
+  const mutations=await setup(page,proof);await page.getByRole('button',{name:'장애 이력',exact:true}).click();
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();
+  const brief=page.locator('.incident-briefing');await brief.locator('summary').first().click();
+  await expect(brief).toContainText('오류율: 12.5% → 0.02%');await expect(brief).toContainText('3,200ms → 120ms');
+  await expect(brief).toContainText('아직 판단 전입니다');await expect(brief).toContainText('가상 지표 검증');expect(mutations).toEqual([]);
+});
+
+test('briefing does not invent recovery results before verification and fits mobile',async({page})=>{
+  await page.setViewportSize({width:390,height:844});const mutations=await setup(page,undefined,'USER',{status:'NEEDS_REVIEW'});
+  await page.getByRole('button',{name:'장애 이력',exact:true}).click();await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();
+  const brief=page.locator('.incident-briefing');await brief.locator('summary').first().click();
+  await expect(brief).toContainText('확인 가능한 가상 복구 비교 기록이 아직 없습니다');await expect(brief).toContainText('관리자가 AI 판단을 확인해야 합니다');
+  expect(await brief.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);expect(mutations).toEqual([]);
 });

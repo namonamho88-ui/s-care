@@ -51,7 +51,7 @@ export default function MessageIntake({ assets, initialMode, provider, api, onCl
           {preview.existingIncidentId?<div className="message-duplicate"><h3>이미 등록된 문자입니다</h3><p>{preview.existingIncidentId} · 기존 분석 결과를 확인하세요.</p><Button disabled={busy} onClick={()=>onRegistered(preview.existingIncidentId,true)}>기존 장애 열기<ArrowRight size={16}/></Button></div>:preview.parsed.eligible&&<>
             <label>대상 구성요소<select value={asset} disabled={busy} onChange={e=>setAsset(e.target.value)}><option value="">구성요소를 선택하세요</option>{assets.filter(a=>a.kind!=="SYSTEM").map(a=><option key={a.id} value={a.id}>{a.name} · {a.id}</option>)}</select></label>
             <p className="small muted">{preview.matchReason}</p>
-            <label>문자 등록 실행 모드<select value={mode} disabled={busy} onChange={e=>setMode(e.target.value)}><option value="REAL">실제 AI 모드 · {provider}</option><option value="DEMO">시연 모드 · Mock</option></select></label>
+            <label>문자 등록 실행 모드<select value={mode} disabled={busy} onChange={e=>setMode(e.target.value)}><option value="REAL">실제 AI 모드 · {provider}</option><option value="DEMO">시연 모드 · 모의 판단</option></select></label>
             <p className="small muted">{mode==="DEMO"?"외부 모델을 호출하지 않는 시뮬레이션입니다.":"모델의 실제 판단을 요청합니다. Local Jev 연결 실패 시 Mock 전환 여부를 분석 화면에 표시합니다."}</p>
             <details><summary>저장할 제목·관측 내용</summary><h4>{preview.parsed.title}</h4><pre>{preview.observations}</pre></details>
             <div className="message-submit"><p>{asset?"등록 후 장애 처리 화면으로 이동합니다. 근거가 부족하면 담당자 확인 단계에서 멈춥니다.":"등록하려면 대상 구성요소를 선택해 주세요."}</p><Button disabled={busy||!asset} onClick={register}>등록 & 분석 시작<ArrowRight size={16}/></Button></div>

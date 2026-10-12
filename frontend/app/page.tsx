@@ -247,7 +247,7 @@ function Decision({ d }: { d: Row | null }) {
         </div>
         {d.fallback && (
           <div className="small">
-            Local jevos 연결 실패 후 Mock으로 전환했습니다. {d.fallbackReason}
+            Local jevos 연결 실패 후 모의 판단으로 전환했습니다. {d.fallbackReason}
           </div>
         )}
       </div>
@@ -304,9 +304,9 @@ function AgentResult({ task }: { task: Row }) {
     {data.fallback && <p className="small text-amber-200">{data.fallbackReason}</p>}
   </div>;
   if (task.agent === "knowledge") return <div className="mt-3">
-    <Chip tone={data.simulated ? "amber" : "cyan"}>{data.simulated ? "지식 검색 · Mock" : "지식 검색 · 실제 Hermes"}</Chip>
+    <Chip tone={data.simulated ? "amber" : "cyan"}>{data.simulated ? "지식 검색 · 모의 실행" : "지식 검색 · 실제 Hermes"}</Chip>
     <p className="small mt-2">{data.explanation}</p>
-    <p className="small muted">승인 Skill {data.skills?.length || 0}개 · 매뉴얼 {data.manuals?.length || 0}개</p>
+    <p className="small muted">승인된 해결 절차 {data.skills?.length || 0}개 · 매뉴얼 {data.manuals?.length || 0}개</p>
     <p className="mono small muted">{data.provider} · {data.latencyMs} ms</p>
     {data.fallback && <p className="small text-amber-200">대체 실행: {data.fallbackReason}</p>}
   </div>;
@@ -576,20 +576,20 @@ export default function Home() {
     number,
   ][];
   const title: Row = {
-    dashboard: "AI Incident Command Center",
-    ontology: "온톨로지 · 시스템 영향 분석",
+    dashboard: "AI 장애 대응 관제센터",
+    ontology: "시스템 연결과 영향 분석",
     incidents: "장애 이력 & 보고서",
-    knowledge: "지식 & Skill · 해결 절차 관리",
-    harness: "Harness · 실행 통제와 평가",
+    knowledge: "해결 지식 · 해결 절차 관리",
+    harness: "안전 점검 · 실행 관리와 평가",
     guide: "사용 안내 · 역할별 매뉴얼",
-    technology: "기술 & 모델 · 역할 안내",
+    technology: "사용 기술 · 역할 안내",
     accounts: isAdmin ? "계정 & 권한 관리" : "내 계정",
   };
   const descriptions: Row = {
     dashboard: "장애를 접수하고, 지금 필요한 확인과 조치를 이어가세요.",
     ontology: "시스템이 무엇에 의존하는지 확인하고, 선택한 장애의 영향 가능성을 전체화면으로 살펴봅니다.",
     incidents: "장애를 검색하고 조치 후기·재발 방지 대책·보고서를 확인합니다.",
-    knowledge: "해결 방법을 재사용하는 공간입니다. 검토한 Skill만 승인하고 Hermes 게시 상태를 확인하세요.",
+    knowledge: "해결 방법을 재사용하는 공간입니다. 검토한 해결 절차만 승인하고 Hermes 게시 상태를 확인하세요.",
     harness: "AI의 실행 제한과 승인 기록을 확인하고 가상 시나리오로 판단 정확도를 평가합니다.",
     guide: "처음 사용하는 분은 사용자용부터, 승인과 환경 운영 담당자는 관리자용을 확인하세요.",
     technology: "각 기술이 쓰이는 단계와 역할, 실제 AI와 내부 기능의 차이를 확인합니다.",
@@ -600,7 +600,7 @@ export default function Home() {
     return (
       <div className="login">
         <div className="loading flex-row">
-          <BrainCircuit /> Command Center 연결 중
+          <BrainCircuit /> 관제센터 연결 중
         </div>
       </div>
     );
@@ -612,7 +612,7 @@ export default function Home() {
             <BrainCircuit size={23} />
           </div>
           <div className="eyebrow" style={{ marginTop: 25 }}>
-            S-CARE · OPERATIONS INTELLIGENCE
+            S-CARE · AI 장애 대응
           </div>
           <h1>
             AI Incident Brain <span className="muted">3.0</span>
@@ -626,7 +626,7 @@ export default function Home() {
             {loginMode === "activate" && <label className="mt-3">초대 코드<input required value={inviteCode} maxLength={100} onChange={e => setInviteCode(e.target.value)} autoComplete="off" /></label>}
             <label className="mt-3">{loginMode === "activate" ? "새 비밀번호" : "비밀번호"}<input type="password" required minLength={loginMode === "activate" ? 12 : undefined} maxLength={128} value={password} onChange={e => setPassword(e.target.value)} autoComplete={loginMode === "activate" ? "new-password" : "current-password"} /></label>
           </>}
-          <Button className="w-full mt-5" disabled={busy}>{busy ? "연결 중…" : loginMode === "activate" ? "계정 활성화 & 시작" : "Command Center 시작"}<ArrowUpRight size={16} /></Button>
+          <Button className="w-full mt-5" disabled={busy}>{busy ? "연결 중…" : loginMode === "activate" ? "계정 활성화 & 시작" : "관제센터 시작"}<ArrowUpRight size={16} /></Button>
           <p className="small" style={{ margin: "20px 0 0" }}>{loginMode === "admin" ? "첫 관리자 계정 생성 또는 계정 복구 시에만 토큰을 사용하세요." : loginMode === "activate" ? "관리자에게 받은 24시간 유효한 1회용 코드와 새 비밀번호(12~128자)를 입력하세요." : "계정이 없거나 비밀번호를 잊으셨다면 관리자에게 초대 코드 발급을 요청하세요."}<br />모든 업무 자산·담당자·장애·지표는 가상 데이터입니다.</p>
           {error && (
             <div role="alert" className="banner error mt-4">
@@ -645,18 +645,18 @@ export default function Home() {
           </div>
           <div>
             <strong>Incident Brain</strong>
-            <small>INTELLIGENCE PLATFORM</small>
+            <small>AI 장애 대응 플랫폼</small>
           </div>
         </div>
-        <div className="nav-label">WORKSPACE</div>
+        <div className="nav-label">업무 공간</div>
         <nav>
           {[
             ["dashboard", LayoutDashboard, "통합 관제"],
-            ["ontology", Network, "온톨로지"],
+            ["ontology", Network, "시스템 영향도"],
             ["incidents", History, "장애 이력"],
-            ["knowledge", BookOpen, "지식 & Skill"],
-            ["harness", ShieldCheck, "Harness & 평가"],
-            ["technology", BrainCircuit, "기술 & 모델"],
+            ["knowledge", BookOpen, "해결 지식"],
+            ["harness", ShieldCheck, "안전 점검·평가"],
+            ["technology", BrainCircuit, "사용 기술"],
             ["guide", FileText, "사용 안내"],
             ["accounts", ShieldCheck, isAdmin ? "계정 관리" : "내 계정"],
           ].filter(([id]) => isAdmin || id !== "harness").map(([id, Icon, label]) => (
@@ -672,7 +672,7 @@ export default function Home() {
           ))}
         </nav>
         <div className="nav-label" style={{ marginTop: 30 }}>
-          CONNECTED LAYERS
+          연결된 기술
         </div>
         <div className="sidebar-layers px-3 space-y-4 small muted">
           <div className="flex-row">
@@ -689,7 +689,7 @@ export default function Home() {
           </div>
         </div>
         <div className="side-bottom">
-          <Chip tone="amber">FICTIONAL DATA ONLY</Chip>
+          <Chip tone="amber">모든 데이터는 가상입니다</Chip>
           <p className="small muted mt-3">
             금융 IT 혁신 서비스 시연
             <br />
@@ -700,18 +700,18 @@ export default function Home() {
       <div className="workspace">
         <header className="topbar">
           <div className="topbar-title">
-            <span className="muted small">WORKSPACE</span>
+            <span className="muted small">업무 공간</span>
             <ChevronRight size={12} />
             <span>가상 금융 IT 운영센터</span>
             <span className="divider" />
             <Chip tone={online ? "green" : "red"}>
               <span className="live-dot" />
-              {online ? "API 연결" : "API 연결 끊김"}
+              {online ? "서버 연결됨" : "서버 연결 끊김"}
             </Chip>
           </div>
           <div className="flex-row">
-            <span className="mono small muted">ASIA / SEOUL</span>
-            <span className="small">{user.displayName}</span><Chip>{isAdmin ? "ADMIN" : "USER"}</Chip>
+            <span className="mono small muted">한국 시간</span>
+            <span className="small">{user.displayName}</span><Chip>{isAdmin ? "관리자" : "사용자"}</Chip>
             <button
               aria-label="로그아웃"
               className="p-2 muted"
@@ -726,7 +726,7 @@ export default function Home() {
         <main className={"page" + (view === "dashboard" ? " dashboard-page" : "")}>
           <div className="heading">
             <div>
-              <div className="eyebrow">OPERATIONS / {view.toUpperCase()}</div>
+              <div className="eyebrow">장애 대응 · {title[view]}</div>
               <h1>{title[view]}</h1>
               <p>{descriptions[view]}</p>
             </div>
@@ -768,11 +768,11 @@ export default function Home() {
                 onChange={(e) => setMode(e.target.value)}
               >
                 <option value="REAL">실제 AI 모드</option>
-                <option value="DEMO">시연 모드 · Mock</option>
+                <option value="DEMO">시연 모드 · 모의 판단</option>
               </select>
               {mode === "REAL" && (
                 <select
-                  aria-label="Jev Provider"
+                  aria-label="판단 모델 선택"
                   value={provider}
                   onChange={(e) => setProvider(e.target.value)}
                 >
@@ -802,13 +802,13 @@ export default function Home() {
           </div>
           {mode === "REAL" && provider === "LOCAL" && (
             <div className="small muted mb-5">
-              Local jevos 연결 실패 시 Mock으로 전환되며, 결과에 시뮬레이션
+              Local jevos 연결 실패 시 모의 판단으로 전환되며, 결과에 시뮬레이션
               표시가 남습니다. 낮은 신뢰도의 실제 판단은 담당자 확인을
               기다립니다.
             </div>
           )}
           </details>}
-              <details className="operations-details"><summary>운영 현황 펼치기 · 지표 / 온톨로지 / Agent</summary>
+              <details className="operations-details"><summary>운영 현황 펼치기 · 지표 / 시스템 연결 / AI 도우미</summary>
               <div className="stats">
                 {[
                   [
@@ -823,7 +823,7 @@ export default function Home() {
                     "긴급 위험",
                     dashboard.critical || 0,
                     "건",
-                    "P1 활성 장애",
+                    "긴급 장애 · P1",
                   ],
                   [
                     Clock,
@@ -872,7 +872,7 @@ export default function Home() {
                 <div>
                   <Panel
                     title="시스템 운영 상태"
-                    extra={<Chip>12 BUSINESS SYSTEMS</Chip>}
+                    extra={<Chip>12개 업무 시스템</Chip>}
                   >
                     <div className="system-grid">
                       {(dashboard.systemStatus || []).map((s: Row) => (
@@ -903,7 +903,7 @@ export default function Home() {
                     </div>
                   </Panel>
                   <Panel
-                    title="Ontology · 의존 관계"
+                    title="시스템 연결 관계"
                     extra={
                       <div className="flex-row">
                         <Chip tone="cyan">
@@ -928,7 +928,7 @@ export default function Home() {
                     extra={
                       <Chip tone={live ? "green" : ""}>
                         <Radio size={11} />
-                        {live ? "SSE LIVE" : "STANDBY"}
+                        {live ? "실시간 수신 중" : "대기 중"}
                       </Chip>
                     }
                   >
@@ -958,7 +958,7 @@ export default function Home() {
                   </Panel>
                   {current?.decision && (
                     <Panel
-                      title="Jev Decision"
+                      title="AI 장애 판단"
                       extra={
                         <BrainCircuit size={16} className="text-cyan-200" />
                       }
@@ -1007,8 +1007,8 @@ export default function Home() {
                 </div>
               </div>
               <Panel
-                title="A2A Specialist Agents"
-                extra={<Chip>HTTP JSON-RPC · 6 AGENTS</Chip>}
+                title="역할별 AI 도우미"
+                extra={<Chip>6개 역할 · 작업 분담</Chip>}
               >
                 <div className="agent-grid">
                   {agents.map((a, index) => {
@@ -1028,10 +1028,10 @@ export default function Home() {
                                   : ""
                             }
                           >
-                            {task?.status || "STANDBY"}
+                            {({completed:"완료",failed:"실패",working:"진행 중",submitted:"접수됨",canceled:"취소됨"} as Row)[task?.status] || "대기 중"}
                           </Chip>
                         </div>
-                        <b>{a[0].toUpperCase() + a.slice(1)} Agent</b>
+                        <b>{agentLabels[index]} 도우미</b>
                         <span className="small muted">
                           {agentLabels[index]}
                         </span>
@@ -1148,7 +1148,7 @@ export default function Home() {
             <>
               <div className={"banner " + (config.hermes?.llmVerified ? "good" : "")}>
                 <strong>Nous Hermes Agent</strong> · {config.hermes?.apiReachable ? "API 서버 연결됨" : "API 서버 미연결"}
-                <p className="small mt-2">{config.hermes?.llmVerified ? "최근 Hermes 모델 응답 검증 완료" : "실제 LLM 응답 미검증 · Mock 대체 시 결과에 명시"} · 승인된 PostgreSQL 지식만 검색에 사용합니다.</p>
+                <p className="small mt-2">{config.hermes?.llmVerified ? "최근 Hermes 모델 응답 검증 완료" : "실제 LLM 응답 미검증 · 모의 판단으로 대체 시 결과에 명시"} · 승인된 PostgreSQL 지식만 검색에 사용합니다.</p>
                 <p className="small muted">{config.hermes?.lastResult?.provider || "아직 지식 생성 실행 없음"}{config.hermes?.lastResult?.fallbackReason ? " · " + config.hermes.lastResult.fallbackReason : ""}</p>
                 {config.hermes?.reason && <p className="mono small muted">{config.hermes.reason}</p>}
               </div>
@@ -1162,7 +1162,7 @@ export default function Home() {
                 <Chip>대응 매뉴얼 {catalog.manuals.length}</Chip>
                 <Button size="sm" variant="outline" disabled={!isAdmin || busy || !config.hermesExportConfigured} onClick={() => action(async () => {
                   let cursor = "", processed = 0, failed = 0;
-                  setSyncProgress("승인 Skill 동기화 시작…");
+                  setSyncProgress("승인된 해결 절차 동기화 시작…");
                   try {
                     do {
                       const result = await api(`/hermes/sync?limit=5&after=${encodeURIComponent(cursor)}`, "POST", {});
@@ -1174,8 +1174,8 @@ export default function Home() {
                       cursor = result.hasMore ? result.nextCursor : "";
                     } while (cursor);
                     await refresh();
-                    if (failed) throw new Error(`${failed}개 Skill 게시 실패 — 상태를 확인하고 동기화를 다시 실행하세요.`);
-                    setSyncProgress(`승인 Skill ${processed}개 동기화 완료`);
+                    if (failed) throw new Error(`${failed}개 해결 절차 게시 실패 — 상태를 확인하고 동기화를 다시 실행하세요.`);
+                    setSyncProgress(`승인된 해결 절차 ${processed}개 동기화 완료`);
                   } catch (error) {
                     setSyncProgress(`${processed}개 처리 후 오류 · 게시 상태와 감사 로그를 확인하세요.`);
                     throw error;
@@ -1183,7 +1183,7 @@ export default function Home() {
                 })}>승인 지식 동기화</Button>
               </div>
               {syncProgress && <p role="status" className="small muted mb-5">{syncProgress}</p>}
-              <PaginatedList label="해결 Skill" items={skills}>{pageItems=><div className="skill-grid">
+              <PaginatedList label="해결 절차" items={skills}>{pageItems=><div className="skill-grid">
                 {pageItems.map((s) => (
                   <article className="panel skill-card" key={s.id}>
                     <div className="flex-row justify-between">
@@ -1234,7 +1234,7 @@ export default function Home() {
                             )
                           }
                         >
-                          Skill 승인
+                          해결 절차 승인
                         </Button>
                         <Button
                           size="sm"
@@ -1305,7 +1305,7 @@ export default function Home() {
                         )
                       }
                     >
-                      Mock 50건 평가
+                      모의 판단 50건 평가
                     </Button>
                     <Button
                       size="sm"
@@ -1380,7 +1380,7 @@ export default function Home() {
               </Panel>
               <Panel
                 title="감사 로그"
-                extra={<Chip>APPEND-ONLY · {auditPage.total} RECORDS</Chip>}
+                extra={<Chip>변경 불가 기록 · {auditPage.total}건</Chip>}
                 body={false}
               >
                 <RemoteList result={auditPage} label="감사 로그" empty="감사 로그가 없습니다.">{pageItems=><div className="overflow-auto">
@@ -1483,7 +1483,7 @@ export default function Home() {
                 데이터만 사용합니다.
               </div>
               <div className="space-y-5">
-                <label>등록 실행 모드<select value={mode} onChange={e => setMode(e.target.value)}><option value="REAL">실제 AI 모드</option><option value="DEMO">시연 모드 · Mock</option></select></label>
+                <label>등록 실행 모드<select value={mode} onChange={e => setMode(e.target.value)}><option value="REAL">실제 AI 모드</option><option value="DEMO">시연 모드 · 모의 판단</option></select></label>
                 <label>
                   장애 제목
                   <input
