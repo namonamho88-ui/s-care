@@ -14,8 +14,14 @@ export async function POST(request: NextRequest) {
   const origin = request.headers.get("origin");
   if (origin && new URL(origin).host !== request.headers.get("host"))
     return Response.json({error:"Invalid origin"},{status:403});
-  if (!request.cookies.get("brain_token")?.value)
-    return Response.json({error:"로그인이 필요합니다."},{status:401});
+  const token = request.cookies.get("brain_token")?.value;
+  if (!token) return Response.json({error:"로그인이 필요합니다."},{status:401});
+  try {
+    const auth = await fetch((process.env.BACKEND_URL || "http://127.0.0.1:8080").replace(/\/$/, "") + "/api/auth/me", {
+      headers: {Authorization: `Bearer ${token}`}, cache:"no-store",signal:AbortSignal.timeout(10000)
+    });
+    if (!auth.ok) return Response.json({error:"유효하지 않은 세션입니다."},{status:401});
+  } catch { return Response.json({error:"인증 서버를 확인할 수 없습니다."},{status:503}); }
   const apiKey = process.env.DIFY_API_KEY;
   if (!apiKey) return Response.json({error:"Dify API가 설정되지 않았습니다."},{status:503});
   let body: {scenario_id?:string;question?:string};
