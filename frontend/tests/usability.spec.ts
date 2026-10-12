@@ -20,6 +20,8 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
     if (request.method() !== 'GET') mutations.push(path);
     if (path === '/api/config') data = { user: { id:'bootstrap-admin', role, kind:role === 'ADMIN' ? 'BOOTSTRAP' : 'ACCOUNT', displayName:'가상 검증 사용자', operatorId:'OP-01' }, database: 'POSTGRESQL', graph: 'NEO4J', defaultProvider: 'LOCAL', a2a: '0.3.0', hermes: { apiReachable: false }, fictional: true };
     else if (path === '/api/catalog') data = { assets, operators: [{ id:'OP-01', name:'가상 담당자', department:'PLATFORM' }], scenarios:[{id:'SCN-01',title:'가상 시나리오'}], manuals:lists.manuals||[] };
+    else if (path === '/api/operations') data={stages:[],notifications:[],jobs:[],mttaSamples:0,mttrSamples:0};
+    else if (path.endsWith('/similar')) data={items:[],note:'텍스트 유사도'};
     else if (path === '/api/graph') data = { nodes:assets, edges, engine:'NEO4J' };
     else if (path === '/api/skills' || path === '/api/audit') data=lists[path.slice(5)]||[];
     else if (path === '/api/evaluations') data=lists.evaluations||[{id:'EVAL-FAILED',status:'FAILED',mode:'REAL',provider:'LOCAL',created_at:'2026-10-10T12:00:00Z',result_json:JSON.stringify({error:'테스트용 연결 오류'})}];
@@ -99,7 +101,7 @@ test('technology map explains implementation to normal users without exposing ad
   await guide.getByText('6개 Agent의 역할과 모델 연결 보기',{exact:true}).click();
   await expect(guide.getByRole('heading',{name:'Diagnosis Agent · 원인 후보 분석'})).toBeVisible();
   await expect(guide.getByRole('heading',{name:'Report Agent · 보고서 구성'})).toBeVisible();
-  await expect(page.getByRole('button',{name:'모의 판단 50건 평가',exact:true})).toHaveCount(0);expect(mutations).toEqual([]);
+  await expect(page.getByRole('button',{name:'한국어 100건 · 모의 평가',exact:true})).toHaveCount(0);expect(mutations).toEqual([]);
 });
 
 test('stage technology evidence separates real Jev, Hermes Mock fallback and unexecuted work',async({page})=>{
@@ -173,7 +175,7 @@ test('Harness pages reach older evaluations and audit logs while running state c
   const audit=Array.from({length:321},(_,i)=>({id:i+1,actor:'가상 감사 주체',action:`PAGE-ACTION-${i+1}`,data_json:'{}',created_at:'2026-10-10T12:00:00Z'}));
   const mutations=await setup(page,undefined,'ADMIN',{}, {evaluations,audit});await page.getByRole('button',{name:'안전 점검·평가',exact:true}).click();
   const ev=page.getByRole('region',{name:'Harness 평가 목록',exact:true}), logs=page.getByRole('region',{name:'감사 로그 목록',exact:true});
-  await expect(ev.locator('.system')).toHaveCount(10);await expect(logs.locator('tbody tr')).toHaveCount(10);await expect(page.getByRole('button',{name:'모의 판단 50건 평가',exact:true})).toBeDisabled();
+  await expect(ev.locator('.system')).toHaveCount(10);await expect(logs.locator('tbody tr')).toHaveCount(10);await expect(page.getByRole('button',{name:'한국어 100건 · 모의 평가',exact:true})).toBeDisabled();
   await ev.getByRole('navigation').first().getByRole('button',{name:'마지막 페이지',exact:true}).click();await expect(ev).toContainText('MOCK-PAGE-35');await expect(ev.locator('.system')).toHaveCount(5);
   await logs.getByRole('navigation').first().getByRole('button',{name:'마지막 페이지',exact:true}).click();await expect(logs).toContainText('PAGE-ACTION-321');await expect(logs.locator('tbody tr')).toHaveCount(1);
   await expect(ev.getByRole('navigation').first()).toContainText('4/4페이지');expect(mutations).toEqual([]);
@@ -504,7 +506,7 @@ test('stepper shows named requests, truthful progress and automatically opens th
   await expect(dialog.getByRole('tab',{name:/4\. 복구 검증/})).toHaveAttribute('aria-selected','true');
   await expect(progress).toHaveAttribute('aria-valuenow','50');
   record.status='RESOLVED';record.notes='';record.prevention='';
-  await page.clock.runFor(5100);
+  await page.clock.runFor(41000);
   await expect(dialog.getByRole('tab',{name:/5\. 후기/})).toHaveAttribute('aria-selected','true');
   await expect(progress).toHaveAttribute('aria-valuenow','67');
   await dialog.getByRole('textbox',{name:'조치 후기',exact:true}).fill('가상 복구 지표를 확인했습니다.');
@@ -586,7 +588,7 @@ test('an old in-flight read cannot delay or reverse the next stage after approva
   const dialog=page.getByRole('dialog',{name:'장애 상세'});
   await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('가상 영향 범위 확인');
   delayNext=true;
-  await page.clock.runFor(5100);
+  await page.clock.runFor(41000);
   await expect.poll(()=>delayed).toBe(true);
   await dialog.getByRole('button',{name:'대응 승인',exact:true}).click();
   await expect(dialog.getByRole('tab',{name:/4\. 복구/})).toHaveAttribute('aria-selected','true');
@@ -669,4 +671,27 @@ test('management failure keeps confirmation and reason without retrying automati
  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();const dialog=page.getByRole('dialog',{name:'장애 상세'});
  await dialog.getByText('관리자 작업 · 강제 종료 / 삭제 / 복원',{exact:true}).click();await dialog.getByLabel('처리 사유',{exact:true}).fill('가상 사유');await dialog.getByLabel('확인용 장애 번호').fill('INC-UI-RESOLVED');await dialog.getByRole('button',{name:'강제 종료 실행'}).click();
  await expect(dialog.getByRole('alert')).toContainText('가상 충돌');await expect(dialog.getByLabel('처리 사유',{exact:true})).toHaveValue('가상 사유');await expect(dialog.getByLabel('확인용 장애 번호')).toHaveValue('INC-UI-RESOLVED');expect(calls).toBe(1);expect(mutations).toEqual([]);
+});
+
+test('healthy SSE eliminates five-second detail polling and background tabs stop refresh',async({page})=>{
+ await page.clock.install();await page.addInitScript(()=>{class Source {onopen:any;onerror:any;constructor(){setTimeout(()=>this.onopen?.(),0);}addEventListener(){}close(){}};(window as any).EventSource=Source;});
+ await setup(page,undefined,'ADMIN',{status:'NEEDS_REVIEW'});let details=0,dashboards=0;page.on('request',r=>{const path=new URL(r.url()).pathname;if(path==='/api/incidents/INC-UI-RESOLVED')details++;if(path==='/api/dashboard')dashboards++;});
+ await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();await expect(page.getByRole('dialog',{name:'장애 상세'})).toBeVisible();await page.clock.runFor(1000);const initial=details;
+ await page.clock.runFor(20000);expect(details).toBe(initial);
+ await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});const before=dashboards;await page.clock.runFor(120000);expect(dashboards).toBe(before);
+});
+
+test('skill draft saves versioned changes and exposes old and new values',async({page})=>{
+ const skill:any={id:'SKL-UI-EDIT',type:'RESOURCE',title:'가상 초안',status:'DRAFT',conditions:'가상 적용 조건',checks:'가상 점검',solution:'기존 가상 조치',cautions:'가상 환경 전용',revision:0,simulated:true,incident_id:'INC-UI-RESOLVED'};
+ await setup(page,undefined,'ADMIN',{}, {skills:[skill]});let history:any[]=[];
+ await page.route('**/api/skills/SKL-UI-EDIT**',async route=>{if(route.request().method()==='GET'){await route.fulfill({json:history});return;}const before={...skill};Object.assign(skill,route.request().postDataJSON(),{revision:1});history=[{id:1,revision:1,action:'EDIT',actor:'가상 관리자',reason:skill.reason,before_json:JSON.stringify(before),after_json:JSON.stringify(skill)}];await route.fulfill({json:skill});});
+ await page.getByRole('button',{name:'해결 지식',exact:true}).click();await page.getByRole('button',{name:'초안 편집 · 재생성'}).click();await page.getByLabel('초안 해결 방법').fill('수정한 가상 조치');await page.getByLabel('초안 변경 사유').fill('가상 검증 절차 보완');await page.getByRole('button',{name:'수정 내용 저장',exact:true}).click();await expect(page.getByText('버전 1 · 관리자 수정 · 가상 관리자')).toBeVisible();await page.getByText('버전 1 · 관리자 수정 · 가상 관리자').click();await expect(page.getByText('이전: 기존 가상 조치')).toBeVisible();await expect(page.getByText('변경: 수정한 가상 조치')).toBeVisible();
+});
+
+test('similar history explains matching and never mutates an incident',async({page})=>{
+ const mutations=await setup(page);await page.route('**/api/incidents/*/similar',route=>route.fulfill({json:{note:'원인 확률이 아닙니다.',items:[{id:'INC-FICTIONAL-PAST',title:'가상 과거 장애',similarity:71,matchedTerms:['연결'],sameAsset:true,notes:'가상 연결 수 검증',prevention:'가상 점검 추가'}]}}));await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();await page.getByText('비슷한 과거 장애와 당시 조치 보기').click();await expect(page.getByText('당시 조치: 가상 연결 수 검증')).toBeVisible();await expect(page.getByText('원인 확률이 아닙니다.')).toBeVisible();expect(mutations).toEqual([]);
+});
+
+test('new evaluation separates keyword baseline actual AI and legacy demonstration scores',async({page})=>{
+ await setup(page,undefined,'ADMIN',{}, {evaluations:[{id:'EVAL-KO',status:'COMPLETED',mode:'REAL',provider:'LOCAL',created_at:'2026-10-12T00:00:00Z',result_json:JSON.stringify({datasetVersion:'ko-incident-v1',passed:52,total:100,accuracy:.52,baselinePassed:35,actualAiPassed:40,actualAiCount:80,errors:2,denominators:{type:60,severity:40,department:60,recurrence:30},note:'가상 평가 · 실운영 성능 아님'})}]});await page.getByRole('button',{name:'안전 점검·평가',exact:true}).click();await expect(page.getByRole('button',{name:'한국어 100건 · 실제 Jev 평가'})).toBeVisible();await expect(page.getByText(/기존 영어 키워드 기준선 35\/100/)).toBeVisible();await expect(page.getByText(/실제 AI만 40\/80건/)).toBeVisible();
 });

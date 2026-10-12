@@ -14,7 +14,7 @@ public class KnowledgeEngine {
   var approved=store.search(incident.get("type").toString());
   var result=new LinkedHashMap<String,Object>();result.put("fictional",true);result.put("incidentId",incident.get("id"));result.put("type",incident.get("type"));result.put("observations",incident.get("observations"));
   result.put("approvedSkills",approved.get("skills"));result.put("manuals",approved.get("manuals"));
-  result.put("similarIncidents",s.db.queryForList("SELECT id,title,notes,prevention FROM incidents WHERE type=? AND status='CLOSED' AND deleted_at IS NULL AND id<>? ORDER BY created_at DESC LIMIT 3",incident.get("type"),incident.get("id")));
+  result.put("similarIncidents",new SimilarIncidents(s).find(incident));
   return result;
  }
  public Map<String,Object> search(Map<String,Object> incident){

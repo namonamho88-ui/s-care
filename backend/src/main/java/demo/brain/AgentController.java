@@ -42,7 +42,7 @@ public class AgentController {
  private Object task(String id,String context,String state,Object data){Map<String,Object> t=new LinkedHashMap<>();t.put("kind","task");t.put("id",id);t.put("contextId",context);t.put("status",Map.of("state",state,"timestamp",Instant.now().toString()));if(data!=null)t.put("artifacts",List.of(Map.of("artifactId",id+"-result","parts",List.of(Map.of("kind","data","data",data)))));return t;}
  private Object work(String agent,Map<String,Object> i){String type=i.get("type").toString();return switch(agent){
   case "incident"->Map.of("incidentId",i.get("id"),"plan",AGENTS,"scope","FICTIONAL_ONLY");
-  case "diagnosis"->{var result=diagnosis.assess(i);result.put("similarIncidents",s.db.queryForList("SELECT id,title,notes FROM incidents WHERE type=? AND status='CLOSED' AND deleted_at IS NULL AND id<>? ORDER BY created_at DESC LIMIT 3",type,i.get("id")));yield result;}
+  case "diagnosis"->{var result=diagnosis.assess(i);result.put("similarIncidents",new SimilarIncidents(s).find(i));yield result;}
   case "knowledge"->knowledge.search(i);
   case "impact"->{if(i.get("impact_json")==null)throw new IllegalStateException("Ontology analysis required");yield s.decode(i.get("impact_json"));}
   case "recovery"->{if(!i.get("status").equals("RECOVERING"))throw new IllegalStateException("Approval required");var approved=skills.search(type);yield Map.of("guideSource","APPROVED_SKILLS","approvedSkills",approved.get("skills"),"manuals",approved.get("manuals"),"tools",List.of("apply_simulated_recovery","verify_simulated_recovery"),"realChanges",false);}

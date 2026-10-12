@@ -1,4 +1,7 @@
-"""Reproducible fictional dataset: seed 300; no clock/network inputs."""
+"""Legacy DEMO regression fixtures, NOT a model-quality benchmark.
+For Korean model evaluation use generate_evaluation.py; keep deployed V2/V3 immutable.
+Reproducible fictional dataset: seed 300; no clock/network inputs.
+"""
 from pathlib import Path
 from datetime import datetime, timedelta
 import random

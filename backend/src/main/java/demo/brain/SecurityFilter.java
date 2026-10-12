@@ -34,10 +34,10 @@ public class SecurityFilter extends OncePerRequestFilter {
   if(service&&!identity.kind().equals("BOOTSTRAP")||!identity.admin()&&!userAllowed(method,path)){
    deny(response,403,"이 작업을 수행할 권한이 없습니다.");return;
   }
-  chain.doFilter(request,response);
+  try{if(identity.kind().equals("BOOTSTRAP")&&service&&request.getHeader("X-Work-Id")!=null)WorkContext.set(request.getHeader("X-Work-Id"),request.getHeader("X-Work-Token"));chain.doFilter(request,response);}finally{WorkContext.clear();}
  }
  private static boolean userAllowed(String method,String path){
-  if(method.equals("GET"))return java.util.List.of("/api/auth/me","/api/config","/api/catalog","/api/graph","/api/dashboard","/api/incidents","/api/skills").contains(path)||path.matches("/api/incidents/[A-Za-z0-9_-]+(?:/events|/report/(?:pdf|xlsx))?");
+  if(method.equals("GET"))return java.util.List.of("/api/auth/me","/api/config","/api/catalog","/api/graph","/api/dashboard","/api/incidents","/api/skills").contains(path)||path.matches("/api/incidents/[A-Za-z0-9_-]+(?:/events|/similar|/report/(?:pdf|xlsx))?");
   if(method.equals("POST"))return java.util.List.of("/api/incidents","/api/message-intake/preview","/api/message-intake/register","/api/auth/logout","/api/auth/password").contains(path);
   return method.equals("PATCH")&&path.matches("/api/incidents/[A-Za-z0-9_-]+");
  }

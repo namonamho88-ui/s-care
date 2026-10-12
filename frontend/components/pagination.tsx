@@ -41,17 +41,17 @@ export function useRemotePage(path:string,api:(path:string)=>Promise<any>,enable
   useEffect(()=>{setData(null);setPage(1);setError("");},[identity]);
   useEffect(()=>{
     if(!enabled)return;
-    let active=true,pending=false;
+    let active=true,pending=false,nextPoll=0;
     const load=async()=>{
-      if(pending)return;pending=true;setLoading(true);
+      if(pending||document.hidden||Date.now()<nextPoll)return;pending=true;setLoading(true);
       try{const result=await api(`${path}?page=${requested}`);
         if(!result||!Array.isArray(result.items)||!Number.isInteger(result.page)||result.page<1||!Number.isInteger(result.total)||result.total<0)throw new Error("서버의 페이지 응답을 확인할 수 없습니다. 잠시 후 다시 조회해 주세요.");
-        if(active){setData(result);setPage(result.page);setError("");}}
+        nextPoll=Date.now()+(result.running?15000:60000);if(active){setData(result);setPage(result.page);setError("");}}
       catch(e){if(active)setError((e as Error).message);}
       finally{pending=false;if(active)setLoading(false);}
     };
-    void load();const interval=setInterval(load,5000);
-    return()=>{active=false;clearInterval(interval);};
+    void load();const visible=()=>{if(!document.hidden){nextPoll=0;void load();}};document.addEventListener("visibilitychange",visible);const interval=setInterval(load,15000);
+    return()=>{active=false;clearInterval(interval);document.removeEventListener("visibilitychange",visible);};
   },[api,path,enabled,requested,revision,retry,identity]);
   return {items:data?.items||[],page:data?.page||1,total:data?.total||0,running:data?.running??false,loading,error,ready:!!data,setPage,reload:()=>setRetry(n=>n+1)};
 }

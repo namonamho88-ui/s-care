@@ -30,6 +30,8 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import OperationsPanel from "@/components/operations-panel";
+import SkillEditor from "@/components/skill-editor";
 import AccountCenter from "@/components/account-center";
 import ManualCenter from "@/components/manual-center";
 import DashboardWorkbench from "@/components/dashboard-workbench";
@@ -322,6 +324,8 @@ export default function Home() {
   const isAdmin = user.role === "ADMIN";
   const [loginMode, setLoginMode] = useState("login"), [loginName, setLoginName] = useState(""), [password, setPassword] = useState(""), [inviteCode, setInviteCode] = useState("");
   const [syncProgress, setSyncProgress] = useState("");
+  const [pageVisible,setPageVisible]=useState(true);
+  useEffect(()=>{const update=()=>setPageVisible(!document.hidden);document.addEventListener("visibilitychange",update);update();return()=>document.removeEventListener("visibilitychange",update);},[]);
   const [notice, setNotice] = useState("");
   const [requestLabel, setRequestLabel] = useState("");
   const [view, setView] = useState("dashboard"),
@@ -377,14 +381,14 @@ export default function Home() {
     const [d, i, k, c] = await Promise.all([
       api("/dashboard?" + q),
       api("/incidents?" + q + (isAdmin && view === "incidents" && showDeleted ? "&deleted=true" : "")),
-      api("/skills"),
-      api("/config"),
+      view === "knowledge" ? api("/skills") : Promise.resolve(null),
+      view === "knowledge" ? api("/config") : Promise.resolve(null),
     ]);
     if (version !== refreshVersion.current) return;
     setDashboard(d);
     setIncidents(i);
-    setSkills(k);
-    setConfig(c);
+    if(k)setSkills(k);
+    if(c)setConfig(c);
     setOnline(true);
   }, [filterType, filterSystem, from, to, isAdmin, view, showDeleted]);
   const refreshRef = useRef(refresh);
@@ -454,7 +458,7 @@ export default function Home() {
       .catch((e) => setError("기초 정보 조회 실패: " + e.message));
   }, [auth]);
   useEffect(() => {
-    if (!auth) return;
+    if (!auth || !pageVisible) return;
     refresh().catch((e) => {
       setOnline(false);
       setError("화면 정보 조회 실패: " + e.message);
@@ -465,39 +469,43 @@ export default function Home() {
           setOnline(false);
           setError("자동 새로고침 실패: " + e.message);
         }),
-      5000,
+      60000,
     );
     return () => clearInterval(interval);
-  }, [auth, refresh]);
+  }, [auth, refresh, pageVisible]);
   useEffect(() => {
     if (!selected) { setDetail(null); return; }
-    setDetail(null);
+    if (!pageVisible) return;
+    setDetail(current=>current?.id===selected?current:null);
     loadDetail(selected).catch((e) => setError("장애 상세 조회 실패: " + e.message));
     const source = new EventSource("/api/incidents/" + selected + "/events");
-    source.onopen = () => setLive(true);
-    source.onerror = () => setLive(false);
+    let connected=false, lastFallback=Date.now();
+    source.onopen = () => {connected=true;setLive(true);};
+    source.onerror = () => {connected=false;setLive(false);};
     let stageTimer: ReturnType<typeof setTimeout>;
-    source.addEventListener("stage", () => {
+    let updateLists=false;
+    source.addEventListener("stage", (event) => {
+      try{const row=JSON.parse((event as MessageEvent).data);updateLists ||= ["INCIDENT","REVIEW","APPROVAL","HISTORY","CLOSE","FORCE_STOP","MANAGEMENT","FAILURE","EDIT"].includes(row.stage);}catch{}
       clearTimeout(stageTimer);
       stageTimer = setTimeout(() => {
         loadDetail(selected).catch((e) => setError("장애 상세 갱신 실패: " + e.message));
-        refreshRef.current().catch((e) => {
+        if(updateLists){updateLists=false;refreshRef.current().catch((e) => {
           setOnline(false);
           setError("실시간 화면 갱신 실패: " + e.message);
-        });
-      }, 150);
+        });}
+      }, 350);
     });
-    // Also observe edits from another session and recover from a missed SSE event.
+    // Healthy SSE is the detail source. Poll only after a disconnected grace period.
     const interval = setInterval(() => {
-      loadDetail(selected).catch(() => setLive(false));
-    }, 5000);
+      if(!connected && Date.now()-lastFallback>=30000){lastFallback=Date.now();loadDetail(selected).catch(() => setLive(false));}
+    }, 10000);
     return () => {
       clearInterval(interval);
       clearTimeout(stageTimer);
       source.close();
       setLive(false);
     };
-  }, [selected, loadDetail]);
+  }, [selected, loadDetail, pageVisible]);
   useEffect(() => {
     if (!error) return;
     const timer = setTimeout(() => setError(""), 12000);
@@ -1057,6 +1065,7 @@ export default function Home() {
               </details>
             </>
           )}
+          {isAdmin && (view==="dashboard"||view==="harness") && <OperationsPanel api={api} onOpen={openIncident} revision={historyRevision}/> }
           {view === "incidents" && (
             <>
               <div className="filters">
@@ -1209,7 +1218,7 @@ export default function Home() {
                             : "거부됨"}
                       </Chip>
                     </div>
-                    <h3>{s.title}</h3>
+                    <h3>{s.title}</h3>{s.revision>0&&<p className="small">수정·재생성 이력 {s.revision}회 · 최초 AI 원문과 다를 수 있습니다.</p>}
                     <div className="flex-row"><Chip tone={s.simulated ? "amber" : "cyan"}>{s.simulated ? "시뮬레이션 / 고정 지식" : "Hermes 모델 생성"}</Chip><span className="small muted">{s.source_provider}</span></div>
                     <p className="mono small muted">{s.source_model} · {s.export_status === "EXPORTED" ? "Hermes Skill 파일 게시됨" : s.export_status === "FAILED" ? "게시 실패 · 동기화 재시도 필요" : "Hermes 미게시"}</p>
                     <dl>
@@ -1226,6 +1235,7 @@ export default function Home() {
                       ))}
                     </dl>
                     <p className="mono">{s.id}</p>
+                    {isAdmin && <SkillEditor skill={s} api={api} onSaved={refresh}/> }
                     {isAdmin && s.status === "DRAFT" && (
                       <div className="flex-row mt-4">
                         <Button
@@ -1234,7 +1244,7 @@ export default function Home() {
                           onClick={() =>
                             action(() =>
                               api("/skills/" + s.id + "/review", "POST", {
-                                status: "APPROVED",
+                                status: "APPROVED",revision:String(s.revision||0),
                               }),
                             )
                           }
@@ -1310,7 +1320,7 @@ export default function Home() {
                         )
                       }
                     >
-                      모의 판단 50건 평가
+                      한국어 100건 · 모의 평가
                     </Button>
                     <Button
                       size="sm"
@@ -1326,7 +1336,7 @@ export default function Home() {
                         )
                       }
                     >
-                      Local Jev 50건 평가
+                      한국어 100건 · 실제 Jev 평가
                     </Button>
                   </div>
                 }
@@ -1367,12 +1377,14 @@ export default function Home() {
                         {r?.total && (
                           <>
                             <div className="flex-row small muted mt-3">
-                              유형 {r.typeCorrect}/50 · 심각도{" "}
-                              {r.severityCorrect}/50 · 부서{" "}
-                              {r.departmentCorrect}/50 · 재발{" "}
-                              {r.recurrenceCorrect}/50 · 검토 {r.reviews} · Mock
+                              유형 {r.typeCorrect}/{r.denominators?.type??r.total} · 심각도{" "}
+                              {r.severityCorrect}/{r.denominators?.severity??r.total} · 부서{" "}
+                              {r.departmentCorrect}/{r.denominators?.department??r.total} · 재발{" "}
+                              {r.recurrenceCorrect}/{r.denominators?.recurrence??r.total} · 검토 {r.reviews} · Mock
                               대체 {r.fallbacks}
                             </div>
+                            <p className="small mt-3">{r.datasetVersion ? `평가셋 ${r.datasetVersion} · 기존 영어 키워드 기준선 ${r.baselinePassed}/${r.total} · 실제 AI만 ${r.actualAiPassed}/${r.actualAiCount}건 · 호출 오류 ${r.errors}건` : "이전 시연용 데이터 결과 · 모델 실력의 근거로 사용하지 마세요."}</p><p className="small muted">{r.note}</p>
+                            {r.groups&&<table className="small mt-3"><thead><tr><th>평가 구분</th><th>이번 결과</th><th>기존 키워드</th></tr></thead><tbody>{Object.entries(r.groups).map(([name,counts])=>{const n=counts as number[];return <tr key={name}><td>{({TECHNICAL_KO:'기술 관측',AMBIGUOUS_KO:'모호·복합 사례',SMS_BATCH:'배치 문자',SMS_TMS:'오류율 문자'} as Row)[name]||name}</td><td>{n[1]}/{n[0]}</td><td>{n[2]}/{n[0]}</td></tr>;})}</tbody></table>}
                             <Json
                               value={r}
                               label="시나리오별 실제 결과와 정답"

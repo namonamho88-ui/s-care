@@ -1,4 +1,5 @@
 "use client";
+import SimilarPanel from "./similar-panel";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Check, LoaderCircle, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -188,6 +189,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
         {status === "FAILED" && <section className="workflow-card guide-target" id="guide-retry" tabIndex={-1}><h3>실행 중단 · 원인 확인</h3>{renderTimeline((incident.events || []).filter((e: Row) => e.stage === "FAILURE").slice(-1))}<p>오류 원인을 해결한 후 재시도하세요.</p>{isAdmin && <Button disabled={busy} className="mt-3" onClick={() => command("retry",{},"실패 작업 재시도 요청 중","재시도를 요청했습니다. 실행 상태에 따라 단계가 갱신됩니다.")}>실패 작업 재시도</Button>}</section>}
         {status === "REJECTED" && <section className="workflow-card">{renderTimeline((incident.events || []).filter((e: Row) => e.stage === "APPROVAL"))}</section>}
       </>}
+      <SimilarPanel key={incident.id} id={incident.id} api={api}/>
       <details className="workflow-evidence"><summary>전체 실행 기록·감사 로그</summary>{renderTimeline(incident.events || [])}{(incident.audit || []).map((a: Row) => <details key={a.id}><summary>{a.action} · {a.actor}</summary><pre>{JSON.stringify(readJson(a.data_json),null,2)}</pre></details>)}</details>
     </div>}
   </div>;

@@ -8,7 +8,7 @@ GitHub 저장소 `namonamho88-ui/s-care`를 연결합니다. Vercel은 **Root Di
 
 Supabase와 Railway의 서비스별 구성은 **[배포 가이드](docs/DEPLOYMENT.md)**와 `deploy/` 예제를 따릅니다. `.env`와 API 키는 GitHub에 올리지 않습니다.
 
-**클라우드 시연: [s-care-mu.vercel.app](https://s-care-mu.vercel.app/)**. 2026-10-10 Vercel → Railway → Supabase에서 DEMO와 실제 Local Jev/Hermes 시연을 모두 장애 종료까지 검증했습니다. 실제 Jev 분류, Neo4j 영향 탐색, 여섯 A2A Agent, 담당자 검토·승인, 가상 복구, 보고서와 이력 저장이 동작합니다. 실제 모델 50건 평가는 47/50(94%), Mock 대체 0건입니다. [클라우드 검증 결과와 한계](docs/VALIDATION.md)를 확인하세요. Railway는 현재 Trial이며 최종 시연 전 요금제·자원 확인과 부하 리허설이 필요합니다.
+**클라우드 시연: [s-care-mu.vercel.app](https://s-care-mu.vercel.app/)**. 2026-10-10 Vercel → Railway → Supabase에서 DEMO와 실제 Local Jev/Hermes 시연을 모두 장애 종료까지 검증했습니다. 실제 Jev 분류, Neo4j 영향 탐색, 여섯 A2A Agent, 담당자 검토·승인, 가상 복구, 보고서와 이력 저장이 동작합니다. 이전 47/50 평가는 중복·쉬운 단서가 있는 시연용 결과이며 모델 성능 근거로 사용하지 않습니다. 신규 한국어 100건 평가에서 기준선·보류·실제 AI·대체 실행을 분리합니다. [클라우드 검증 결과와 한계](docs/VALIDATION.md)를 확인하세요. Railway는 현재 Trial이며 최종 시연 전 요금제·자원 확인과 부하 리허설이 필요합니다.
 
 선택형 **Dify Cloud 연결**을 준비한다면 [가져오기용 YAML·설정 가이드](integrations/dify/README.md)를 참고하세요. Knowledge Agent와 Hermes 사이에서 승인 지식 선택·Skill 초안 생성을 편집하는 워크플로와 가상 예제, API 실행 도구를 제공합니다. 현재 앱의 자동 연결은 활성화하지 않았으며 기존 Jev·Ontology·A2A·Harness·승인 흐름을 유지합니다.
 
@@ -75,7 +75,7 @@ docker compose up --build -d
 7. MCP 가상 조치 → 지표 검증 → Report Agent → Skill 초안/이력 저장을 확인합니다.
 8. **후기 & 보고서**에서 조치 후기와 재발 방지 대책을 저장하고 PDF/Excel을 다운로드합니다. **장애 종료**를 누릅니다.
 9. **지식 & Skill**에서 생성된 초안을 승인합니다. 승인 전 초안은 Agent 검색에 포함되지 않습니다.
-10. **Harness & 평가**에서 Mock 또는 Local Jev 50건 평가를 실행합니다. 실제 점수, 담당자 검토 수, fallback 수가 표시됩니다.
+10. **Harness & 평가**에서 Mock 또는 Local Jev 한국어 100건 평가를 실행합니다. 실제 점수, 담당자 검토 수, fallback 수가 표시됩니다.
 
 자세한 진행 대본은 [docs/DEMO_GUIDE.md](docs/DEMO_GUIDE.md), 검증 증적은 [docs/VALIDATION.md](docs/VALIDATION.md)에 있습니다.
 
@@ -225,3 +225,14 @@ python scripts/smoke.py --mode REAL --provider LOCAL
 - `docs/`: 아키텍처, Provider/프로토콜 계약, 시연 및 검증 결과
 
 Hermes는 공식 Nous Agent와 OpenAI로 실제 연동되며 PostgreSQL이 승인 지식의 원본입니다. 원인 후보는 확정 근본 원인과 구분하고, 근거 부족·분류 불일치는 담당자 확인을 요구합니다. A2A는 0.3.0 JSON-RPC 동기 task 프로필이며 전체 프로토콜 인증을 받았다는 의미가 아닙니다. 개인 계정 로그인과 ADMIN/USER 역할·담당자 검사는 구현되어 있습니다. 관리자 토큰은 초기 설정·복구와 내부 서버 통신용입니다. 실운영 SSO/MFA/HA/감사 보관 정책은 별도 확장 범위입니다.
+
+
+## 한국어 평가·작업 재개·지식 검토·알림
+
+- `evaluation_cases`는 한국어 기술 관측 60건, 경계 사례 20건, 문자 변형 20건(독립 형식 계열 4개)이다. `scripts/generate_evaluation.py`와 `docs/evaluation-dataset.json`에 근거·정답·버전을 보존한다. 구형 시연 시나리오 50건은 그대로 유지한다. 입력만으로 알 수 없는 심각도·재발 항목은 채점하지 않는다. 전문가 독립 라벨링과 외부 검증은 후속 과제다.
+- 장애 생성·검토·승인과 `work_jobs` 등록은 같은 트랜잭션이다. 작업 임대 45초·10초 갱신·최대 3회, `FOR UPDATE SKIP LOCKED`, `work_checkpoints`와 RPC 작업 토큰으로 이어받는다. 사람 확인 단계와 작업 완료를 같은 트랜잭션에 기록한다. HTTP 모델 요청은 재호출될 수 있으나 오래된 결과는 저장하지 않는다. 평가 작업은 재시작 시 실패 처리되며 자동 재개 대상은 장애 처리 작업이다. 현재 배포는 단일 백엔드를 유지한다.
+- 해결 지식의 초안 편집·재생성은 사유·버전 확인 및 이전/이후 내용 기록을 요구한다. 승인 지식은 수정하지 않는다. 재생성은 해당 장애의 모드(DEMO/REAL)를 사용한다.
+- 장애 상세에서 최대 최근 종료 1,000건과 텍스트 Jaccard(65%)·유형(25%)·자산(10%)을 비교한 상위 5건과 당시 조치를 표시한다. 임베딩 검색이나 원인 확률로 표현하지 않는다.
+- 관리자 통합 관제/안전 점검의 처리 시간과 알림에 MTTA/MTTR 표본 수, 단계 체류시간, 작업 큐를 표시한다. `BRAIN_SLA_MINUTES`(Spring relaxed binding, 기본 15분)로 대기 기준을 지정한다. 사람의 첫 검토·승인·수정·알림 확인 등 기록이 없는 과거 이력은 MTTA에서 제외한다.
+- 승인 요청·SLA 초과 알림은 영속 outbox를 거쳐 인증된 내부 `/api/internal/mock-notifications`로 Slack text 형식 HTTP 요청을 보낸다. 수신기는 중복을 제거하고 `notification_deliveries`에 저장한다. 최대 3회 전송 시도, 실패 상태를 표시한다. 외부 Slack/Teams 전송은 비활성·미구현이며 이번 요청에서 실제 메시지를 보내지 않는다.
+- 상세 SSE가 정상인 동안 5초 폴링을 하지 않는다. 연결 실패 보완 조회 30초, 목록/운영/감사 기본 60초, 실행 중 평가 15초이며 숨긴 탭은 조회를 멈춘다. SSE 자체에도 Vercel 실행 비용은 발생한다.
