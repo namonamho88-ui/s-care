@@ -8,8 +8,8 @@ const rows = [
   { id: 'INC-UI-CLOSED', title: '가상 네트워크 장애', type: 'NETWORK', status: 'CLOSED' },
 ].map(row => ({ ...row, asset_id: 'ASSET-12', asset_name: '가상 자산 12', system_name: '가상 업무', severity: 'P1', owner_id: 'OP-01', owner_name: '가상 담당자', department: 'PLATFORM', created_at: '2026-10-10T12:00:00Z', notes: '저장된 조치 후기', prevention: '저장된 예방 대책', observations: 'Fictional CPU usage 96%', decision: null, tasks: [], events: [], audit: [], impact: { root: 'ASSET-12', affected: ['ASSET-12','ASSET-13','ASSET-14'], engine: 'NEO4J' } }));
 
-async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial: Record<string, unknown> = {}) {
-  const records = structuredClone(rows);
+async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial: Record<string, unknown> = {}, lists: Record<string,any[]> = {}) {
+  const records = structuredClone(lists.incidents || rows);
   Object.assign(records[0], initial);
   records[1].owner_id="OP-02";
   if (recoveryNotes !== undefined) Object.assign(records[0], {notes:recoveryNotes,events:[{id:1,stage:'VERIFY',state:'COMPLETED',message:'가상 복구 검증',data_json:recoveryNotes,created_at:'2026-10-10T12:01:00Z'}]});
@@ -19,10 +19,10 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
     let data: unknown = {};
     if (request.method() !== 'GET') mutations.push(path);
     if (path === '/api/config') data = { user: { id:'bootstrap-admin', role, kind:role === 'ADMIN' ? 'BOOTSTRAP' : 'ACCOUNT', displayName:'가상 검증 사용자', operatorId:'OP-01' }, database: 'POSTGRESQL', graph: 'NEO4J', defaultProvider: 'LOCAL', a2a: '0.3.0', hermes: { apiReachable: false }, fictional: true };
-    else if (path === '/api/catalog') data = { assets, operators: [{ id:'OP-01', name:'가상 담당자', department:'PLATFORM' }], scenarios:[{id:'SCN-01',title:'가상 시나리오'}], manuals:[] };
+    else if (path === '/api/catalog') data = { assets, operators: [{ id:'OP-01', name:'가상 담당자', department:'PLATFORM' }], scenarios:[{id:'SCN-01',title:'가상 시나리오'}], manuals:lists.manuals||[] };
     else if (path === '/api/graph') data = { nodes:assets, edges, engine:'NEO4J' };
-    else if (path === '/api/skills' || path === '/api/audit') data=[];
-    else if (path === '/api/evaluations') data=[{id:'EVAL-FAILED',status:'FAILED',mode:'REAL',provider:'LOCAL',created_at:'2026-10-10T12:00:00Z',result_json:JSON.stringify({error:'테스트용 연결 오류'})}];
+    else if (path === '/api/skills' || path === '/api/audit') data=lists[path.slice(5)]||[];
+    else if (path === '/api/evaluations') data=lists.evaluations||[{id:'EVAL-FAILED',status:'FAILED',mode:'REAL',provider:'LOCAL',created_at:'2026-10-10T12:00:00Z',result_json:JSON.stringify({error:'테스트용 연결 오류'})}];
     else if (path === '/api/incidents') data=records.filter(r => !url.searchParams.get('type') || r.type === url.searchParams.get('type'));
     else if (path === '/api/dashboard') data={total:url.searchParams.get('type') ? 1 : 2,active:0,critical:0,mttrMinutes:12,recurrenceRate:0,byDay:{},byType:{RESOURCE:1,NETWORK:1},bySystem:{},systemStatus:[]};
     else if (path.endsWith('/events')) { await route.fulfill({ contentType:'text/event-stream', body:': heartbeat\n\n' }); return; }
@@ -33,6 +33,10 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
       if (path.endsWith('/close')) row.status='CLOSED';
       data=row;
     } else throw new Error('Unexpected API path: '+path);
+    if(['/api/evaluations','/api/audit'].includes(path)&&url.searchParams.has('page')&&Array.isArray(data)){
+      const current=Math.min(Number(url.searchParams.get('page')),Math.max(1,Math.ceil(data.length/10)));
+      data={items:data.slice((current-1)*10,current*10),total:data.length,page:current,pageSize:10,running:data.some(r=>r.status==='RUNNING')};
+    }
     await route.fulfill({json:data});
   });
   await page.goto('/');
@@ -50,6 +54,51 @@ test('normal SMS is displayed but cannot register or call incident analysis',asy
   await expect(dialog.getByText('END_OK는 정상 종료입니다.',{exact:false})).toBeVisible();
   await expect(dialog.getByRole('button',{name:'등록 & 분석 시작'})).toHaveCount(0);
   expect(previews).toBe(1);expect(mutations).toEqual([]);
+});
+
+test('incident history uses ten rows, last page and search reset without mutations',async({page})=>{
+  const incidents=Array.from({length:25},(_,i)=>({...rows[0],id:`INC-PAGE-${String(i+1).padStart(3,'0')}`,title:`가상 장애 ${i+1}`}));
+  const mutations=await setup(page,undefined,'ADMIN',{}, {incidents});await page.getByRole('button',{name:'장애 이력',exact:true}).click();
+  const list=page.getByRole('region',{name:'장애 이력 목록',exact:true}), nav=list.getByRole('navigation').first();
+  await expect(list.getByRole('button',{name:/INC-PAGE/})).toHaveCount(10);await expect(nav).toContainText('총 25건 · 1–10건');
+  await expect(nav.getByRole('button',{name:'이전 페이지',exact:true})).toBeDisabled();await nav.getByRole('button',{name:'다음 페이지',exact:true}).click();
+  await expect(list.getByRole('button',{name:/INC-PAGE-011/})).toBeVisible();await expect(list).toBeFocused();
+  await list.getByRole('navigation').last().getByRole('button',{name:'마지막 페이지',exact:true}).click();await expect(list.getByRole('button',{name:/INC-PAGE/})).toHaveCount(5);await expect(nav).toContainText('21–25건');
+  await page.getByLabel('장애 검색').fill('INC-PAGE-025');await expect(list.getByRole('button',{name:/INC-PAGE/})).toHaveCount(1);await expect(nav).toContainText('1/1페이지');
+  await page.getByLabel('장애 검색').fill('없는 가상 기록');await expect(list).toContainText('조건에 맞는 장애가 없습니다.');await expect(nav).toContainText('총 0건 · 0–0건');
+  await page.getByRole('button',{name:'검색 초기화',exact:true}).click();await expect(list.getByRole('button',{name:/INC-PAGE/})).toHaveCount(10);expect(mutations).toEqual([]);
+});
+test('skills and manuals have independent ten-item pages on mobile',async({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  const skills=Array.from({length:25},(_,i)=>({id:`SKL-PAGE-${i+1}`,title:`가상 Skill ${i+1}`,status:'APPROVED',type:'RESOURCE',simulated:true,conditions:'가상 조건',checks:'점검',solution:'가상 해결',cautions:'주의'}));
+  const manuals=Array.from({length:21},(_,i)=>({id:`MAN-PAGE-${i+1}`,title:`가상 매뉴얼 ${i+1}`,procedure_text:'가상 점검 절차'}));
+  const mutations=await setup(page,undefined,'ADMIN',{}, {skills,manuals});await page.getByRole('button',{name:'지식 & Skill',exact:true}).click();
+  const skillList=page.getByRole('region',{name:'해결 Skill 목록',exact:true}), manualList=page.getByRole('region',{name:'대응 매뉴얼 목록',exact:true});
+  await expect(skillList.locator('article')).toHaveCount(10);await expect(manualList.locator('details')).toHaveCount(10);
+  await skillList.getByRole('navigation').last().getByRole('button',{name:'다음 페이지',exact:true}).click();await expect(skillList.getByRole('heading',{name:'가상 Skill 11',exact:true})).toBeVisible();
+  await expect(skillList).toBeFocused();expect(await skillList.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+  await manualList.getByRole('navigation').first().getByRole('button',{name:'마지막 페이지',exact:true}).click();await expect(manualList.locator('details')).toHaveCount(1);await expect(skillList.getByRole('navigation').first()).toContainText('2/3페이지');
+  expect(mutations).toEqual([]);
+});
+test('Harness pages reach older evaluations and audit logs while running state covers all pages',async({page})=>{
+  const evaluations=Array.from({length:35},(_,i)=>({id:`EVAL-PAGE-${i+1}`,status:i===34?'RUNNING':'COMPLETED',mode:'DEMO',provider:`MOCK-PAGE-${i+1}`,created_at:'2026-10-10T12:00:00Z',result_json:'{}'}));
+  const audit=Array.from({length:321},(_,i)=>({id:i+1,actor:'가상 감사 주체',action:`PAGE-ACTION-${i+1}`,data_json:'{}',created_at:'2026-10-10T12:00:00Z'}));
+  const mutations=await setup(page,undefined,'ADMIN',{}, {evaluations,audit});await page.getByRole('button',{name:'Harness & 평가',exact:true}).click();
+  const ev=page.getByRole('region',{name:'Harness 평가 목록',exact:true}), logs=page.getByRole('region',{name:'감사 로그 목록',exact:true});
+  await expect(ev.locator('.system')).toHaveCount(10);await expect(logs.locator('tbody tr')).toHaveCount(10);await expect(page.getByRole('button',{name:'Mock 50건 평가',exact:true})).toBeDisabled();
+  await ev.getByRole('navigation').first().getByRole('button',{name:'마지막 페이지',exact:true}).click();await expect(ev).toContainText('MOCK-PAGE-35');await expect(ev.locator('.system')).toHaveCount(5);
+  await logs.getByRole('navigation').first().getByRole('button',{name:'마지막 페이지',exact:true}).click();await expect(logs).toContainText('PAGE-ACTION-321');await expect(logs.locator('tbody tr')).toHaveCount(1);
+  await expect(ev.getByRole('navigation').first()).toContainText('4/4페이지');expect(mutations).toEqual([]);
+});
+
+test('a failed page read retains the successful page and retry loads the requested page',async({page})=>{
+  const audit=Array.from({length:21},(_,i)=>({id:i+1,actor:'가상 감사 주체',action:`RETRY-PAGE-${i+1}`,data_json:'{}',created_at:'2026-10-10T12:00:00Z'}));
+  const mutations=await setup(page,undefined,'ADMIN',{}, {audit});let failed=false;
+  await page.route('**/api/audit?page=2',async route=>{if(failed)return route.fallback();failed=true;await route.fulfill({status:503,json:{error:'가상 페이지 조회 실패'}});});
+  await page.getByRole('button',{name:'Harness & 평가',exact:true}).click();const logs=page.getByRole('region',{name:'감사 로그 목록',exact:true});
+  await expect(logs.locator('tbody tr')).toHaveCount(10);await logs.getByRole('navigation').first().getByRole('button',{name:'다음 페이지',exact:true}).click();
+  await expect(logs.getByRole('alert')).toContainText('가상 페이지 조회 실패');await expect(logs.getByRole('navigation').first()).toContainText('1/3페이지');await expect(logs).toContainText('RETRY-PAGE-1');
+  await logs.getByRole('button',{name:'다시 조회',exact:true}).click();await expect(logs.getByRole('navigation').first()).toContainText('2/3페이지');await expect(logs).toContainText('RETRY-PAGE-11');await expect(logs.getByRole('alert')).toHaveCount(0);expect(mutations).toEqual([]);
 });
 test('SMS requires explicit asset choice and opens the incident stepper after server registration',async({page})=>{
   await setup(page,undefined,'USER',{status:'NEEDS_REVIEW'});let registrations=0;

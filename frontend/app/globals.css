@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./workflow.css";
 @import "./message-intake.css";
+@import "./pagination.css";
 @config "../tailwind.config.ts";
 :root {
   color-scheme: dark;

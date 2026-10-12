@@ -80,6 +80,24 @@ class BrainIntegrationTest {
   assertThat(s.incident(id).get("observations").toString()).contains("95.65","0.65%p","[개인]").doesNotContain("가상수신자","가상금융회사");
   assertThat(s.encode(get("/api/incidents/"+id).getBody())).doesNotContain("가상수신자","가상금융회사","[Web발신]");
  }
+ @Test @Order(18) void historyPagesReachPastLegacyLimitsAndEnforcePermissions(){
+  for(int n=0;n<25;n++)s.db.update("INSERT INTO evaluations(id,mode,provider,status,result_json,created_at) VALUES (?,'DEMO','MOCK',?,'{}',TIMESTAMP '2001-01-01 00:00:00')",String.format("EVAL-PAGE-%02d",n),n==0?"RUNNING":"COMPLETED");
+  for(int n=0;n<305;n++)s.audit(null,"fictional-pagination","PAGING_FIXTURE",Map.of("index",n));
+  for(String resource:List.of("evaluations","audit")){
+   int total=s.db.queryForObject("SELECT COUNT(*) FROM "+resource,Integer.class);var found=new ArrayList<Object>();
+   for(int page=1;page<=(int)Math.ceil(total/10.0);page++){
+    var response=get("/api/"+resource+"?page="+page);assertThat(response.getStatusCode().value()).isEqualTo(200);var data=response.getBody();
+    assertThat(data).containsEntry("total",total).containsEntry("page",page).containsEntry("pageSize",10);
+    var items=(List<Map<String,Object>>)data.get("items");assertThat(items).hasSize(Math.min(10,total-found.size()));items.forEach(item->found.add(item.get("id")));
+    if(resource.equals("evaluations"))assertThat(data).containsEntry("running",true);
+   }
+   assertThat(new HashSet<>(found)).hasSize(total);assertThat(get("/api/"+resource+"?page=999999").getBody()).containsEntry("page",(int)Math.ceil(total/10.0));
+   assertThat(get("/api/"+resource+"?page=0").getStatusCode().value()).isEqualTo(400);
+   assertThat(http.getForEntity("/api/"+resource+"?page=1",String.class).getStatusCode().value()).isEqualTo(401);
+  }
+  var account=new AccountChecks(s,http,token);String user=account.login("fictional.sms",AccountChecks.PASSWORD);
+  for(String resource:List.of("evaluations","audit"))assertThat(account.get(user,"/api/"+resource+"?page=2").getStatusCode().value()).isEqualTo(403);
+ }
  String create(String mode){var response=post("/api/simulate",Map.of("scenarioId","SCN-01","mode",mode,"provider","LOCAL"));assertThat(response.getStatusCode().value()).isEqualTo(200);return response.getBody().get("id").toString();}
  void waitFor(String id,String expected)throws Exception{long end=System.nanoTime()+15_000_000_000L;while(System.nanoTime()<end){String state=s.incident(id).get("status").toString();if(state.equals(expected))return;if(state.equals("FAILED"))fail(s.db.queryForList("SELECT * FROM events WHERE incident_id=?",id).toString());Thread.sleep(30);}fail("Timeout waiting for "+expected);}
 }

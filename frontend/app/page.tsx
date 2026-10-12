@@ -35,6 +35,7 @@ import ManualCenter from "@/components/manual-center";
 import IncidentProgress from "@/components/incident-progress";
 import IncidentWorkflow from "@/components/incident-workflow";
 import MessageIntake from "@/components/message-intake";
+import PaginatedList, { RemoteList, useRemotePage } from "@/components/pagination";
 import { incidentGuide, stageLabel, eventStateLabel } from "@/lib/incident-guide.mjs";
 const ImpactGraph = dynamic(() => import("@/components/impact-graph"), {
   ssr: false,
@@ -330,9 +331,10 @@ export default function Home() {
     [graph, setGraph] = useState<Row>({ nodes: [], edges: [] }),
     [dashboard, setDashboard] = useState<Row>({}),
     [incidents, setIncidents] = useState<Row[]>([]),
-    [skills, setSkills] = useState<Row[]>([]),
-    [audit, setAudit] = useState<Row[]>([]),
-    [evaluations, setEvaluations] = useState<Row[]>([]);
+    [skills, setSkills] = useState<Row[]>([]);
+  const [historyRevision,setHistoryRevision]=useState(0);
+  const evaluationPage=useRemotePage("/evaluations",api,auth===true&&isAdmin&&view==="harness",historyRevision,user.id||"");
+  const auditPage=useRemotePage("/audit",api,auth===true&&isAdmin&&view==="harness",historyRevision,user.id||"");
   const [mode, setMode] = useState("REAL"),
     [provider, setProvider] = useState("LOCAL"),
     [scenario, setScenario] = useState("SCN-01"),
@@ -367,20 +369,16 @@ export default function Home() {
       ...(from ? { from } : {}),
       ...(to ? { to } : {}),
     });
-    const [d, i, k, a, e, c] = await Promise.all([
+    const [d, i, k, c] = await Promise.all([
       api("/dashboard?" + q),
       api("/incidents?" + q),
       api("/skills"),
-      isAdmin ? api("/audit") : Promise.resolve([]),
-      isAdmin ? api("/evaluations") : Promise.resolve([]),
       api("/config"),
     ]);
     if (version !== refreshVersion.current) return;
     setDashboard(d);
     setIncidents(i);
     setSkills(k);
-    setAudit(a);
-    setEvaluations(e);
     setConfig(c);
     setOnline(true);
   }, [filterType, filterSystem, from, to, isAdmin]);
@@ -405,6 +403,7 @@ export default function Home() {
     setNotice("");
     try {
       await fn();
+      setHistoryRevision(n=>n+1);
       setRequestLabel("처리 결과와 다음 단계 확인 중");
       setNotice(successMessage);
       try {
@@ -421,7 +420,7 @@ export default function Home() {
     }
   };
   const clearSession = useCallback(() => {
-    ++refreshVersion.current; setAuth(false); setUser({}); setToken(""); setPassword(""); setInviteCode(""); setSelected(null); setDetail(null); setDrawer(false); setCreateOpen(false); setMessageOpen(false); setView("dashboard"); setIncidents([]); setSkills([]); setAudit([]); setEvaluations([]);
+    ++refreshVersion.current; setAuth(false); setUser({}); setToken(""); setPassword(""); setInviteCode(""); setSelected(null); setDetail(null); setDrawer(false); setCreateOpen(false); setMessageOpen(false); setView("dashboard"); setIncidents([]); setSkills([]);
   }, []);
   useEffect(() => {
     const expired = () => { if (auth !== true) return; clearSession(); setError("세션이 만료되었거나 폐기되었습니다. 다시 로그인하세요."); };
@@ -1122,18 +1121,14 @@ export default function Home() {
                 extra={<Chip>{config.database} · PERSISTED</Chip>}
                 body={false}
               >
-                {visible.length ? (
-                  visible.map((i) => (
+                <PaginatedList key={JSON.stringify([search,filterType,filterSystem,from,to])} label="장애 이력" items={visible} empty="조건에 맞는 장애가 없습니다.">{pageItems=>pageItems.map((i) => (
                     <IncidentRow
                       key={i.id}
                       i={i}
                       selected={selected === i.id}
                       onClick={() => openIncident(i.id)}
                     />
-                  ))
-                ) : (
-                  <div className="empty">조건에 맞는 장애가 없습니다.</div>
-                )}
+                  ))}</PaginatedList>
               </Panel>
               <Panel title="시스템별 장애 빈도">
                 <div className="system-grid">
@@ -1188,8 +1183,8 @@ export default function Home() {
                 })}>승인 지식 동기화</Button>
               </div>
               {syncProgress && <p role="status" className="small muted mb-5">{syncProgress}</p>}
-              <div className="skill-grid">
-                {skills.map((s) => (
+              <PaginatedList label="해결 Skill" items={skills}>{pageItems=><div className="skill-grid">
+                {pageItems.map((s) => (
                   <article className="panel skill-card" key={s.id}>
                     <div className="flex-row justify-between">
                       <Chip>{typeLabels[s.type]}</Chip>
@@ -1259,16 +1254,16 @@ export default function Home() {
                     )}
                   </article>
                 ))}
-              </div>
+              </div>}</PaginatedList>
               <Panel title="대응 매뉴얼">
-                <div className="system-grid">
-                  {catalog.manuals.map((m: Row) => (
+                <PaginatedList<Row> label="대응 매뉴얼" items={catalog.manuals}>{pageItems=><div className="system-grid">
+                  {pageItems.map((m) => (
                     <details key={m.id}>
                       <summary>{m.title}</summary>
                       <p className="small muted">{m.procedure_text}</p>
                     </details>
                   ))}
-                </div>
+                </div>}</PaginatedList>
               </Panel>
             </>
           )}
@@ -1299,14 +1294,14 @@ export default function Home() {
                       size="sm"
                       variant="outline"
                       disabled={
-                        busy || evaluations.some((e) => e.status === "RUNNING")
+                        busy || !evaluationPage.ready || !!evaluationPage.error || evaluationPage.running
                       }
                       onClick={() =>
-                        action(() =>
-                          api("/evaluations", "POST", {
+                        action(async () => {
+                          await api("/evaluations", "POST", {
                             mode: "DEMO",
                             provider: "MOCK",
-                          }),
+                          }); evaluationPage.setPage(1); },
                         )
                       }
                     >
@@ -1315,14 +1310,14 @@ export default function Home() {
                     <Button
                       size="sm"
                       disabled={
-                        busy || evaluations.some((e) => e.status === "RUNNING")
+                        busy || !evaluationPage.ready || !!evaluationPage.error || evaluationPage.running
                       }
                       onClick={() =>
-                        action(() =>
-                          api("/evaluations", "POST", {
+                        action(async () => {
+                          await api("/evaluations", "POST", {
                             mode: "REAL",
                             provider: "LOCAL",
-                          }),
+                          }); evaluationPage.setPage(1); },
                         )
                       }
                     >
@@ -1336,8 +1331,7 @@ export default function Home() {
                   여부를 비교하며, 대체 실행을 실제 모델 성능으로 표시하지
                   않습니다.
                 </p>
-                {evaluations.length ? (
-                  evaluations.map((e) => {
+                <RemoteList result={evaluationPage} label="Harness 평가" empty="평가를 실행하면 결과가 DB에 저장됩니다.">{pageItems=>pageItems.map((e) => {
                     const r = parse(e.result_json);
                     return (
                       <div className="system mb-3" key={e.id}>
@@ -1382,19 +1376,14 @@ export default function Home() {
                         )}
                       </div>
                     );
-                  })
-                ) : (
-                  <div className="empty">
-                    평가를 실행하면 결과가 DB에 저장됩니다.
-                  </div>
-                )}
+                  })}</RemoteList>
               </Panel>
               <Panel
                 title="감사 로그"
-                extra={<Chip>APPEND-ONLY · {audit.length} RECORDS</Chip>}
+                extra={<Chip>APPEND-ONLY · {auditPage.total} RECORDS</Chip>}
                 body={false}
               >
-                <div className="overflow-auto">
+                <RemoteList result={auditPage} label="감사 로그" empty="감사 로그가 없습니다.">{pageItems=><div className="overflow-auto">
                   <table className="audit-table">
                     <thead>
                       <tr>
@@ -1405,7 +1394,7 @@ export default function Home() {
                       </tr>
                     </thead>
                     <tbody>
-                      {audit.map((a) => (
+                      {pageItems.map((a) => (
                         <tr key={a.id}>
                           <td className="mono">{formatTime(a.created_at)}</td>
                           <td>{a.actor}</td>
@@ -1425,7 +1414,7 @@ export default function Home() {
                       ))}
                     </tbody>
                   </table>
-                </div>
+                </div>}</RemoteList>
               </Panel>
             </>
           )}
