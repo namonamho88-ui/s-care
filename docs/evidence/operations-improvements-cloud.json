@@ -1,0 +1,99 @@
+{
+  "incidentId": "INC-ee60ff3b-83a8-44",
+  "skillId": "SKL-0389ef3a-000a-41",
+  "result": "PASS",
+  "fictional": true,
+  "internalMockWebhookReceived": true,
+  "externalDelivery": false,
+  "skillRevisions": 2,
+  "similarMatches": 5,
+  "jobs": [
+    {
+      "id": "JOB-ced7f19c-e8ac-48",
+      "incident_id": "INC-ee60ff3b-83a8-44",
+      "phase": "RECOVER",
+      "status": "COMPLETED",
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-12T05:21:50.597+00:00"
+    },
+    {
+      "id": "JOB-af4ee37b-1d36-46",
+      "incident_id": "INC-ee60ff3b-83a8-44",
+      "phase": "ANALYZE",
+      "status": "COMPLETED",
+      "attempts": 1,
+      "error": null,
+      "created_at": "2026-10-12T05:20:56.810+00:00"
+    }
+  ],
+  "mttaSamples": 1,
+  "mttrSamples": 210,
+  "testSkillRejected": true,
+  "testIncidentSoftDeleted": true,
+  "runtimeCommit": "42911b0e09660bc20196ba551a4307d90e55ab03",
+  "DEMO": {
+    "datasetVersion": "ko-incident-v1",
+    "passed": 68,
+    "total": 100,
+    "baselinePassed": 37,
+    "actualAiCount": 0,
+    "actualAiPassed": 0,
+    "fallbacks": 0,
+    "errors": 0,
+    "groups": {
+      "AMBIGUOUS_KO": [
+        20,
+        16,
+        17
+      ],
+      "SMS_BATCH": [
+        12,
+        12,
+        12
+      ],
+      "SMS_TMS": [
+        8,
+        8,
+        8
+      ],
+      "TECHNICAL_KO": [
+        60,
+        32,
+        0
+      ]
+    }
+  },
+  "REAL": {
+    "datasetVersion": "ko-incident-v1",
+    "passed": 41,
+    "total": 100,
+    "baselinePassed": 37,
+    "actualAiCount": 93,
+    "actualAiPassed": 34,
+    "fallbacks": 0,
+    "errors": 0,
+    "groups": {
+      "AMBIGUOUS_KO": [
+        20,
+        20,
+        17
+      ],
+      "SMS_BATCH": [
+        12,
+        12,
+        12
+      ],
+      "SMS_TMS": [
+        8,
+        8,
+        8
+      ],
+      "TECHNICAL_KO": [
+        60,
+        1,
+        0
+      ]
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "version": "ko-incident-v1",
+  "version": "ko-incident-v2",
   "fictional": true,
   "technicalObservations": 60,
   "boundaryObservations": 20,
@@ -10,7 +10,7 @@
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "동시 처리 수가 증가하면서 실행 대기열이 240개로 늘었다. 처리기 사용률은 98%이고 디스크 대기는 1%이다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "동시 처리 수가 증가하면서 실행 대기열이 240개로 늘었다. 처리기 사용률은 98%이고 디스크 대기는 1%이다. 전 지점의 출금이 20분째 한 건도 처리되지 않는다. 대체 창구도 같은 서비스를 사용한다. 지난주 가상 기록과 장비·오류번호·발생 순서가 같고 당시 조치 후 멈췄던 현상이 다시 나타났다.",
       "expected_type": "RESOURCE",
       "expected_department": "PLATFORM",
       "expected_severity": "P1",
@@ -19,12 +19,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-001",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "힙 점유가 수거 직후에도 97%에 머물며 새 객체를 만들지 못하고 프로세스가 종료되었다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "힙 점유가 수거 직후에도 97%에 머물며 새 객체를 만들지 못하고 프로세스가 종료되었다. 일부 조회가 지연되지만 자금 이동은 정상이며 재시도하면 조회도 완료된다. 최근 90일의 전체 기록을 검토했으며 같은 자산과 오류 조합의 선행 건은 없다.",
       "expected_type": "RESOURCE",
       "expected_department": "PLATFORM",
       "expected_severity": "P2",
@@ -33,7 +33,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-002",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
@@ -47,12 +47,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-003",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "임시 파일 영역의 남은 공간은 0바이트이다. 로그 파일 쓰기가 실패하지만 거래 연결은 정상이다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.",
+      "observations": "임시 파일 영역의 남은 공간은 0바이트이다. 로그 파일 쓰기가 실패하지만 거래 연결은 정상이다. 가상 카드 결제가 모든 가맹점에서 거절되고 예비 경로 전환도 실패했다.",
       "expected_type": "RESOURCE",
       "expected_department": "PLATFORM",
       "expected_severity": "P1",
@@ -61,12 +61,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-004",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "저장 공간은 40% 남았지만 inode 사용량이 100%라 신규 파일을 만들지 못한다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "저장 공간은 40% 남았지만 inode 사용량이 100%라 신규 파일을 만들지 못한다. 한 지역의 예약 기능만 실패한다. 즉시 이체와 다른 지역 서비스는 정상이다. 동일 버전의 동일 배치에서 이틀 전 처리한 것과 같은 오류 흐름이 다시 재현됐다.",
       "expected_type": "RESOURCE",
       "expected_department": "PLATFORM",
       "expected_severity": "P2",
@@ -75,12 +75,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-005",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "컨테이너 메모리 제한 2GiB를 넘긴 직후 종료 코드 137과 OOMKilled가 함께 기록됐다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "컨테이너 메모리 제한 2GiB를 넘긴 직후 종료 코드 137과 OOMKilled가 함께 기록됐다. 서비스 개통 이후 보관한 모든 기록에서 이 요청 실패는 처음 확인됐다.",
       "expected_type": "RESOURCE",
       "expected_department": "PLATFORM",
       "expected_severity": null,
@@ -89,12 +89,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-006",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "전체 처리기는 여유가 있지만 해당 컨테이너의 CPU throttling 비율이 92%이고 quota에 도달했다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.",
+      "observations": "전체 처리기는 여유가 있지만 해당 컨테이너의 CPU throttling 비율이 92%이고 quota에 도달했다. 급여 지급 마감까지 10분인데 대상 8만 건이 전부 대기 중이며 수기 처리할 수 없다.",
       "expected_type": "RESOURCE",
       "expected_department": "PLATFORM",
       "expected_severity": "P1",
@@ -103,12 +103,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-007",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "수거 시간이 전체 실행 시간의 88%이며 old 영역은 수거 후에도 99%이다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.",
+      "observations": "수거 시간이 전체 실행 시간의 88%이며 old 영역은 수거 후에도 99%이다. 100건 중 4건이 처음에 지연됐지만 재처리로 완료됐다. 고객 자금에는 영향이 없다.",
       "expected_type": "RESOURCE",
       "expected_department": "PLATFORM",
       "expected_severity": "P2",
@@ -117,12 +117,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-008",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "스레드 4096개가 모두 사용 중이고 새 스레드를 생성할 수 없다는 시스템 오류가 관측된다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "스레드 4096개가 모두 사용 중이고 새 스레드를 생성할 수 없다는 시스템 오류가 관측된다. 이전 장애의 로그 지문과 이번 지문을 대조한 결과 해당 구성요소와 예외 지점이 모두 같다.",
       "expected_type": "RESOURCE",
       "expected_department": "PLATFORM",
       "expected_severity": null,
@@ -131,12 +131,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-009",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "스왑 입출력이 초당 2GB이고 가용 메모리는 10MB이다. 애플리케이션 예외는 없다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "스왑 입출력이 초당 2GB이고 가용 메모리는 10MB이다. 애플리케이션 예외는 없다. 주센터와 예비센터 모두 계좌 입금을 처리하지 못해 고객 자금 반영이 중단됐다. 과거 비슷한 제목의 건은 다른 장비와 다른 원인이었고 이번 오류에 해당하는 기록은 없다.",
       "expected_type": "RESOURCE",
       "expected_department": "PLATFORM",
       "expected_severity": "P1",
@@ -145,12 +145,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-010",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "공유 메모리 세그먼트 할당 한도에 도달하여 배치 프로세스가 시작되지 않는다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.",
+      "observations": "공유 메모리 세그먼트 할당 한도에 도달하여 배치 프로세스가 시작되지 않는다. 월별 통계 화면만 사용할 수 없고 핵심 금융 거래는 모두 정상 동작한다.",
       "expected_type": "RESOURCE",
       "expected_department": "PLATFORM",
       "expected_severity": "P2",
@@ -159,7 +159,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-011",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
@@ -173,12 +173,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-012",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "조회 세션 120개가 동일한 미완료 거래의 행 잠금 해제를 기다리고 있다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "조회 세션 120개가 동일한 미완료 거래의 행 잠금 해제를 기다리고 있다. 국내 전체 채널의 이체 성공 건수가 0으로 내려갔다. 대체 결제 경로는 없다. 지난달 같은 계층의 같은 오류를 처리한 이력이 있으며 이번에도 직전 설정 변경과 현상이 일치한다.",
       "expected_type": "DATABASE",
       "expected_department": "DATABASE",
       "expected_severity": "P1",
@@ -187,12 +187,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-013",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "대기 그래프에서 두 거래가 서로 가진 행을 요청한다. 희생 거래에 ORA-00060이 남았다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "대기 그래프에서 두 거래가 서로 가진 행을 요청한다. 희생 거래에 ORA-00060이 남았다. 주 회선은 문제가 있지만 예비 회선을 통해 전체 거래가 처리된다. 평소보다 2초 느리다. 최근 기록의 반복 경보는 시험 메시지였으며 이번 현상에 대응하는 이전 장애는 없음을 확인했다.",
       "expected_type": "DATABASE",
       "expected_department": "DATABASE",
       "expected_severity": "P2",
@@ -201,7 +201,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-014",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
@@ -215,12 +215,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-015",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "복제본 적용 지연이 7200초이며 쓰기 원본에는 최신 거래가 존재한다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.",
+      "observations": "복제본 적용 지연이 7200초이며 쓰기 원본에는 최신 거래가 존재한다. 가상 잔액이 잘못 차감되는 현상이 여러 계정에서 재현돼 모든 금융 거래를 차단했다.",
       "expected_type": "DATABASE",
       "expected_department": "DATABASE",
       "expected_severity": "P1",
@@ -229,12 +229,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-016",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "조회 실행계획이 인덱스 탐색에서 전체 스캔으로 바뀐 뒤 처리시간이 200배 늘었다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "조회 실행계획이 인덱스 탐색에서 전체 스캔으로 바뀐 뒤 처리시간이 200배 늘었다. 배치가 예상보다 10분 늦었지만 마감까지 6시간 남았고 온라인 거래는 정상이다. 일주일 전 복구한 서버에서 동일 요청으로 같은 실패 순서가 재현됐음을 담당자가 확인했다.",
       "expected_type": "DATABASE",
       "expected_department": "DATABASE",
       "expected_severity": "P2",
@@ -243,12 +243,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-017",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "아카이브 로그 저장 영역이 가득 차서 새 거래 커밋이 대기 중이다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "아카이브 로그 저장 영역이 가득 차서 새 거래 커밋이 대기 중이다. 보관 중인 전 기간의 로그 지문을 대조했으나 이번 구성요소·오류 조합은 발견하지 못했다.",
       "expected_type": "DATABASE",
       "expected_department": "DATABASE",
       "expected_severity": null,
@@ -257,12 +257,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-018",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "테이블스페이스 확장이 한도에 도달했고 INSERT에서 ORA-01653이 발생한다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.",
+      "observations": "테이블스페이스 확장이 한도에 도달했고 INSERT에서 ORA-01653이 발생한다. 전체 거래의 최종 결과를 확인할 수 없어 중복 지급 위험 때문에 서비스가 중지됐다.",
       "expected_type": "DATABASE",
       "expected_department": "DATABASE",
       "expected_severity": "P1",
@@ -271,12 +271,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-019",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "기본 키 중복으로 ORA-00001이 발생했다. 동일 거래번호가 두 번 들어왔고 최초 데이터는 존재한다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.",
+      "observations": "기본 키 중복으로 ORA-00001이 발생했다. 동일 거래번호가 두 번 들어왔고 최초 데이터는 존재한다. 일부 사용자의 알림 조회만 오류가 나며 거래 접수와 잔액 반영은 정상이다.",
       "expected_type": "DATABASE",
       "expected_department": "DATABASE",
       "expected_severity": "P2",
@@ -285,12 +285,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-020",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "읽기 전용 복제본으로 쓰기가 전달되어 read-only transaction 오류가 반복된다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "읽기 전용 복제본으로 쓰기가 전달되어 read-only transaction 오류가 반복된다. 가상 이력의 이전 두 건과 이번 건은 같은 인스턴스·오류번호·조건을 갖는다.",
       "expected_type": "DATABASE",
       "expected_department": "DATABASE",
       "expected_severity": null,
@@ -299,12 +299,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-021",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "주 인스턴스의 연결 상한 300개가 모두 점유되어 신규 세션이 거절된다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "주 인스턴스의 연결 상한 300개가 모두 점유되어 신규 세션이 거절된다. 영업점과 모바일에서 모두 인증을 완료할 수 없고 대체 로그인 수단도 동작하지 않는다. 동일 번호의 이전 알림은 정상 업무 거절이었고 이번 오류 상태로 발생한 건은 처음이다.",
       "expected_type": "DATABASE",
       "expected_department": "DATABASE",
       "expected_severity": "P1",
@@ -313,12 +313,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-022",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "실행 중인 스키마 변경이 배타 잠금을 유지하며 모든 조회가 relation lock을 기다린다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.",
+      "observations": "실행 중인 스키마 변경이 배타 잠금을 유지하며 모든 조회가 relation lock을 기다린다. 대체 화면을 사용하면 같은 업무를 처리할 수 있어 안내 후 서비스가 계속되고 있다.",
       "expected_type": "DATABASE",
       "expected_department": "DATABASE",
       "expected_severity": "P2",
@@ -327,7 +327,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-023",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
@@ -341,12 +341,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-024",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "서로 다른 세 호스트에서 동일 도메인을 조회하면 NXDOMAIN이 돌아오지만 IP 직접 접속은 성공한다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "서로 다른 세 호스트에서 동일 도메인을 조회하면 NXDOMAIN이 돌아오지만 IP 직접 접속은 성공한다. 출금 결과가 원장에 반영되지 않는 상태로 거래가 이어져 전사 거래 접수를 중지했다. 전날 임시 조치로 해소했던 증상이 같은 부하 조건에서 다시 발생했다.",
       "expected_type": "NETWORK",
       "expected_department": "NETWORK",
       "expected_severity": "P1",
@@ -355,12 +355,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-025",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "경계 라우터 변경 직후 특정 대역으로 가는 경로가 사라졌다. 로컬 거래는 정상이다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "경계 라우터 변경 직후 특정 대역으로 가는 경로가 사라졌다. 로컬 거래는 정상이다. 한 서버를 제외하고 나머지 서버가 모든 요청을 처리 중이다. 거래 누락은 확인되지 않았다. 가상 이력 전체를 검색한 결과 이번 버전의 해당 실패 조건에 해당하는 장애는 없었다.",
       "expected_type": "NETWORK",
       "expected_department": "NETWORK",
       "expected_severity": "P2",
@@ -369,7 +369,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-026",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
@@ -383,12 +383,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-027",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "이름 서버 응답이 5초 넘게 지연되지만 캐시된 주소를 쓰는 요청은 성공한다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.",
+      "observations": "이름 서버 응답이 5초 넘게 지연되지만 캐시된 주소를 쓰는 요청은 성공한다. 핵심 결제 채널 전부가 응답하지 않으며 우회 채널도 동일한 장애 구간을 거친다.",
       "expected_type": "NETWORK",
       "expected_department": "NETWORK",
       "expected_severity": "P1",
@@ -397,12 +397,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-028",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "TLS 협상에서 인증서 만료 오류가 발생한다. 서버 시각과 인증서 만료일이 일치한다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "TLS 협상에서 인증서 만료 오류가 발생한다. 서버 시각과 인증서 만료일이 일치한다. 조회 응답이 1초에서 4초로 늘었지만 성공률은 유지되며 입출금에는 문제가 없다. 어제 해결한 장애의 재현 절차를 오늘 실행했을 때 동일한 실패가 발생했다.",
       "expected_type": "NETWORK",
       "expected_department": "NETWORK",
       "expected_severity": "P2",
@@ -411,12 +411,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-029",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "방화벽 규칙 변경 후 8443 포트의 SYN이 모두 폐기된다. 443 포트는 연결된다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "방화벽 규칙 변경 후 8443 포트의 SYN이 모두 폐기된다. 443 포트는 연결된다. 직전 건은 다른 구성요소의 예정된 점검이었다. 이번 현상의 선행 장애는 없다고 확인됐다.",
       "expected_type": "NETWORK",
       "expected_department": "NETWORK",
       "expected_severity": null,
@@ -425,12 +425,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-030",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "외부 연결 NAT 포트가 소진되어 신규 연결만 실패한다. 기존 연결은 유지된다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.",
+      "observations": "외부 연결 NAT 포트가 소진되어 신규 연결만 실패한다. 기존 연결은 유지된다. 정산 파일 전송 마감 3분 전이고 전체 파일이 미전송이다. 기한 연장이나 다른 전송 경로가 없다.",
       "expected_type": "NETWORK",
       "expected_department": "NETWORK",
       "expected_severity": "P1",
@@ -439,12 +439,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-031",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "1500바이트 이하 요청은 성공하나 큰 응답은 멈춘다. 경로 MTU 1280이고 관련 ICMP가 차단된다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.",
+      "observations": "1500바이트 이하 요청은 성공하나 큰 응답은 멈춘다. 경로 MTU 1280이고 관련 ICMP가 차단된다. 가상 고객 3명의 선택 기능에서만 재현되고 다른 기능으로 동일 결과를 얻을 수 있다.",
       "expected_type": "NETWORK",
       "expected_department": "NETWORK",
       "expected_severity": "P2",
@@ -453,12 +453,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-032",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "부하분산기에 오래된 목적지 주소만 등록돼 제거된 서버로 요청이 전달된다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "부하분산기에 오래된 목적지 주소만 등록돼 제거된 서버로 요청이 전달된다. 동일 구성의 지난 장애 로그와 시간 순서·원인 지점이 같고 다른 신규 변경은 없다.",
       "expected_type": "NETWORK",
       "expected_department": "NETWORK",
       "expected_severity": null,
@@ -467,12 +467,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-033",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "동일 주소를 두 장비가 광고하면서 ARP 테이블이 초당 수십 회 바뀐다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "동일 주소를 두 장비가 광고하면서 ARP 테이블이 초당 수십 회 바뀐다. 가상 고객 정보가 외부에서 계속 열람되는 것이 확인돼 모든 온라인 서비스를 즉시 중지했다. 지난 기록에는 지연 사례만 있고 이번과 같은 오류 지점은 없음을 운영자가 대조 확인했다.",
       "expected_type": "NETWORK",
       "expected_department": "NETWORK",
       "expected_severity": "P1",
@@ -481,12 +481,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-034",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "요청은 도착하지만 반환 경로가 다른 방화벽을 지나며 세션 불일치로 폐기된다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.",
+      "observations": "요청은 도착하지만 반환 경로가 다른 방화벽을 지나며 세션 불일치로 폐기된다. 업무 시간 전 점검에서 발견했다. 서비스는 예비 장비로 정상 운영되며 용량도 충분하다.",
       "expected_type": "NETWORK",
       "expected_department": "NETWORK",
       "expected_severity": "P2",
@@ -495,7 +495,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-035",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
@@ -509,12 +509,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-036",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "새 버전 배포 직후 날짜 문자열 처리에서 NullPointerException이 발생한다. 이전 버전 요청은 성공한다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "새 버전 배포 직후 날짜 문자열 처리에서 NullPointerException이 발생한다. 이전 버전 요청은 성공한다. 단일 고객의 문제가 아니라 전 고객의 입출금이 불가능하며 대체 업무 방식도 준비되지 않았다. 해당 구성요소에서 같은 입력을 처리할 때 발생한 지난 기록을 찾았으며 오류 메시지도 동일하다.",
       "expected_type": "APPLICATION",
       "expected_department": "APPLICATION",
       "expected_severity": "P1",
@@ -523,12 +523,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-037",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "동일한 금액을 입력하면 계산 결과가 음수가 된다. 조회와 연결 상태는 정상이다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "동일한 금액을 입력하면 계산 결과가 음수가 된다. 조회와 연결 상태는 정상이다. 일괄 파일 중 2개만 지연됐고 해당 건은 승인된 대체 절차로 처리할 수 있다. 해당 자산의 설치 이후 모든 기록에서 이번 예외 지문은 처음 나타났다.",
       "expected_type": "APPLICATION",
       "expected_department": "APPLICATION",
       "expected_severity": "P2",
@@ -537,7 +537,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-038",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
@@ -551,12 +551,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-039",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "계좌번호 앞자리 0이 직렬화 과정에서 사라져 특정 고객 요청만 유효성 검사에 실패한다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.",
+      "observations": "계좌번호 앞자리 0이 직렬화 과정에서 사라져 특정 고객 요청만 유효성 검사에 실패한다. 비상 전환을 했지만 새 센터에서도 동일 증상이 재현돼 핵심 업무가 전면 중단됐다.",
       "expected_type": "APPLICATION",
       "expected_department": "APPLICATION",
       "expected_severity": "P1",
@@ -565,12 +565,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-040",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "배치 코드에서 종료 조건이 반대로 적용돼 동일한 10건을 계속 반복 처리한다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "배치 코드에서 종료 조건이 반대로 적용돼 동일한 10건을 계속 반복 처리한다. 요청의 대부분은 정상이고 실패한 일부 요청은 자동 재시도로 완료된다. 중복 처리는 없다. 기존 알려진 장애의 재현 조건이 이번에도 충족됐고 같은 위치에서 중단됐다.",
       "expected_type": "APPLICATION",
       "expected_department": "APPLICATION",
       "expected_severity": "P2",
@@ -579,12 +579,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-041",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "캐시 키에서 통화코드가 빠져 다른 통화의 환율이 반환된다. 원본 값은 정상이다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "캐시 키에서 통화코드가 빠져 다른 통화의 환율이 반환된다. 원본 값은 정상이다. 현재 장애의 코드와 조건으로 이전 이력을 전수 대조했으나 대응하는 기록이 없었다.",
       "expected_type": "APPLICATION",
       "expected_department": "APPLICATION",
       "expected_severity": null,
@@ -593,12 +593,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-042",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "빈 목록을 받으면 첫 원소를 무조건 읽어 IndexOutOfBoundsException이 발생한다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.",
+      "observations": "빈 목록을 받으면 첫 원소를 무조건 읽어 IndexOutOfBoundsException이 발생한다. 전국 가맹점의 승인 성공률이 0%이고 30분 동안 복구되지 않았다. 수기 승인은 허용되지 않는다.",
       "expected_type": "APPLICATION",
       "expected_department": "APPLICATION",
       "expected_severity": "P1",
@@ -607,12 +607,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-043",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "업무 설정의 최대 건수가 0으로 저장된 뒤 모든 업로드가 제한 초과로 거절된다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.",
+      "observations": "업무 설정의 최대 건수가 0으로 저장된 뒤 모든 업로드가 제한 초과로 거절된다. 보조 리포트 생성만 실패하고 결제·이체·고객 인증은 모두 정상이다.",
       "expected_type": "APPLICATION",
       "expected_department": "APPLICATION",
       "expected_severity": "P2",
@@ -621,12 +621,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-044",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "배포 산출물에 필요한 라이브러리가 빠져 ClassNotFoundException으로 시작이 실패한다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "배포 산출물에 필요한 라이브러리가 빠져 ClassNotFoundException으로 시작이 실패한다. 직전 장애 후 제거했던 임시 설정이 다시 적용된 뒤 동일 증상이 돌아왔다.",
       "expected_type": "APPLICATION",
       "expected_department": "APPLICATION",
       "expected_severity": null,
@@ -635,12 +635,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-045",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "지역 시간을 UTC로 다시 해석하여 예약이 9시간 늦게 실행된다. 장비 시각은 정확하다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "지역 시간을 UTC로 다시 해석하여 예약이 9시간 늦게 실행된다. 장비 시각은 정확하다. 모든 대출 실행이 멈췄고 당일 실행 마감이 지났다. 다른 채널을 통한 실행도 불가능하다. 이전의 동일 문구는 테스트 입력이었고 실제 가상 업무 경로에서 이 현상은 처음 발생했다.",
       "expected_type": "APPLICATION",
       "expected_department": "APPLICATION",
       "expected_severity": "P1",
@@ -649,12 +649,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-046",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "메시지를 처리한 뒤 확인 응답을 보내지 않아 같은 거래가 반복 소비된다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.",
+      "observations": "메시지를 처리한 뒤 확인 응답을 보내지 않아 같은 거래가 반복 소비된다. 특정 기기의 검색 정렬만 잘못되며 거래 실행 기능은 정상적으로 제공되고 있다.",
       "expected_type": "APPLICATION",
       "expected_department": "APPLICATION",
       "expected_severity": "P2",
@@ -663,7 +663,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-047",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
@@ -677,12 +677,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-048",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "등록되지 않은 해외 주소가 1분에 400개 계정으로 로그인하며 동일 암호를 반복 시도한다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "등록되지 않은 해외 주소가 1분에 400개 계정으로 로그인하며 동일 암호를 반복 시도한다. 거래 자료의 무결성이 깨졌다는 검증 결과에 따라 전체 금융 거래를 중단한 상태다. 세 달 전 같은 버전에서 확인된 문제와 입력·스택 위치·구성요소가 모두 같다.",
       "expected_type": "SECURITY",
       "expected_department": "SECURITY",
       "expected_severity": "P1",
@@ -691,12 +691,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-049",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "퇴사 처리된 가상 계정의 비활성화 이후에도 기존 세션으로 관리자 페이지 접근이 관측된다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "퇴사 처리된 가상 계정의 비활성화 이후에도 기존 세션으로 관리자 페이지 접근이 관측된다. 대체 기관으로 전송한 모든 요청이 성공했다. 주 경로 점검 때문에 처리만 다소 느리다. 보관된 200건의 원인·자산·오류를 검토했으며 이번 조합과 같은 건은 없었다.",
       "expected_type": "SECURITY",
       "expected_department": "SECURITY",
       "expected_severity": "P2",
@@ -705,7 +705,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-050",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
@@ -719,12 +719,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-051",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "일반 계정이 다른 가상 고객의 식별자를 바꾸자 조회 결과가 노출된다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.",
+      "observations": "일반 계정이 다른 가상 고객의 식별자를 바꾸자 조회 결과가 노출된다. 주요 대외 기관 전체로의 송금이 차단돼 금융 공동망 참여 업무를 수행하지 못한다.",
       "expected_type": "SECURITY",
       "expected_department": "SECURITY",
       "expected_severity": "P1",
@@ -733,12 +733,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-052",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "허용되지 않은 실행 파일이 서비스 계정으로 시작됐고 외부 주소에 지속 연결한다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "허용되지 않은 실행 파일이 서비스 계정으로 시작됐고 외부 주소에 지속 연결한다. 전체 중 1%의 조회가 지연되지만 원장 조회 대체 화면은 바로 응답한다. 운영 기록에서 같은 자산의 동일 오류를 확인했고 이번 로그와의 차이가 없는 것으로 검토했다.",
       "expected_type": "SECURITY",
       "expected_department": "SECURITY",
       "expected_severity": "P2",
@@ -747,12 +747,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-053",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "감사 설정 변경 권한이 없는 계정이 감사 수집을 중지했다는 변경 이력이 발견된다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "감사 설정 변경 권한이 없는 계정이 감사 수집을 중지했다는 변경 이력이 발견된다. 새 서비스의 개통 이후 전체 실행 내역을 확인해 이번 실패가 첫 발생임을 검증했다.",
       "expected_type": "SECURITY",
       "expected_department": "SECURITY",
       "expected_severity": null,
@@ -761,12 +761,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-054",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "애플리케이션 입력에 UNION SELECT 구문이 집중되고 방어 규칙이 차단 이벤트를 기록한다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.",
+      "observations": "애플리케이션 입력에 UNION SELECT 구문이 집중되고 방어 규칙이 차단 이벤트를 기록한다. 전체 지점에서 원장 조회와 변경이 동시에 불가능하다. 재시도와 예비 서버 전환도 효과가 없다.",
       "expected_type": "SECURITY",
       "expected_department": "SECURITY",
       "expected_severity": "P1",
@@ -775,12 +775,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-055",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "밤새 대량 다운로드가 발생했으며 업무 승인 없는 가상 관리자 계정이 사용됐다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.",
+      "observations": "밤새 대량 다운로드가 발생했으며 업무 승인 없는 가상 관리자 계정이 사용됐다. 정산 확인 화면만 갱신되지 않는다. 실제 정산과 원장 반영이 완료됐음을 별도로 확인했다.",
       "expected_type": "SECURITY",
       "expected_department": "SECURITY",
       "expected_severity": "P2",
@@ -789,12 +789,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-056",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "다중 인증을 통과하지 않은 세션으로 관리자 권한이 발급되는 요청이 재현된다. 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.",
+      "observations": "다중 인증을 통과하지 않은 세션으로 관리자 권한이 발급되는 요청이 재현된다. 과거 복구 후 정상화됐던 현상이 같은 대상과 같은 요청 조건에서 다시 관측됐다.",
       "expected_type": "SECURITY",
       "expected_department": "SECURITY",
       "expected_severity": null,
@@ -803,12 +803,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-057",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "폐기된 API 키가 여전히 인증에 성공하며 최근 사용 기록도 남는다. 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다. 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.",
+      "observations": "폐기된 API 키가 여전히 인증에 성공하며 최근 사용 기록도 남는다. 온라인 채널 전체가 비정상 결과를 반환해 신규 거래를 받지 않도록 중지했고 우회 방식이 없다. 유사한 과거 경보는 정상 종료였고 이번 오류 상태가 기록된 선행 사례는 없다.",
       "expected_type": "SECURITY",
       "expected_department": "SECURITY",
       "expected_severity": "P1",
@@ -817,12 +817,12 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-058",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
       "raw_message": null,
-      "observations": "공개 저장 영역에 가상 비밀 설정 파일이 올라가 누구나 내려받을 수 있다. 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.",
+      "observations": "공개 저장 영역에 가상 비밀 설정 파일이 올라가 누구나 내려받을 수 있다. 부가 기능을 일시 차단했고 핵심 거래는 제한 없이 처리된다. 임시 안내 방법도 제공했다.",
       "expected_type": "SECURITY",
       "expected_department": "SECURITY",
       "expected_severity": "P2",
@@ -831,7 +831,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-059",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "TECHNICAL_KO",
@@ -845,7 +845,7 @@
       "expected_eligible": true,
       "rationale": "관측된 고장 계층의 담당 부서를 평가한다. 고객 영향·과거 이력은 주어지지 않아 심각도·재발은 채점하지 않는다.",
       "id": "KO-060",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -859,7 +859,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-061",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -873,7 +873,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-062",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -887,7 +887,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-063",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -901,7 +901,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-064",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -915,7 +915,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-065",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -929,7 +929,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-066",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -943,7 +943,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-067",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -957,7 +957,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-068",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -971,7 +971,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-069",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -985,7 +985,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-070",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -999,7 +999,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-071",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -1013,7 +1013,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-072",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -1027,7 +1027,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-073",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -1041,7 +1041,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-074",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -1055,7 +1055,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-075",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -1069,7 +1069,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-076",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -1083,7 +1083,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-077",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -1097,7 +1097,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-078",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -1111,7 +1111,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-079",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "AMBIGUOUS_KO",
@@ -1125,7 +1125,7 @@
       "expected_eligible": true,
       "rationale": "부정 관측·증거 부족·상충 또는 다중 원인으로 사람 검토가 필요하다. 특정 유형을 강요하지 않는다.",
       "id": "KO-080",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1139,7 +1139,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-081",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1153,7 +1153,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-082",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1167,7 +1167,7 @@
       "expected_eligible": false,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-083",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1181,7 +1181,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-084",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1195,7 +1195,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-085",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1209,7 +1209,7 @@
       "expected_eligible": false,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-086",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1223,7 +1223,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-087",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1237,7 +1237,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-088",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1251,7 +1251,7 @@
       "expected_eligible": false,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-089",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1265,7 +1265,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-090",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1279,7 +1279,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-091",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_BATCH",
@@ -1293,7 +1293,7 @@
       "expected_eligible": false,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-092",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_TMS",
@@ -1307,7 +1307,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-093",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_TMS",
@@ -1321,7 +1321,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-094",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_TMS",
@@ -1335,7 +1335,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-095",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_TMS",
@@ -1349,7 +1349,7 @@
       "expected_eligible": false,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-096",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_TMS",
@@ -1363,7 +1363,7 @@
       "expected_eligible": false,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-097",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_TMS",
@@ -1377,7 +1377,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-098",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_TMS",
@@ -1391,7 +1391,7 @@
       "expected_eligible": true,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-099",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     },
     {
       "category": "SMS_TMS",
@@ -1405,7 +1405,7 @@
       "expected_eligible": false,
       "rationale": "실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.",
       "id": "KO-100",
-      "dataset_version": "ko-incident-v1"
+      "dataset_version": "ko-incident-v2"
     }
   ]
 }

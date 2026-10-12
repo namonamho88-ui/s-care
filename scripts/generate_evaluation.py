@@ -118,13 +118,16 @@ def generate():
    raw=f'[Web발신]\n[가상카드] TMS 온라인 비즈니스오류 임계치 초과 알림\n▶ IF아이디 : [DEMO_IF_{n:03}]\n▶ IF명 : [[개인]가상예약조회]\n▶ 업무코드 : [DEMO]\n▶ 서비스코드 : [DEMO_SERVICE]\n▶ 거래일자 : [20261008]\n▶ 거래시간 : [1550~1650](1시간)\n▶ 오류율임계치 : [{threshold}]%\n▶ 현재거래건수 : [{total}]\n▶ 현재오류건수 : [{errors}]\n▶ 현재오류율 : [{rate}]%\n▶ 메시지 발생일시 : [2026-10-08 17:{n:02}:12]'
   rows.append(dict(category='SMS_BATCH' if n<12 else 'SMS_TMS',raw_message=raw,observations='',expected_type=None,expected_department=None,expected_severity=None,expected_recurrence=None,expected_review=eligible,expected_eligible=eligible,rationale='실제 문자 파서 경로의 등록 여부를 평가한다. 알림만으로 원인·심각도·재발을 확정하지 않는다.'))
  assert len(rows)==100
- # Add independent customer-impact evidence to 20 technical cases; do not encode labels in input.
+ # Independently authored impact/history contexts; no single marker maps to a label.
+ contexts=json.loads((ROOT/'scripts/evaluation_contexts.json').read_text(encoding='utf-8'))
+ assert len(set(contexts['P1']+contexts['P2']))==40
+ assert len(set(contexts['RECURRING']+contexts['NEW']))==30
  for n,row in enumerate(rows[:60]):
-  if n%3==0:row['observations']+=' 전국 가상 영업점에서 입출금 1200건이 20분 동안 모두 실패했고 우회 경로도 사용할 수 없다.';row['expected_severity']='P1'
-  if n%3==1:row['observations']+=' 300건 중 12건은 재시도로 완료됐고 나머지는 첫 요청에 성공했다. 일부 기능만 지연된다.';row['expected_severity']='P2'
-  if n%4==0:row['observations']+=' 가상 이력 INC-DEMO-OLD와 동일 구성요소·오류번호·직전 변경 내용이 일치함을 비교 확인했다.';row['expected_recurrence']=True
-  if n%4==1:row['observations']+=' 최근 90일 가상 이력 전체에서 동일 구성요소와 오류번호 조합은 조회되지 않았다.';row['expected_recurrence']=False
- for n,row in enumerate(rows):row['id']=f'KO-{n+1:03}';row['dataset_version']='ko-incident-v1'
+  if n%3==0:row['observations']+=' '+contexts['P1'][n//3];row['expected_severity']='P1'
+  if n%3==1:row['observations']+=' '+contexts['P2'][n//3];row['expected_severity']='P2'
+  if n%4==0:row['observations']+=' '+contexts['RECURRING'][n//4];row['expected_recurrence']=True
+  if n%4==1:row['observations']+=' '+contexts['NEW'][n//4];row['expected_recurrence']=False
+ for n,row in enumerate(rows):row['id']=f'KO-{n+1:03}';row['dataset_version']='ko-incident-v2'
  assert len({row['raw_message'] or row['observations'] for row in rows})==100
  return rows
 def q(x):
@@ -133,6 +136,6 @@ def q(x):
  return "'"+str(x).replace("'","''")+"'"
 if __name__=='__main__':
  rows=generate();fields=['id','dataset_version','category','raw_message','observations','expected_type','expected_severity','expected_department','expected_recurrence','expected_review','expected_eligible','rationale']
- (ROOT/'backend/src/main/resources/db/migration/V9__korean_evaluation.sql').write_text('\n'.join('INSERT INTO evaluation_cases('+','.join(fields)+') VALUES ('+','.join(q(r[f]) for f in fields)+');' for r in rows)+'\n',encoding='utf-8')
- (ROOT/'docs/evaluation-dataset.json').write_text(json.dumps({'version':'ko-incident-v1','fictional':True,'technicalObservations':60,'boundaryObservations':20,'smsVariants':20,'independentSmsFailureFamilies':4,'limitation':'수작업 가상 기준이며 전문가 독립 라벨링·운영 데이터 외부 검증 전입니다. 분류·검토 점수와 원인 규명 능력은 다릅니다.','cases':rows},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+ (ROOT/'backend/src/main/resources/db/migration/V10__evaluation_context_diversity.sql').write_text('\n'.join('UPDATE evaluation_cases SET '+','.join(f+'='+q(r[f]) for f in fields if f!='id')+' WHERE id='+q(r['id'])+';' for r in rows)+'\n',encoding='utf-8')
+ (ROOT/'docs/evaluation-dataset.json').write_text(json.dumps({'version':'ko-incident-v2','fictional':True,'technicalObservations':60,'boundaryObservations':20,'smsVariants':20,'independentSmsFailureFamilies':4,'limitation':'수작업 가상 기준이며 전문가 독립 라벨링·운영 데이터 외부 검증 전입니다. 분류·검토 점수와 원인 규명 능력은 다릅니다.','cases':rows},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
  print('Generated 100 cases: 60 technical + 20 boundary + 20 SMS variants')
