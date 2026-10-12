@@ -1,0 +1,36 @@
+{
+  "sha": "8b089edba9a87407c4cc79de8d77605659f70d84",
+  "runs": [
+    {
+      "id": 38196855362,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38196855362"
+    },
+    {
+      "id": 38196855500,
+      "name": "container verification",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38196855500"
+    }
+  ],
+  "vercel": [
+    {
+      "state": "success",
+      "context": "Vercel – s-care",
+      "target_url": "https://vercel.com/namonamho88-uis-projects/s-care/G37XkNAHt6uxHG6cm8feBEjaxMSz",
+      "description": "Deployment has completed"
+    }
+  ],
+  "verifiedAt": "2026-10-12",
+  "site": "https://s-care-mu.vercel.app/",
+  "checks": [
+    "Korean dashboard title and navigation visible on deployed site",
+    "Existing incident briefing expanded; simulated provenance retained",
+    "Saved fictional error rate 12.5% to 0.02%; latency 3200ms to 120ms displayed",
+    "No live incident mutation, approval, model call or save performed"
+  ],
+  "screenshot": "outputs/Incident-Briefing-Cloud.jpg"
+}

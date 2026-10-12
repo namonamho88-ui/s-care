@@ -254,3 +254,4 @@ Mock 시연 점수와 실제 모델 점수를 섞지 않는다. 정답은 모델
 - 조치 전후 비교는 기존 SIMULATED_METRICS 검증기를 재사용한다. 실제 변경·잘못된 지표·미기록 결과를 성공으로 표시하지 않는다. 펼치기만으로 API 변경 요청을 보내지 않는다.
 - Java 21 / H2 백엔드 테스트 66개, 프론트엔드 단위 테스트 28개, Playwright 화면 테스트 36개 통과. Next.js production build 및 매뉴얼 원본·출력 일치 확인 통과.
 - 화면 테스트에 가상 복구 전후 값, 기록 없는 상태, 사용자 권한 안내, 모바일 너비와 변경 요청 없음 검증을 추가했다.
+- 클라우드 검증: 커밋 `8b089ed`의 Vercel 배포 `G37XkNAHt6uxHG6cm8feBEjaxMSz` 성공. verify 및 container verification 워크플로 모두 성공. 실제 사이트에서 한글 메뉴와 기존 장애의 발표 요약·가상 전후 지표를 조회로 확인했다. 기록: `docs/evidence/plain-korean-briefing-cloud.json`.
