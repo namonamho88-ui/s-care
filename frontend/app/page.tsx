@@ -32,13 +32,13 @@ import {
 import { Button } from "@/components/ui/button";
 import AccountCenter from "@/components/account-center";
 import ManualCenter from "@/components/manual-center";
-import IncidentProgress from "@/components/incident-progress";
+import DashboardWorkbench from "@/components/dashboard-workbench";
 import IncidentWorkflow from "@/components/incident-workflow";
 import MessageIntake from "@/components/message-intake";
 import PaginatedList, { RemoteList, useRemotePage } from "@/components/pagination";
 import TechnologyGuide, { TechnologyContext } from "@/components/technology-guide";
 import { stageTechnologyLabel } from "@/lib/technology-guide.mjs";
-import { incidentGuide, stageLabel, eventStateLabel } from "@/lib/incident-guide.mjs";
+import { stageLabel, eventStateLabel } from "@/lib/incident-guide.mjs";
 const ImpactGraph = dynamic(() => import("@/components/impact-graph"), {
   ssr: false,
 });
@@ -537,10 +537,6 @@ export default function Home() {
       previous?.focus();
     };
   }, [drawer, createOpen, messageOpen]);
-  function navigateGuide(target: string) {
-    if (target === "register") { setCreateOpen(true); return; }
-    if (detail) setDrawer(true);
-  }
   async function login(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
@@ -574,7 +570,6 @@ export default function Home() {
   const visible = incidents.filter((i) =>
     `${i.title} ${i.id}`.toLowerCase().includes(search.toLowerCase()),
   );
-  const recent = incidents.slice(0, 6);
   const current = detail;
   const dayEntries = Object.entries(dashboard.byDay || {}).slice(-14) as [
     string,
@@ -591,7 +586,7 @@ export default function Home() {
     accounts: isAdmin ? "계정 & 권한 관리" : "내 계정",
   };
   const descriptions: Row = {
-    dashboard: "현재 장애와 처리 진행 상황을 확인합니다. 장애를 선택하면 판단·영향 분석·Agent 결과가 표시됩니다.",
+    dashboard: "장애를 접수하고, 지금 필요한 확인과 조치를 이어가세요.",
     ontology: "시스템이 무엇에 의존하는지 확인하고, 선택한 장애의 영향 가능성을 전체화면으로 살펴봅니다.",
     incidents: "장애를 검색하고 조치 후기·재발 방지 대책·보고서를 확인합니다.",
     knowledge: "해결 방법을 재사용하는 공간입니다. 검토한 Skill만 승인하고 Hermes 게시 상태를 확인하세요.",
@@ -601,7 +596,6 @@ export default function Home() {
     accounts: "개인 계정과 로그인 정보를 관리합니다. 권한은 서버에서도 검사합니다.",
   };
   const canEdit = !!detail && (isAdmin || (user.operatorId && user.operatorId === detail.owner_id));
-  const guide = incidentGuide(detail, { isAdmin, canEdit });
   if (auth === null)
     return (
       <div className="login">
@@ -680,7 +674,7 @@ export default function Home() {
         <div className="nav-label" style={{ marginTop: 30 }}>
           CONNECTED LAYERS
         </div>
-        <div className="px-3 space-y-4 small muted">
+        <div className="sidebar-layers px-3 space-y-4 small muted">
           <div className="flex-row">
             <Database size={13} />
             {config.database}
@@ -729,21 +723,33 @@ export default function Home() {
             </button>
           </div>
         </header>
-        <main className="page">
+        <main className={"page" + (view === "dashboard" ? " dashboard-page" : "")}>
           <div className="heading">
             <div>
               <div className="eyebrow">OPERATIONS / {view.toUpperCase()}</div>
               <h1>{title[view]}</h1>
               <p>{descriptions[view]}</p>
             </div>
-            <div className="flex-row" style={{flexWrap:"wrap"}}><Button variant="outline" onClick={() => setMessageOpen(true)}>문자 붙여넣기</Button>
+            {view !== "dashboard" && <div className="flex-row" style={{flexWrap:"wrap"}}><Button variant="outline" onClick={() => setMessageOpen(true)}>문자 붙여넣기</Button>
             <Button variant="outline" onClick={() => setCreateOpen(true)}>
               <Plus size={16} />
               장애 직접 등록
-            </Button></div>
+            </Button></div>}
           </div>
-          <TechnologyContext view={view} onOpen={() => setView("technology")} />
-          {isAdmin && !["guide", "accounts", "technology"].includes(view) && <><div className="simulation-bar">
+          {filtered && ["dashboard", "incidents", "ontology"].includes(view) && <div className="filter-notice" role="status"><span>집계 필터 적용 중 · {typeLabels[filterType] || "모든 유형"} · {catalog.assets.find((a: Row) => a.id === filterSystem)?.name || "모든 시스템"} · {from || "처음"} ~ {to || "현재 이후 포함"}</span><Button size="sm" variant="outline" onClick={resetFilters}>집계 필터 초기화</Button></div>}
+          {view === "accounts" && <AccountCenter user={user} operators={catalog.operators} api={api} onPasswordChanged={() => { clearSession(); setError("비밀번호를 변경하고 모든 세션을 폐기했습니다. 새 비밀번호로 로그인하세요."); }} />}
+          {view === "guide" && <ManualCenter />}
+          {view === "technology" && <TechnologyGuide config={config} />}
+          {view === "ontology" && <>
+            <div className="ontology-context"><label>분석 기준 장애<select value={selected || ""} onChange={e => setSelected(e.target.value || null)}><option value="">선택 안 함 · 전체 구조</option>{incidents.map(i => <option key={i.id} value={i.id}>{i.id} · {i.title} · {statusLabels[i.status]}</option>)}</select></label><p className="small muted">저장된 분석 결과를 조회합니다. 영향도 분석 전 장애는 전체 구조만 표시됩니다.</p>{current && <Button size="sm" variant="outline" onClick={() => openIncident(current.id)}>선택 장애 상세 보기</Button>}</div>
+            <Panel title="자산 의존 관계" body={false} extra={<Chip tone="cyan">{current?.impact?.engine || graph.engine}</Chip>}><ImpactGraph assets={graph.nodes} edges={graph.edges} root={current?.impact?.root} affected={current?.impact?.affected || NO_AFFECTED} expanded /></Panel>
+          </>}
+          {view === "dashboard" && (
+            <>
+              <DashboardWorkbench incidents={incidents} user={user} ready={typeof dashboard.total === "number"} online={online}
+                filterKey={`${filterType}:${filterSystem}:${from}:${to}`} onMessage={() => setMessageOpen(true)} onCreate={() => setCreateOpen(true)}
+                onOpen={openIncident} onHistory={() => setView("incidents")} onGuide={() => setView("guide")} />
+          {isAdmin && <details className="dashboard-simulation"><summary>시연용 가상 장애 만들기 · 관리자</summary><p>알림 문자나 관측 내용 없이 미리 준비된 시나리오로 처리 과정을 연습합니다. 버튼을 누르면 장애 이력이 저장됩니다.</p><div className="simulation-bar">
             <div className="flex-row">
               <div className="brand-icon">
                 <Zap size={19} />
@@ -801,21 +807,7 @@ export default function Home() {
               기다립니다.
             </div>
           )}
-          </>}
-          {filtered && ["dashboard", "incidents", "ontology"].includes(view) && <div className="filter-notice" role="status"><span>집계 필터 적용 중 · {typeLabels[filterType] || "모든 유형"} · {catalog.assets.find((a: Row) => a.id === filterSystem)?.name || "모든 시스템"} · {from || "처음"} ~ {to || "현재 이후 포함"}</span><Button size="sm" variant="outline" onClick={resetFilters}>집계 필터 초기화</Button></div>}
-          {view === "accounts" && <AccountCenter user={user} operators={catalog.operators} api={api} onPasswordChanged={() => { clearSession(); setError("비밀번호를 변경하고 모든 세션을 폐기했습니다. 새 비밀번호로 로그인하세요."); }} />}
-          {view === "guide" && <ManualCenter />}
-          {view === "technology" && <TechnologyGuide config={config} />}
-          {view === "ontology" && <>
-            <div className="ontology-context"><label>분석 기준 장애<select value={selected || ""} onChange={e => setSelected(e.target.value || null)}><option value="">선택 안 함 · 전체 구조</option>{incidents.map(i => <option key={i.id} value={i.id}>{i.id} · {i.title} · {statusLabels[i.status]}</option>)}</select></label><p className="small muted">저장된 분석 결과를 조회합니다. 영향도 분석 전 장애는 전체 구조만 표시됩니다.</p>{current && <Button size="sm" variant="outline" onClick={() => openIncident(current.id)}>선택 장애 상세 보기</Button>}</div>
-            <Panel title="자산 의존 관계" body={false} extra={<Chip tone="cyan">{current?.impact?.engine || graph.engine}</Chip>}><ImpactGraph assets={graph.nodes} edges={graph.edges} root={current?.impact?.root} affected={current?.impact?.affected || NO_AFFECTED} expanded /></Panel>
-          </>}
-          {view === "dashboard" && (
-            <>
-              <IncidentProgress guide={guide} incidentTitle={current?.title} onNavigate={navigateGuide} announce={!drawer} />
-              <Panel title="처리할 장애 · 최근 이력" body={false} extra={<Button variant="ghost" size="sm" onClick={() => setView("incidents")}>전체 이력</Button>}>
-                {recent.map(i => <IncidentRow key={i.id} i={i} selected={selected === i.id} onClick={() => openIncident(i.id)} />)}
-              </Panel>
+          </details>}
               <details className="operations-details"><summary>운영 현황 펼치기 · 지표 / 온톨로지 / Agent</summary>
               <div className="stats">
                 {[
@@ -1426,6 +1418,7 @@ export default function Home() {
               </Panel>
             </>
           )}
+          <TechnologyContext view={view} onOpen={() => setView("technology")} />
           <div className="footer-note">
             <span>AI INCIDENT BRAIN 3.0 · 모든 데이터는 가상입니다.</span>
             <span>Jev / Ontology / A2A / Hermes Adapter / Harness</span>
@@ -1484,7 +1477,7 @@ export default function Home() {
               </Button>
             </div>
             <div className="drawer-body">
-              <p className="guide-point">포인트 1 · 제목·구성요소·가상 관측 입력 → 등록 & 분석 시작<br />등록 후에는 통합 관제의 ‘장애 처리 길잡이’에서 다음 단계를 확인하세요.</p>
+              <p className="guide-point">포인트 1 · 제목·구성요소·가상 관측 입력 → 등록 & 분석 시작<br />등록 후 자동으로 열리는 처리 화면의 상단 스텝퍼에서 다음 단계를 확인하세요.</p>
               <div className="banner">
                 실제 개인정보나 운영 시스템 로그를 입력하지 마세요. 가상 관측
                 데이터만 사용합니다.

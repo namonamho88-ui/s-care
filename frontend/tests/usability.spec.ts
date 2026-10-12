@@ -10,8 +10,8 @@ const rows = [
 
 async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial: Record<string, unknown> = {}, lists: Record<string,any[]> = {}) {
   const records = structuredClone(lists.incidents || rows);
-  Object.assign(records[0], initial);
-  records[1].owner_id="OP-02";
+  if(records[0]) Object.assign(records[0], initial);
+  if(records[1]) records[1].owner_id="OP-02";
   if (recoveryNotes !== undefined) Object.assign(records[0], {notes:recoveryNotes,events:[{id:1,stage:'VERIFY',state:'COMPLETED',message:'가상 복구 검증',data_json:recoveryNotes,created_at:'2026-10-10T12:01:00Z'}]});
   const mutations: string[] = [];
   await page.route('**/api/**', async route => {
@@ -45,6 +45,50 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
 }
 
 const smsPreview = (normal=false, existing="") => ({ parsed: {kind:'BATCH',status:normal?'END_OK':'ABEND',eligible:!normal,title:'가상 배치 알림',fields:{배치ID:'DEMO_BATCH_001',배치명:'가상정산배치..',발생일시:'2026-10-07 14:57:40'},warnings:['배치명이 생략되어 있습니다. 대상 구성요소를 확인하세요.']},observations:'가상 배치 관측값',existingIncidentId:existing,suggestedAssetId:'',matchReason:'대상 구성요소를 선택해 주세요.'});
+
+test('dashboard places both intake actions first on mobile and opens existing forms without mutation',async({page})=>{
+  await page.setViewportSize({width:390,height:844});const mutations=await setup(page);
+  const intake=page.getByRole('region',{name:'장애가 발생했나요?'});
+  const sms=intake.getByRole('button',{name:'문자 붙여넣기',exact:true}), manual=intake.getByRole('button',{name:'장애 직접 등록',exact:true});
+  for(const action of [sms,manual]) {const box=await action.boundingBox();expect(box).not.toBeNull();expect(box!.y+box!.height).toBeLessThan(844);}
+  expect(await page.locator('body').evaluate(el=>el.scrollWidth<=window.innerWidth)).toBe(true);
+  expect(await page.getByRole('complementary',{name:'이 화면에 사용된 기술'}).evaluate(el=>el.compareDocumentPosition(document.querySelector('.work-queue')!)&Node.DOCUMENT_POSITION_PRECEDING)).toBeTruthy();
+  await expect(page.getByRole('button',{name:'가상 장애 발생',exact:true})).toBeHidden();
+  await sms.click();await expect(page.getByRole('dialog',{name:'문자로 장애 등록'})).toBeVisible();await page.keyboard.press('Escape');await expect(sms).toBeFocused();
+  await manual.click();await expect(page.getByRole('dialog',{name:'장애 등록',exact:true})).toBeVisible();await expect(page.getByLabel('장애 제목',{exact:true})).toBeVisible();await page.keyboard.press('Escape');
+  expect(mutations).toEqual([]);
+});
+
+test('dashboard queue prioritizes pending work behind closed history, paginates and opens the current step',async({page})=>{
+  await page.setViewportSize({width:1440,height:1000});
+  const incidents=[...Array.from({length:15},(_,i)=>({...rows[1],id:`CLOSED-${i}`})),
+    ...Array.from({length:12},(_,i)=>({...rows[0],id:`PENDING-${String(i+1).padStart(2,'0')}`,status:i===11?'NEEDS_REVIEW':'ANALYZING'}))];
+  const mutations=await setup(page,undefined,'ADMIN',{}, {incidents});
+  const list=page.getByRole('region',{name:'처리할 장애 목록',exact:true});
+  await expect(list.locator('.queue-item')).toHaveCount(10);await expect(list.locator('.queue-item').first()).toContainText('PENDING-12');
+  await page.screenshot({path:'test-results/dashboard-worklist-desktop.png',fullPage:true});
+  await expect(list.getByRole('button',{name:/CLOSED-/})).toHaveCount(0);
+  await list.getByRole('navigation').first().getByRole('button',{name:'다음 페이지',exact:true}).click();await expect(list.locator('.queue-item')).toHaveCount(2);
+  await page.getByRole('button',{name:/내 확인 필요/}).click();await expect(list.locator('.queue-item')).toHaveCount(1);await expect(list.getByRole('navigation').first()).toContainText('1/1페이지');
+  await list.getByRole('button',{name:/PENDING-12/}).click();await expect(page.getByRole('tab',{name:/2\. 분석/})).toHaveAttribute('aria-selected','true');expect(mutations).toEqual([]);
+});
+
+test('dashboard normal-user work filter respects ownership and admin-only actions',async({page})=>{
+  const incidents=[{...rows[0],id:'OWN-NOTES',prevention:''},{...rows[0],id:'OTHER-NOTES',owner_id:'OP-02',prevention:''},{...rows[0],id:'ADMIN-APPROVAL',status:'WAITING_APPROVAL'}];
+  const mutations=await setup(page,undefined,'USER',{}, {incidents});await page.getByRole('button',{name:/내 확인 필요/}).click();
+  const list=page.getByRole('region',{name:'처리할 장애 목록',exact:true});await expect(list.locator('.queue-item')).toHaveCount(1);await expect(list).toContainText('OWN-NOTES');
+  await expect(page.getByText('시연용 가상 장애 만들기 · 관리자',{exact:true})).toHaveCount(0);
+  await list.getByRole('button',{name:/OWN-NOTES/}).click();await expect(page.getByRole('tab',{name:/5\. 후기/})).toHaveAttribute('aria-selected','true');await expect(page.getByRole('button',{name:'승인 & 가상 복구 시작',exact:true})).toHaveCount(0);expect(mutations).toEqual([]);
+});
+
+test('empty dashboard retains intake, simulation is an explicit admin choice, and screenshots cover both sizes',async({page})=>{
+  await page.setViewportSize({width:1440,height:1050});const mutations=await setup(page,undefined,'ADMIN',{}, {incidents:[]});
+  await expect(page.getByRole('region',{name:'처리할 장애 목록',exact:true})).toContainText('현재 조회 범위에 처리 중인 장애가 없습니다.');
+  await page.screenshot({path:'test-results/dashboard-desktop.png',fullPage:true});
+  await page.getByText('시연용 가상 장애 만들기 · 관리자',{exact:true}).click();await expect(page.getByRole('button',{name:'가상 장애 발생',exact:true})).toBeVisible();
+  await page.getByText('시연용 가상 장애 만들기 · 관리자',{exact:true}).click();
+  await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.scrollTo(0,0));await page.screenshot({path:'test-results/dashboard-mobile.png',fullPage:true});expect(mutations).toEqual([]);
+});
 test('technology map explains implementation to normal users without exposing admin actions',async({page})=>{
   const mutations=await setup(page,undefined,'USER');
   await page.getByRole('button',{name:'기술별 역할 보기',exact:true}).click();
