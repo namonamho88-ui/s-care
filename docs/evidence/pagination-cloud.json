@@ -1,0 +1,97 @@
+{
+  "runtimeCommit": "79ae90aa5410a03d218e4dbb36e84dd822845474",
+  "site": "https://s-care-mu.vercel.app/",
+  "backend": "https://backend-production-0eb45.up.railway.app",
+  "readOnly": true,
+  "pages": {
+    "evaluations": {
+      "total": 2,
+      "firstCount": 2,
+      "secondCount": 2,
+      "lastCount": 2,
+      "lastPage": 1,
+      "countStableAcrossReads": true,
+      "running": false
+    },
+    "audit": {
+      "total": 304,
+      "firstCount": 10,
+      "secondCount": 10,
+      "lastCount": 4,
+      "lastPage": 31,
+      "countStableAcrossReads": true,
+      "running": null
+    }
+  },
+  "manuals": [
+    {
+      "audience": "user",
+      "matchesSource": true,
+      "sha256": "1184cbbddacbf9b2730dd7ade26f6e4aea63ec1d0665c3fc979a18a9dcbdce2f"
+    },
+    {
+      "audience": "admin",
+      "matchesSource": true,
+      "sha256": "55c60fa66771fed0cd4b311b8dc4218bc78cc368df1dfdf6d96bc8197e40e407"
+    }
+  ],
+  "validatedOn": "2026-10-12",
+  "ci": [
+    {
+      "id": 38187558417,
+      "name": "verify",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38187558417"
+    },
+    {
+      "id": 38187558378,
+      "name": "container verification",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/namonamho88-ui/s-care/actions/runs/38187558378"
+    }
+  ],
+  "vercel": [
+    {
+      "state": "success",
+      "context": "Vercel – s-care",
+      "target_url": "https://vercel.com/namonamho88-uis-projects/s-care/4c835mXN7EhJPYKDAikDUf1mXsFD",
+      "description": "Deployment has completed"
+    }
+  ],
+  "railwayBackend": {
+    "id": "afd288a8-f8c3-45ae-8290-600e4c43add5",
+    "status": "SUCCESS"
+  },
+  "ui": {
+    "incidents": {
+      "total": 211,
+      "secondPageCount": 10,
+      "lastPage": 22,
+      "lastPageCount": 1,
+      "searchResetsToFirstPage": true
+    },
+    "skills": {
+      "total": 29,
+      "secondPageCount": 10
+    },
+    "manuals": {
+      "total": 30,
+      "lastPage": 3,
+      "independentFromSkillPage": true
+    },
+    "evaluations": {
+      "total": 2,
+      "countVisible": 2
+    },
+    "audit": {
+      "total": 304,
+      "secondPageCount": 10,
+      "lastPage": 31,
+      "lastPageCount": 4
+    },
+    "screenshot": "outputs/List-Pagination.png",
+    "limitations": "Live verification used read-only existing records. Multi-page evaluation boundaries were verified with fictional local and CI fixtures."
+  }
+}
