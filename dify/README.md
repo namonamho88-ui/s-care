@@ -10,7 +10,7 @@ This is an **optional, isolated** analysis path. It does not replace Jev, Hermes
 
 Mock scenarios: CARD_DB_POOL, API_LATENCY, REDIS_FAILURE, POD_RESTART.
 
-Security: The API key only exists server-side. A `brain_token` cookie is required, but this minimal prototype does **not** validate session contents with Spring Boot or enforce ADMIN/USER roles. Before public exposure, add authoritative session verification and server-side rate limits. All scenarios are fixed mocks; no actual recovery execution. Dify import and live API calls require manual verification in your workspace.
+Security: The API key only exists server-side. A valid `brain_token` is verified against Spring Boot `/api/auth/me` before invoking Dify. Both ADMIN and USER sessions can use this read-only mock analysis endpoint. Before public exposure, add server-side rate limits and usage quotas. All scenarios are fixed mocks; no actual recovery execution. Dify import and live API calls require manual verification in your workspace.
 
 Example:
 ```ts
