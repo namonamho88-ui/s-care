@@ -30,6 +30,8 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ManualKnowledge from "@/components/manual-knowledge";
+import DemoSettings from "@/components/demo-settings";
 import OperationsPanel from "@/components/operations-panel";
 import SkillEditor from "@/components/skill-editor";
 import AccountCenter from "@/components/account-center";
@@ -126,9 +128,7 @@ async function api(path: string, method = "GET", body?: any) {
   const data = await res.json();
   if (res.status === 401 && path !== "/session") window.dispatchEvent(new Event("brain-session-expired"));
   if (!res.ok)
-    throw new Error(
-      data.error || data.message || "요청을 처리하지 못했습니다.",
-    );
+    throw Object.assign(new Error(data.error || data.message || "요청을 처리하지 못했습니다."),{status:res.status});
   return data;
 }
 function Chip({
@@ -321,7 +321,8 @@ export default function Home() {
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
   const [user, setUser] = useState<Row>({});
-  const isAdmin = user.role === "ADMIN";
+  const isDemo=user.role==="DEMO_ADMIN";
+  const isAdmin = user.role === "ADMIN" || isDemo;
   const [loginMode, setLoginMode] = useState("login"), [loginName, setLoginName] = useState(""), [password, setPassword] = useState(""), [inviteCode, setInviteCode] = useState("");
   const [syncProgress, setSyncProgress] = useState("");
   const [pageVisible,setPageVisible]=useState(true);
@@ -438,8 +439,9 @@ export default function Home() {
     window.addEventListener("brain-session-expired", expired);
     return () => window.removeEventListener("brain-session-expired", expired);
   }, [clearSession, auth]);
+  useEffect(()=>{if(!auth||!isDemo)return;const timer=setInterval(()=>{if(!document.hidden)void api("/auth/me").catch(()=>{});},5000);return()=>clearInterval(timer);},[auth,isDemo]);
   useEffect(() => {
-    api("/config")
+    api("/config").catch(async(error)=>{if(error.status!==401)throw error;const response=await fetch("/api/session",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"demo"})});if(!response.ok)throw new Error("로그인이 필요합니다.");return api("/config");})
       .then((c) => {
         setConfig(c);
         setUser(c.user || {});
@@ -686,7 +688,7 @@ export default function Home() {
         </nav>
         {isAdmin && <details className="admin-navigation" open={['harness','operations','accounts'].includes(view) || undefined}>
           <summary>관리자 메뉴</summary>
-          <nav aria-label="관리자 메뉴">{[['operations','운영 현황'],['harness','AI 품질 관리'],['accounts','계정 관리']].map(([id,label])=><button key={id} className={'nav-button '+(view===id?'active':'')} aria-current={view===id?'page':undefined} onClick={()=>setView(id)}><ShieldCheck size={16}/><span>{label}</span></button>)}</nav>
+          <nav aria-label="관리자 메뉴">{[['operations','운영 현황'],['harness','AI 품질 관리'],...(!isDemo?[['accounts','계정 관리']]:[])].map(([id,label])=><button key={id} className={'nav-button '+(view===id?'active':'')} aria-current={view===id?'page':undefined} onClick={()=>setView(id)}><ShieldCheck size={16}/><span>{label}</span></button>)}</nav>
         </details>}
         <div className="nav-label" style={{ marginTop: 30 }}>
           연결된 기술
@@ -728,9 +730,9 @@ export default function Home() {
           </div>
           <div className="flex-row">
             <span className="mono small muted">한국 시간</span>
-            <span className="small">{user.displayName}</span><Chip>{isAdmin ? "관리자" : "사용자"}</Chip>
+            <span className="small">{user.displayName}</span>{isDemo&&<Chip tone="amber">시연모드 활성화</Chip>}<Chip>{isAdmin ? "관리자" : "사용자"}</Chip>
             <button
-              aria-label="로그아웃"
+              aria-label={isDemo?"시연 나가기 · 계정 로그인":"로그아웃"}
               className="p-2 muted"
               onClick={async () => {
                 try { await api("/session", "DELETE"); clearSession(); } catch (e) { setError((e as Error).message); }
@@ -754,12 +756,12 @@ export default function Home() {
             </Button></div>}
           </div>
           {filtered && ["dashboard", "incidents", "ontology"].includes(view) && <div className="filter-notice" role="status"><span>집계 필터 적용 중 · {typeLabels[filterType] || "모든 유형"} · {catalog.assets.find((a: Row) => a.id === filterSystem)?.name || "모든 시스템"} · {from || "처음"} ~ {to || "현재 이후 포함"}</span><Button size="sm" variant="outline" onClick={resetFilters}>집계 필터 초기화</Button></div>}
-          {view === "accounts" && <AccountCenter user={user} operators={catalog.operators} api={api} onPasswordChanged={() => { clearSession(); setError("비밀번호를 변경하고 모든 세션을 폐기했습니다. 새 비밀번호로 로그인하세요."); }} />}
+          {view === "accounts" && !isDemo && <>{isAdmin&&<DemoSettings api={api}/>}<AccountCenter user={user} operators={catalog.operators} api={api} onPasswordChanged={() => { clearSession(); setError("비밀번호를 변경하고 모든 세션을 폐기했습니다. 새 비밀번호로 로그인하세요."); }} /></>}
           {view === "guide" && <ManualCenter />}
           {view === "technology" && <TechnologyGuide config={config} />}
           {view === "ontology" && <>
             <div className="ontology-context"><label>분석 기준 장애<select value={selected || ""} onChange={e => setSelected(e.target.value || null)}><option value="">선택 안 함 · 전체 구조</option>{incidents.map(i => <option key={i.id} value={i.id}>{i.id} · {i.title} · {statusLabels[i.status]}</option>)}</select></label><p className="small muted">저장된 분석 결과를 조회합니다. 영향도 분석 전 장애는 전체 구조만 표시됩니다.</p>{current && <Button size="sm" variant="outline" onClick={() => openIncident(current.id)}>선택 장애 상세 보기</Button>}</div>
-            <Panel title="자산 의존 관계" body={false} extra={<Chip tone="cyan">{current?.impact?.engine || graph.engine}</Chip>}><ImpactGraph assets={graph.nodes} edges={graph.edges} root={current?.impact?.root} affected={current?.impact?.affected || NO_AFFECTED} expanded /></Panel>
+            <Panel title="자산 의존 관계" body={false} extra={<Chip tone="cyan">{current?.impact?.engine || graph.engine}</Chip>}><ImpactGraph assets={graph.nodes} edges={graph.edges} root={current?.impact?.root} affected={current?.impact?.affected || NO_AFFECTED} direct={current?.impact?.direct} api={api} expanded /></Panel>
           </>}
           {view === "dashboard" && (
             <>
@@ -1165,7 +1167,7 @@ export default function Home() {
             </>
           )}
           {view === "knowledge" && (
-            <>
+            <><ManualKnowledge assets={catalog.assets} user={user} api={api} onSaved={refresh}/>
               <div className={"banner " + (config.hermes?.llmVerified ? "good" : "")}>
                 <strong>Nous Hermes Agent</strong> · {config.hermes?.apiReachable ? "API 서버 연결됨" : "API 서버 미연결"}
                 <p className="small mt-2">{config.hermes?.llmVerified ? "최근 Hermes 모델 응답 검증 완료" : "실제 LLM 응답 미검증 · 모의 판단으로 대체 시 결과에 명시"} · 승인된 PostgreSQL 지식만 검색에 사용합니다.</p>
@@ -1180,7 +1182,7 @@ export default function Home() {
                   검토 대기 {skills.filter((s) => s.status === "DRAFT").length}
                 </Chip>
                 <Chip>대응 매뉴얼 {catalog.manuals.length}</Chip>
-                <Button size="sm" variant="outline" disabled={!isAdmin || busy || !config.hermesExportConfigured} onClick={() => action(async () => {
+                <Button size="sm" variant="outline" disabled={!isAdmin || isDemo || busy || !config.hermesExportConfigured} onClick={() => action(async () => {
                   let cursor = "", processed = 0, failed = 0;
                   setSyncProgress("승인된 해결 절차 동기화 시작…");
                   try {
@@ -1218,14 +1220,14 @@ export default function Home() {
                         }
                       >
                         {s.status === "DRAFT"
-                          ? "승인 대기"
-                          : s.status === "APPROVED"
+                          ? (s.source_kind==="MANUAL_ENTRY"?"임시 저장":"AI 초안")
+                          : s.status === "PENDING" ? "승인 대기" : s.status === "APPROVED"
                             ? "승인됨"
                             : "거부됨"}
                       </Chip>
                     </div>
-                    <h3>{s.title}</h3>{s.revision>0&&<p className="small">수정·재생성 이력 {s.revision}회 · 최초 AI 원문과 다를 수 있습니다.</p>}
-                    <div className="flex-row"><Chip tone={s.simulated ? "amber" : "cyan"}>{s.simulated ? "시뮬레이션 / 고정 지식" : "Hermes 모델 생성"}</Chip><span className="small muted">{s.source_provider}</span></div>
+                    <h3>{s.title}</h3><p className="small">출처: {s.source_kind==="MANUAL_ENTRY"?"직접 등록":s.source_kind==="IMPORTED"?"외부 자료":"AI 생성"} · 등록자: {s.created_by||"기존 이력"} · {s.created_at}</p>{s.revision>0&&<p className="small">수정·재생성 이력 {s.revision}회 · 최초 AI 원문과 다를 수 있습니다.</p>}
+                    <div className="flex-row"><Chip tone={s.simulated ? "amber" : "cyan"}>{s.source_kind==="MANUAL_ENTRY"?"사용자 작성":s.simulated ? "시뮬레이션 / 고정 지식" : "Hermes 모델 생성"}</Chip><span className="small muted">{s.source_provider}</span></div>
                     <p className="mono small muted">{s.source_model} · {s.export_status === "EXPORTED" ? "Hermes Skill 파일 게시됨" : s.export_status === "FAILED" ? "게시 실패 · 동기화 재시도 필요" : "Hermes 미게시"}</p>
                     <dl>
                       {[
@@ -1241,8 +1243,8 @@ export default function Home() {
                       ))}
                     </dl>
                     <p className="mono">{s.id}</p>
-                    {isAdmin && <SkillEditor skill={s} api={api} onSaved={refresh}/> }
-                    {isAdmin && s.status === "DRAFT" && (
+                    {s.source_kind==="MANUAL_ENTRY"?<><ManualKnowledge skill={s} assets={catalog.assets} user={user} api={api} onSaved={refresh}/>{(isAdmin||s.created_by===user.id)&&<SkillEditor skill={{...s,status:"HISTORY"}} api={api} onSaved={refresh}/>}{s.status==="DRAFT"&&(isAdmin||s.created_by===user.id)&&<Button size="sm" disabled={busy} onClick={()=>action(()=>api(`/skills/${s.id}/submit`,"POST",{revision:s.revision||0}))}>승인 요청</Button>}</>:isAdmin&&<SkillEditor skill={s} api={api} onSaved={refresh}/> }
+                    {isAdmin && (s.status === "PENDING" || (s.status === "DRAFT" && s.source_kind!=="MANUAL_ENTRY")) && (
                       <div className="flex-row mt-4">
                         <Button
                           size="sm"
@@ -1449,7 +1451,7 @@ export default function Home() {
         </main>
       </div>
       {selected && <div className="modal-backdrop" style={{ display: drawer ? "flex" : "none" }} role={drawer ? "dialog" : undefined} aria-modal={drawer ? true : undefined} aria-label="장애 상세">
-        <IncidentWorkflow open={drawer} incident={detail} isAdmin={isAdmin} canEdit={canEdit} operators={catalog.operators} api={api}
+        <IncidentWorkflow open={drawer} incident={detail} isAdmin={isAdmin} canEdit={canEdit} operators={catalog.operators} assets={catalog.assets} edges={graph.edges} api={api}
           onClose={() => setDrawer(false)} onGraph={() => { setDrawer(false); setView("ontology"); }}
           onRefresh={async () => { const result = await loadDetail(selected, true); await refresh(); return result; }}
           renderDecision={d => <Decision d={d} />} renderTimeline={events => <Timeline events={events} />} renderAgent={task => <AgentResult task={task} />} />

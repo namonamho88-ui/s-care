@@ -965,3 +965,12 @@ h3 {
     display: none;
   }
 }
+
+.manual-knowledge { margin-bottom:18px; }
+.knowledge-assets { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; max-height:240px; overflow:auto; padding:12px; border:1px solid var(--line); }
+.knowledge-assets label { display:flex; gap:8px; align-items:center; font-size:12px; }
+.knowledge-assets input { width:auto; }
+.asset-context { padding:16px; border:1px solid var(--line); border-radius:10px; margin-top:12px; max-height:420px; overflow:auto; }
+.asset-context p { white-space:pre-wrap; overflow-wrap:anywhere; font-size:12px; margin:8px 0; }
+.asset-context h4 { margin-top:16px; }
+.graph-toolbar > .flex-row { flex-wrap:wrap; }

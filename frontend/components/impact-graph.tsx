@@ -1,12 +1,13 @@
 "use client";
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ReactFlow, ReactFlowProvider, Background, Controls, MarkerType, Position, useNodesInitialized, useReactFlow, useStore, type Node, type Edge } from "@xyflow/react";
+import AssetContext from "./asset-context";
 import { Maximize2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import "@xyflow/react/dist/style.css";
 
 type Asset = { id: string; name: string; kind: string; system_id: string | null };
-type Props = { assets: Asset[]; edges: { source_id: string; target_id: string }[]; root?: string; affected?: string[]; expanded?: boolean };
+type Props = { assets: Asset[]; edges: { source_id: string; target_id: string }[]; root?: string; affected?: string[]; expanded?: boolean; direct?:string[]; api?:(p:string)=>Promise<any> };
 const EMPTY: string[] = [];
 const kinds: Record<string, string> = { SYSTEM: "업무 시스템", API: "API", SERVER: "서버", DATABASE: "데이터베이스", BATCH: "배치" };
 
@@ -24,24 +25,26 @@ function AutoFit({ layoutKey }: { layoutKey: string }) {
   return null;
 }
 
-function Canvas({ assets, edges, root, affected = EMPTY, expanded, fullscreen = false }: Props & { fullscreen?: boolean }) {
+function Canvas({ assets, edges, root, affected = EMPTY, direct, api, expanded, fullscreen = false }: Props & { fullscreen?: boolean }) {
+  const [directOnly,setDirectOnly]=useState(false);
   const [onlyAffected, setOnlyAffected] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  useEffect(() => { setOnlyAffected(false); setSelectedId(null); }, [root]);
-  const impacted = useMemo(() => new Set([...affected, ...(root ? [root] : [])]), [affected, root]);
+  useEffect(() => { setOnlyAffected(false); setSelectedId(null); setDirectOnly(false); }, [root]);
+  const directIds=useMemo(()=>new Set(direct||edges.filter(e=>e.target_id===root&&affected.includes(e.source_id)).map(e=>e.source_id)),[direct,edges,root,affected]);
+  const impacted = useMemo(() => new Set([...(directOnly?[...directIds]:affected), ...(root ? [root] : [])]), [affected, root,directOnly,directIds]);
   const visible = useMemo(() => onlyAffected && root ? assets.filter(a => impacted.has(a.id)) : assets, [assets, onlyAffected, root, impacted]);
   const graph = useMemo(() => {
     const groups = ["SYSTEM", "API", "SERVER", "DATABASE", "BATCH"];
     const ids = new Set(visible.map(a => a.id));
     const nodes: Node[] = visible.map(a => {
       const peers = visible.filter(x => x.kind === a.kind);
-      const isRoot = a.id === root, isAffected = impacted.has(a.id);
+      const isRoot = a.id === root, isAffected = impacted.has(a.id), isDirect=directIds.has(a.id);
       return {
         id: a.id,
         ariaLabel: a.name + " · " + (kinds[a.kind] || a.kind) + (isRoot ? " · 장애 발생 지점" : isAffected ? " · 영향 가능성" : ""),
         data: { label: <><div className="graph-node-kind">{kinds[a.kind] || a.kind} · {a.id}</div><strong>{a.name}</strong></> },
         position: { x: Math.max(0, groups.indexOf(a.kind)) * 230, y: peers.findIndex(x => x.id === a.id) * 84 },
-        style: { width: 194, background: isRoot ? "#472137" : isAffected ? "#332e24" : "#122237", color: "#e3edf7", border: "1px solid " + (isRoot ? "#ff729b" : isAffected ? "#d7a45b" : "#42607c") },
+        style: { width: 194, background: isRoot ? "#511e25" : isAffected ? (isDirect?"#56321a":"#423c19") : "#242b34", color: "#e3edf7", border: "1px solid " + (isRoot ? "#ff6067" : isAffected ? (isDirect?"#fb923c":"#fde047") : "#64748b") },
         sourcePosition: Position.Right, targetPosition: Position.Left,
       };
     });
@@ -53,7 +56,7 @@ function Canvas({ assets, edges, root, affected = EMPTY, expanded, fullscreen = 
         markerEnd: { type: MarkerType.ArrowClosed, width: 14, height: 14, color } };
     });
     return { nodes, edges: links };
-  }, [visible, edges, root, impacted]);
+  }, [visible, edges, root, impacted,directIds]);
   const chosen = assets.find(a => a.id === selectedId);
   const layoutKey = graph.nodes.map(n => n.id).join(",");
   return <div className={"graph-canvas " + (fullscreen ? "graph-canvas-full" : "")}>
@@ -61,6 +64,7 @@ function Canvas({ assets, edges, root, affected = EMPTY, expanded, fullscreen = 
       <div className="flex-row">
         <Button size="sm" variant={onlyAffected ? "outline" : "default"} aria-pressed={!onlyAffected} onClick={() => setOnlyAffected(false)}>전체 자산</Button>
         <Button size="sm" variant={onlyAffected ? "default" : "outline"} aria-pressed={onlyAffected} disabled={!root} onClick={() => setOnlyAffected(true)}>영향 자산만</Button>
+        <label className="small">영향 범위<select aria-label="영향 범위" disabled={!root} value={directOnly?"direct":"all"} onChange={e=>setDirectOnly(e.target.value==="direct")}><option value="all">전체 영향</option><option value="direct">직접 영향</option></select></label>
         <span className="small muted" role="status">자산 {graph.nodes.length}개 · 관계 {graph.edges.length}개</span>
       </div>
       <span className="small muted">{root ? "분석 기준: " + (assets.find(a => a.id === root)?.name || root) : "장애를 선택하면 영향 범위가 강조됩니다."}</span>
@@ -80,7 +84,8 @@ function Canvas({ assets, edges, root, affected = EMPTY, expanded, fullscreen = 
     <div className="graph-info" aria-live="polite">
       {chosen ? <><strong>{chosen.name}</strong><span>{kinds[chosen.kind] || chosen.kind} · {chosen.id} · {chosen.id === root ? "장애 발생 지점" : impacted.has(chosen.id) ? "영향 가능성 — 실제 장애 확정 아님" : "분석 영향 범위 밖"}</span><span>의존하는 자산 {edges.filter(e => e.source_id === chosen.id).length}개 · 이 자산을 사용하는 자산 {edges.filter(e => e.target_id === chosen.id).length}개</span></> : <span>자산을 클릭하면 종류와 연결 수를 확인할 수 있습니다. 드래그로 이동하고 휠 또는 + / − 버튼으로 확대·축소하세요.</span>}
     </div>
-    <div className="graph-legend small"><span className="text-rose-300">● 장애 지점</span><span className="text-amber-200">● 영향 가능성</span><span>화살표: 사용하는 자산 → 의존 자산 · 장애 영향은 반대 방향으로 최대 6단계 탐색</span></div>
+    {chosen&&api&&<AssetContext key={chosen.id} id={chosen.id} api={api}/>}
+    <div className="graph-legend small"><span className="text-rose-300">● 장애 지점</span><span style={{color:"#fb923c"}}>● 직접 영향 가능</span><span style={{color:"#fde047"}}>● 간접 영향 가능</span><span>● 범위 밖</span><span>화살표: 사용하는 자산 → 의존 자산 · 장애 영향은 반대 방향으로 최대 6단계 탐색</span></div>
   </div>;
 }
 export default function ImpactGraph(props: Props) {

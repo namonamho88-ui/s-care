@@ -11,7 +11,7 @@ public class KnowledgeEngine {
  public KnowledgeEngine(Store s,LocalSkillStore store,HttpHermesAdapter real,MockHermesAdapter mock){this.s=s;this.store=store;this.real=real;this.mock=mock;}
  public Map<String,Object> status(){var result=new LinkedHashMap<>(real.probe());result.put("provider","HERMES_AGENT");result.put("lastResult",last);result.put("llmVerified",Boolean.TRUE.equals(result.get("apiReachable"))&&Boolean.FALSE.equals(last.get("simulated")));result.put("knowledgeStore","POSTGRESQL_APPROVED_SKILLS");return result;}
  private Map<String,Object> context(Map<String,Object> incident){
-  var approved=store.search(incident.get("type").toString());
+  var approved=store.search(incident);
   var result=new LinkedHashMap<String,Object>();result.put("fictional",true);result.put("incidentId",incident.get("id"));result.put("type",incident.get("type"));result.put("observations",incident.get("observations"));
   result.put("approvedSkills",approved.get("skills"));result.put("manuals",approved.get("manuals"));
   result.put("similarIncidents",new SimilarIncidents(s).find(incident));

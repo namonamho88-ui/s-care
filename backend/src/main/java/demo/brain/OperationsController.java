@@ -7,12 +7,13 @@ import java.sql.Timestamp;
 @RestController
 @RequestMapping("/api")
 public class OperationsController {
+ @org.springframework.beans.factory.annotation.Autowired private KnowledgeCases cases;
  private final Store s;private final SimilarIncidents similar;private final SkillEditing editing;private final int minutes;
  public OperationsController(Store s,SimilarIncidents similar,SkillEditing editing,@Value("${brain.sla-minutes:15}") int minutes){this.s=s;this.similar=similar;this.editing=editing;this.minutes=Math.max(1,minutes);}
  @GetMapping("/incidents/{id}/similar") public Object similar(@PathVariable String id){var i=s.incident(id);if(i.get("deleted_at")!=null&&!Access.current().admin())throw Access.denied();return Map.of("items",similar.find(i),"note","텍스트·유형·자산 기준 유사도이며 원인 확률이 아닙니다. 최대 최근 종료 1,000건 비교.");}
- @PatchMapping("/skills/{id}") public Object edit(@PathVariable String id,@RequestBody Map<String,Object> body){return editing.edit(id,body,false);}
+ @PatchMapping("/skills/{id}") public Object edit(@PathVariable String id,@RequestBody Map<String,Object> body){return "MANUAL_ENTRY".equals(s.one("SELECT source_kind FROM skills WHERE id=?",id).get("source_kind"))?cases.edit(id,body):editing.edit(id,body,false);}
  @PostMapping("/skills/{id}/regenerate") public Object regenerate(@PathVariable String id,@RequestBody Map<String,Object> body){return editing.edit(id,body,true);}
- @GetMapping("/skills/{id}/revisions") public Object revisions(@PathVariable String id){Access.admin();return s.db.queryForList("SELECT * FROM skill_revisions WHERE skill_id=? ORDER BY revision DESC",id);}
+ @GetMapping("/skills/{id}/revisions") public Object revisions(@PathVariable String id){return cases.revisions(id);}
  @PostMapping("/notifications/{id}/ack") public Object acknowledge(@PathVariable String id){Access.admin();s.tx(()->{var n=s.one("SELECT * FROM notifications WHERE id=? FOR UPDATE",id);if(n.get("acknowledged_at")==null){s.db.update("UPDATE notifications SET acknowledged_at=?,acknowledged_by=? WHERE id=?",Store.now(),Access.actor(),id);s.audit(n.get("incident_id").toString(),Access.actor(),"NOTIFICATION_ACK",Map.of("notificationId",id));}return null;});return Map.of("acknowledged",true);}
  @GetMapping("/operations") public Object overview(){Access.admin();var active=s.db.queryForList("SELECT id,title,status,phase_started_at FROM incidents WHERE deleted_at IS NULL AND status NOT IN ('CLOSED','CANCELLED','REJECTED','RESOLVED') ORDER BY phase_started_at");
   for(var i:active){long age=Math.max(0,(System.currentTimeMillis()-((Timestamp)i.get("phase_started_at")).getTime())/60000);i.put("elapsedMinutes",age);i.put("targetMinutes",minutes);i.put("overdue",age>=minutes);}

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import java.util.*;
 import static org.assertj.core.api.Assertions.*;
-@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.DEFINED_PORT,properties={"server.port=18080","spring.datasource.url=${TEST_DB_URL:jdbc:h2:mem:brain_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}","spring.datasource.username=${TEST_DB_USER:sa}","spring.datasource.password=${TEST_DB_PASSWORD:}","brain.neo4j-uri=${TEST_NEO4J_URI:disabled}","brain.graph-required=false","brain.step-ms=0","brain.internal-url=http://localhost:18080","brain.jev.local-url=http://127.0.0.1:19998/v1/systemone"})
+@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.DEFINED_PORT,properties={"server.port=18080","spring.datasource.url=${TEST_DB_URL:jdbc:h2:mem:brain_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}","spring.datasource.username=${TEST_DB_USER:sa}","spring.datasource.password=${TEST_DB_PASSWORD:}","brain.neo4j-uri=${TEST_NEO4J_URI:disabled}","brain.graph-required=false","brain.graph-namespace=${TEST_GRAPH_NAMESPACE:Asset}","brain.step-ms=0","brain.internal-url=http://localhost:18080","brain.jev.local-url=http://127.0.0.1:19998/v1/systemone"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @org.springframework.test.context.TestPropertySource(properties="brain.sse-timeout-ms=1200")
 class BrainIntegrationTest {
@@ -198,4 +198,19 @@ class BrainIntegrationTest {
  }
  String create(String mode){var response=post("/api/simulate",Map.of("scenarioId","SCN-01","mode",mode,"provider","LOCAL"));assertThat(response.getStatusCode().value()).isEqualTo(200);return response.getBody().get("id").toString();}
  void waitFor(String id,String expected)throws Exception{long end=System.nanoTime()+15_000_000_000L;while(System.nanoTime()<end){String state=s.incident(id).get("status").toString();if(state.equals(expected))return;if(state.equals("FAILED"))fail(s.db.queryForList("SELECT * FROM events WHERE incident_id=?",id).toString());Thread.sleep(30);}fail("Timeout waiting for "+expected);}
+
+ @Test @Order(28) void manualKnowledgeOwnershipApprovalAndAssetRecommendations(){
+  var account=new AccountChecks(s,http,token);var invite=account.invite("fictional.knowledge","USER","OP-10");String user=account.activate("fictional.knowledge",invite.get("inviteCode")).get("token").toString();
+  var body=new LinkedHashMap<String,Object>(Map.of("title","[통합 테스트] 연결 풀 고갈 대응","type","DATABASE","conditions","가상 DB 연결 풀 대기 증가","symptoms","가상 연결 획득 시간 초과","checks","활성 연결과 대기 확인","solution","승인 후 가상 연결 지표 검증","cautions","실제 변경 금지","assetIds",List.of("CMP-01","SYS-01")));
+  var created=account.post(user,"/api/skills",body);assertThat(created.getStatusCode().value()).isEqualTo(200);String id=created.getBody().get("id").toString();assertThat(created.getBody()).containsEntry("source_kind","MANUAL_ENTRY").containsEntry("status","DRAFT");
+  String other=account.login("fictional.operator",AccountChecks.PASSWORD);assertThat(account.get(other,"/api/skills/"+id+"/revisions").getStatusCode().value()).isEqualTo(403);
+  body.put("revision",0);body.put("reason","가상 점검 단계 보완");body.put("solution","가상 조치 후 연결 대기를 재측정");assertThat(account.request(other,HttpMethod.PATCH,"/api/skills/"+id,body).getStatusCode().value()).isEqualTo(403);assertThat(account.request(user,HttpMethod.PATCH,"/api/skills/"+id,body).getStatusCode().value()).isEqualTo(200);
+  var context=new LinkedHashMap<String,Object>(s.incident("INC-SEED-001"));context.put("type","DATABASE");context.put("asset_id","CMP-01");context.put("mode","DEMO");var cases=new KnowledgeCases(s);assertThat(cases.search(context).get("skills").toString()).doesNotContain(id);
+  assertThat(account.post(user,"/api/skills/"+id+"/submit",Map.of("revision",1)).getStatusCode().value()).isEqualTo(200);assertThat(account.request(user,HttpMethod.PATCH,"/api/skills/"+id,body).getStatusCode().value()).isEqualTo(409);assertThat(account.post(user,"/api/skills/"+id+"/review",Map.of("status","APPROVED")).getStatusCode().value()).isEqualTo(403);
+  assertThat(post("/api/skills/"+id+"/review",Map.of("status","APPROVED","revision","2")).getStatusCode().value()).isEqualTo(200);
+  var ranked=(List<Map<String,Object>>)cases.search(context).get("skills");assertThat(ranked.get(0)).containsEntry("id",id).containsEntry("matchScore",95).containsEntry("scoreKind","RULE_MATCH_NOT_PROBABILITY");
+  assertThat(get("/api/assets/SYS-01/context").getBody().get("skills").toString()).contains(id);
+  var knowledge=new KnowledgeEngine(s,new LocalSkillStore(s),null,new MockHermesAdapter());assertThat(knowledge.search(context).get("skills").toString()).contains(id);
+  assertThat(s.db.queryForObject("SELECT COUNT(*) FROM skill_revisions WHERE skill_id=?",Integer.class,id)).isEqualTo(1);
+ }
 }

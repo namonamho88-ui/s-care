@@ -1,4 +1,5 @@
 "use client";
+import IncidentImpact from "./incident-impact";
 import SimilarPanel from "./similar-panel";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Check, LoaderCircle, Download } from "lucide-react";
@@ -17,8 +18,8 @@ const depts = ["PLATFORM", "DATABASE", "NETWORK", "APPLICATION", "SECURITY"];
 const deptNames = ["플랫폼운영", "DB운영", "네트워크운영", "업무개발", "보안운영"];
 const readJson = (value: any) => { try { return typeof value === "string" ? JSON.parse(value) : value; } catch { return value; } };
 
-export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, operators, api, onRefresh, onClose, onGraph, renderDecision, renderTimeline, renderAgent }: {
-  open: boolean; incident: Row | null; isAdmin: boolean; canEdit: boolean; operators: Row[];
+export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, operators, assets, edges, api, onRefresh, onClose, onGraph, renderDecision, renderTimeline, renderAgent }: {
+  open: boolean; incident: Row | null; isAdmin: boolean; canEdit: boolean; operators: Row[]; assets:any[]; edges:any[];
   api: (path: string, method?: string, body?: any) => Promise<any>;
   onRefresh: () => Promise<any>; onClose: () => void; onGraph: () => void;
   renderDecision: (decision: Row | null) => ReactNode;
@@ -155,7 +156,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
       {stopped ? <section className="workflow-card"><h3>{incident.deleted_at ? "삭제된 장애 · 기록 보존" : "강제 종료 · 복구 완료 아님"}</h3><p>중단 사유: {incident.stop_reason || "강제 종료 기록 없음"}</p>{observed}{renderTimeline(incident.events || [])}</section> : evidence ? <section className="workflow-card"><Button size="sm" variant="outline" className="mb-4" onClick={() => setEvidence("")}>단계 입력 화면으로 돌아가기</Button>{evidence === "timeline" ? renderTimeline(incident.events || []) : (incident.tasks || []).map((t: Row) => <div key={t.id} className="mb-5"><h3>{t.agent} Agent</h3>{renderAgent(t)}</div>)}</section> : <>
         <StageTechnologies step={step} incident={incident} />
         {step === 0 && <section className="workflow-card"><h3>접수된 장애 정보</h3>{observed}<p>담당자: {incident.owner_name} · {incident.id}</p>{status === "REGISTERED" && automatic}</section>}
-        {step === 1 && <>
+        {step === 1 && <><IncidentImpact key={incident.id} incident={incident} assets={assets} edges={edges} api={api}/>
           {status === "ANALYZING" && automatic}
           {status === "NEEDS_REVIEW" ? <div className="workflow-form-layout">
             <div>{observed}<div className="workflow-context"><h3>AI 판단 요약</h3><p>{typeNames[types.indexOf(incident.decision?.type)] || incident.type} · {incident.decision?.severity || incident.severity}</p><p>판단 신뢰도 {Math.round((incident.decision?.confidence || 0) * 100)}% · 근거 충분도 {Math.round((incident.decision?.evidenceScore || 0) * 100)}%</p>{reviewReasons.map((r: string) => <p key={r}>{r}</p>)}</div></div>
@@ -167,7 +168,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
           </div> : <section className="workflow-card">{renderDecision(incident.decision)}</section>}
           {evidenceDetails}
         </>}
-        {step === 2 && <div className="workflow-form-layout"><div className="workflow-context"><h3>승인 전 확인할 내용</h3><p>영향 가능 자산: {incident.impact?.affected?.length ?? "분석 전"}{incident.impact ? "개" : ""}</p><p>대응 대상: {incident.asset_name}</p><p>승인 후 가상 지표만 변경하며 실제 운영 시스템은 변경하지 않습니다.</p>{incident.impact && <Button size="sm" variant="outline" onClick={onGraph}>영향 그래프 크게 보기</Button>}{evidenceDetails}</div>
+        {step === 2 && <div className="workflow-form-layout"><div className="workflow-context"><IncidentImpact incident={incident} assets={assets} edges={edges} api={api} summary onExpand={()=>{setFollow(false);setStep(1);setEvidence("");}}/><p>승인 후 가상 지표만 변경하며 실제 운영 시스템은 변경하지 않습니다.</p>{incident.impact?.affected&&<Button size="sm" variant="outline" onClick={onGraph}>영향 그래프 크게 보기</Button>}{evidenceDetails}</div>
           <section className="workflow-card guide-target" id="guide-approval" tabIndex={-1}><h3>지금 작성할 내용 · 대응 사유</h3>{status === "WAITING_APPROVAL" && isAdmin ? <><label>승인 / 거부 사유<textarea readOnly={busy} rows={5} value={reason} onChange={e => setReason(e.target.value)} placeholder="영향 범위와 대응 방법을 검토한 내용을 작성하세요." /></label><p className="small muted">{reason.trim() ? "승인을 선택하면 가상 복구 검증 화면으로 이동합니다." : "사유를 입력하면 승인·거부 버튼이 활성화됩니다."}</p><div className="flex-row mt-4"><Button disabled={busy || !reason.trim()} onClick={() => command("approval",{approved:true,reason},"가상 대응 승인 요청 중","승인했습니다. 가상 복구 검증을 진행합니다.")}>대응 승인<ArrowRight size={14}/></Button><Button variant="danger" disabled={busy || !reason.trim()} onClick={() => command("approval",{approved:false,reason},"대응 거부 사유 저장 중","대응을 거부했습니다. 복구를 실행하지 않습니다.")}>대응 거부</Button></div></> : <p>{status === "WAITING_APPROVAL" ? "관리자의 승인을 기다리고 있습니다. 일반 사용자는 승인 사유를 작성하지 않습니다." : status === "REJECTED" ? "대응이 거부되었습니다. 아래 실행 기록에서 사유를 확인하세요." : step < activeStep ? "대응 승인이 완료되었습니다." : "분석·판단 확인이 끝난 후 관리자에게 승인 입력란이 표시됩니다."}</p>}</section>
         </div>}
         {step === 3 && <section className="workflow-card">{status === "RECOVERING" ? automatic : <h3>{guide.step > 3 ? "가상 복구 검증 완료" : "승인 후 가상 복구를 검증합니다"}</h3>}{renderTimeline((incident.events || []).filter((e: Row) => ["RECOVERY","MCP_ACTION","VERIFY","REPORT","SKILL_DRAFT","HISTORY"].includes(e.stage)))}<p className="small muted">검증·보고서·이력 저장이 끝나면 조치 후기를 작성하는 5단계로 자동 이동합니다.</p></section>}

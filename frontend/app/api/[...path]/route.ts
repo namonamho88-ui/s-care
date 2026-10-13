@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import {demoRequestAllowed,demoHeaders} from "@/lib/demo-access.mjs";
 import { fetchBackend } from "@/lib/backend-proxy.mjs";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -11,6 +12,7 @@ async function proxy(
 ) {
   const { path } = await params;
   // Session secrets may only be exchanged by /api/session into an HttpOnly cookie.
+  if(path[0]==="demo")return Response.json({error:"Not found"},{status:404});
   if (path[0] === "auth" && ["login", "activate"].includes(path[1]))
     return Response.json({ error: "Use the session endpoint" }, { status: 404 });
   if (path.some((p) => p === ".." || p.includes("/")))
@@ -21,15 +23,19 @@ async function proxy(
     new URL(req.headers.get("origin")!).host !== req.headers.get("host")
   )
     return Response.json({ error: "Invalid origin" }, { status: 403 });
-  const token = req.cookies.get("brain_token")?.value;
+  const accountToken=req.cookies.get("brain_token")?.value;
+  const token=accountToken||req.cookies.get("brain_demo_token")?.value;
+  const demo=!accountToken&&!!token;
+  if(demo&&!demoRequestAllowed(req))return Response.json({error:"시연 접속이 종료되었거나 접근이 허용되지 않습니다."},{status:401});
   const headers = new Headers();
+  if(demo)Object.entries(demoHeaders()).forEach(([k,v])=>headers.set(k,v));
   if (token) headers.set("Authorization", `Bearer ${token}`);
   if (req.headers.get("Content-Type"))
     headers.set("Content-Type", req.headers.get("Content-Type")!);
   if (req.headers.get("Last-Event-ID"))
     headers.set("Last-Event-ID", req.headers.get("Last-Event-ID")!);
     const res = await fetchBackend(
-      `${upstream}/api/${path.map(encodeURIComponent).join("/")}${req.nextUrl.search}`,
+      `${demo?process.env.DEMO_BACKEND_URL:upstream}/api/${path.map(encodeURIComponent).join("/")}${req.nextUrl.search}`,
       {
         method: req.method,
         headers,

@@ -1,0 +1,15 @@
+"use client";
+import {useState} from 'react';
+import ImpactGraph from './impact-graph';
+import PaginatedList from './pagination';
+type Row=Record<string,any>;
+export default function IncidentImpact({incident,assets,edges,api,summary=false,onExpand}:{incident:Row;assets:any[];edges:any[];api:(p:string)=>Promise<any>;summary?:boolean;onExpand?:()=>void}){
+ const [knowledge,setKnowledge]=useState<Row|null>(null),[loading,setLoading]=useState(false),[error,setError]=useState('');
+ const impact=incident.impact, valid=impact&&['NEO4J','SQL_FALLBACK'].includes(impact.engine)&&impact.root===incident.asset_id&&Array.isArray(impact.affected)&&impact.affected.includes(impact.root);
+ const root=assets.find(a=>a.id===incident.asset_id),system=assets.find(a=>a.id===root?.system_id);
+ const systems:Row[]=valid&&Array.isArray(impact.systems)?impact.systems:valid?assets.filter(a=>a.kind==='SYSTEM'&&(impact.affected.includes(a.id)||assets.some(x=>x.system_id===a.id&&impact.affected.includes(x.id)))):[];
+ const direct=valid&&Array.isArray(impact.direct)?impact.direct:undefined;
+ const pending=['REGISTERED','ANALYZING'].includes(incident.status);
+ async function load(){setLoading(true);setError('');try{setKnowledge(await api(`/incidents/${incident.id}/knowledge`));}catch(e){setError((e as Error).message);}finally{setLoading(false);}}
+ return <section className="workflow-card" aria-label={summary?'승인 전 영향 범위':'장애 영향도'}><h3>{summary?'승인 전 영향 범위 확인':'온톨로지 영향도'}</h3><p>발생 시스템: {system?.name||(root?.kind==='SYSTEM'?root.name:'미확인')} · 구성요소: {root?.name||incident.asset_id}</p>{!valid?<p role="status">{pending?'온톨로지 영향 분석 중':'저장된 영향도 분석 결과가 없습니다. 분석 상태와 실패 기록을 확인하세요.'}</p>:<><p>영향 가능 시스템 {systems.length}개 · 전체 영향 가능 자산 {impact.affected.length}개(발생 지점 포함)</p><p className="small">{systems.map(a=>a.name).join(' · ')||'연결된 업무 시스템 없음'} · 분석 엔진: {impact.engine}</p><p className="small muted">영향 가능성은 실제 장애 확정이 아닙니다. 저장된 분석 결과를 표시합니다.</p>{summary?<button onClick={onExpand}>전체 영향도 보기</button>:<><p className="small">직접 영향 {direct?direct.length:'미기록'}개 · 간접 영향 {Array.isArray(impact.indirect)?impact.indirect.length:'미기록'}개</p>{!direct&&<p className="small muted">이전 분석 이력에는 직접·간접 구분이 저장되지 않았습니다. 그래프의 구분은 현재 의존 관계를 기준으로 표시합니다.</p>}<ImpactGraph assets={assets} edges={edges} root={impact.root} affected={impact.affected} direct={direct} api={api}/></>}</>}{!summary&&<details onToggle={e=>{if(e.currentTarget.open&&!knowledge&&!loading)void load();}}><summary>관련 승인 지식 사례 조회</summary>{loading&&<p role="status">추천 지식을 조회하고 있습니다.</p>}{error&&<p role="alert">{error}<button onClick={load}>다시 조회</button></p>}{knowledge&&<><p className="small">규칙 기반 일치 점수 · 유형 40 + 자산 35 + 시스템 20 + 유사 이력 5 · AI 확률 아님</p><PaginatedList<Row> label="장애 추천 지식" items={knowledge.skills} empty="관련 승인 지식이 없습니다.">{rows=>rows.map(k=><details key={k.id}><summary>{k.title} · 일치 점수 {k.matchScore}/100</summary><p>{k.matchReasons.join(' · ')}</p><p>{k.solution}</p><p>{k.cautions}</p></details>)}</PaginatedList></>}</details>}</section>;
+}

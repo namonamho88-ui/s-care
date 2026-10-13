@@ -5,12 +5,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/auth")
 public class AccountController {
+ @org.springframework.beans.factory.annotation.Autowired private DemoAccess demo;
  private final AccountService accounts;
  public AccountController(AccountService accounts){this.accounts=accounts;}
  @PostMapping("/login") public Object login(@RequestBody Map<String,String> b){return accounts.login(b.get("login"),b.get("password"));}
  @PostMapping("/activate") public Object activate(@RequestBody Map<String,String> b){return accounts.activate(b.get("login"),b.get("inviteCode"),b.get("password"));}
  @GetMapping("/me") public Object me(){return Access.current().view();}
- @PostMapping("/logout") public Object logout(){accounts.logout();return Map.of("ok",true);}
+ @PostMapping("/logout") public Object logout(){if(Access.current().kind().equals("DEMO"))demo.logout();else accounts.logout();return Map.of("ok",true);}
  @PostMapping("/password") public Object password(@RequestBody Map<String,String> b){accounts.changePassword(b.get("oldPassword"),b.get("newPassword"));return Map.of("ok",true);}
  @GetMapping("/users") public Object users(){return accounts.list();}
  @PostMapping("/users") public Object invite(@RequestBody Map<String,String> b){return accounts.invite(b);}

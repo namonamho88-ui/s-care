@@ -11,6 +11,7 @@ spring:
   jackson:
     time-zone: UTC
 brain:
+  graph-namespace: ${GRAPH_NAMESPACE:Asset}
   admin-token: ${ADMIN_TOKEN:local-demo-admin-change-me}
   internal-url: ${INTERNAL_URL:http://127.0.0.1:${server.port}}
   agent-base-url: ${AGENT_BASE_URL:${brain.internal-url}}

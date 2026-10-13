@@ -20,6 +20,8 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
     if (request.method() !== 'GET') mutations.push(path);
     if (path === '/api/config') data = { user: { id:'bootstrap-admin', role, kind:role === 'ADMIN' ? 'BOOTSTRAP' : 'ACCOUNT', displayName:'가상 검증 사용자', operatorId:'OP-01' }, database: 'POSTGRESQL', graph: 'NEO4J', defaultProvider: 'LOCAL', a2a: '0.3.0', hermes: { apiReachable: false }, fictional: true };
     else if (path === '/api/catalog') data = { assets, operators: [{ id:'OP-01', name:'가상 담당자', department:'PLATFORM' }], scenarios:[{id:'SCN-01',title:'가상 시나리오'}], manuals:lists.manuals||[] };
+    else if (path === '/api/demo-control') data={allowed:false,enabled:false,configured:false};
+    else if(path.startsWith('/api/assets/')&&path.endsWith('/context'))data={asset:assets[12],components:[],dependencies:[],skills:[],incidents:[],types:[],manuals:[]};
     else if (path === '/api/operations') data={stages:[],notifications:[],jobs:[],mttaSamples:0,mttrSamples:0};
     else if (path.endsWith('/similar')) data={items:[],note:'텍스트 유사도'};
     else if (path === '/api/graph') data = { nodes:assets, edges, engine:'NEO4J' };
@@ -434,7 +436,7 @@ test('user role hides administrator controls and allows only owned incident note
 test('login defaults to a personal account and keeps bootstrap and activation separate', async ({page}) => {
   const calls: any[]=[];
   await page.route('**/api/**',async route=>{
-    if(new URL(route.request().url()).pathname==='/api/session') calls.push(route.request().postDataJSON());
+    if(new URL(route.request().url()).pathname==='/api/session'&&route.request().postDataJSON().mode!=='demo') calls.push(route.request().postDataJSON());
     await route.fulfill({status:401,json:{error:'가상 인증 검증 오류'}});
   });
   await page.goto('/');
@@ -710,4 +712,36 @@ test('similar history explains matching and never mutates an incident',async({pa
 
 test('new evaluation separates keyword baseline actual AI and legacy demonstration scores',async({page})=>{
  await setup(page,undefined,'ADMIN',{}, {evaluations:[{id:'EVAL-KO',status:'COMPLETED',mode:'REAL',provider:'LOCAL',created_at:'2026-10-12T00:00:00Z',result_json:JSON.stringify({datasetVersion:'ko-incident-v1',passed:52,total:100,accuracy:.52,baselinePassed:35,actualAiPassed:40,actualAiCount:80,errors:2,denominators:{type:60,severity:40,department:60,recurrence:30},note:'가상 평가 · 실운영 성능 아님'})}]});await page.getByText('관리자 메뉴',{exact:true}).first().click();await page.getByRole('button',{name:'AI 품질 관리',exact:true}).click();await expect(page.getByRole('button',{name:'한국어 100건 · 실제 Jev 평가'})).toBeVisible();await expect(page.getByText(/기존 영어 키워드 기준선 35\/100/)).toBeVisible();await expect(page.getByText(/실제 AI만 40\/80건/)).toBeVisible();
+});
+
+
+test('demo session bypasses login, hides account administration and revocation returns to login',async({page})=>{
+  await setup(page);let issued=false;
+  await page.route('**/api/config',r=>r.fulfill(issued?{json:{user:{id:'DEMO-test',role:'DEMO_ADMIN',kind:'DEMO',displayName:'시연 참가자',operatorId:'OP-01'},defaultProvider:'LOCAL',hermes:{},fictional:true}}:{status:401,json:{error:'login'}}));
+  await page.route('**/api/session',r=>{expect(r.request().postDataJSON()).toEqual({mode:'demo'});issued=true;return r.fulfill({json:{ok:true,user:{role:'DEMO_ADMIN'}}});});
+  await page.reload();await expect(page.getByText('시연모드 활성화',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'관제센터 시작'})).toHaveCount(0);
+  await page.getByText('관리자 메뉴',{exact:true}).click();await expect(page.getByRole('button',{name:'계정 관리',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'AI 품질 관리',exact:true})).toBeVisible();
+  await page.route('**/api/auth/me',r=>r.fulfill({status:401,json:{error:'시연 종료'}}));
+  await expect(page.getByRole('tab',{name:'개인 계정',exact:true})).toBeVisible({timeout:8000});
+});
+
+test('manual knowledge saves an owned draft and requests approval without exposing approval to users',async({page})=>{
+ const skills:any[]=[];await setup(page,undefined,'USER',{}, {skills});
+ await page.route('**/api/skills',async r=>{if(r.request().method()==='POST'){const body=r.request().postDataJSON();expect(body.assetIds).toContain('ASSET-0');skills.push({...body,id:'SKL-MANUAL-TEST',source_kind:'MANUAL_ENTRY',created_by:'bootstrap-admin',status:'DRAFT',revision:0});return r.fulfill({json:skills[0]});}return r.fallback();});
+ await page.route('**/api/skills/SKL-MANUAL-TEST/submit',r=>{expect(r.request().postDataJSON()).toEqual({revision:0});skills[0].status='PENDING';skills[0].revision=1;return r.fulfill({json:skills[0]});});
+ await page.getByRole('button',{name:'해결 지식',exact:true}).click();await page.getByRole('button',{name:'지식 직접 등록',exact:true}).click();
+ const form=page.getByRole('form',{name:'지식 직접 등록',exact:true});for(const label of ['지식 제목','발생 조건','주요 증상','점검 절차','해결 방법','주의사항'])await form.getByRole('textbox',{name:label,exact:true}).fill('가상 DB 대응 '+label);
+ await form.getByRole('checkbox',{name:'가상 자산 0',exact:true}).check();await form.getByRole('button',{name:'임시 저장',exact:true}).click();await expect(page.getByRole('heading',{name:'가상 DB 대응 지식 제목',exact:true})).toBeVisible();await page.getByRole('button',{name:'승인 요청',exact:true}).click();await expect(page.getByText('승인 대기',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'해결 절차 승인',exact:true})).toHaveCount(0);
+ await page.screenshot({path:'test-results/integrated-manual-knowledge.png',fullPage:true});
+});
+
+test('saved ontology impact shows direct and indirect scope and approval summary without mutation',async({page})=>{
+ await page.setViewportSize({width:1440,height:1000});const mutations=await setup(page,undefined,'ADMIN',{status:'WAITING_APPROVAL',impact:{engine:'NEO4J',root:'ASSET-12',affected:['ASSET-12','ASSET-13','ASSET-14'],direct:['ASSET-13'],indirect:['ASSET-14']}});
+ await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();const dialog=page.getByRole('dialog',{name:'장애 상세'});await expect(dialog.getByRole('region',{name:'승인 전 영향 범위'})).toContainText('분석 엔진: NEO4J');await dialog.getByRole('button',{name:'전체 영향도 보기',exact:true}).click();
+ const impact=dialog.getByRole('region',{name:'장애 영향도',exact:true});await expect(impact).toContainText('직접 영향 1개 · 간접 영향 1개');await impact.getByRole('button',{name:'영향 자산만',exact:true}).click();await expect(impact.locator('.react-flow__node')).toHaveCount(3);await impact.getByRole('combobox',{name:'영향 범위'}).selectOption('direct');await expect(impact.locator('.react-flow__node')).toHaveCount(2);await impact.locator('.react-flow__node[data-id="ASSET-12"]').click();await expect(impact.getByRole('region',{name:'자산별 대응 정보'})).toBeVisible();
+ await page.screenshot({path:'test-results/integrated-ontology.png',fullPage:true});await page.setViewportSize({width:390,height:844});expect(await page.locator('body').evaluate(el=>el.scrollWidth<=window.innerWidth)).toBe(true);expect(mutations).toEqual([]);
+});
+
+test('missing ontology evidence is never shown as completed impact',async({page})=>{
+ await setup(page,undefined,'ADMIN',{status:'NEEDS_REVIEW',impact:null});await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();const impact=page.getByRole('region',{name:'장애 영향도',exact:true});await expect(impact).toContainText('저장된 영향도 분석 결과가 없습니다');await expect(impact.getByRole('button',{name:'전체화면',exact:true})).toHaveCount(0);
 });

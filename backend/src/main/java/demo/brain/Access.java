@@ -9,7 +9,7 @@ import java.util.Map;
 /** Request identity comes exclusively from SecurityFilter, never from client JSON. */
 public final class Access {
  public record Identity(String id,String login,String displayName,String role,String operatorId,String kind,String sessionHash) {
-  public boolean admin(){return role.equals("ADMIN");}
+  public boolean admin(){return (role.equals("ADMIN")||role.equals("DEMO_ADMIN"));}
   public Map<String,Object> view(){return Map.of("id",id,"login",login,"displayName",displayName,"role",role,"operatorId",operatorId,"kind",kind);}
  }
  public static Identity current(){

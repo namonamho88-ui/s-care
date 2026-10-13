@@ -11,6 +11,8 @@ import java.time.LocalDate;
 @RestController
 @RequestMapping("/api")
 public class ApiController {
+ @org.springframework.beans.factory.annotation.Autowired private DemoAccess demo;
+ @org.springframework.beans.factory.annotation.Autowired private KnowledgeCases cases;
  private final Store s;private final Harness h;private final Ontology graph;private final JevRouter jev;private final EvaluationService eval;private final Reports reports;private final Environment env;private final String defaultProvider;private final KnowledgeEngine knowledge;private final HermesSkillPublisher publisher;
  @org.springframework.beans.factory.annotation.Autowired private AccountService accounts;
  @org.springframework.beans.factory.annotation.Autowired private IncidentLifecycle lifecycle;
@@ -44,8 +46,8 @@ public class ApiController {
  @PostMapping("/incidents/{id}/approval") public Object approval(@PathVariable String id,@RequestBody Map<String,Object> b){if(!(b.get("approved") instanceof Boolean))throw new IllegalArgumentException("approved boolean required");h.approve(id,(Boolean)b.get("approved"),Objects.toString(b.get("reason"),""));return Map.of("accepted",true);}
  @PostMapping("/incidents/{id}/retry") public Object retry(@PathVariable String id){h.retry(id);return Map.of("accepted",true);}
  @PostMapping("/incidents/{id}/close") public Object close(@PathVariable String id){s.active(id,()->{var i=s.incident(id);Harness.text(i.get("notes").toString(),4000,"조치 후기");Harness.text(i.get("prevention").toString(),4000,"재발 방지");s.transition(id,"RESOLVED","CLOSED");s.audit(id,Access.actor(),"CLOSE",Map.of());s.event(id,"CLOSE","COMPLETED","장애 종료",Map.of());return null;});return Map.of("closed",true);}
- @GetMapping("/skills") public Object skills(){return s.db.queryForList("SELECT * FROM skills WHERE (?=TRUE OR status='APPROVED') ORDER BY CASE WHEN status='DRAFT' THEN 0 ELSE 1 END,created_at DESC,id",Access.current().admin());}
- @PostMapping("/skills/{id}/review") public Object skillReview(@PathVariable String id,@RequestBody Map<String,String> b){String status=b.getOrDefault("status","");if(!List.of("APPROVED","REJECTED").contains(status))throw new IllegalArgumentException("Invalid status");s.tx(()->{var before=s.one("SELECT * FROM skills WHERE id=? FOR UPDATE",id);if(b.containsKey("revision")&&Integer.parseInt(b.get("revision"))!=((Number)before.get("revision")).intValue())throw new IllegalStateException("초안이 변경되었습니다. 수정 이력을 확인하세요.");if(s.db.update("UPDATE skills SET status=?,approved_by=? WHERE id=? AND status='DRAFT'",status,Access.actor(),id)!=1)throw new IllegalStateException("초안만 승인 또는 거부할 수 있습니다.");s.audit(null,Access.actor(),"SKILL_"+status,Map.of("skillId",id));return null;});return Map.of("status",status,"export",status.equals("APPROVED")?publisher.publish(id):Map.of("status","NOT_EXPORTED"));}
+ @GetMapping("/skills") public Object skills(){return cases.list();}
+ @PostMapping("/skills/{id}/review") public Object skillReview(@PathVariable String id,@RequestBody Map<String,String> b){Access.admin();String status=b.getOrDefault("status","");if(!List.of("APPROVED","REJECTED").contains(status))throw new IllegalArgumentException("Invalid status");s.tx(()->{var before=s.one("SELECT * FROM skills WHERE id=? FOR UPDATE",id);if(b.containsKey("revision")&&Integer.parseInt(b.get("revision"))!=((Number)before.get("revision")).intValue())throw new IllegalStateException("초안이 변경되었습니다. 수정 이력을 확인하세요.");if(s.db.update("UPDATE skills SET status=?,approved_by=? WHERE id=? AND (status='PENDING' OR (status='DRAFT' AND source_kind<>'MANUAL_ENTRY'))",status,Access.actor(),id)!=1)throw new IllegalStateException("초안만 승인 또는 거부할 수 있습니다.");s.audit(null,Access.actor(),"SKILL_"+status,Map.of("skillId",id));return null;});return Map.of("status",status,"export",status.equals("APPROVED")?publisher.publish(id):Map.of("status","NOT_EXPORTED"));}
  @PostMapping("/hermes/sync") public Object syncHermes(@RequestParam(defaultValue="") String after,@RequestParam(defaultValue="5") int limit){return publisher.sync(after,limit);}
  @GetMapping("/evaluations") public Object evaluations(@RequestParam(required=false) Integer page){if(page==null)return s.db.queryForList("SELECT * FROM evaluations ORDER BY created_at DESC,id DESC LIMIT 20");var result=historyPage("evaluations","created_at DESC,id DESC",page);result.put("running",s.db.queryForObject("SELECT COUNT(*) FROM evaluations WHERE status='RUNNING'",Integer.class)>0);return result;}
  @PostMapping("/evaluations") public Object evaluate(@RequestBody Map<String,String> b){return Map.of("id",eval.start(b.getOrDefault("mode","DEMO"),b.getOrDefault("provider","MOCK")));}
@@ -65,7 +67,7 @@ public class ApiController {
   long deadline=System.nanoTime()+TimeUnit.MILLISECONDS.toNanos(duration);
   ScheduledFuture<?>[] task={null};
   task[0]=streams.scheduleWithFixedDelay(()->{try{
-   if(System.nanoTime()>=deadline||!accounts.active(streamIdentity)||(!streamIdentity.admin()&&s.incident(id).get("deleted_at")!=null)){emitter.complete();return;}
+   if(System.nanoTime()>=deadline||!(streamIdentity.kind().equals("DEMO")?demo.active(streamIdentity):accounts.active(streamIdentity))||(!streamIdentity.admin()&&s.incident(id).get("deleted_at")!=null)){emitter.complete();return;}
    var rows=s.db.queryForList("SELECT * FROM events WHERE incident_id=? AND id>? ORDER BY id",id,c[0]);
    for(var r:rows){emitter.send(SseEmitter.event().id(r.get("id").toString()).name("stage").data(r));c[0]=((Number)r.get("id")).longValue();}
    if(rows.isEmpty())emitter.send(SseEmitter.event().comment("heartbeat"));
