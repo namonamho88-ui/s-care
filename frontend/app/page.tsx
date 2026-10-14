@@ -32,6 +32,7 @@ import {
 import { Button } from "@/components/ui/button";
 import ManualKnowledge from "@/components/manual-knowledge";
 import DemoSettings from "@/components/demo-settings";
+import ModelWarmup from "@/components/model-warmup";
 import OperationsPanel from "@/components/operations-panel";
 import SkillEditor from "@/components/skill-editor";
 import AccountCenter from "@/components/account-center";
@@ -43,6 +44,7 @@ import PaginatedList, { RemoteList, useRemotePage } from "@/components/paginatio
 import TechnologyGuide, { TechnologyContext } from "@/components/technology-guide";
 import { stageTechnologyLabel } from "@/lib/technology-guide.mjs";
 import { stageLabel, eventStateLabel } from "@/lib/incident-guide.mjs";
+import { categoryLabel, resultCategory, mergeIncidentEvents, mergeIncidentSnapshot } from "@/lib/analysis-performance.mjs";
 const ImpactGraph = dynamic(() => import("@/components/impact-graph"), {
   ssr: false,
 });
@@ -241,11 +243,7 @@ function Decision({ d }: { d: Row | null }) {
         <div className="flex-row">
           <BrainCircuit size={15} />
           <strong>
-            {d.simulated
-              ? "시뮬레이션 결과 · 실제 AI 판단 아님"
-              : d.provider === "OPERATOR"
-                ? "담당자가 확인한 판단"
-                : "실제 AI 모델 판단"}
+            {categoryLabel(resultCategory(d))}
           </strong>
         </div>
         {d.fallback && (
@@ -299,7 +297,7 @@ function AgentResult({ task }: { task: Row }) {
   const data = parse(task.result_json)?.artifacts?.[0]?.parts?.[0]?.data;
   if (!data) return null;
   if (task.agent === "diagnosis") return <div className="mt-3">
-    <Chip tone={data.simulated ? "amber" : "cyan"}>{data.simulated ? "원인 후보 · 시뮬레이션" : "원인 후보 · 실제 Jev"}</Chip>
+    <Chip tone={data.simulated ? "amber" : "cyan"}>원인 후보 · {categoryLabel(resultCategory(data))}</Chip>
     <p className="mt-2"><strong>{data.causeLabel}</strong></p>
     <p className="small muted">신뢰도 {Math.round(data.confidence * 100)}% · 근거 {Math.round(data.evidenceScore * 100)}%</p>
     <p className="mono small muted">{data.provider} · {data.model} · {data.latencyMs} ms</p>
@@ -307,7 +305,7 @@ function AgentResult({ task }: { task: Row }) {
     {data.fallback && <p className="small text-amber-200">{data.fallbackReason}</p>}
   </div>;
   if (task.agent === "knowledge") return <div className="mt-3">
-    <Chip tone={data.simulated ? "amber" : "cyan"}>{data.simulated ? "지식 검색 · 모의 실행" : "지식 검색 · 실제 Hermes"}</Chip>
+    <Chip tone={data.simulated ? "amber" : "cyan"}>지식 검색 · {categoryLabel(resultCategory(data))}</Chip>
     <p className="small mt-2">{data.explanation}</p>
     <p className="small muted">승인된 해결 절차 {data.skills?.length || 0}개 · 매뉴얼 {data.manuals?.length || 0}개</p>
     <p className="mono small muted">{data.provider} · {data.latencyMs} ms</p>
@@ -365,6 +363,8 @@ export default function Home() {
     [newAsset, setNewAsset] = useState("CMP-01");
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
+  const detailRef = useRef(detail);
+  detailRef.current = detail;
   const filtered = !!(filterType || filterSystem || from || to);
   const refreshVersion = useRef(0);
   const detailVersion = useRef(0);
@@ -400,7 +400,7 @@ export default function Home() {
     if (!fresh && detailRequest.current?.id === id) return detailRequest.current.promise;
     const version = ++detailVersion.current;
     const promise = api("/incidents/" + id).then(d => {
-      if (selectedRef.current === id && version === detailVersion.current) setDetail(d);
+      if (selectedRef.current === id && version === detailVersion.current) setDetail(current=>mergeIncidentSnapshot(d,current));
       return d;
     }).finally(() => {
       if (detailRequest.current?.promise === promise) detailRequest.current = null;
@@ -484,24 +484,33 @@ export default function Home() {
     let connected=false, lastFallback=Date.now();
     source.onopen = () => {connected=true;setLive(true);};
     source.onerror = () => {connected=false;setLive(false);};
-    let stageTimer: ReturnType<typeof setTimeout>;
+    let stageTimer: ReturnType<typeof setTimeout> | undefined;
     let updateLists=false;
+    let loading=false, refreshPending=false, disposed=false;
+    const refreshStages = () => {
+      stageTimer=undefined;
+      if(loading){refreshPending=true;return;}
+      loading=true;
+      loadDetail(selected,true).catch((e) => setError("장애 상세 갱신 실패: " + e.message)).finally(()=>{
+        loading=false;
+        if(refreshPending&&!disposed){refreshPending=false;stageTimer=setTimeout(refreshStages,100);}
+      });
+      if(updateLists){updateLists=false;refreshRef.current().catch((e) => {setOnline(false);setError("실시간 화면 갱신 실패: " + e.message);});}
+    };
     source.addEventListener("stage", (event) => {
-      try{const row=JSON.parse((event as MessageEvent).data);updateLists ||= ["INCIDENT","REVIEW","APPROVAL","HISTORY","CLOSE","FORCE_STOP","MANAGEMENT","FAILURE","EDIT"].includes(row.stage);}catch{}
-      clearTimeout(stageTimer);
-      stageTimer = setTimeout(() => {
-        loadDetail(selected).catch((e) => setError("장애 상세 갱신 실패: " + e.message));
-        if(updateLists){updateLists=false;refreshRef.current().catch((e) => {
-          setOnline(false);
-          setError("실시간 화면 갱신 실패: " + e.message);
-        });}
-      }, 350);
+      try{const row=JSON.parse((event as MessageEvent).data);updateLists ||= ["INCIDENT","REVIEW","APPROVAL","HISTORY","CLOSE","FORCE_STOP","MANAGEMENT","FAILURE","EDIT"].includes(row.stage);
+        setDetail(current=>current?.id===selected?mergeIncidentEvents(current,[row]):current);
+      }catch{}
+      // Render each received stage immediately; coalesce snapshots without starving them.
+      if(!stageTimer)stageTimer=setTimeout(refreshStages,100);
     });
     // Healthy SSE is the detail source. Poll only after a disconnected grace period.
     const interval = setInterval(() => {
-      if(!connected && Date.now()-lastFallback>=30000){lastFallback=Date.now();loadDetail(selected).catch(() => setLive(false));}
-    }, 10000);
+      const active=detailRef.current?.id===selected&&["REGISTERED","ANALYZING","RECOVERING"].includes(detailRef.current.status);
+      if(!connected && Date.now()-lastFallback>=(active?2000:30000)){lastFallback=Date.now();loadDetail(selected).catch(() => setLive(false));}
+    }, 1000);
     return () => {
+      disposed=true;
       clearInterval(interval);
       clearTimeout(stageTimer);
       source.close();
@@ -1169,7 +1178,7 @@ export default function Home() {
           {view === "knowledge" && (
             <><ManualKnowledge assets={catalog.assets} user={user} api={api} onSaved={refresh}/>
               <div className={"banner " + (config.hermes?.llmVerified ? "good" : "")}>
-                <strong>Nous Hermes Agent</strong> · {config.hermes?.apiReachable ? "API 서버 연결됨" : "API 서버 미연결"}
+                <strong>Nous Hermes Agent</strong> · {config.hermes?.apiReachable ? "최근 확인: API 서버 연결됨" : "최근 확인: API 연결 미확인"}
                 <p className="small mt-2">{config.hermes?.llmVerified ? "최근 Hermes 모델 응답 검증 완료" : "실제 LLM 응답 미검증 · 모의 판단으로 대체 시 결과에 명시"} · 승인된 PostgreSQL 지식만 검색에 사용합니다.</p>
                 <p className="small muted">{config.hermes?.lastResult?.provider || "아직 지식 생성 실행 없음"}{config.hermes?.lastResult?.fallbackReason ? " · " + config.hermes.lastResult.fallbackReason : ""}</p>
                 {config.hermes?.reason && <p className="mono small muted">{config.hermes.reason}</p>}
@@ -1292,6 +1301,7 @@ export default function Home() {
           )}
           {view === "harness" && (
             <>
+              {isAdmin && !isDemo && <ModelWarmup api={api} />}
               <div className="stats">
                 {[
                   ["동시 활성 장애", "최대 4"],

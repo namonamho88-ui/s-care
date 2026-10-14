@@ -16,13 +16,15 @@ brain:
   internal-url: ${INTERNAL_URL:http://127.0.0.1:${server.port}}
   agent-base-url: ${AGENT_BASE_URL:${brain.internal-url}}
   sse-timeout-ms: ${SSE_TIMEOUT_MS:240000}
-  step-ms: ${STEP_MS:500}
+  step-ms: ${STEP_MS:0}
+  parallel-analysis: ${PARALLEL_ANALYSIS:true}
   graph-required: ${GRAPH_REQUIRED:true}
   neo4j-uri: ${NEO4J_URI:bolt://localhost:7687}
   neo4j-password: ${NEO4J_PASSWORD:neo4j_demo_only}
   neo4j-user: ${NEO4J_USER:neo4j}
   neo4j-database: ${NEO4J_DATABASE:neo4j}
   jev:
+    combined-analysis: ${JEV_COMBINED_ANALYSIS:true}
     provider: ${JEV_PROVIDER:LOCAL}
     local-url: ${LOCAL_JEV_URL:http://localhost:8017/v1/systemone}
     local-key: ${LOCAL_JEV_KEY:}

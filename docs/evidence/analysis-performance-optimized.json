@@ -1,0 +1,5979 @@
+{
+  "label" : "optimized",
+  "environment" : "ISOLATED_H2_LOOPBACK_ONLY",
+  "fictional" : true,
+  "observations" : "가상 결제 서비스 CPU 96%, cpu throttling 관측, memory 92%, process queue pressure. 응답 지연 3200ms, service remains available. 재발 이력은 조회되지 않았다.",
+  "measurement" : "POST /api/incidents to WAITING_APPROVAL; includes durable queue wait; no human approval or recovery",
+  "p95Method" : "nearest-rank",
+  "summaries" : {
+    "DEMO_MOCK" : {
+      "medianMs" : 115.48285,
+      "count" : 12,
+      "meanMs" : 142.15305833333335,
+      "p95Ms" : 554.9438
+    },
+    "MOCK_FALLBACK" : {
+      "medianMs" : 77.1054,
+      "count" : 12,
+      "meanMs" : 78.01959166666667,
+      "p95Ms" : 98.487
+    },
+    "REAL_AI" : {
+      "reason" : "No actual model available/called. Not inferred from mock timings.",
+      "count" : 0
+    }
+  },
+  "samples" : [ {
+    "iteration" : 1,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 554.9438,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.298+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.318+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.351+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.354+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.361+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.374+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.377+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.387+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.389+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.390+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.390+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.418+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.421+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.425+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.428+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.431+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.437+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.444+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.451+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.455+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.460+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.461+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.465+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.474+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.481+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.489+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.491+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.492+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.497+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.505+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.509+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.513+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.537+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.539+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:21.541+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 27,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 17,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 73,
+      "http_elapsed_ms" : 58,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 78,
+      "http_elapsed_ms" : 63,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 105,
+      "http_elapsed_ms" : 92,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 121,
+      "http_elapsed_ms" : 108,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 10,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 43,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 54,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 26,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 2,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 125.4075,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.570+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.586+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.589+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.591+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.596+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.600+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.603+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.609+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.610+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.611+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.614+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.618+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.621+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.622+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.624+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.626+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.629+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.631+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.634+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.635+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.638+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.640+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.642+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.644+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.644+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.650+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.654+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.658+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.660+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.661+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.663+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.666+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.670+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.672+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:21.674+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 8,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 29,
+      "http_elapsed_ms" : 22,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 34,
+      "http_elapsed_ms" : 26,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 52,
+      "http_elapsed_ms" : 42,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 54,
+      "http_elapsed_ms" : 43,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 0,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 18,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 14,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 6,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 3,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 129.7477,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.710+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.720+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.724+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.727+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.733+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.736+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.738+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.743+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.744+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.744+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.746+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.753+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.756+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.757+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.761+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.762+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.766+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.766+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.767+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.770+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.773+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.776+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.779+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.780+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.785+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.786+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.787+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.791+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.793+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.798+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.802+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.804+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.810+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.814+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:21.816+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 7,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 41,
+      "http_elapsed_ms" : 32,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 59,
+      "http_elapsed_ms" : 49,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 48,
+      "http_elapsed_ms" : 39,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 28,
+      "http_elapsed_ms" : 18,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 11,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 18,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 9,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 4,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 127.8808,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.851+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.860+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.864+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.866+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.868+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.870+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.872+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.876+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.878+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.879+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.882+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.886+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.888+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.890+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.891+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.892+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.894+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.897+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.903+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.905+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.910+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.912+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.914+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.916+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.920+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.926+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.933+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.934+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.938+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.941+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.944+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:21.949+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.959+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.962+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:21.967+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 4,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 33,
+      "http_elapsed_ms" : 23,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 39,
+      "http_elapsed_ms" : 28,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 61,
+      "http_elapsed_ms" : 47,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 68,
+      "http_elapsed_ms" : 57,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 19,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 28,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 14,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 5,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 138.0951,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:21.998+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.007+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.014+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.016+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.021+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.025+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.027+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.031+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.033+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.034+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.038+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.044+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.047+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.049+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.052+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.054+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.057+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.062+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.063+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.064+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.070+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.075+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.076+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.081+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.083+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.084+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.086+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.090+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.091+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.098+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.100+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.102+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.108+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.111+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:22.113+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 6,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 37,
+      "http_elapsed_ms" : 28,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 56,
+      "http_elapsed_ms" : 46,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 69,
+      "http_elapsed_ms" : 60,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 53,
+      "http_elapsed_ms" : 34,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 13,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 30,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 9,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 6,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 125.7058,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.147+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.154+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.158+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.162+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.169+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.171+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.172+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.178+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.178+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.179+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.181+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.186+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.187+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.191+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.196+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.203+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.205+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.208+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.213+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.217+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.219+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.220+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.222+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.228+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.233+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.236+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.237+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.239+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.240+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.242+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.243+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.246+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.253+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.254+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:22.255+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 5,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 42,
+      "http_elapsed_ms" : 29,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 65,
+      "http_elapsed_ms" : 56,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 48,
+      "http_elapsed_ms" : 39,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 66,
+      "http_elapsed_ms" : 56,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 30,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 11,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 5,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 8,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 7,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 105.5582,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.290+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.297+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.301+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.303+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.306+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.308+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.310+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.315+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.318+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.320+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.321+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.325+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.329+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.330+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.332+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.334+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.338+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.340+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.341+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.344+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.345+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.348+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.349+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.352+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.353+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.356+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.357+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.359+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.363+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.363+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.365+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.367+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.373+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.374+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:22.377+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 4,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 50,
+      "http_elapsed_ms" : 40,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 27,
+      "http_elapsed_ms" : 21,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 47,
+      "http_elapsed_ms" : 36,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 40,
+      "http_elapsed_ms" : 24,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 15,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 8,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 7,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 8,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 81.9486,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.406+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.412+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.416+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.420+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.422+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.424+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.427+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.431+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.431+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.432+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.434+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.439+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.440+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.441+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.444+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.445+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.447+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.449+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.451+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.452+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.455+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.456+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.457+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.457+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.460+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.461+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.464+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.466+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.468+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.469+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.470+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.472+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.478+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.479+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:22.480+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 4,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 38,
+      "http_elapsed_ms" : 32,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 24,
+      "http_elapsed_ms" : 18,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 40,
+      "http_elapsed_ms" : 35,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 28,
+      "http_elapsed_ms" : 18,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 15,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 14,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 6,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 9,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 69.2192,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.498+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.502+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.503+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.506+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.507+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.508+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.509+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.513+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.513+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.513+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.516+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.519+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.522+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.523+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.524+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.525+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.527+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.530+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.531+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.532+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.533+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.535+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.536+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.539+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.539+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.540+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.543+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.545+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.547+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.550+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.551+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.552+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.557+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.558+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:22.559+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 0,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 39,
+      "http_elapsed_ms" : 35,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 34,
+      "http_elapsed_ms" : 28,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 21,
+      "http_elapsed_ms" : 16,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 25,
+      "http_elapsed_ms" : 16,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 14,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 11,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 4,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 10,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 95.7557,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.579+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.593+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.595+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.596+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.598+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.599+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.600+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.603+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.604+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.604+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.605+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.611+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.612+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.613+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.614+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.616+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.617+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.623+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.624+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.625+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.626+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.627+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.629+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.630+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.633+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.635+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.636+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.640+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.641+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.645+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.647+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.649+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.653+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.655+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:22.656+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 44,
+      "http_elapsed_ms" : 39,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 21,
+      "http_elapsed_ms" : 17,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 35,
+      "http_elapsed_ms" : 30,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 29,
+      "http_elapsed_ms" : 22,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 0,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 10,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 19,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 5,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 5,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 11,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 82.6889,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.686+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.690+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.694+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.695+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.697+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.698+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.700+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.703+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.703+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.705+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.706+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.711+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.713+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.714+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.716+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.717+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.720+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.723+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.724+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.725+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.728+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.729+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.730+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.731+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.734+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.737+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.739+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.740+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.741+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.742+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.743+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.746+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.749+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.751+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:22.752+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 38,
+      "http_elapsed_ms" : 30,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 29,
+      "http_elapsed_ms" : 24,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 40,
+      "http_elapsed_ms" : 36,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 22,
+      "http_elapsed_ms" : 17,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 13,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 11,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 6,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 12,
+    "category" : "DEMO_MOCK",
+    "elapsedMs" : 68.8854,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.776+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.780+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.782+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.783+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.785+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.786+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.787+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.789+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.790+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.790+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.791+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.796+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.797+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.800+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.801+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.801+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.803+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.804+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.807+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.808+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.811+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.813+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.814+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.815+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.816+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.818+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.820+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.821+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.822+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.825+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.827+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.828+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.832+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.833+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:22.834+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 0,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 24,
+      "http_elapsed_ms" : 19,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 33,
+      "http_elapsed_ms" : 28,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 20,
+      "http_elapsed_ms" : 14,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 37,
+      "http_elapsed_ms" : 30,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 11,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 12,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "DEMO_MOCK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 4,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 1,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 83.7267,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.854+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.858+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.871+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.872+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.874+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.875+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.877+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.880+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.881+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.881+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.883+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.887+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.888+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.889+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.890+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.891+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.892+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.894+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.896+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.899+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.900+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.901+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.902+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.905+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.906+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.906+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.907+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.912+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.912+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.915+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.916+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.919+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.922+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.923+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:22.924+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 11,
+      "http_elapsed_ms" : 8,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 21,
+      "http_elapsed_ms" : 16,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 24,
+      "http_elapsed_ms" : 18,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 37,
+      "http_elapsed_ms" : 32,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 28,
+      "http_elapsed_ms" : 21,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 16,
+      "http_elapsed_ms" : 6,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 7,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 4,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 2,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 93.4849,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.955+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.960+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.973+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.976+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.978+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.981+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:22.984+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.988+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.988+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.989+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.990+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.996+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:22.998+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.000+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.001+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.002+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.003+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.006+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.006+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.008+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.011+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.013+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.015+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.016+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.018+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.019+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.019+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.021+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.023+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.028+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.031+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.033+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.038+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.039+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.039+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 11,
+      "http_elapsed_ms" : 9,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 5,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 44,
+      "http_elapsed_ms" : 39,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 33,
+      "http_elapsed_ms" : 27,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 28,
+      "http_elapsed_ms" : 17,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 29,
+      "http_elapsed_ms" : 20,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 7,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 17,
+      "http_elapsed_ms" : 6,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 5,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 3,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 83.2543,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.059+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.062+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.075+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.076+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.078+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.081+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.083+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.087+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.087+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.089+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.090+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.096+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.096+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.098+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.098+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.100+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.101+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.103+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.106+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.107+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.107+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.110+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.110+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.110+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.113+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.114+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.115+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.118+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.120+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.124+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.125+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.127+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.132+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.133+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.134+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 10,
+      "http_elapsed_ms" : 8,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 4,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 29,
+      "http_elapsed_ms" : 22,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 23,
+      "http_elapsed_ms" : 17,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 39,
+      "http_elapsed_ms" : 34,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 26,
+      "http_elapsed_ms" : 18,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 6,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 13,
+      "http_elapsed_ms" : 4,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 5,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 4,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 98.487,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.153+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.170+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.181+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.182+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.184+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.185+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.187+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.189+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.190+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.190+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.191+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.195+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.198+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.198+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.200+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.201+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.203+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.204+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.205+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.206+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.209+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.210+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.211+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.212+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.213+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.215+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.217+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.218+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.220+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.224+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.225+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.226+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.231+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.233+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.234+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 9,
+      "http_elapsed_ms" : 8,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 23,
+      "http_elapsed_ms" : 20,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 22,
+      "http_elapsed_ms" : 15,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 28,
+      "http_elapsed_ms" : 22,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 35,
+      "http_elapsed_ms" : 31,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 6,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 15,
+      "http_elapsed_ms" : 4,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 6,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 5,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 85.0566,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.258+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.279+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.286+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.287+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.288+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.289+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.290+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.292+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.294+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.294+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.296+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.301+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.302+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.303+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.303+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.304+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.305+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.309+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.310+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.311+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.312+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.313+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.313+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.314+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.316+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.318+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.318+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.321+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.324+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.328+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.329+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.330+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.332+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.333+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.334+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 6,
+      "http_elapsed_ms" : 4,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 23,
+      "http_elapsed_ms" : 18,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 27,
+      "http_elapsed_ms" : 23,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 20,
+      "http_elapsed_ms" : 15,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 37,
+      "http_elapsed_ms" : 31,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 8,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 10,
+      "http_elapsed_ms" : 3,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 6,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 70.2531,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.351+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.355+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.364+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.364+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.365+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.366+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.367+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.368+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.368+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.368+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.369+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.374+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.375+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.375+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.376+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.378+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.379+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.381+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.383+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.384+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.385+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.385+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.387+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.388+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.388+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.389+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.391+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.391+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.392+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.393+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.394+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.395+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.398+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.399+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.400+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 7,
+      "http_elapsed_ms" : 6,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 25,
+      "http_elapsed_ms" : 23,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 23,
+      "http_elapsed_ms" : 20,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 16,
+      "http_elapsed_ms" : 13,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 19,
+      "http_elapsed_ms" : 15,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 12,
+      "http_elapsed_ms" : 4,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 0,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 7,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 7,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 85.9883,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.429+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.450+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.461+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.463+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.466+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.468+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.469+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.472+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.472+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.472+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.473+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.477+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.480+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.481+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.481+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.483+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.483+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.485+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.486+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.487+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.488+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.489+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.490+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.491+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.491+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.493+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.494+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.495+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.496+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.499+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.499+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.500+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.502+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.502+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.503+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 9,
+      "http_elapsed_ms" : 7,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 16,
+      "http_elapsed_ms" : 13,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 20,
+      "http_elapsed_ms" : 16,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 28,
+      "http_elapsed_ms" : 24,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 25,
+      "http_elapsed_ms" : 20,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 10,
+      "http_elapsed_ms" : 4,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 4,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 8,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 69.7138,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.522+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.528+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.536+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.537+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.538+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.539+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.539+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.541+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.541+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.541+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.543+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.546+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.548+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.548+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.548+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.549+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.550+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.550+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.552+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.553+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.553+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.557+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.559+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.559+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.561+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.563+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.565+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.565+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.567+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.569+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.570+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.571+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.574+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.575+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.575+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 7,
+      "http_elapsed_ms" : 5,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 17,
+      "http_elapsed_ms" : 13,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 12,
+      "http_elapsed_ms" : 10,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 28,
+      "http_elapsed_ms" : 25,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 25,
+      "http_elapsed_ms" : 20,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 0,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 13,
+      "http_elapsed_ms" : 6,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 7,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 9,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 69.4386,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.602+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.605+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.614+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.616+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.617+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.618+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.619+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.621+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.621+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.622+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.622+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.627+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.627+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.628+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.629+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.629+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.630+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.632+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.634+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.635+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.635+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.637+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.639+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.640+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.641+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.641+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.642+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.643+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.644+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.646+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.646+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.647+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.649+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.650+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.651+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 8,
+      "http_elapsed_ms" : 7,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 22,
+      "http_elapsed_ms" : 19,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 25,
+      "http_elapsed_ms" : 22,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 15,
+      "http_elapsed_ms" : 11,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 19,
+      "http_elapsed_ms" : 14,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 13,
+      "http_elapsed_ms" : 5,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 5,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 0,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 0,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 10,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 70.9565,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.680+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.682+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.692+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.693+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.696+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.698+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.699+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.702+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.702+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.702+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.703+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.709+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.710+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.711+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.712+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.714+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.714+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.716+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.719+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.721+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.721+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.724+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.724+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.725+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.726+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.727+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.730+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.731+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.732+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.734+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.735+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.736+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.738+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.740+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.740+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 8,
+      "http_elapsed_ms" : 7,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 4,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 33,
+      "http_elapsed_ms" : 30,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 23,
+      "http_elapsed_ms" : 19,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 21,
+      "http_elapsed_ms" : 17,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 30,
+      "http_elapsed_ms" : 21,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 13,
+      "http_elapsed_ms" : 5,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 6,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 3,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 11,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 55.1534,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.758+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.762+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.771+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.772+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.773+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.774+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.775+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.777+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.777+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.778+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.778+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.782+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.783+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.783+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.784+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.785+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.787+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.787+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.789+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.789+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.790+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.792+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.793+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.793+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.795+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.797+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.799+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.799+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.800+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.801+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.803+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.804+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.805+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.806+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.806+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 6,
+      "http_elapsed_ms" : 4,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 12,
+      "http_elapsed_ms" : 9,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 16,
+      "http_elapsed_ms" : 12,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 26,
+      "http_elapsed_ms" : 23,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 23,
+      "http_elapsed_ms" : 19,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 0,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 12,
+      "http_elapsed_ms" : 5,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 4,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  }, {
+    "iteration" : 12,
+    "category" : "MOCK_FALLBACK",
+    "elapsedMs" : 70.7219,
+    "status" : "WAITING_APPROVAL",
+    "actualProvider" : "MOCK_FALLBACK",
+    "classification" : "RESOURCE",
+    "events" : [ {
+      "stage" : "INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.820+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.827+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.834+00:00"
+    }, {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.835+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.836+00:00"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.837+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.838+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.840+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.841+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.841+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.842+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.846+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.847+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.847+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.849+00:00"
+    }, {
+      "stage" : "AGENT_INCIDENT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.850+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.851+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.851+00:00"
+    }, {
+      "stage" : "AGENT_IMPACT",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.852+00:00"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.852+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.854+00:00"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.856+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.857+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.858+00:00"
+    }, {
+      "stage" : "AGENT_DIAGNOSIS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.859+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.861+00:00"
+    }, {
+      "stage" : "AGENT_KNOWLEDGE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.863+00:00"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.864+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.865+00:00"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.867+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.867+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "RUNNING",
+      "created_at" : "2026-10-14T22:01:23.868+00:00"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.870+00:00"
+    }, {
+      "stage" : "PERFORMANCE",
+      "state" : "COMPLETED",
+      "created_at" : "2026-10-14T22:01:23.871+00:00"
+    }, {
+      "stage" : "APPROVAL",
+      "state" : "WAITING",
+      "created_at" : "2026-10-14T22:01:23.872+00:00"
+    } ],
+    "metrics" : [ {
+      "stage" : "JEV",
+      "state" : "COMPLETED",
+      "duration_ms" : 7,
+      "http_elapsed_ms" : 6,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 1,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "ONTOLOGY",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 14,
+      "http_elapsed_ms" : 12,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "TASK_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 17,
+      "http_elapsed_ms" : 14,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "HERMES",
+      "state" : "COMPLETED",
+      "duration_ms" : 28,
+      "http_elapsed_ms" : 24,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "TASK_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 23,
+      "http_elapsed_ms" : 19,
+      "model_inference_ms" : null,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_incident",
+      "state" : "COMPLETED",
+      "duration_ms" : 0,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_impact",
+      "state" : "COMPLETED",
+      "duration_ms" : 1,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    }, {
+      "stage" : "AGENT_knowledge",
+      "state" : "COMPLETED",
+      "duration_ms" : 11,
+      "http_elapsed_ms" : 3,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "AGENT_diagnosis",
+      "state" : "COMPLETED",
+      "duration_ms" : 5,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "MOCK_FALLBACK"
+    }, {
+      "stage" : "HARNESS",
+      "state" : "COMPLETED",
+      "duration_ms" : 2,
+      "http_elapsed_ms" : 0,
+      "model_inference_ms" : 0,
+      "network_wait_ms" : null,
+      "retry_count" : 0,
+      "category" : "LOCAL"
+    } ]
+  } ]
+}

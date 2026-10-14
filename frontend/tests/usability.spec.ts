@@ -21,6 +21,7 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
     if (path === '/api/config') data = { user: { id:'bootstrap-admin', role, kind:role === 'ADMIN' ? 'BOOTSTRAP' : 'ACCOUNT', displayName:'가상 검증 사용자', operatorId:'OP-01' }, database: 'POSTGRESQL', graph: 'NEO4J', defaultProvider: 'LOCAL', a2a: '0.3.0', hermes: { apiReachable: false }, fictional: true };
     else if (path === '/api/catalog') data = { assets, operators: [{ id:'OP-01', name:'가상 담당자', department:'PLATFORM' }], scenarios:[{id:'SCN-01',title:'가상 시나리오'}], manuals:lists.manuals||[] };
     else if (path === '/api/demo-control') data={allowed:false,enabled:false,configured:false};
+    else if (path === '/api/admin/models/warmup') data={fictional:true,actualModelCall:false,targets:[]};
     else if(path.startsWith('/api/assets/')&&path.endsWith('/context'))data={asset:assets[12],components:[],dependencies:[],skills:[],incidents:[],types:[],manuals:[]};
     else if (path === '/api/operations') data={stages:[],notifications:[],jobs:[],mttaSamples:0,mttrSamples:0};
     else if (path.endsWith('/similar')) data={items:[],note:'텍스트 유사도'};
@@ -697,6 +698,37 @@ test('healthy SSE eliminates five-second detail polling and background tabs stop
  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();await expect(page.getByRole('dialog',{name:'장애 상세'})).toBeVisible();await page.clock.runFor(1000);const initial=details;
  await page.clock.runFor(20000);expect(details).toBe(initial);
  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});const before=dashboards;await page.clock.runFor(120000);expect(dashboards).toBe(before);
+});
+
+test('analysis performance shows parallel timers and immediate SSE completions despite a stale snapshot',async({page})=>{
+ const pageErrors:string[]=[];page.on('pageerror',error=>pageErrors.push(error.message));
+ await page.clock.install({time:new Date('2026-10-15T00:00:05Z')});
+ await page.addInitScript(()=>{class Source {onopen:any;onerror:any;listeners:any={};constructor(){(window as any).analysisSource=this;setTimeout(()=>this.onopen?.(),0);}addEventListener(name:string,listener:any){this.listeners[name]=listener;}close(){}};(window as any).EventSource=Source;});
+ const startedAt='2026-10-15T00:00:00Z';
+ const stages=[{id:'diagnosis',stage:'TASK_diagnosis',state:'RUNNING',startedAt,category:'PENDING'},{id:'knowledge',stage:'HERMES',state:'RUNNING',startedAt,category:'PENDING'}];
+ const mutations=await setup(page,undefined,'ADMIN',{status:'ANALYZING',performance:{stages},events:[{id:1,stage:'TASK_diagnosis',state:'RUNNING',created_at:startedAt},{id:2,stage:'HERMES',state:'RUNNING',created_at:startedAt}]});
+ await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+ const panel=page.getByRole('region',{name:'단계별 분석 실행 현황'});
+ await expect(panel.locator('.analysis-stage.running')).toHaveCount(2);await expect(panel).toContainText('5초 경과');
+ await page.clock.runFor(1000);await expect(panel).toContainText('6초 경과');
+ await page.evaluate(()=>{(window as any).analysisSource.listeners.stage({data:JSON.stringify({id:3,incident_id:'INC-UI-RESOLVED',stage:'PERFORMANCE',state:'COMPLETED',created_at:'2026-10-15T00:00:06Z',message:'TASK_diagnosis 실행 시간',data_json:JSON.stringify({id:'diagnosis',stage:'TASK_diagnosis',state:'COMPLETED',startedAt:'2026-10-15T00:00:00Z',endedAt:'2026-10-15T00:00:06Z',durationMs:6000,category:'MOCK_FALLBACK',httpElapsedMs:5900,modelInferenceMs:null,networkWaitMs:null,retryCount:0})})});});
+ await expect(panel.locator('.analysis-stage.completed')).toHaveCount(1);await expect(panel).toContainText('MOCK_FALLBACK · 실제 AI 아님');
+ await page.clock.runFor(300);await expect(panel.locator('.analysis-stage.completed')).toHaveCount(1);await expect(panel.locator('.analysis-stage.running')).toHaveCount(1);
+ await panel.screenshot({path:'test-results/analysis-performance.png'});expect(mutations).toEqual([]);expect(pageErrors).toEqual([]);
+});
+
+test('admin warmup displays unknown cost and never calls a model until one explicit request',async({page})=>{
+ await setup(page);let calls=0, lastResult:any=null;
+ await page.route('**/api/admin/models/warmup',async route=>{
+  if(route.request().method()==='POST'){calls++;expect(route.request().postDataJSON()).toEqual({target:'JEV_LOCAL',mode:'REAL',performInference:true});await route.fulfill({json:{target:'JEV_LOCAL',status:'FAILED',modelCallAttempted:true,actualModelCall:false,estimatedCostUsd:null,latencyMs:100,reason:'FICTIONAL_PROVIDER_UNAVAILABLE'}});return;}
+  await route.fulfill({json:{fictional:true,actualModelCall:false,targets:[{target:'JEV_LOCAL',configured:true,estimatedCostUsd:null,maxPerHour:4,remainingThisHour:4-calls,cooldownSeconds:60,retryAfterMs:calls?60000:0,inFlight:false,lastResult}]}});
+ });
+ await page.getByText('관리자 메뉴',{exact:true}).first().click();await page.getByRole('button',{name:'AI 품질 관리',exact:true}).click();
+ const panel=page.getByRole('region',{name:'관리자 모델 워밍업'});await expect(panel).toContainText('예상 비용: 알 수 없음');expect(calls).toBe(0);
+ const run=panel.getByRole('button',{name:'Jev · 로컬 모델 실제 추론 1회 실행'});await run.click();await expect(panel).toContainText('호출 시도: 예 · 실제 모델 응답 확인: 아니요');await expect(run).toBeDisabled();expect(calls).toBe(1);
+ lastResult={status:'READY',modelCallAttempted:true,actualModelCall:true,endedAt:'2026-10-15T00:05:00Z'};
+ await panel.getByRole('button',{name:'호출 없이 설정·제한 새로고침'}).click();await expect(panel).toContainText('모델 응답 확인 완료');await expect(panel).toContainText('실제 모델 응답 확인: 예');expect(calls).toBe(1);
+ await page.screenshot({path:'test-results/model-warmup.png',fullPage:true});
 });
 
 test('skill draft saves versioned changes and exposes old and new values',async({page})=>{

@@ -14,6 +14,7 @@ public class HttpHermesAdapter implements HermesAdapter {
  private final Store s;
  private final String base,key,model;
  private final Duration timeout;
+ private volatile Map<String,Object> lastProbe=Map.of();
  private final HttpClient http=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(2)).build();
  public HttpHermesAdapter(Store s,@Value("${brain.hermes-url}") String base,@Value("${brain.hermes-key}") String key,
    @Value("${brain.hermes-model:hermes-agent}") String model,@Value("${brain.hermes-timeout-seconds:90}") long seconds){
@@ -21,25 +22,48 @@ public class HttpHermesAdapter implements HermesAdapter {
  }
  public String provider(){return "HERMES_AGENT";}
  public boolean configured(){return !base.isBlank()&&!key.isBlank();}
+ public String model(){return model;}
+ /** Status reads never dispatch external requests, including when the UI is in DEMO mode. */
+ public Map<String,Object> status(){var result=new LinkedHashMap<String,Object>();result.put("apiReachable",false);result.put("toolsDisabled",false);result.put("reason","NOT_PROBED");result.putAll(lastProbe);result.put("configured",configured());result.put("cached",true);return result;}
  private JsonNode request(String path,Object body,Duration limit){
   if(!configured())throw new IllegalStateException("HERMES_NOT_CONFIGURED");
+  long started=System.nanoTime();Long inferenceMs=body==null?0L:null;
   try{
    var b=HttpRequest.newBuilder(URI.create(base+path)).timeout(limit).header("Authorization","Bearer "+key).header("Content-Type","application/json");
    if(body==null)b.GET();else b.POST(HttpRequest.BodyPublishers.ofString(s.encode(body)));
    var r=http.send(b.build(),HttpResponse.BodyHandlers.ofString());
+   if(body!=null)inferenceMs=JevHttpClient.reportedInference(r);
    if(r.statusCode()!=200)throw new IllegalStateException("HERMES_HTTP_"+r.statusCode());
    return s.json.readTree(r.body());
   }catch(InterruptedException e){Thread.currentThread().interrupt();throw new IllegalStateException("HERMES_INTERRUPTED");}
   catch(IllegalStateException e){throw e;}
   catch(Exception e){throw new IllegalStateException("HERMES_UNAVAILABLE_"+e.getClass().getSimpleName());}
+  finally{PerformanceTrace.recordHttp("HERMES"+path,(System.nanoTime()-started)/1_000_000,inferenceMs);}
+ }
+ /** At most one small inference request, with the same disabled-tool gate as normal knowledge work. */
+ public Map<String,Object> warmup(){
+  long started=System.nanoTime();var result=new LinkedHashMap<String,Object>();
+  result.put("provider",provider());result.put("model",model);result.put("modelCallAttempted",false);result.put("actualModelCall",false);result.put("modelReady",false);
+  try{
+   var probe=probe();result.put("apiReachable",probe.get("apiReachable"));result.put("toolsDisabled",probe.get("toolsDisabled"));
+   if(!Boolean.TRUE.equals(probe.get("apiReachable")))throw new IllegalStateException(probe.get("reason").toString());
+   result.put("modelCallAttempted",true);
+   var response=request("/chat/completions",Map.of("model",model,"stream",false,"max_tokens",24,"temperature",0,
+    "model_options",Map.of("reasoning",Map.of("enabled",false)),"messages",List.of(Map.of("role","system","content","Fictional readiness check only. No tools. Return the JSON object {\"ready\":true}."))),timeout);
+   result.put("actualModelCall",true);result.put("usage",response.path("usage"));result.put("model",response.path("model").asText(model));
+   var reply=s.json.readTree(response.path("choices").path(0).path("message").path("content").asText(""));
+   if(!reply.path("ready").isBoolean()||!reply.path("ready").asBoolean())throw new IllegalStateException("HERMES_INVALID_READINESS_RESPONSE");
+   result.put("modelReady",true);result.put("status","READY");result.put("reason","");
+  }catch(Exception e){result.put("status","FAILED");result.put("reason",e instanceof IllegalStateException?e.getMessage():"HERMES_INVALID_READINESS_RESPONSE");}
+  result.put("latencyMs",(System.nanoTime()-started)/1_000_000);return result;
  }
  public Map<String,Object> probe(){
   try{
    var data=request("/toolsets",null,Duration.ofSeconds(3)).path("data");
    if(!data.isArray())throw new IllegalStateException("HERMES_INVALID_TOOLSET_RESPONSE");
    for(var toolset:data)if(toolset.path("enabled").asBoolean())throw new IllegalStateException("HERMES_TOOLS_MUST_BE_DISABLED");
-   return Map.of("apiReachable",true,"toolsDisabled",true,"configured",configured(),"reason","");
-  }catch(Exception e){return Map.of("apiReachable",false,"toolsDisabled",false,"configured",configured(),"reason",e.getMessage());}
+   lastProbe=Map.of("apiReachable",true,"toolsDisabled",true,"configured",configured(),"reason","","observedAt",java.time.Instant.now().toString());return lastProbe;
+  }catch(Exception e){lastProbe=Map.of("apiReachable",false,"toolsDisabled",false,"configured",configured(),"reason",e.getMessage(),"observedAt",java.time.Instant.now().toString());return lastProbe;}
  }
  public Map<String,Object> generate(String operation,Map<String,Object> context){
   long started=System.nanoTime();

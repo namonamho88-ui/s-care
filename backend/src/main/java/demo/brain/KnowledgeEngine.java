@@ -9,12 +9,12 @@ public class KnowledgeEngine {
  private final Store s;private final LocalSkillStore store;private final HttpHermesAdapter real;private final MockHermesAdapter mock;
  private volatile Map<String,Object> last=Map.of();
  public KnowledgeEngine(Store s,LocalSkillStore store,HttpHermesAdapter real,MockHermesAdapter mock){this.s=s;this.store=store;this.real=real;this.mock=mock;}
- public Map<String,Object> status(){var result=new LinkedHashMap<>(real.probe());result.put("provider","HERMES_AGENT");result.put("lastResult",last);result.put("llmVerified",Boolean.TRUE.equals(result.get("apiReachable"))&&Boolean.FALSE.equals(last.get("simulated")));result.put("knowledgeStore","POSTGRESQL_APPROVED_SKILLS");return result;}
+ public Map<String,Object> status(){var result=new LinkedHashMap<>(real.status());result.put("provider","HERMES_AGENT");result.put("lastResult",last);result.put("llmVerified",Boolean.TRUE.equals(result.get("apiReachable"))&&Boolean.FALSE.equals(last.get("simulated")));result.put("knowledgeStore","POSTGRESQL_APPROVED_SKILLS");return result;}
  private Map<String,Object> context(Map<String,Object> incident){
   var approved=store.search(incident);
   var result=new LinkedHashMap<String,Object>();result.put("fictional",true);result.put("incidentId",incident.get("id"));result.put("type",incident.get("type"));result.put("observations",incident.get("observations"));
   result.put("approvedSkills",approved.get("skills"));result.put("manuals",approved.get("manuals"));
-  result.put("similarIncidents",new SimilarIncidents(s).find(incident));
+  result.put("similarIncidents",approved.containsKey("similarIncidents")?approved.get("similarIncidents"):new SimilarIncidents(s).find(incident));
   return result;
  }
  public Map<String,Object> search(Map<String,Object> incident){
@@ -30,11 +30,12 @@ public class KnowledgeEngine {
  }
  private Map<String,Object> generate(String operation,Map<String,Object> context,Map<String,Object> incident){
   long started=System.nanoTime();
-  Map<String,Object> result;
+  Map<String,Object> result;var compact=HermesContext.compact(context);
   if("DEMO".equals(incident.get("mode")))result=new LinkedHashMap<>(mock.generate(operation,context));
-  else try{result=new LinkedHashMap<>(real.generate(operation,context));validate(operation,result,context);}
+  else try{result=new LinkedHashMap<>(real.generate(operation,compact));validate(operation,result,context);}
   catch(Exception e){result=new LinkedHashMap<>(mock.generate(operation,context));result.put("provider","MOCK_HERMES_FALLBACK");result.put("fallback",true);result.put("fallbackReason",e.getMessage());result.put("latencyMs",(System.nanoTime()-started)/1_000_000);}
   result.put("requestedProvider","DEMO".equals(incident.get("mode"))?"MOCK_HERMES":"HERMES_AGENT");result.put("operation",operation);result.put("fictional",true);
+  result.put("promptContext",Map.of("version","compact-v1","originalCharacters",s.encode(context).length(),"compactCharacters",s.encode(compact).length(),"estimatedInputTokens",(s.encode(compact).length()+1)/2,"tokenEstimateMethod","CHARACTERS_DIVIDED_BY_2_NOT_TOKENIZER","approvedCandidateCount",((List<?>)context.get("approvedSkills")).size(),"allCandidateIdsPreserved",true));
   validate(operation,result,context);
   var metadata=new LinkedHashMap<>(result);metadata.remove("content");metadata.put("at",java.time.Instant.now().toString());last=Map.copyOf(metadata);
   var recorded=result;s.active(incident.get("id").toString(),()->{s.audit(incident.get("id").toString(),"hermes","HERMES_"+operation.toUpperCase(Locale.ROOT),recorded);return null;});return result;

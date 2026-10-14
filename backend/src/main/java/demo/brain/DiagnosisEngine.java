@@ -5,7 +5,7 @@ import java.util.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-/** A separate observation-only Jev assessment; never receives benchmark answers. */
+/** Observation-only cause questions; may reuse the joint Jev response and never receives benchmark answers. */
 @Service
 public class DiagnosisEngine {
   private record Cause(String type, String label, String criteria, List<String> signatures) {}
@@ -38,9 +38,20 @@ public class DiagnosisEngine {
     if (primary.path("fallback").asBoolean()) return mock(observations, "MOCK_FALLBACK", "Primary Jev used fallback; diagnosis remains simulated", 0);
     boolean cloud="TYPESAFE".equals(incident.get("provider"));
     String provider=cloud ? "TYPESAFE_JEV" : "LOCAL_JEV";
+    if(primary.path("answers").path("_combinedInference").asBoolean(false)) {
+      try {
+        var joint=s.json.createObjectNode();joint.put("model",primary.path("model").asText("unknown"));joint.set("answers",primary.path("answers"));
+        var result=parse(new JevHttpClient.ModelReply(joint,0),provider,observations);
+        result.put("inferenceReused",true);result.put("sharedInferenceLatencyMs",primary.path("latencyMs").asLong());
+        result.put("execution",reusedExecution(primary));return result;
+      } catch(IllegalArgumentException invalid) {
+        var result=invalid(provider,observations,0);result.put("inferenceReused",true);result.put("execution",reusedExecution(primary));return result;
+      }
+    }
     if (cloud && cloudKey.isBlank()) throw new IllegalStateException("TypeSafe key is not configured");
     long start=System.nanoTime();
     for (int attempt=1; attempt<=2; attempt++) {
+      if(attempt>1)PerformanceTrace.retry();
       try {
         var response=http.query(provider, cloud ? cloudUrl : localUrl, cloud ? cloudKey : localKey, request(observations));
         return parse(response, provider, observations);
@@ -48,21 +59,22 @@ public class DiagnosisEngine {
         if (cloud) throw failure;
         if (attempt==2) return mock(observations, "MOCK_FALLBACK", failure.getMessage(), (System.nanoTime()-start)/1_000_000);
       } catch (IllegalArgumentException invalid) {
-        var result=result("UNKNOWN", 0, 0, provider, "invalid-response", (System.nanoTime()-start)/1_000_000, false, "", observations, Map.of());
-        result.put("schemaValid", false);
-        result.put("reviewReason", "원인 분석 응답의 형식 또는 확률이 유효하지 않습니다.");
-        return result;
+        return invalid(provider,observations,(System.nanoTime()-start)/1_000_000);
       }
     }
     throw new IllegalStateException("Unreachable diagnosis state");
   }
 
   Map<String,Object> request(String observations) {
+    return Map.of("model", "jev-latest", "state", observations, "questions", questions());
+  }
+
+  static Map<String,Object> questions() {
     var criteria=new LinkedHashMap<String,String>();
     CAUSES.forEach((key,value)->criteria.put(key,value.criteria()));
-    return Map.of("model", "jev-latest", "state", observations, "questions", Map.of(
+    return Map.of(
         "cause", Map.of("type", "choice", "instructions", "Select the best supported cause hypothesis using only the fictional observations. Choose UNKNOWN when evidence is insufficient. A hypothesis is not a confirmed root cause.", "criteria", criteria),
-        "support", Map.of("type", "noul", "instructions", "Do the observations contain concrete technical evidence supporting a specific cause hypothesis?")));
+        "support", Map.of("type", "noul", "instructions", "Do the observations contain concrete technical evidence supporting a specific cause hypothesis?"));
   }
 
   private Map<String,Object> parse(JevHttpClient.ModelReply response, String provider, String observations) {
@@ -71,8 +83,11 @@ public class DiagnosisEngine {
     if (!CAUSES.containsKey(cause)) throw new IllegalArgumentException("Unknown cause");
     double confidence=probability(answers.path("cause").path("confidence"));
     double support=probability(answers.path("support").path("noul"));
-    @SuppressWarnings("unchecked") var raw=(Map<String,Object>)s.decode(answers.toString());
+    // Preserve the diagnosis artifact shape even when classification questions shared this request.
+    var diagnosisAnswers=s.json.createObjectNode();diagnosisAnswers.set("cause",answers.path("cause"));diagnosisAnswers.set("support",answers.path("support"));
+    @SuppressWarnings("unchecked") var raw=(Map<String,Object>)s.decode(diagnosisAnswers.toString());
     var result=result(cause,confidence,support,provider,response.body().path("model").asText("unknown"),response.latencyMs(),false,"",observations,raw);
+    if(!response.execution().isEmpty())result.put("execution",response.execution());
     var probabilities=answers.path("cause").path("probabilities");
     if (probabilities.isObject()) {
       var ranked=new ArrayList<Map<String,Object>>();
@@ -84,6 +99,20 @@ public class DiagnosisEngine {
       result.put("candidates",ranked.stream().limit(3).toList());
     }
     return result;
+  }
+
+  private Map<String,Object> invalid(String provider,String observations,long elapsed) {
+    var result=result("UNKNOWN",0,0,provider,"invalid-response",elapsed,false,"",observations,Map.of());
+    result.put("schemaValid",false);result.put("reviewReason","원인 분석 응답의 형식 또는 확률이 유효하지 않습니다.");return result;
+  }
+
+  private Map<String,Object> reusedExecution(JsonNode primary) {
+    var execution=new LinkedHashMap<String,Object>();String now=java.time.Instant.now().toString();
+    execution.put("startedAt",now);execution.put("endedAt",now);execution.put("durationMs",0);
+    execution.put("httpElapsedMs",0);execution.put("modelInferenceMs",null);execution.put("networkWaitMs",null);
+    execution.put("retryCount",0);execution.put("requestCount",0);execution.put("modelCallAttempted",false);execution.put("actualModelCall",false);
+    execution.put("inferenceReused",true);execution.put("sourceStage","JEV");execution.put("category","REAL_AI");
+    execution.put("sourceExecution",s.decode(primary.path("answers").path("_execution").toString()));return execution;
   }
 
   private static double probability(JsonNode value) {

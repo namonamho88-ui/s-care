@@ -12,7 +12,11 @@ public class Harness {
  @org.springframework.beans.factory.annotation.Autowired(required=false) private DurableQueue queue;
  private final Store s;private final JevRouter jev;private final Ontology graph;private final RpcClient rpc;private final LocalSkillStore skills;private final EvidencePolicy policy;private final KnowledgeEngine knowledge;private final long delay;
  private final ExecutorService workers=Executors.newFixedThreadPool(4);
- public Harness(Store s,JevRouter jev,Ontology graph,RpcClient rpc,LocalSkillStore skills,EvidencePolicy policy,KnowledgeEngine knowledge,@Value("${brain.step-ms}") long delay){this.s=s;this.jev=jev;this.graph=graph;this.rpc=rpc;this.skills=skills;this.policy=policy;this.knowledge=knowledge;this.delay=delay;}
+ private final ExecutorService agents=new ThreadPoolExecutor(8,8,0,TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(32),new ThreadPoolExecutor.AbortPolicy());
+ private final Set<CompletableFuture<Void>> agentRuns=ConcurrentHashMap.newKeySet();
+ @Value("${brain.parallel-analysis:true}") private boolean parallelAnalysis=true;
+ private final PerformanceTrace performance;
+ public Harness(Store s,JevRouter jev,Ontology graph,RpcClient rpc,LocalSkillStore skills,EvidencePolicy policy,KnowledgeEngine knowledge,@Value("${brain.step-ms}") long delay){this.s=s;this.jev=jev;this.graph=graph;this.rpc=rpc;this.skills=skills;this.policy=policy;this.knowledge=knowledge;this.delay=delay;this.performance=new PerformanceTrace(s);}
  @EventListener(ApplicationReadyEvent.class) public void recoverStartup(){s.db.update("UPDATE evaluations SET status='FAILED' WHERE status='RUNNING'");try{graph.sync();}catch(Exception e){s.audit(null,"system","GRAPH_UNAVAILABLE",Map.of("reason",e.getMessage()));}}
  public synchronized String create(String scenarioId,String mode,String provider,String title,String asset,String observations,String owner){
   return createInternal(scenarioId,mode,provider,title,asset,observations,owner,null);
@@ -41,14 +45,26 @@ public class Harness {
  private void run(String id,Runnable task){if(queue!=null)return;workers.submit(()->{try{task.run();}catch(Exception e){fail(id,String.valueOf(e.getMessage()));}});}
  private Object step(String id,String stage,String title,Supplier<Object> task){
   var lease=WorkContext.get();if(lease!=null){s.ensureActive(id);var cached=s.db.queryForList("SELECT result_json FROM work_checkpoints WHERE job_id=? AND stage=?",lease.id(),stage);if(!cached.isEmpty())return s.decode(cached.get(0).get("result_json"));}
-s.active(id,()->{s.event(id,stage,"RUNNING",title,Map.of());return null;});for(int attempt=1;attempt<=2;attempt++)try{if(delay>0)Thread.sleep(delay);s.ensureActive(id);Object data=task.get();s.active(id,()->{s.event(id,stage,"COMPLETED",title+" 완료",data);if(lease!=null)s.db.update("INSERT INTO work_checkpoints(job_id,stage,result_json) VALUES (?,?,?)",lease.id(),stage,s.encode(data));return null;});return data;}catch(Exception e){s.ensureActive(id);int failedAttempt=attempt;s.active(id,()->{s.audit(id,"harness","STEP_ATTEMPT_FAILED",Map.of("stage",stage,"attempt",failedAttempt,"reason",String.valueOf(e.getMessage())));return null;});if(attempt==2)throw new IllegalStateException(stage+": "+e.getMessage());}throw new IllegalStateException();}
+  return performance.measure(id,stage,()->{
+   s.active(id,()->{s.event(id,stage,"RUNNING",title,Map.of());return null;});
+   for(int attempt=1;attempt<=2;attempt++)try{
+    if(attempt>1)PerformanceTrace.retry();
+    if(delay>0)Thread.sleep(delay);s.ensureActive(id);Object data=task.get();
+    s.active(id,()->{s.event(id,stage,"COMPLETED",title+" 완료",data);if(lease!=null)s.db.update("INSERT INTO work_checkpoints(job_id,stage,result_json) VALUES (?,?,?)",lease.id(),stage,s.encode(data));return null;});return data;
+   }catch(InterruptedException e){Thread.currentThread().interrupt();throw new CancellationException("분석 작업 중단");}
+   catch(CancellationException e){throw e;}
+   catch(Exception e){s.ensureActive(id);int failedAttempt=attempt;s.active(id,()->{s.audit(id,"harness","STEP_ATTEMPT_FAILED",Map.of("stage",stage,"attempt",failedAttempt,"reason",String.valueOf(e.getMessage())));return null;});if(attempt==2)throw new IllegalStateException(stage+": "+e.getMessage());}
+   throw new IllegalStateException();
+  });
+ }
  private void analyze(String id){var i=s.active(id,()->{if(s.incident(id).get("status").equals("REGISTERED"))s.transition(id,"REGISTERED","ANALYZING");var row=s.incident(id);s.event(id,"JEV","RUNNING","Jev 판단 요청",Map.of("provider",row.get("provider")));return row;});JevDecision d;
-  try{d=i.get("decision_json")==null?jev.decide(i.get("observations").toString(),i.get("mode").toString(),i.get("provider").toString()):decision(id);}
+  try{d=i.get("decision_json")==null?performance.measure(id,"JEV",()->jev.decide(i.get("observations").toString(),i.get("mode").toString(),i.get("provider").toString())):decision(id);}
   catch(IllegalArgumentException invalid){s.active(id,()->{s.transition(id,"ANALYZING","NEEDS_REVIEW");s.event(id,"JEV","NEEDS_REVIEW",invalid.getMessage(),Map.of("schemaValid",false));s.audit(id,"harness","DECISION_REVIEW_REQUIRED",Map.of("reason",invalid.getMessage()));return null;});return;}
   d.validate();s.active(id,()->{s.db.update("UPDATE incidents SET decision_json=?,type=?,severity=?,owner_id=(SELECT id FROM operators WHERE department=? ORDER BY id LIMIT 1) WHERE id=?",s.encode(d),d.type(),d.severity(),d.department(),id);s.event(id,"JEV","COMPLETED",d.fallback()?"로컬 연결 실패 · 시뮬레이션 결과로 전환":d.simulated()?"Mock 시뮬레이션 판단 완료":"실제 Jev 모델 판단 완료",d);s.audit(id,"jev","DECISION",d);return null;});
   if(d.needsReview()){s.active(id,()->{s.transition(id,"ANALYZING","NEEDS_REVIEW");s.event(id,"REVIEW","WAITING","판단 신뢰도 또는 근거 부족 · 담당자 확인 필요",Map.of("confidence",d.confidence(),"evidenceScore",d.evidenceScore()));return null;});return;}continueAnalysis(id);
  }
- private void continueAnalysis(String id){var i=s.incident(id);Object impact=step(id,"ONTOLOGY","Ontology 영향 분석",()->graph.impact(i.get("asset_id").toString()));s.active(id,()->{s.db.update("UPDATE incidents SET impact_json=? WHERE id=?",s.encode(impact),id);return null;});for(String name:List.of("incident","diagnosis","impact"))step(id,"TASK_"+name,"전문 Agent · "+name,()->agent(id,name));step(id,"HERMES","Hermes Adapter · 승인 Skill 검색",()->agent(id,"knowledge"));
+ private void continueAnalysis(String id){var i=s.incident(id);Object impact=step(id,"ONTOLOGY","Ontology 영향 분석",()->graph.impact(i.get("asset_id").toString()));s.active(id,()->{s.db.update("UPDATE incidents SET impact_json=? WHERE id=?",s.encode(impact),id);return null;});
+  runIndependentAgents(id);
   var assessment=s.json.valueToTree(step(id,"HARNESS","Harness 근거 교차 검증",()->{
    var decision=decision(id);var approved=(List<?>)skills.search(decision.type()).get("skills");
    var task=s.one("SELECT result_json FROM agent_tasks WHERE incident_id=? AND agent='diagnosis' AND status='completed' ORDER BY created_at DESC LIMIT 1",id);
@@ -62,6 +78,24 @@ s.active(id,()->{s.event(id,stage,"RUNNING",title,Map.of());return null;});for(i
   if(assessment.path("needsReview").asBoolean()){s.active(id,()->{s.transition(id,"ANALYZING","NEEDS_REVIEW");s.event(id,"REVIEW","WAITING","분류·원인 후보 교차 검증: 담당자 확인 필요",s.decode(assessment.toString()));return null;});return;}
   s.active(id,()->{s.transition(id,"ANALYZING","WAITING_APPROVAL");s.event(id,"APPROVAL","WAITING","가상 복구 대응 승인 대기",Map.of("actor","admin"));return null;});
  }
+ private void runIndependentAgents(String id){
+  var lease=WorkContext.get();var pending=new ArrayList<CompletableFuture<Void>>();
+  for(String name:List.of("incident","diagnosis","impact","knowledge")){
+   Runnable action=()->step(id,name.equals("knowledge")?"HERMES":"TASK_"+name,name.equals("knowledge")?"Hermes Adapter · 승인 Skill 검색":"전문 Agent · "+name,()->agent(id,name));
+   if(!parallelAnalysis){action.run();continue;}
+   try{
+    var future=CompletableFuture.runAsync(()->{
+     try{if(lease!=null)WorkContext.set(lease.id(),lease.token());s.ensureActive(id);action.run();}
+     finally{WorkContext.clear();}
+    },agents);
+    agentRuns.add(future);future.whenComplete((result,error)->agentRuns.remove(future));pending.add(future);
+   }catch(RejectedExecutionException stopping){pending.add(CompletableFuture.failedFuture(stopping));break;}
+  }
+  // Join all children before the parent changes job/incident state or releases its lease.
+  try{CompletableFuture.allOf(pending.toArray(CompletableFuture[]::new)).get();}
+  catch(InterruptedException e){pending.forEach(f->f.cancel(true));Thread.currentThread().interrupt();throw new CancellationException("병렬 분석 중단");}
+  catch(ExecutionException e){if(e.getCause() instanceof RuntimeException failure)throw failure;throw new IllegalStateException(e.getCause());}
+ }
  private Object agent(String id,String name){s.ensureActive(id);var i=s.incident(id);Object result=rpc.agent(name,id,((Number)i.get("version")).longValue());if(!s.json.valueToTree(result).path("status").path("state").asText().equals("completed"))throw new IllegalStateException(name+" Agent failed");return result;}
  public JevDecision decision(String id){try{return s.json.readValue(s.incident(id).get("decision_json").toString(),JevDecision.class);}catch(Exception e){throw new IllegalStateException("Decision is missing");}}
  public synchronized void review(String id,String type,String severity,String department,String reason){text(reason,1000,"확인 사유");if(!JevDecision.TYPES.contains(type)||!List.of("P1","P2","P3").contains(severity)||!JevDecision.DEPARTMENTS.contains(department))throw new IllegalArgumentException("Invalid review classification");var i=s.incident(id);JevDecision d=i.get("decision_json")==null?new JevDecision(type,severity,Integer.parseInt(severity.substring(1)),department,false,0,0,"OPERATOR","manual-review",0,false,false,"",false,List.of(i.get("observations").toString(),reason),Map.of()):decision(id).reviewed(type,severity,department,reason);
@@ -74,5 +108,5 @@ s.active(id,()->{s.event(id,stage,"RUNNING",title,Map.of());return null;});for(i
  public synchronized void retry(String id){s.tx(()->{boolean approved=s.db.queryForObject("SELECT COUNT(*) FROM approvals WHERE incident_id=? AND approved=TRUE",Integer.class,id)>0;s.transition(id,"FAILED",approved?"RECOVERING":"REGISTERED");s.audit(id,Access.actor(),"RETRY",Map.of("resumeRecovery",approved));if(queue!=null)queue.enqueue(id,approved?"RECOVER":"ANALYZE");return null;});if(s.incident(id).get("status").equals("RECOVERING"))run(id,()->recover(id));else run(id,()->analyze(id));}
  void fail(String id,String error){s.tx(()->{if(s.db.update("UPDATE incidents SET status='FAILED',version=version+1 WHERE id=? AND deleted_at IS NULL AND status IN ('REGISTERED','ANALYZING','RECOVERING')",id)!=1)return null;s.event(id,"FAILURE","FAILED",error,Map.of());s.audit(id,"harness","FAILED",Map.of("reason",error));return null;});}
  void executePhase(String id,String phase){s.ensureActive(id);String state=s.incident(id).get("status").toString();if(!List.of("REGISTERED","ANALYZING","RECOVERING").contains(state))return;if(phase.equals("RECOVER")){if(!state.equals("RECOVERING"))throw new IllegalStateException("승인된 복구 상태가 아닙니다.");recover(id);}else if(phase.equals("CONTINUE")){if(state.equals("ANALYZING"))continueAnalysis(id);}else if(List.of("REGISTERED","ANALYZING").contains(state))analyze(id);}
- @PreDestroy void shutdown(){workers.shutdownNow();}
+ @PreDestroy void shutdown(){workers.shutdownNow();agents.shutdownNow();agentRuns.forEach(f->f.cancel(true));}
 }

@@ -1,0 +1,16 @@
+{
+  "realModelCalls" : 0,
+  "promptContext" : {
+    "approvedCandidateCount" : 20,
+    "compactCharacters" : 13626,
+    "version" : "compact-v1",
+    "estimatedInputTokens" : 6813,
+    "allCandidateIdsPreserved" : true,
+    "originalCharacters" : 242394,
+    "tokenEstimateMethod" : "CHARACTERS_DIVIDED_BY_2_NOT_TOKENIZER"
+  },
+  "fixture" : "20 approved skills; 2,000-character solution + 10,000-character provenance each",
+  "fictional" : true,
+  "measurement" : "LOCAL_CONTRACT_FIXTURE_NOT_REAL_AI",
+  "characterReductionPercent" : 94.37857372707245
+}

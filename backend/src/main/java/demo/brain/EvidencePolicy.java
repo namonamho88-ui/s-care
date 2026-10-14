@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.*;
 import org.springframework.stereotype.Service;
 
-/** Cross-checks independent model output and database evidence; never executes recovery. */
+/** Cross-checks classification, cause questions and database evidence; never executes recovery. */
 @Service
 public class EvidencePolicy {
   public Map<String,Object> check(JevDecision decision, JsonNode diagnosis, JsonNode impact,

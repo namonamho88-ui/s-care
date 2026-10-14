@@ -1,4 +1,5 @@
 import { recoveryNotesDraft } from './recovery-notes.mjs';
+import { analysisStages } from './analysis-performance.mjs';
 
 export const incidentSteps = [
   { label: '장애 접수', who: '사용자 / 관리자' },
@@ -13,6 +14,7 @@ const stageNames = {
   FORCE_STOP: '강제 종료', MANAGEMENT: '관리자 처리', INCIDENT: '장애 접수', MESSAGE_INTAKE: '문자 관측값 확인', JEV: 'AI 장애 판단 · Jev', ONTOLOGY: '영향 범위 분석 · Ontology',
   AGENT_INCIDENT: '업무 조정 · Incident Agent', AGENT_DIAGNOSIS: '원인 후보 분석 · Diagnosis Agent',
   AGENT_IMPACT: '영향 분석 · Impact Agent', AGENT_KNOWLEDGE: '해결 지식 검색 · Knowledge Agent',
+  TASK_INCIDENT: '업무 조정 · Incident Agent', TASK_DIAGNOSIS: '원인 후보 분석 · Diagnosis Agent', TASK_IMPACT: '영향 분석 · Impact Agent', PERFORMANCE: '실행 시간 측정',
   AGENT_RECOVERY: '복구 가이드 · Recovery Agent', AGENT_REPORT: '보고서 작성 · Report Agent',
   HERMES: '승인된 해결 절차 검색 · Hermes', HARNESS: '판단 근거·실행 정책 검증 · Harness',
   REVIEW: '관리자 판단 확인', APPROVAL: '관리자 대응 승인', RECOVERY: '가상 복구 가이드',
@@ -28,7 +30,7 @@ export const eventStateLabel = state => ({ RUNNING: '진행 중', COMPLETED: '�
  * @param {{isAdmin?: boolean, canEdit?: boolean, dirty?: boolean, notes?: string, prevention?: string}} options */
 export function incidentGuide(incident, options = {}) {
   const { isAdmin = false, canEdit = false, dirty = false } = options;
-  const events = incident?.events || [];
+  const events = (incident?.events || []).filter(event=>event.stage!=='PERFORMANCE');
   const latest = events.at(-1);
   const notes = options.notes ?? incident?.notes ?? '';
   const prevention = options.prevention ?? incident?.prevention ?? '';
@@ -100,8 +102,9 @@ export function incidentGuide(incident, options = {}) {
   }
   if (incident?.deleted_at) { step=-1; tone='stopped'; badge='삭제된 장애'; title='목록에서 삭제된 장애입니다'; text='기록은 보존되어 있습니다. 관리자가 복원할 수 있으며 중단한 작업은 자동으로 재개되지 않습니다.'; action='삭제 기록 보기'; target='timeline'; }
   const activeLatest = ['ANALYZING', 'RECOVERING'].includes(incident?.status) && latest && latest.stage !== 'FAILURE' && latest.state !== 'WAITING';
+  const running = analysisStages(incident).filter(row=>!row.nested&&row.state==='RUNNING');
   return { step, tone, badge, title, text, action, target,
-    phase: activeLatest ? `${stageLabel(latest.stage)} · ${eventStateLabel(latest.state)}` : null,
+    phase: running.length ? running.map(row=>`${stageLabel(row.stage)} · 진행 중`).join(' / ') : activeLatest ? `${stageLabel(latest.stage)} · ${eventStateLabel(latest.state)}` : null,
     steps: incidentSteps.map((item, index) => ({ ...item, state: step === 6 || index < step ? 'complete' : index === step ? 'current' : 'pending' })),
   };
 }

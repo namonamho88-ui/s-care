@@ -1,0 +1,125 @@
+{
+  "fictional": true,
+  "environment": "ISOLATED_H2_LOOPBACK_ONLY",
+  "measurement": "POST /api/incidents to WAITING_APPROVAL; includes durable queue wait; no human approval or recovery",
+  "p95Method": "nearest-rank (12 samples: maximum)",
+  "realAiMeasured": false,
+  "rows": [
+    {
+      "category": "DEMO_MOCK",
+      "before": {
+        "count": 12,
+        "meanMs": 4007.2669333333333,
+        "medianMs": 4021.9057,
+        "p95Ms": 4063.3891
+      },
+      "after": {
+        "count": 12,
+        "meanMs": 142.15305833333335,
+        "medianMs": 115.48285,
+        "p95Ms": 554.9438
+      },
+      "meanReductionPercent": 96.45261818844976,
+      "stageMeanMsBefore": {
+        "AGENT_DIAGNOSIS": 7.916666666666667,
+        "AGENT_IMPACT": 2.1666666666666665,
+        "AGENT_INCIDENT": 2.3333333333333335,
+        "AGENT_KNOWLEDGE": 13.583333333333334,
+        "HARNESS": 511.75,
+        "HERMES": 529.9166666666666,
+        "JEV": 3.0833333333333335,
+        "ONTOLOGY": 509.9166666666667,
+        "QUEUE": 825.3333333333334,
+        "TASK_diagnosis": 523.9166666666666,
+        "TASK_impact": 521.4166666666666,
+        "TASK_incident": 524.8333333333334
+      },
+      "stageMeanMsAfter": {
+        "AGENT_DIAGNOSIS": 24.75,
+        "AGENT_IMPACT": 12.416666666666666,
+        "AGENT_INCIDENT": 10.5,
+        "AGENT_KNOWLEDGE": 31.166666666666668,
+        "HARNESS": 7.083333333333333,
+        "HERMES": 52.0,
+        "JEV": 8.333333333333334,
+        "ONTOLOGY": 3.0,
+        "QUEUE": 9.166666666666666,
+        "TASK_diagnosis": 45.75,
+        "TASK_impact": 33.0,
+        "TASK_incident": 30.75
+      },
+      "accuracyMeasured": false
+    },
+    {
+      "category": "MOCK_FALLBACK",
+      "before": {
+        "count": 12,
+        "meanMs": 4033.978475,
+        "medianMs": 4042.40875,
+        "p95Ms": 4077.8215
+      },
+      "after": {
+        "count": 12,
+        "meanMs": 78.01959166666667,
+        "medianMs": 77.1054,
+        "p95Ms": 98.487
+      },
+      "meanReductionPercent": 98.06593931647922,
+      "stageMeanMsBefore": {
+        "AGENT_DIAGNOSIS": 6.166666666666667,
+        "AGENT_IMPACT": 1.6666666666666667,
+        "AGENT_INCIDENT": 1.5,
+        "AGENT_KNOWLEDGE": 18.666666666666668,
+        "HARNESS": 513.25,
+        "HERMES": 534.0833333333334,
+        "JEV": 11.5,
+        "ONTOLOGY": 510.6666666666667,
+        "QUEUE": 880.5833333333334,
+        "TASK_diagnosis": 519.6666666666666,
+        "TASK_impact": 519.0833333333334,
+        "TASK_incident": 520.6666666666666
+      },
+      "stageMeanMsAfter": {
+        "AGENT_DIAGNOSIS": 11.0,
+        "AGENT_IMPACT": 5.583333333333333,
+        "AGENT_INCIDENT": 5.083333333333333,
+        "AGENT_KNOWLEDGE": 17.75,
+        "HARNESS": 2.9166666666666665,
+        "HERMES": 30.083333333333332,
+        "JEV": 11.25,
+        "ONTOLOGY": 1.5,
+        "QUEUE": 8.083333333333334,
+        "TASK_diagnosis": 24.0,
+        "TASK_impact": 18.833333333333332,
+        "TASK_incident": 17.333333333333332
+      },
+      "accuracyMeasured": false
+    },
+    {
+      "category": "REAL_AI",
+      "before": {
+        "count": 0,
+        "meanMs": null,
+        "medianMs": null,
+        "p95Ms": null
+      },
+      "after": {
+        "count": 0,
+        "meanMs": null,
+        "medianMs": null,
+        "p95Ms": null
+      },
+      "meanReductionPercent": null,
+      "stageMeanMsBefore": {},
+      "stageMeanMsAfter": {},
+      "accuracyMeasured": false
+    }
+  ],
+  "limitations": [
+    "SQL ontology fallback, not Neo4j",
+    "H2, not PostgreSQL",
+    "Loopback connection refusal does not represent remote timeout latency",
+    "No actual AI accuracy or inference speed claim",
+    "Nested stage times overlap"
+  ]
+}
