@@ -22,10 +22,13 @@ export default function AnalysisPerformance({incident}: {incident: Row}) {
     <details><summary>시각·추론·통신 측정</summary><p>시작 {at(row.startedAt)} · 종료 {row.endedAt?at(row.endedAt):"미완료"} (KST){!row.measured?" · 이벤트 시각 기준":""}</p><p>모델 추론 {ms(row.modelInferenceMs)} · HTTP 왕복 {ms(row.httpElapsedMs)} · 네트워크 대기 {ms(row.networkWaitMs)} · 재시도 {Number.isFinite(row.retryCount)?`${row.retryCount}회`:"미기록"}</p></details>
   </li>;
   return <section className="analysis-performance workflow-card" aria-label="단계별 분석 실행 현황">
-    <h3>단계별 분석 실행 현황 · 가상 장애</h3>
-    <p className="small" aria-live="polite">{running.length?`현재 실행: ${running.map(row=>stageLabel(row.stage)).join(" / ")}`:active?"다음 실행 상태 확인 중":"저장된 실행 결과"}</p>
+    <details key={incident.id}>
+    <summary>단계별 분석 실행 현황 · 가상 장애 <span className="small">펼쳐서 보기</span></summary>
+    <p className="small">{main.filter(row=>row.state==="COMPLETED").length}개 단계 완료</p>
     <ul className="analysis-stages">{main.map(render)}</ul>
     {nested.length>0&&<details className="mt-3"><summary>A2A 내부 실행 측정 {nested.length}개 · 상위 단계와 시간 중복</summary><ul className="analysis-stages">{nested.map(render)}</ul></details>}
     <p className="small muted mt-3">병렬·중첩 단계의 시간은 합산하지 않습니다. HTTP 왕복에는 서버 대기·추론이 포함되며, 제공자가 추론 시간을 보내지 않으면 네트워크 대기와 분리할 수 없습니다.</p>
+    </details>
+    <p className="small analysis-current" aria-live="polite">{running.length?`현재 실행: ${running.map(row=>`${stageLabel(row.stage)} · ${row.elapsedMs===null?"시간 미확인":`${Math.floor(row.elapsedMs/1000)}초 경과`}`).join(" / ")}`:active?"다음 실행 상태 확인 중":"저장된 실행 결과"}</p>
   </section>;
 }

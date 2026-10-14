@@ -71,4 +71,15 @@ class PerformanceIntegrationTest {
    assertThat(s.one("SELECT status,token FROM work_jobs WHERE id=?",job)).containsEntry("status","CANCELLED").containsEntry("token",null);
   }finally{release.countDown();pool.shutdownNow();}
  }
+ @Test void lifecycleWritesAreAtomicWithMetricsAndInferenceRunsOutsideTransaction(){
+  String id=fixture();var trace=new PerformanceTrace(s);
+  trace.measure(id,"ATOMIC",()->{assertThat(TransactionSynchronizationManager.isActualTransactionActive()).isTrue();s.event(id,"ATOMIC","RUNNING","start",Map.of());},()->{
+   assertThat(TransactionSynchronizationManager.isActualTransactionActive()).isFalse();return Map.of("provider","MOCK");
+  },result->{assertThat(TransactionSynchronizationManager.isActualTransactionActive()).isTrue();s.event(id,"ATOMIC","COMPLETED","done",result);s.audit(id,"test","ATOMIC_COMPLETE",result);});
+  assertThat(s.one("SELECT state FROM analysis_stage_metrics WHERE incident_id=?",id)).containsEntry("state","COMPLETED");
+  assertThat(s.db.queryForObject("SELECT COUNT(*) FROM events WHERE incident_id=?",Integer.class,id)).isEqualTo(3);
+  assertThatThrownBy(()->trace.measure(id,"ROLLBACK",()->{},()->Map.of(),result->{s.event(id,"ROLLBACK","COMPLETED","must roll back",result);throw new IllegalStateException("commit failure");})).isInstanceOf(IllegalStateException.class);
+  assertThat(s.db.queryForObject("SELECT COUNT(*) FROM events WHERE incident_id=? AND stage='ROLLBACK'",Integer.class,id)).isZero();
+  assertThat(s.one("SELECT state FROM analysis_stage_metrics WHERE incident_id=? AND stage='ROLLBACK'",id)).containsEntry("state","FAILED");
+ }
 }

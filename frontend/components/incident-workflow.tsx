@@ -29,6 +29,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
   renderAgent: (task: Row) => ReactNode;
 }) {
   const [step, setStep] = useState(0), [follow, setFollow] = useState(true);
+  const [scrollRequest,setScrollRequest] = useState(0);
   const [notes, setNotes] = useState(""), [prevention, setPrevention] = useState("");
   const [title, setTitle] = useState(""), [owner, setOwner] = useState("");
   const [type, setType] = useState("RESOURCE"), [severity, setSeverity] = useState("P1"), [department, setDepartment] = useState("PLATFORM");
@@ -50,6 +51,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
   const busy = !!operation;
   const running = ["REGISTERED", "ANALYZING", "RECOVERING"].includes(status);
   const canWriteNotes = !stopped && canEdit && ["RESOLVED", "CLOSED"].includes(status);
+  const inputTarget = !stopped && !evidence ? step===1 && status==="NEEDS_REVIEW" && isAdmin ? "review" : step===2 && status==="WAITING_APPROVAL" && isAdmin ? "approval" : step===4 && canWriteNotes ? "notes" : "" : "";
   const draft = recoveryNotesDraft(incident?.notes);
   const proof = draft ? incident?.notes : [...(incident?.events || [])].reverse().find((e: Row) => e.stage === "VERIFY" && e.state === "COMPLETED")?.data_json;
 
@@ -71,16 +73,16 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
   useEffect(() => {
     if (!incident || !open) return;
     const frame = requestAnimationFrame(() => {
-      const el = content.current, head = document.querySelector(".workflow-head");
+      const el = (inputTarget ? document.getElementById(`guide-${inputTarget}`) : null) || content.current, head = document.querySelector(".workflow-head");
       if (!el) return;
-      el.style.scrollMarginTop = `${(head?.getBoundingClientRect().height || 0) + 12}px`;
+      el.style.scrollMarginTop = `${(head && getComputedStyle(head).position==="sticky" ? head.getBoundingClientRect().height : 0) + 12}px`;
       el.scrollIntoView({ block: "start", behavior: "instant" });
       if (keyboardStep.current) document.getElementById(`workflow-tab-${step}`)?.focus({ preventScroll: true });
       else el.focus({ preventScroll: true });
       keyboardStep.current = false;
     });
     return () => cancelAnimationFrame(frame);
-  }, [open, id, step, evidence]);
+  }, [open, id, step, evidence, inputTarget, scrollRequest]);
   useEffect(() => {
     if (!operation) { setSeconds(0); return; }
     const tick = () => setSeconds(Math.floor((Date.now() - operation.since) / 1000));
@@ -100,7 +102,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
     } finally { setOperation(null); }
   }
   function selectStep(index: number) { setFollow(false); setEvidence(""); setStep(index); }
-  function returnToCurrent() { setFollow(true); setStep(activeStep); setEvidence(""); }
+  function returnToCurrent() { setFollow(true); setStep(activeStep); setEvidence(""); setScrollRequest(n=>n+1); }
   const command = (suffix: string, body: any, label: string, success: string) => perform(`/incidents/${id}/${suffix}`, "POST", body, label, success);
   const latest = incident?.events?.filter((event: Row)=>event.stage!=="PERFORMANCE").at(-1);
   const decisionSource = incident?.decision ? categoryLabel(resultCategory(incident.decision)) : ["REGISTERED", "ANALYZING"].includes(status) ? incident?.mode === "DEMO" ? "DEMO Mock · 모의 판단 대기" : "모델 판단 결과 대기" : "저장된 모델 판단 기록 없음";
@@ -136,13 +138,14 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
         {operation && <div className="workflow-request" role="status"><LoaderCircle size={16} className="working-spinner" /><strong>{operation.label}</strong><span>서버 응답 대기 중 · <span aria-hidden="true">{seconds}초 경과</span></span></div>}
       </>}
     </header>
-    {incident && <div className="workflow-content" ref={content} id="workflow-stage" role="tabpanel" aria-labelledby={`workflow-tab-${step}`} tabIndex={-1}>
+    {incident && <div className="workflow-content" data-active-input={inputTarget} ref={content} id="workflow-stage" role="tabpanel" aria-labelledby={`workflow-tab-${step}`} tabIndex={-1}>
       {error && <div className="banner error" role="alert">{error}<Button size="sm" variant="outline" className="mt-2" disabled={busy} onClick={() => { void onRefresh().then(() => setError("")).catch(e => setError(e.message)); }}>상태 다시 확인</Button></div>}
       {message && <p className="workflow-success" role="status"><Check size={15} />{message}</p>}
       <div className={`workflow-instruction ${guide.tone}`} aria-live="polite">
         <span>{stopped || step === activeStep ? guide.badge : `${step + 1}단계 ${step < activeStep ? "기록 확인" : "미리 보기"}`}</span>
         <h2>{stopped || step === activeStep ? guide.title : `${step + 1}. ${incidentSteps[step].label}`}</h2>
         <p>{stopped || step === activeStep ? guide.text : step > activeStep ? "앞 단계를 완료하면 이 단계로 자동 이동합니다. 현재 단계에서 필요한 확인과 입력을 먼저 진행하세요." : "이미 처리한 단계의 기록을 확인하고 있습니다."}</p>
+        {inputTarget && <Button variant="outline" size="sm" onClick={()=>setScrollRequest(n=>n+1)}>현재 작성 위치로 이동 <ArrowRight size={14}/></Button>}
       </div>
       {isAdmin && <details className="workflow-evidence incident-management" key={`${id}-${status}-${incident.deleted_at || "visible"}`}><summary>관리자 작업 · 강제 종료 / 삭제 / 복원</summary>
         <p className="small muted">강제 종료는 복구 완료가 아닙니다. 삭제하면 목록·집계에서 제외하며 기록은 보존해 복원할 수 있습니다. 이미 전송한 AI 요청은 도착할 수 있지만 후속 처리에는 반영하지 않습니다.</p>

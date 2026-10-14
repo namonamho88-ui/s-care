@@ -45,17 +45,16 @@ public class Harness {
  private void run(String id,Runnable task){if(queue!=null)return;workers.submit(()->{try{task.run();}catch(Exception e){fail(id,String.valueOf(e.getMessage()));}});}
  private Object step(String id,String stage,String title,Supplier<Object> task){
   var lease=WorkContext.get();if(lease!=null){s.ensureActive(id);var cached=s.db.queryForList("SELECT result_json FROM work_checkpoints WHERE job_id=? AND stage=?",lease.id(),stage);if(!cached.isEmpty())return s.decode(cached.get(0).get("result_json"));}
-  return performance.measure(id,stage,()->{
-   s.active(id,()->{s.event(id,stage,"RUNNING",title,Map.of());return null;});
+  return performance.measure(id,stage,()->s.event(id,stage,"RUNNING",title,Map.of()),()->{
    for(int attempt=1;attempt<=2;attempt++)try{
     if(attempt>1)PerformanceTrace.retry();
     if(delay>0)Thread.sleep(delay);s.ensureActive(id);Object data=task.get();
-    s.active(id,()->{s.event(id,stage,"COMPLETED",title+" 완료",data);if(lease!=null)s.db.update("INSERT INTO work_checkpoints(job_id,stage,result_json) VALUES (?,?,?)",lease.id(),stage,s.encode(data));return null;});return data;
+    return data;
    }catch(InterruptedException e){Thread.currentThread().interrupt();throw new CancellationException("분석 작업 중단");}
    catch(CancellationException e){throw e;}
    catch(Exception e){s.ensureActive(id);int failedAttempt=attempt;s.active(id,()->{s.audit(id,"harness","STEP_ATTEMPT_FAILED",Map.of("stage",stage,"attempt",failedAttempt,"reason",String.valueOf(e.getMessage())));return null;});if(attempt==2)throw new IllegalStateException(stage+": "+e.getMessage());}
    throw new IllegalStateException();
-  });
+  },data->{s.event(id,stage,"COMPLETED",title+" 완료",data);if(lease!=null)s.db.update("INSERT INTO work_checkpoints(job_id,stage,result_json) VALUES (?,?,?)",lease.id(),stage,s.encode(data));});
  }
  private void analyze(String id){var i=s.active(id,()->{if(s.incident(id).get("status").equals("REGISTERED"))s.transition(id,"REGISTERED","ANALYZING");var row=s.incident(id);s.event(id,"JEV","RUNNING","Jev 판단 요청",Map.of("provider",row.get("provider")));return row;});JevDecision d;
   try{d=i.get("decision_json")==null?performance.measure(id,"JEV",()->jev.decide(i.get("observations").toString(),i.get("mode").toString(),i.get("provider").toString())):decision(id);}

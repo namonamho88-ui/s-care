@@ -709,12 +709,61 @@ test('analysis performance shows parallel timers and immediate SSE completions d
  const mutations=await setup(page,undefined,'ADMIN',{status:'ANALYZING',performance:{stages},events:[{id:1,stage:'TASK_diagnosis',state:'RUNNING',created_at:startedAt},{id:2,stage:'HERMES',state:'RUNNING',created_at:startedAt}]});
  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
  const panel=page.getByRole('region',{name:'단계별 분석 실행 현황'});
+ await expect(panel.locator('details').first()).not.toHaveAttribute('open','');
+ await expect(panel).toContainText('5초 경과');
+ await panel.locator('summary').first().click();
  await expect(panel.locator('.analysis-stage.running')).toHaveCount(2);await expect(panel).toContainText('5초 경과');
  await page.clock.runFor(1000);await expect(panel).toContainText('6초 경과');
  await page.evaluate(()=>{(window as any).analysisSource.listeners.stage({data:JSON.stringify({id:3,incident_id:'INC-UI-RESOLVED',stage:'PERFORMANCE',state:'COMPLETED',created_at:'2026-10-15T00:00:06Z',message:'TASK_diagnosis 실행 시간',data_json:JSON.stringify({id:'diagnosis',stage:'TASK_diagnosis',state:'COMPLETED',startedAt:'2026-10-15T00:00:00Z',endedAt:'2026-10-15T00:00:06Z',durationMs:6000,category:'MOCK_FALLBACK',httpElapsedMs:5900,modelInferenceMs:null,networkWaitMs:null,retryCount:0})})});});
  await expect(panel.locator('.analysis-stage.completed')).toHaveCount(1);await expect(panel).toContainText('MOCK_FALLBACK · 실제 AI 아님');
  await page.clock.runFor(300);await expect(panel.locator('.analysis-stage.completed')).toHaveCount(1);await expect(panel.locator('.analysis-stage.running')).toHaveCount(1);
  await panel.screenshot({path:'test-results/analysis-performance.png'});expect(mutations).toEqual([]);expect(pageErrors).toEqual([]);
+});
+
+for(const viewport of [{width:390,height:844},{width:1440,height:1000}]) {
+ test(`current input is highlighted and scrolled into view at ${viewport.width}px`,async({page})=>{
+  await page.setViewportSize(viewport);
+  await setup(page,undefined,'ADMIN',{status:'RESOLVED',notes:'',prevention:'',performance:{stages:[{id:'jev',stage:'JEV',state:'COMPLETED',durationMs:2,category:'DEMO_MOCK'}]}});
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  const dialog=page.getByRole('dialog',{name:'장애 상세'}),target=dialog.locator('#guide-notes');
+  await expect(target).toBeFocused();
+  await expect(dialog.locator('.workflow-content')).toHaveAttribute('data-active-input','notes');
+  await expect.poll(()=>target.evaluate(el=>{const r=el.getBoundingClientRect();const h=document.querySelector('.workflow-head')!;const bottom=getComputedStyle(h).position==='sticky'?h.getBoundingClientRect().bottom:0;return r.top>=bottom && r.top<window.innerHeight/2;})).toBe(true);
+  await expect(dialog.getByRole('region',{name:'단계별 분석 실행 현황'}).locator('details').first()).not.toHaveAttribute('open','');
+  await dialog.getByRole('textbox',{name:'조치 후기',exact:true}).fill('가상 복구 확인');
+  await expect(dialog.getByRole('textbox',{name:'조치 후기',exact:true})).toBeFocused();
+  await dialog.screenshot({path:`test-results/current-input-${viewport.width}.png`});
+ });
+}
+
+test('demo is the explicit default for intake and real AI remains selectable',async({page})=>{
+ await setup(page);
+ await page.getByRole('button',{name:'장애 직접 등록',exact:true}).click();
+ await expect(page.getByLabel('등록 실행 모드',{exact:true})).toHaveValue('DEMO');
+ await page.getByLabel('등록 실행 모드',{exact:true}).selectOption('REAL');
+ await expect(page.getByLabel('등록 실행 모드',{exact:true})).toHaveValue('REAL');
+ await page.keyboard.press('Escape');
+ await page.getByRole('button',{name:'문자 붙여넣기',exact:true}).click();
+ await page.getByLabel('수신 문자',{exact:true}).fill('[Web발신] ABEND 가상 배치');
+ await page.route('**/api/message-intake/preview',route=>route.fulfill({json:smsPreview()}));
+ await page.getByRole('button',{name:'내용 분석',exact:true}).click();
+ await expect(page.getByLabel('문자 등록 실행 모드')).toHaveValue('REAL');
+ await page.getByLabel('문자 등록 실행 모드').selectOption('DEMO');
+ await expect(page.getByText('외부 모델을 호출하지 않는 시뮬레이션입니다.',{exact:true})).toBeVisible();
+});
+
+test('saving the current form does not wait for a slow dashboard refresh',async({page})=>{
+ await setup(page,undefined,'ADMIN',{status:'RESOLVED',notes:'',prevention:''});
+ await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+ const dialog=page.getByRole('dialog',{name:'장애 상세'});
+ await dialog.getByRole('textbox',{name:'조치 후기',exact:true}).fill('가상 복구 확인');
+ await dialog.getByRole('textbox',{name:'재발 방지 대책',exact:true}).fill('가상 점검 추가');
+ let release:()=>void=()=>{};const gate=new Promise<void>(resolve=>{release=resolve;});
+ await page.route('**/api/dashboard*',async route=>{await gate;await route.fulfill({json:{total:2,active:0}});});
+ await dialog.getByRole('button',{name:'수정 내용 저장',exact:true}).click();
+ await expect(dialog.getByRole('tab',{name:/6\. 장애 종료/})).toHaveAttribute('aria-selected','true');
+ await expect(dialog.getByRole('button',{name:'장애 종료',exact:true})).toBeEnabled();
+ release();
 });
 
 test('admin warmup displays unknown cost and never calls a model until one explicit request',async({page})=>{
