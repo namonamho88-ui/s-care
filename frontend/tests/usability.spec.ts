@@ -734,7 +734,51 @@ for(const viewport of [{width:390,height:844},{width:1440,height:1000}]) {
   await expect(dialog.getByRole('textbox',{name:'조치 후기',exact:true})).toBeFocused();
   await dialog.screenshot({path:`test-results/current-input-${viewport.width}.png`});
  });
+ test(`final close action scrolls into view after saving long notes at ${viewport.width}px`,async({page})=>{
+  await page.setViewportSize(viewport);
+  const mutations=await setup(page,undefined,'ADMIN',{status:'RESOLVED',notes:'',prevention:''});
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  const dialog=page.getByRole('dialog',{name:'장애 상세'}),target=dialog.locator('#guide-close');
+  await dialog.getByRole('textbox',{name:'조치 후기',exact:true}).fill('가상 복구 후 서비스와 지표를 확인했습니다. '.repeat(100));
+  await dialog.getByRole('textbox',{name:'재발 방지 대책',exact:true}).fill('가상 점검 항목을 추가했습니다. '.repeat(100));
+  await dialog.getByRole('button',{name:'수정 내용 저장',exact:true}).click();
+  await expect(target).toBeFocused();
+  await expect(dialog.locator('.workflow-content')).toHaveAttribute('data-active-input','close');
+  const close=dialog.getByRole('button',{name:'장애 종료',exact:true});
+  await expect(close).toBeEnabled();
+  await expect.poll(()=>close.evaluate(el=>{const r=el.getBoundingClientRect(),h=document.querySelector('.workflow-head')!;const bottom=getComputedStyle(h).position==='sticky'?h.getBoundingClientRect().bottom:0;return r.top>=bottom && r.bottom<=window.innerHeight;})).toBe(true);
+  await page.screenshot({path:`test-results/final-close-${viewport.width}.png`});
+  await dialog.getByRole('tab',{name:/5\. 후기/}).click();
+  await dialog.getByRole('button',{name:'현재 단계로 돌아가기',exact:false}).click();
+  await expect(target).toBeFocused();
+  expect(mutations).toEqual(['/api/incidents/INC-UI-RESOLVED']);
+ });
 }
+
+test('collapsed processing indication animates, respects reduced motion and stops when approval is needed',async({page})=>{
+ const startedAt=new Date().toISOString();
+ const initial={status:'ANALYZING',performance:{stages:[{id:'diagnosis',stage:'TASK_diagnosis',state:'RUNNING',startedAt,category:'PENDING'}]}};
+ const mutations=await setup(page,undefined,'ADMIN',initial);
+ await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+ const dialog=page.getByRole('dialog',{name:'장애 상세'}),panel=dialog.getByRole('region',{name:'단계별 분석 실행 현황'});
+ await expect(panel.locator('details').first()).not.toHaveAttribute('open','');
+ await expect(panel.locator('.analysis-processing')).toBeVisible();
+ await expect(panel.locator('.processing-dot')).toHaveCSS('animation-name','processing-pulse');
+ await expect(dialog.locator('.workflow-stepper [aria-current="step"] .working-spinner')).toBeVisible();
+ await page.screenshot({path:'test-results/processing-desktop.png'});
+ await page.setViewportSize({width:390,height:844});
+ expect(await dialog.evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
+ await panel.scrollIntoViewIfNeeded();await page.screenshot({path:'test-results/processing-mobile.png'});
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await expect(panel.locator('.processing-dot')).toHaveCSS('animation-name','none');
+ await expect(panel.locator('.analysis-processing .working-spinner')).toHaveCSS('animation-name','none');
+ await page.route('**/api/incidents/INC-UI-RESOLVED',route=>route.fulfill({json:{...rows[0],...initial,status:'WAITING_APPROVAL'}}));
+ await expect(dialog.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true',{timeout:15000});
+ await expect(panel.locator('.analysis-processing')).toHaveCount(0);
+ await expect(dialog.locator('.workflow-stepper .working-spinner')).toHaveCount(0);
+ await expect(panel.locator('.analysis-current')).toHaveText('저장된 실행 결과');
+ expect(mutations).toEqual([]);
+});
 
 test('demo is the explicit default for intake and real AI remains selectable',async({page})=>{
  await setup(page);

@@ -49,9 +49,9 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
   const completed = guide.steps.filter(s => s.state === "complete").length;
   const percent = Math.round(completed / 6 * 100);
   const busy = !!operation;
-  const running = ["REGISTERED", "ANALYZING", "RECOVERING"].includes(status);
+  const running = !stopped && ["REGISTERED", "ANALYZING", "RECOVERING"].includes(status);
   const canWriteNotes = !stopped && canEdit && ["RESOLVED", "CLOSED"].includes(status);
-  const inputTarget = !stopped && !evidence ? step===1 && status==="NEEDS_REVIEW" && isAdmin ? "review" : step===2 && status==="WAITING_APPROVAL" && isAdmin ? "approval" : step===4 && canWriteNotes ? "notes" : "" : "";
+  const inputTarget = !stopped && !evidence ? step===1 && status==="NEEDS_REVIEW" && isAdmin ? "review" : step===2 && status==="WAITING_APPROVAL" && isAdmin ? "approval" : step===4 && canWriteNotes ? "notes" : step===5 && status==="RESOLVED" && isAdmin ? "close" : "" : "";
   const draft = recoveryNotesDraft(incident?.notes);
   const proof = draft ? incident?.notes : [...(incident?.events || [])].reverse().find((e: Row) => e.stage === "VERIFY" && e.state === "COMPLETED")?.data_json;
 
@@ -130,7 +130,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
           {guide.steps.map((item, index) => <button key={item.label} id={`workflow-tab-${index}`} role="tab" aria-controls="workflow-stage" aria-selected={step === index} aria-current={item.state === "current" ? "step" : undefined} tabIndex={step === index ? 0 : -1} disabled={busy || stopped}
             className={`${item.state} ${step === index ? "selected" : ""}`} onClick={() => selectStep(index)}
             onKeyDown={e => { const next = e.key === "ArrowRight" ? (index + 1) % 6 : e.key === "ArrowLeft" ? (index + 5) % 6 : e.key === "Home" ? 0 : e.key === "End" ? 5 : null; if (next !== null) { e.preventDefault(); keyboardStep.current = true; selectStep(next); } }}>
-            <span className="step-point" aria-hidden="true">{item.state === "complete" ? <Check size={14} /> : index + 1}</span><span><strong>{index + 1}. {item.label}</strong><small>{item.state === "complete" ? "완료" : item.state === "current" ? "현재 단계" : "예정"}</small><small>{stepTechnologyLabels[index]}</small></span>
+            <span className="step-point" aria-hidden="true">{item.state === "complete" ? <Check size={14} /> : item.state === "current" && running ? <LoaderCircle size={14} className="working-spinner" /> : index + 1}</span><span><strong>{index + 1}. {item.label}</strong><small>{item.state === "complete" ? "완료" : item.state === "current" ? running ? "처리 중" : "현재 단계" : "예정"}</small><small>{stepTechnologyLabels[index]}</small></span>
           </button>)}
         </div>
         {!stopped && <><div className="workflow-progress-info"><strong>전체 처리 {percent}%</strong><span>6단계 중 {completed}단계 완료 · 완료된 단계 수 기준</span>{(!follow || evidence) && <button onClick={returnToCurrent}>현재 단계로 돌아가기 <ArrowRight size={12} /></button>}</div>
@@ -145,7 +145,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
         <span>{stopped || step === activeStep ? guide.badge : `${step + 1}단계 ${step < activeStep ? "기록 확인" : "미리 보기"}`}</span>
         <h2>{stopped || step === activeStep ? guide.title : `${step + 1}. ${incidentSteps[step].label}`}</h2>
         <p>{stopped || step === activeStep ? guide.text : step > activeStep ? "앞 단계를 완료하면 이 단계로 자동 이동합니다. 현재 단계에서 필요한 확인과 입력을 먼저 진행하세요." : "이미 처리한 단계의 기록을 확인하고 있습니다."}</p>
-        {inputTarget && <Button variant="outline" size="sm" onClick={()=>setScrollRequest(n=>n+1)}>현재 작성 위치로 이동 <ArrowRight size={14}/></Button>}
+        {inputTarget && <Button variant="outline" size="sm" onClick={()=>setScrollRequest(n=>n+1)}>{inputTarget === "close" ? "최종 종료 버튼으로 이동" : "현재 작성 위치로 이동"} <ArrowRight size={14}/></Button>}
       </div>
       {isAdmin && <details className="workflow-evidence incident-management" key={`${id}-${status}-${incident.deleted_at || "visible"}`}><summary>관리자 작업 · 강제 종료 / 삭제 / 복원</summary>
         <p className="small muted">강제 종료는 복구 완료가 아닙니다. 삭제하면 목록·집계에서 제외하며 기록은 보존해 복원할 수 있습니다. 이미 전송한 AI 요청은 도착할 수 있지만 후속 처리에는 반영하지 않습니다.</p>
@@ -189,7 +189,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
         </section>}
         {step === 5 && <section className="workflow-card" id="guide-report" tabIndex={-1}><h3>최종 확인 · 장애 종료</h3><div className="workflow-final-grid"><div><h4>저장된 조치 후기</h4><p>{recoveryNotesDraft(incident.notes) || incident.notes || "아직 작성되지 않았습니다."}</p></div><div><h4>저장된 재발 방지 대책</h4><p>{incident.prevention || "아직 작성되지 않았습니다."}</p></div></div>
           {(dirty || draft || !notes.trim() || !prevention.trim()) && status !== "CLOSED" && <div className="banner">5단계에서 후기와 재발 방지 대책을 검토하고 먼저 저장하세요.</div>}
-          <div className="flex-row mt-4"><Button variant="outline" disabled={busy} onClick={() => selectStep(4)}>후기 수정으로 돌아가기</Button>{isAdmin && status === "RESOLVED" && <Button disabled={busy || dirty || !!draft || !notes.trim() || !prevention.trim()} onClick={() => command("close",{},"장애 종료와 이력 저장 확인 중","장애가 종료되었습니다. 전체 6단계를 완료했습니다.")}>장애 종료<Check size={14}/></Button>}{!isAdmin && status === "RESOLVED" && <p>최종 종료는 관리자가 수행합니다.</p>}</div>
+          <div className="flex-row mt-4 workflow-close-actions" id="guide-close" tabIndex={-1}><Button variant="outline" disabled={busy} onClick={() => selectStep(4)}>후기 수정으로 돌아가기</Button>{isAdmin && status === "RESOLVED" && <Button disabled={busy || dirty || !!draft || !notes.trim() || !prevention.trim()} onClick={() => command("close",{},"장애 종료와 이력 저장 확인 중","장애가 종료되었습니다. 전체 6단계를 완료했습니다.")}>장애 종료<Check size={14}/></Button>}{!isAdmin && status === "RESOLVED" && <p>최종 종료는 관리자가 수행합니다.</p>}</div>
           {["RESOLVED","CLOSED"].includes(status) && <div className="flex-row mt-5"><Button asChild size="sm" variant="outline"><a href={`/api/incidents/${id}/report/pdf`} download><Download size={14}/>PDF 보고서</a></Button><Button asChild size="sm" variant="outline"><a href={`/api/incidents/${id}/report/xlsx`} download><Download size={14}/>Excel 보고서</a></Button></div>}
           <p className="small muted mt-4">해결 절차 초안은 장애 종료와 별도로 해결 지식 메뉴에서 관리자가 검토·승인합니다.</p>
         </section>}
