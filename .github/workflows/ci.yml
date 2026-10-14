@@ -40,6 +40,7 @@ jobs:
         with: {distribution: temurin, java-version: '21', cache: maven}
       - run: docker compose up -d --wait postgres neo4j
       - run: docker compose exec -T postgres createdb -U brain brain_test
+      - run: docker compose exec -T postgres createdb -U brain brain_performance_test
       - run: mvn -B -f backend/pom.xml test
         env:
           SPRING_PROFILES_ACTIVE: cloud
@@ -52,6 +53,7 @@ jobs:
           NEO4J_PASSWORD: neo4j_demo_only
           HERMES_PUBLISH_MODE: disabled
           TEST_DB_URL: jdbc:postgresql://localhost:5432/brain_test
+          TEST_PERFORMANCE_DB_URL: jdbc:postgresql://localhost:5432/brain_performance_test
           TEST_DB_USER: brain
           TEST_DB_PASSWORD: brain_demo_only
           TEST_NEO4J_URI: bolt://localhost:7687

@@ -29,7 +29,7 @@ public class AgentController {
     if(cached!=null)return Rpc.result(id,cached);
    }
    s.ensureActive(incident);
-   Object result;try{result=task(taskId,incident,"completed",work(agent,i));}catch(Exception e){result=task(taskId,incident,"failed",Map.of("error",String.valueOf(e.getMessage())));}
+   Object result;try{result=task(taskId,incident,"completed",new PerformanceTrace(s).measure(incident,"AGENT_"+agent,()->work(agent,i)));}catch(Exception e){result=task(taskId,incident,"failed",Map.of("error",String.valueOf(e.getMessage())));}
    final Object completed=result;
    return s.active(incident,()->{
     String state=s.json.valueToTree(completed).path("status").path("state").asText();

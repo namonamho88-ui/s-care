@@ -10,6 +10,8 @@ import { StageTechnologies } from "@/components/technology-guide";
 import { stepTechnologyLabels } from "@/lib/technology-guide.mjs";
 
 import IncidentBriefing from "@/components/incident-briefing";
+import AnalysisPerformance from "@/components/analysis-performance";
+import { categoryLabel, resultCategory } from "@/lib/analysis-performance.mjs";
 
 type Row = Record<string, any>;
 const types = ["RESOURCE", "DATABASE", "NETWORK", "APPLICATION", "SECURITY"];
@@ -100,8 +102,8 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
   function selectStep(index: number) { setFollow(false); setEvidence(""); setStep(index); }
   function returnToCurrent() { setFollow(true); setStep(activeStep); setEvidence(""); }
   const command = (suffix: string, body: any, label: string, success: string) => perform(`/incidents/${id}/${suffix}`, "POST", body, label, success);
-  const latest = incident?.events?.at(-1);
-  const decisionSource = incident?.decision ? incident.decision.simulated ? "시뮬레이션 결과 · 실제 AI 판단 아님" : incident.decision.provider === "OPERATOR" ? "담당자가 확인한 판단" : "실제 AI 모델 판단" : ["REGISTERED", "ANALYZING"].includes(status) ? incident?.mode === "DEMO" ? "시연 모드 · 모의 판단 판단 대기" : "모델 판단 결과 대기" : "저장된 모델 판단 기록 없음";
+  const latest = incident?.events?.filter((event: Row)=>event.stage!=="PERFORMANCE").at(-1);
+  const decisionSource = incident?.decision ? categoryLabel(resultCategory(incident.decision)) : ["REGISTERED", "ANALYZING"].includes(status) ? incident?.mode === "DEMO" ? "DEMO Mock · 모의 판단 대기" : "모델 판단 결과 대기" : "저장된 모델 판단 기록 없음";
   const reviewReasons = readJson(incident?.events?.filter((e: Row) => e.stage === "HARNESS" && e.state === "COMPLETED").at(-1)?.data_json)?.reviewReasons || [];
   const diagnosis = incident?.tasks?.filter((t: Row) => t.agent === "diagnosis").at(-1);
   const automatic = <div className="workflow-auto">
@@ -153,6 +155,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
         <Button className="mt-3" variant={manageAction === "restore" ? "outline" : "danger"} disabled={busy || !manageReason.trim() || confirmation !== id} onClick={()=>perform(`/incidents/${id}/manage/${manageAction}`,"POST",{reason:manageReason,confirmation},"관리자 작업 처리 중",manageAction === "restore" ? "삭제한 장애를 복원했습니다. 작업은 자동 재개되지 않습니다." : manageAction === "delete" ? "목록에서 삭제했습니다. 장애 이력의 삭제된 장애 보기에서 복원할 수 있습니다." : "강제 종료했습니다. 복구 완료로 기록하지 않습니다.")}>{manageAction === "restore" ? "삭제 복원 실행" : manageAction === "delete" ? "장애 삭제 실행" : "강제 종료 실행"}</Button>
       </details>}
       <IncidentBriefing incident={incident} nextAction={guide.title} />
+      <AnalysisPerformance incident={incident} />
       {stopped ? <section className="workflow-card"><h3>{incident.deleted_at ? "삭제된 장애 · 기록 보존" : "강제 종료 · 복구 완료 아님"}</h3><p>중단 사유: {incident.stop_reason || "강제 종료 기록 없음"}</p>{observed}{renderTimeline(incident.events || [])}</section> : evidence ? <section className="workflow-card"><Button size="sm" variant="outline" className="mb-4" onClick={() => setEvidence("")}>단계 입력 화면으로 돌아가기</Button>{evidence === "timeline" ? renderTimeline(incident.events || []) : (incident.tasks || []).map((t: Row) => <div key={t.id} className="mb-5"><h3>{t.agent} Agent</h3>{renderAgent(t)}</div>)}</section> : <>
         <StageTechnologies step={step} incident={incident} />
         {step === 0 && <section className="workflow-card"><h3>접수된 장애 정보</h3>{observed}<p>담당자: {incident.owner_name} · {incident.id}</p>{status === "REGISTERED" && automatic}</section>}
