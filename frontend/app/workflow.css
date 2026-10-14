@@ -58,6 +58,13 @@
 .analysis-performance > details > summary { cursor: pointer; font-weight: 700; }
 .analysis-performance > details > summary span { color: #a4b5cb; font-weight: 400; margin-left: 8px; }
 .analysis-current { margin: 10px 0 0; color: #9edfe8; }
+.analysis-current.is-running { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px; border: 1px solid #3c8194; border-radius: 8px; background: #103040; }
+.analysis-processing { display: inline-flex; align-items: center; gap: 8px; color: #a5f3fc; flex-shrink: 0; }
+.processing-dot { width: 8px; height: 8px; border-radius: 50%; background: #67e8f9; animation: processing-pulse 1.8s ease-in-out infinite; }
+@keyframes processing-pulse { 0%, 100% { opacity: 1; box-shadow: 0 0 0 0 #67e8f940; } 50% { opacity: .45; box-shadow: 0 0 0 5px #67e8f900; } }
+@media (prefers-reduced-motion: reduce) { .processing-dot { animation: none; } }
+.workflow-close-actions { border-radius: 8px; outline: none; }
+.workflow-content[data-active-input="close"] #guide-close { padding: 16px; border: 2px solid #fcd479; background: #202a30; box-shadow: 0 0 0 4px #fcd47920; }
 @media (min-width: 701px) { #guide-review .form-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .workflow-evidence { margin: 20px 0; border: 1px solid #34445b; border-radius: 8px; padding: 14px; }
 .workflow-evidence summary { cursor: pointer; color: #a6bbd3; font-size: 12px; }
