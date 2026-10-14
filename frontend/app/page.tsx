@@ -343,7 +343,7 @@ export default function Home() {
   const [showDeleted,setShowDeleted]=useState(false);
   const evaluationPage=useRemotePage("/evaluations",api,auth===true&&isAdmin&&view==="harness",historyRevision,user.id||"");
   const auditPage=useRemotePage("/audit",api,auth===true&&isAdmin&&view==="harness",historyRevision,user.id||"");
-  const [mode, setMode] = useState("REAL"),
+  const [mode, setMode] = useState("DEMO"),
     [provider, setProvider] = useState("LOCAL"),
     [scenario, setScenario] = useState("SCN-01"),
     [selected, setSelected] = useState<string | null>(null),
@@ -1466,7 +1466,7 @@ export default function Home() {
       {selected && <div className="modal-backdrop" style={{ display: drawer ? "flex" : "none" }} role={drawer ? "dialog" : undefined} aria-modal={drawer ? true : undefined} aria-label="장애 상세">
         <IncidentWorkflow open={drawer} incident={detail} isAdmin={isAdmin} canEdit={canEdit} operators={catalog.operators} assets={catalog.assets} edges={graph.edges} api={api}
           onClose={() => setDrawer(false)} onGraph={() => { setDrawer(false); setView("ontology"); }}
-          onRefresh={async () => { const result = await loadDetail(selected, true); await refresh(); return result; }}
+          onRefresh={async () => { const result = await loadDetail(selected, true); void refresh().catch(e => setNotice(e.message)); return result; }}
           renderDecision={d => <Decision d={d} />} renderTimeline={events => <Timeline events={events} />} renderAgent={task => <AgentResult task={task} />} />
       </div>}
       {messageOpen && <MessageIntake assets={catalog.assets} initialMode={mode} provider={provider} api={api} onClose={() => setMessageOpen(false)} onRegistered={(id, duplicate) => {
@@ -1521,7 +1521,8 @@ export default function Home() {
                 데이터만 사용합니다.
               </div>
               <div className="space-y-5">
-                <label>등록 실행 모드<select value={mode} onChange={e => setMode(e.target.value)}><option value="REAL">실제 AI 모드</option><option value="DEMO">시연 모드 · 모의 판단</option></select></label>
+                <label>등록 실행 모드<select aria-label="등록 실행 모드" value={mode} onChange={e => setMode(e.target.value)}><option value="DEMO">빠른 시연 · DEMO Mock (실제 AI 아님)</option><option value="REAL">실제 AI 모드</option></select></label>
+                <p className="small muted">{mode==="DEMO"?"Jev·Hermes는 외부 모델 대기 없이 모의 결과를 사용합니다. 승인·복구 검증·감사 기록은 동일하게 진행됩니다.":"실제 모델에 요청합니다. 연결 상태와 추론 시간에 따라 대기 시간이 발생합니다."}</p>
                 <label>
                   장애 제목
                   <input

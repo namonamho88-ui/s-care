@@ -50,6 +50,14 @@
 .workflow-context small { color: #93a8c3; }
 .workflow-form-layout { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); align-items: start; gap: 20px; }
 .workflow-card.guide-target { border: 1px solid #cda958; }
+.workflow-content[data-active-input="review"] #guide-review,
+.workflow-content[data-active-input="approval"] #guide-approval,
+.workflow-content[data-active-input="notes"] #guide-notes { border: 2px solid #fcd479; background: #202a30; box-shadow: 0 0 0 4px #fcd47920; outline: none; }
+.workflow-content[data-active-input] .guide-target:focus h3 { color: #ffe4a3; }
+.guide-target textarea:not([readonly]), .guide-target select:not(:disabled) { border-color: #d2b774; background: #0b1727; }
+.analysis-performance > details > summary { cursor: pointer; font-weight: 700; }
+.analysis-performance > details > summary span { color: #a4b5cb; font-weight: 400; margin-left: 8px; }
+.analysis-current { margin: 10px 0 0; color: #9edfe8; }
 @media (min-width: 701px) { #guide-review .form-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .workflow-evidence { margin: 20px 0; border: 1px solid #34445b; border-radius: 8px; padding: 14px; }
 .workflow-evidence summary { cursor: pointer; color: #a6bbd3; font-size: 12px; }
@@ -71,6 +79,7 @@
   .workflow-form-layout > .workflow-card { grid-row: 1; }
 }
 @media (max-width: 600px) {
+  .workflow-head { position: relative; }
   .workflow-title h2 { font-size: 15px; }
   .workflow-title > button { padding: 6px; font-size: 10px; }
   .workflow-stepper { grid-template-columns: repeat(3,minmax(0,1fr)); margin-top: 12px; }

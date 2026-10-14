@@ -10,7 +10,7 @@ MCP에는 읽기와 가상 복구/검증 도구만 노출한다. 실 시스템 �
 
 ## 2. Provider 경계
 JevDecisionProvider ← MockJevProvider / LocalJevProvider / TypeSafeJevProvider.
-기본 REAL/LOCAL은 localhost:8017/v1/systemone. TypeSafe는 공식 /v1/systemone과 Bearer API 키.
+새 접수 화면은 빠른 DEMO Mock이 기본이다. 실제 AI를 선택하면 기본 모델인 REAL/LOCAL은 localhost:8017/v1/systemone을 사용한다. TypeSafe는 공식 /v1/systemone과 Bearer API 키. 기존 REAL 장애의 모드·결과는 변경하지 않는다.
 DEMO는 항상 Mock이다. LOCAL 연결/HTTP 오류는 최대 2회 시도 후 MOCK_FALLBACK으로 기록한다.
 잘못된 모델 스키마나 낮은 confidence, 모호한 관측은 NEEDS_REVIEW로 멈춘다.
 관리자는 분류/긴급도/담당 부서를 확인하거나 수정하고 이유를 남긴 후 분석을 재개한다.

@@ -95,10 +95,12 @@ docker compose exec postgres psql -U brain -d brain -c "SELECT agent,status,coun
 
 ## Jev 설정
 
+새 접수는 빠른 **DEMO Mock**이 기본입니다. 실제 AI는 접수 화면에서 명시적으로 선택할 수 있습니다. 모의 시연도 승인·근거 검증·A2A/MCP·DB 감사 기록을 유지합니다. [시연 속도 개선 및 검증](docs/demo-response-time.md)을 참고하세요.
+
 | 모드 | 실제 동작 | 실패 정책 |
 |---|---|---|
 | DEMO | `MockJevProvider` 고정 규칙 | 외부 모델 호출 없음 |
-| REAL / LOCAL (기본) | `LocalJevProvider` → jevos `/v1/systemone` | 연결/HTTP 오류 2회 후 명시적 Mock fallback |
+| REAL / LOCAL (실제 AI 선택 시 기본 모델) | `LocalJevProvider` → jevos `/v1/systemone` | 연결/HTTP 오류 2회 후 명시적 Mock fallback |
 | REAL / TYPESAFE | `TypeSafeJevProvider` → 공식 TypeSafe API | API 키 필수, 실패 기록, 자동 Mock 전환 없음 |
 
 TypeSafe는 `.env`에 `TYPESAFE_API_KEY`를 지정한 후 backend를 재생성하면 선택할 수 있습니다. 키는 프론트엔드로 전달되지 않습니다. Low confidence나 잘못된 응답 스키마는 Mock으로 덮어쓰지 않고 담당자 확인으로 전환됩니다.

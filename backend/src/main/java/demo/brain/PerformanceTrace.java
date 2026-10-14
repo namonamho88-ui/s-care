@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.function.Supplier;
+import java.util.function.Consumer;
 
 /** Persisted spans. Nested A2A and transport durations overlap; never sum them as end-to-end time. */
 @Component
@@ -18,10 +19,14 @@ public class PerformanceTrace {
   if(providerInferenceMs!=null&&providerInferenceMs>=0){span.inferenceMs+=providerInferenceMs;span.knownInferenceCalls++;}
  }
  public static void retry(){var span=CURRENT.get();if(span!=null)span.retries++;}
- public Span start(String incident,String stage){return new Span(incident,stage);}
+ public Span start(String incident,String stage){return new Span(incident,stage,()->{});}
  public <T>T measure(String incident,String stage,Supplier<T> work){
-  try(var span=start(incident,stage)){
-   try{T result=work.get();span.complete(result);return result;}
+  return measure(incident,stage,()->{},work,result->{});
+ }
+ /** Lifecycle writes share the metric transaction; model/RPC work never holds its locks. */
+ public <T>T measure(String incident,String stage,Runnable started,Supplier<T> work,Consumer<T> completed){
+  try(var span=new Span(incident,stage,started)){
+   try{T result=work.get();span.complete(result);span.commitResult=()->completed.accept(result);return result;}
    catch(RuntimeException e){span.failed(e);throw e;}
   }
  }
@@ -31,10 +36,11 @@ public class PerformanceTrace {
   private final Span previous;
   private long httpMs,inferenceMs;private int calls,knownInferenceCalls,retries;
   private String state="FAILED",category="LOCAL",provider="";private boolean done;
-  private Span(String incident,String stage){
+  private Runnable commitResult=()->{};
+  private Span(String incident,String stage,Runnable onStart){
    this.incident=incident;this.stage=stage;previous=CURRENT.get();
    var lease=WorkContext.get();
-   s.active(incident,()->{s.db.update("INSERT INTO analysis_stage_metrics(id,incident_id,job_id,stage,state,started_at,category,timing_source) VALUES (?,?,?,?,'RUNNING',?,'PENDING','NOT_YET_MEASURED')",id,incident,lease==null?null:lease.id(),stage,started);return null;});
+   s.active(incident,()->{s.db.update("INSERT INTO analysis_stage_metrics(id,incident_id,job_id,stage,state,started_at,category,timing_source) VALUES (?,?,?,?,'RUNNING',?,'PENDING','NOT_YET_MEASURED')",id,incident,lease==null?null:lease.id(),stage,started);onStart.run();return null;});
    CURRENT.set(this);
   }
   public void complete(Object result){
@@ -48,17 +54,25 @@ public class PerformanceTrace {
   public void failed(RuntimeException e){state=e instanceof java.util.concurrent.CancellationException?"CANCELLED":"FAILED";category="UNAVAILABLE";}
   @Override public void close(){
    if(done)return;done=true;CURRENT.set(previous);if(previous==null)CURRENT.remove();
-   long duration=(System.nanoTime()-start)/1_000_000;Timestamp ended=Store.now();
    Long model=null;if(calls==0)model=0L;else if(knownInferenceCalls==calls)model=inferenceMs;
    final Long measuredModel=model;
    // Neither HTTP wall time nor HTTP minus inference isolates network/queue/server overhead.
    String source=calls==0?"NO_HTTP_CALLS":model==null?"HTTP_ROUND_TRIP_ONLY":"PROVIDER_REPORTED_INFERENCE";
-   var data=new LinkedHashMap<String,Object>();data.put("id",id);data.put("stage",stage);data.put("state",state);data.put("startedAt",started.toInstant().toString());data.put("endedAt",ended.toInstant().toString());data.put("durationMs",duration);data.put("httpElapsedMs",httpMs);data.put("modelInferenceMs",model);data.put("networkWaitMs",null);data.put("retryCount",retries);data.put("httpCalls",calls);data.put("category",category);data.put("provider",provider);data.put("timingSource",source);
-   try{s.active(incident,()->{persist(duration,ended,measuredModel,source);s.event(incident,"PERFORMANCE",state,stage+" 실행 시간",data);return null;});}
+   try{s.active(incident,()->{commitResult.run();recordCompletion(measuredModel,source);return null;});}
    catch(java.util.concurrent.CancellationException stopped){
     // Only close this diagnostic row; never write events/results or revive a fenced incident.
-    state="CANCELLED";s.tx(()->{persist(duration,ended,measuredModel,source);return null;});
+    state="CANCELLED";s.tx(()->{persist((System.nanoTime()-start)/1_000_000,Store.now(),measuredModel,source);return null;});
+    throw stopped;
    }
+   catch(RuntimeException failed){
+    state="FAILED";s.tx(()->{persist((System.nanoTime()-start)/1_000_000,Store.now(),measuredModel,source);return null;});throw failed;
+   }
+  }
+  private void recordCompletion(Long model,String source){
+   // Include result/checkpoint writes and lock waits; exclude only this telemetry write and commit.
+   long duration=(System.nanoTime()-start)/1_000_000;Timestamp ended=Store.now();
+   var data=new LinkedHashMap<String,Object>();data.put("id",id);data.put("stage",stage);data.put("state",state);data.put("startedAt",started.toInstant().toString());data.put("endedAt",ended.toInstant().toString());data.put("durationMs",duration);data.put("httpElapsedMs",httpMs);data.put("modelInferenceMs",model);data.put("networkWaitMs",null);data.put("retryCount",retries);data.put("httpCalls",calls);data.put("category",category);data.put("provider",provider);data.put("timingSource",source);
+   persist(duration,ended,model,source);s.event(incident,"PERFORMANCE",state,stage+" 실행 시간",data);
   }
   private void persist(long duration,Timestamp ended,Long model,String source){s.db.update("UPDATE analysis_stage_metrics SET state=?,ended_at=?,duration_ms=?,http_elapsed_ms=?,model_inference_ms=?,network_wait_ms=NULL,retry_count=?,http_calls=?,category=?,provider=?,timing_source=? WHERE id=?",state,ended,duration,httpMs,model,retries,calls,category,provider,source,id);}
  }
