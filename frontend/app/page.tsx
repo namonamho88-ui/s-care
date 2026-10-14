@@ -491,7 +491,10 @@ export default function Home() {
       stageTimer=undefined;
       if(loading){refreshPending=true;return;}
       loading=true;
-      loadDetail(selected,true).catch((e) => setError("장애 상세 갱신 실패: " + e.message)).finally(()=>{
+      // Reuse the initial/polling read, then catch up once after it finishes.
+      // SSE rows still render immediately; replay must not start a second HTTP read.
+      if(detailRequest.current?.id===selected)refreshPending=true;
+      loadDetail(selected).catch((e) => setError("장애 상세 갱신 실패: " + e.message)).finally(()=>{
         loading=false;
         if(refreshPending&&!disposed){refreshPending=false;stageTimer=setTimeout(refreshStages,100);}
       });

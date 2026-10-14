@@ -15,8 +15,10 @@ import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.*;
 
 @SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.NONE,properties={
- "spring.datasource.url=jdbc:h2:mem:performance_contract;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1",
- "spring.datasource.username=sa","spring.datasource.password=","brain.neo4j-uri=disabled","brain.graph-required=false",
+ "spring.datasource.url=${TEST_PERFORMANCE_DB_URL:jdbc:h2:mem:performance_contract;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}",
+ "spring.datasource.username=${TEST_DB_USER:sa}","spring.datasource.password=${TEST_DB_PASSWORD:}",
+ "spring.datasource.hikari.schema=public","spring.flyway.schemas=public","spring.flyway.default-schema=public",
+ "brain.neo4j-uri=disabled","brain.graph-required=false",
  "brain.jev.local-url=http://127.0.0.1:19998/v1/systemone","brain.hermes-key=","brain.step-ms=0"})
 class PerformanceIntegrationTest {
  @Autowired Store s; @Autowired DurableQueue queue;
