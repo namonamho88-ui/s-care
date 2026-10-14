@@ -29,6 +29,6 @@ export default function AnalysisPerformance({incident}: {incident: Row}) {
     {nested.length>0&&<details className="mt-3"><summary>A2A 내부 실행 측정 {nested.length}개 · 상위 단계와 시간 중복</summary><ul className="analysis-stages">{nested.map(render)}</ul></details>}
     <p className="small muted mt-3">병렬·중첩 단계의 시간은 합산하지 않습니다. HTTP 왕복에는 서버 대기·추론이 포함되며, 제공자가 추론 시간을 보내지 않으면 네트워크 대기와 분리할 수 없습니다.</p>
     </details>
-    <p className="small analysis-current" aria-live="polite">{running.length?`현재 실행: ${running.map(row=>`${stageLabel(row.stage)} · ${Math.floor((row.elapsedMs??0)/1000)}초 경과`).join(" / ")}`:active?"다음 실행 상태 확인 중":"저장된 실행 결과"}</p>
+    <p className="small analysis-current" aria-live="polite">{running.length?`현재 실행: ${running.map(row=>`${stageLabel(row.stage)} · ${row.elapsedMs===null?"시간 미확인":`${Math.floor(row.elapsedMs/1000)}초 경과`}`).join(" / ")}`:active?"다음 실행 상태 확인 중":"저장된 실행 결과"}</p>
   </section>;
 }
