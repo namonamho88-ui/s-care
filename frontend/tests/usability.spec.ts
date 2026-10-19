@@ -844,6 +844,7 @@ test('demo session bypasses login, hides account administration and revocation r
   await setup(page);let issued=false;
   await page.route('**/api/config',r=>r.fulfill(issued?{json:{user:{id:'DEMO-test',role:'DEMO_ADMIN',kind:'DEMO',displayName:'시연 참가자',operatorId:'OP-01'},defaultProvider:'LOCAL',hermes:{},fictional:true}}:{status:401,json:{error:'login'}}));
   await page.route('**/api/session',r=>{expect(r.request().postDataJSON()).toEqual({mode:'demo'});issued=true;return r.fulfill({json:{ok:true,user:{role:'DEMO_ADMIN'}}});});
+  await page.route('**/api/auth/me',r=>r.fulfill({json:{user:{id:'DEMO-test',role:'DEMO_ADMIN'}}}));
   await page.reload();await expect(page.getByText('시연모드 활성화',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'관제센터 시작'})).toHaveCount(0);
   await page.getByText('관리자 메뉴',{exact:true}).click();await expect(page.getByRole('button',{name:'계정 관리',exact:true})).toHaveCount(0);await expect(page.getByRole('button',{name:'AI 품질 관리',exact:true})).toBeVisible();
   await page.route('**/api/auth/me',r=>r.fulfill({status:401,json:{error:'시연 종료'}}));
