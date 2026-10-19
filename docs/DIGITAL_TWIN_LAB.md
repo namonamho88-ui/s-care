@@ -87,4 +87,22 @@ REST: `GET /api/twin/catalog`, `GET/POST /api/twin/runs`, `GET /api/twin/runs/{i
 
 API 통합 테스트: H2 마이그레이션, 상태 전이, 명시적 승인, 이전 버전 거부, 반려 시 원본 유지, 실패 전략 승인 차단, MCP 복사본 실행, 실제 평가 결과 저장. 모델 계약 테스트: DEMO 무호출, 평가 정답 제외, 악성/알 수 없는 액션 거부, 잘못된 Jev 응답 대체.
 
-기존 프런트엔드 UI 회귀와 새 Lab 화면 검증은 배포 전 실행한다. 로컬 H2 검증을 실제 PostgreSQL/Neo4j·클라우드 검증으로 표시하지 않는다. 기존 Vercel frontend / Railway backend 배포 구조를 유지한다. 적용 후 rollback은 구 버전 코드로 되돌릴 수 있으며 V14 신규 테이블의 데이터를 파괴하는 down migration은 제공하지 않는다.
+### 실행 결과 (2026-10-19, 코드 `6b9154a`)
+
+| 검증 | 결과 | 범위 |
+|---|---|---|
+| GitHub CI backend | 140건 중 139 통과, 1 조건부 제외, 실패 0 | H2, 기존 기능, 신규 엔진/계약/권한/API 테스트 |
+| GitHub CI PostgreSQL·Neo4j | 140건 중 138 통과, 2 조건부 제외, 실패 0 | 실제 CI 컨테이너 DB, V14 및 Lab API 포함 |
+| 프런트엔드 단위 | 56/56 통과 | BFF 및 기존 공통 동작 |
+| 프런트엔드 UI | 68/68 통과 | 신규 Lab 3건 포함, 모의 API를 사용하는 브라우저 회귀 |
+| 프런트엔드 빌드·매뉴얼 일치 검사 | 통과 | TypeScript·프로덕션 빌드 |
+| 컨테이너 애플리케이션 | DEMO smoke·인증 BFF·계정/쿠키/권한 통과 | 기존 통합 흐름 보존 |
+| Jev/Hermes 컨테이너 | 빌드·시작·Hermes 도구 차단 검사 통과 | 새 Lab 외부 모델 추론 성공 검증과는 구별 |
+
+증거: [전체 테스트 CI](https://github.com/namonamho88-ui/s-care/actions/runs/39222304753), [컨테이너 CI](https://github.com/namonamho88-ui/s-care/actions/runs/39222304733). 조건부 제외는 별도 실측 벤치마크/환경 의존 검사다. 로컬 Windows 전체 테스트는 자원 부족으로 일부 실행이 중단됐고, 동일 코드의 독립 CI에서 전체 성공을 확인했다. 기존 후기 화면 클릭 시간 초과 1건은 로컬 단독 재실행 및 CI에서 통과했다. 신규 Lab 3건은 최종 빌드에서도 재검증했다.
+
+대표 Primary 장애(seed 42) 계산: 재시작 FAILED/가용성 0%/35초, Replica 전환 SUCCESS/100%/73초, 읽기 전용 PARTIAL/70%/32초. 모두 규칙 추정치이며 운영 측정값이 아니다. Replica 동시 장애·복제 지연·fencing 누락은 실패 테스트로 확인했다. 모바일 캡처를 직접 확인해 그래프 아래 읽을 수 있는 노드 목록을 추가했고, 승인 없는 결과 확정을 차단하는 UI/API 테스트를 통과했다.
+
+새 Lab의 **실제 외부 Jev/Hermes 응답과 운영 클라우드 시연은 미검증·미배포**다. 로컬 서버를 연결한 별도 수동 브라우저 리허설은 프런트엔드 시작 명령이 자동 승인 검토에서 차단되어 완료하지 않았다. 이를 완료된 검증으로 계산하지 않는다. 배포 후 관리자 계정/격리 DEMO 세션으로 자동 데모와 REAL 모드를 별도 리허설해야 한다.
+
+기존 Vercel frontend / Railway backend 배포 구조를 유지한다. 적용 후 rollback은 구 버전 코드로 되돌릴 수 있으며 V14 신규 테이블의 데이터를 파괴하는 down migration은 제공하지 않는다.
