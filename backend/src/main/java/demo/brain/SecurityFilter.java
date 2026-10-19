@@ -46,10 +46,12 @@ public class SecurityFilter extends OncePerRequestFilter {
  }
  private void userActivity(){if(activity!=null){boolean resumed=activity.touch();if(queue!=null)queue.authenticatedVisit(resumed);}}
  private static boolean demoAllowed(String method,String path){
+  if(path.startsWith("/api/twin/"))return true;
   if(path.equals("/api/auth/me")||path.equals("/api/auth/logout"))return true;
   return path.matches("/api/(?:config|catalog|graph|dashboard|incidents|simulate|skills|evaluations|audit|operations|notifications|message-intake|assets)(?:/.*)?");
  }
  private static boolean userAllowed(String method,String path){
+  if(method.equals("GET")&&path.matches("/api/twin/(?:catalog|runs(?:/[A-Za-z0-9_-]+(?:/report)?)?)"))return true;
   if(method.equals("GET")&&(path.matches("/api/assets/[A-Za-z0-9_-]+/context")||path.matches("/api/skills/[A-Za-z0-9_-]+/revisions")))return true;
   if(method.equals("GET"))return java.util.List.of("/api/auth/me","/api/config","/api/catalog","/api/graph","/api/dashboard","/api/incidents","/api/skills").contains(path)||path.matches("/api/incidents/[A-Za-z0-9_-]+(?:/events|/similar|/knowledge|/report/(?:pdf|xlsx))?");
   if(method.equals("POST")&&(path.equals("/api/skills")||path.matches("/api/skills/[A-Za-z0-9_-]+/submit")))return true;
