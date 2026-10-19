@@ -960,6 +960,6 @@ for (const width of [390, 1280]) test(`login cold start guides waiting and sends
   await expect(page.getByRole('status')).toContainText('서버 연결을 준비하고 있습니다');
   expect(writes).toBe(0);
   await expect(page.getByRole('button',{name:'연결 중'})).toBeDisabled();
-  await expect(page.getByRole('alert')).toContainText('검증용 인증 실패');
+  await expect(page.getByRole('alert').filter({hasText:'검증용 인증 실패'})).toContainText('검증용 인증 실패');
   expect(writes).toBe(1); expect(probes).toBe(3);
 });
