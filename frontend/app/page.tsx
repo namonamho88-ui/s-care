@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
+import { waitForLoginServer } from "@/lib/login-readiness.mjs";
 import {
   Activity,
   BrainCircuit,
@@ -320,6 +321,10 @@ export default function Home() {
     [token, setToken] = useState(""),
     [error, setError] = useState(""),
     [busy, setBusy] = useState(false);
+  const loginFlight = useRef<AbortController | null>(null);
+  const [loginPhase, setLoginPhase] = useState("");
+  const [loginSeconds, setLoginSeconds] = useState(0);
+  useEffect(() => () => loginFlight.current?.abort(), []);
   const [user, setUser] = useState<Row>({});
   const isDemo=user.role==="DEMO_ADMIN";
   const isAdmin = user.role === "ADMIN" || isDemo;
@@ -566,8 +571,16 @@ export default function Home() {
   }, [drawer, createOpen, messageOpen]);
   async function login(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true);
+    if (loginFlight.current) return;
+    const controller = new AbortController();
+    loginFlight.current = controller;
+    setBusy(true); setError(""); setLoginSeconds(0); setLoginPhase("preparing");
+    const started = Date.now();
+    const timer = window.setInterval(() => setLoginSeconds(Math.floor((Date.now() - started) / 1000)), 1000);
     try {
+      await waitForLoginServer(controller.signal);
+      controller.signal.throwIfAborted();
+      setLoginPhase("authenticating");
       const result = await api("/session", "POST", loginMode === "admin" ? { mode: "admin", token } : { mode: loginMode, login: loginName, password, inviteCode });
       setUser(result.user); setToken(""); setPassword(""); setInviteCode("");
       setAuth(true);
@@ -575,7 +588,9 @@ export default function Home() {
     } catch (e) {
       setError((e as Error).message);
     } finally {
-      setBusy(false);
+      window.clearInterval(timer);
+      loginFlight.current = null;
+      setLoginPhase(""); setBusy(false);
     }
   }
   function openIncident(id: string) {
@@ -648,13 +663,18 @@ export default function Home() {
           </h1>
           <p>가상 금융 IT 환경에서 장애 판단부터 복구 검증까지.<br />개인 계정으로 업무를 시작하세요.</p>
           <div className="tabs mb-4" role="tablist" aria-label="로그인 방식">
-            {[["login", "개인 계정"], ["activate", "초대 활성화"], ["admin", "관리자 초기 설정"]].map(([id, label]) => <button key={id} type="button" role="tab" aria-selected={loginMode === id} className={"tab " + (loginMode === id ? "active" : "")} onClick={() => { setLoginMode(id); setError(""); setToken(""); setPassword(""); setInviteCode(""); }}>{label}</button>)}
+            {[["login", "개인 계정"], ["activate", "초대 활성화"], ["admin", "관리자 초기 설정"]].map(([id, label]) => <button key={id} type="button" role="tab" disabled={busy} aria-selected={loginMode === id} className={"tab " + (loginMode === id ? "active" : "")} onClick={() => { setLoginMode(id); setError(""); setToken(""); setPassword(""); setInviteCode(""); }}>{label}</button>)}
           </div>
           {loginMode === "admin" ? <label>관리자 토큰<input aria-label="관리자 토큰" type="password" required value={token} onChange={e => setToken(e.target.value)} autoComplete="off" /></label> : <>
             <label>아이디<input required value={loginName} maxLength={60} onChange={e => setLoginName(e.target.value)} autoComplete="username" autoCapitalize="none" /></label>
             {loginMode === "activate" && <label className="mt-3">초대 코드<input required value={inviteCode} maxLength={100} onChange={e => setInviteCode(e.target.value)} autoComplete="off" /></label>}
             <label className="mt-3">{loginMode === "activate" ? "새 비밀번호" : "비밀번호"}<input type="password" required minLength={loginMode === "activate" ? 12 : undefined} maxLength={128} value={password} onChange={e => setPassword(e.target.value)} autoComplete={loginMode === "activate" ? "new-password" : "current-password"} /></label>
           </>}
+          {loginPhase && <div role="status" aria-live="polite" className="banner mt-4">
+            <div><strong>{loginPhase === "preparing" ? "서버 연결을 준비하고 있습니다" : "로그인 확인 중입니다"}</strong><br />
+            {loginPhase === "preparing" ? "절전 상태라면 서버를 시작하는 데 시간이 필요합니다. 준비되면 자동으로 로그인을 진행합니다." : "로그인 요청을 전송했습니다. 잠시만 기다려 주세요."}
+            <br /><span aria-live="off">{loginSeconds}초 경과</span></div>
+          </div>}
           <Button className="w-full mt-5" disabled={busy}>{busy ? "연결 중…" : loginMode === "activate" ? "계정 활성화 & 시작" : "관제센터 시작"}<ArrowUpRight size={16} /></Button>
           <p className="small" style={{ margin: "20px 0 0" }}>{loginMode === "admin" ? "첫 관리자 계정 생성 또는 계정 복구 시에만 토큰을 사용하세요." : loginMode === "activate" ? "관리자에게 받은 24시간 유효한 1회용 코드와 새 비밀번호(12~128자)를 입력하세요." : "계정이 없거나 비밀번호를 잊으셨다면 관리자에게 초대 코드 발급을 요청하세요."}<br />모든 업무 자산·담당자·장애·지표는 가상 데이터입니다.</p>
           {error && (
