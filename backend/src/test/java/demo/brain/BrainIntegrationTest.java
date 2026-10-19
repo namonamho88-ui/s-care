@@ -184,6 +184,7 @@ class BrainIntegrationTest {
   String id=lifecycleFixture("REGISTERED"),job=Store.id("JOB-");s.db.update("UPDATE incidents SET observations='원인 미확인',decision_json=NULL,phase_started_at=CURRENT_TIMESTAMP WHERE id=?",id);
   s.db.update("INSERT INTO work_jobs(id,incident_id,phase,status,attempts,token,lease_until,available_at,created_at) VALUES (?,?,'ANALYZE','RUNNING',1,'dead-process',?,?,?)",job,id,java.sql.Timestamp.from(java.time.Instant.now().minusSeconds(60)),Store.now(),Store.now());
   WorkContext.set(job,"dead-process");try{assertThatThrownBy(()->s.active(id,()->{s.db.update("UPDATE incidents SET title='stale' WHERE id=?",id);return null;})).isInstanceOf(java.util.concurrent.CancellationException.class);}finally{WorkContext.clear();}
+  queue.wake(); // Simulate the startup/authenticated-resume signal after the old process died.
   waitFor(id,"NEEDS_REVIEW");assertThat(s.one("SELECT attempts FROM work_jobs WHERE id=?",job).get("attempts")).isEqualTo(2);assertThat(s.incident(id).get("title")).isNotEqualTo("stale");
   assertThat(post("/api/incidents/"+id+"/manage/delete",management(id)).getStatusCode().value()).isEqualTo(200);
  }

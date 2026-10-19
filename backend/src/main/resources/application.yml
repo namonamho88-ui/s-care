@@ -11,6 +11,8 @@ spring:
   jackson:
     time-zone: UTC
 brain:
+  idle-enabled: ${APP_IDLE_ENABLED:false}
+  idle-after-seconds: ${APP_IDLE_AFTER_SECONDS:60}
   graph-namespace: ${GRAPH_NAMESPACE:Asset}
   admin-token: ${ADMIN_TOKEN:local-demo-admin-change-me}
   internal-url: ${INTERNAL_URL:http://127.0.0.1:${server.port}}

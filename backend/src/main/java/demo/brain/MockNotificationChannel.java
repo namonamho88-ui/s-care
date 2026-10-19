@@ -10,9 +10,14 @@ import java.util.*;
 @RestController
 public class MockNotificationChannel {
  private final Store s;private final String base,token;private final HttpClient client=HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(1)).build();
+ @org.springframework.beans.factory.annotation.Autowired(required=false) private BackgroundActivity activity;
  public MockNotificationChannel(Store s,@Value("${brain.internal-url}") String base,@Value("${brain.admin-token}") String token){this.s=s;this.base=base;this.token=token;}
  @Scheduled(fixedDelay=5000,initialDelay=10000) public void deliver(){
-  for(var n:s.db.queryForList("SELECT n.id,n.message FROM notifications n JOIN incidents i ON i.id=n.incident_id WHERE n.status='QUEUED' AND n.attempts<3 AND i.deleted_at IS NULL AND i.status NOT IN ('CANCELLED','CLOSED','REJECTED','RESOLVED') ORDER BY n.created_at LIMIT 5"))try{
+  if(activity!=null&&!activity.shouldDrainNotifications())return;
+  long version=activity==null?0:activity.notificationVersion();
+  var notifications=s.db.queryForList("SELECT n.id,n.message FROM notifications n JOIN incidents i ON i.id=n.incident_id WHERE n.status='QUEUED' AND n.attempts<3 AND i.deleted_at IS NULL AND i.status NOT IN ('CANCELLED','CLOSED','REJECTED','RESOLVED') ORDER BY n.created_at LIMIT 5");
+  if(notifications.isEmpty()&&activity!=null)activity.notificationsDrained(version);
+  for(var n:notifications)try{
    var payload=Map.of("notificationId",n.get("id"),"text","[S-CARE 가상 알림] "+n.get("message"),"fictional",true,"format","SLACK_TEXT_MOCK");
    var req=HttpRequest.newBuilder(URI.create(base+"/api/internal/mock-notifications")).timeout(Duration.ofSeconds(2)).header("Authorization","Bearer "+token).header("Content-Type","application/json").POST(HttpRequest.BodyPublishers.ofString(s.encode(payload))).build();var response=client.send(req,HttpResponse.BodyHandlers.discarding());if(response.statusCode()!=200)throw new IllegalStateException("Mock receiver unavailable");
   }catch(Exception e){s.db.update("UPDATE notifications SET attempts=attempts+1,status=CASE WHEN attempts>=2 THEN 'FAILED' ELSE 'QUEUED' END WHERE id=? AND status='QUEUED'",n.get("id"));}

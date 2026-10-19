@@ -1,0 +1,38 @@
+{
+  "checkedAt": "2026-10-19T00:28:23.7300417Z",
+  "project": "astonishing-balance",
+  "environment": "production",
+  "settingsSaved": true,
+  "serverless": {
+    "backend": true,
+    "hermes": true,
+    "neo4j": false,
+    "jevos": true
+  },
+  "backendReplicas": 1,
+  "backendVariables": {
+    "DB_POOL_MIN_IDLE": "0",
+    "DB_POOL_IDLE_TIMEOUT_MS": "30000",
+    "DB_POOL_KEEPALIVE_MS": "0",
+    "DB_TCP_KEEPALIVE": "false",
+    "APP_IDLE_ENABLED": "true",
+    "APP_IDLE_AFTER_SECONDS": "60"
+  },
+  "hermesVariables": {
+    "DO_NOT_TRACK": "1",
+    "HF_HUB_DISABLE_TELEMETRY": "1"
+  },
+  "runtimeApplied": false,
+  "runtimeVerification": "BLOCKED_BY_RAILWAY_TRIAL_EXPIRATION",
+  "redeployError": "Your trial has expired. Please select a plan to continue using Railway.",
+  "existingIncidentWrites": 0,
+  "passwordChanges": 0,
+  "actualAiCalls": 0,
+  "paymentChanges": 0,
+  "observedCostSavings": null,
+  "notes": [
+    "Serverless takes effect only after deployment. Saved settings do not prove sleeping or successful recovery.",
+    "Database and volume costs remain. Neo4j remains available with its existing memory limits.",
+    "Application validation uses isolated data; production login availability remains blocked until plan activation and redeployment."
+  ]
+}

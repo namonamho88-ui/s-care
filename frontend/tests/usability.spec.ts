@@ -870,3 +870,74 @@ test('saved ontology impact shows direct and indirect scope and approval summary
 test('missing ontology evidence is never shown as completed impact',async({page})=>{
  await setup(page,undefined,'ADMIN',{status:'NEEDS_REVIEW',impact:null});await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();const impact=page.getByRole('region',{name:'장애 영향도',exact:true});await expect(impact).toContainText('저장된 영향도 분석 결과가 없습니다');await expect(impact.getByRole('button',{name:'전체화면',exact:true})).toHaveCount(0);
 });
+
+async function activityStreamFixture(page: Page) {
+  await page.clock.install();
+  await page.addInitScript(() => {
+    (window as any).activityStreams = [];
+    class Source {
+      onopen: any; onerror: any; listeners: any = {}; closed = false;
+      constructor() { (window as any).activityStreams.push(this); setTimeout(() => this.onopen?.(), 0); }
+      addEventListener(name: string, listener: any) { this.listeners[name] = listener; }
+      close() { this.closed = true; }
+    }
+    (window as any).EventSource = Source;
+  });
+}
+
+test('idle screen stops polling and SSE then resumes once without losing an unsaved form', async ({page}) => {
+  await activityStreamFixture(page);
+  const mutations = await setup(page, undefined, 'ADMIN', {status:'RESOLVED',notes:'',prevention:''});
+  let reads = 0;
+  page.on('request', r => { if (r.method()==='GET' && new URL(r.url()).pathname.startsWith('/api/')) reads++; });
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  const notes=page.getByRole('textbox',{name:'조치 후기',exact:true});
+  await notes.fill('저장하지 않은 가상 후기');
+  await page.clock.runFor(300100);
+  await expect.poll(()=>page.evaluate(()=>(window as any).activityStreams.at(-1).closed)).toBe(true);
+  const stopped=reads; await page.clock.runFor(120000); expect(reads).toBe(stopped);
+  await notes.press('End'); await notes.press('a');
+  await expect.poll(()=>page.evaluate(()=>(window as any).activityStreams.length)).toBe(2);
+  await expect(notes).toHaveValue('저장하지 않은 가상 후기a');
+  await page.clock.runFor(1000); const resumed=reads;
+  await notes.press('b'); await notes.press('c'); await page.clock.runFor(1000);
+  expect(reads).toBe(resumed);
+  expect(mutations).toEqual([]);
+});
+
+test('visible running work is tracked past idle and closes its stream when work finishes', async ({page}) => {
+  await activityStreamFixture(page);
+  await setup(page, undefined, 'ADMIN', {status:'ANALYZING',notes:'',prevention:''});
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  await page.clock.runFor(300100);
+  expect(await page.evaluate(()=>(window as any).activityStreams.at(-1).closed)).toBe(false);
+  await page.route('**/api/incidents/INC-UI-RESOLVED',route=>route.fulfill({json:{...rows[0],status:'WAITING_APPROVAL'}}));
+  await page.route('**/api/incidents?*',route=>route.fulfill({json:rows.map(r=>({...r,status:'WAITING_APPROVAL'}))}));
+  await page.evaluate(()=>(window as any).activityStreams.at(-1).listeners.stage({data:JSON.stringify({id:99,incident_id:'INC-UI-RESOLVED',stage:'INCIDENT',state:'COMPLETED',created_at:new Date().toISOString(),message:'가상 분석 완료'})}));
+  await page.clock.runFor(500);
+  await expect.poll(()=>page.evaluate(()=>(window as any).activityStreams.at(-1).closed)).toBe(true);
+});
+
+test('hidden running work stops requests and returning refreshes and reconnects', async ({page}) => {
+  await activityStreamFixture(page);
+  await setup(page, undefined, 'ADMIN', {status:'ANALYZING'});
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click(); await page.clock.runFor(1000);
+  let reads=0; page.on('request',r=>{if(r.method()==='GET'&&new URL(r.url()).pathname.startsWith('/api/'))reads++;});
+  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});
+  await expect.poll(()=>page.evaluate(()=>(window as any).activityStreams.at(-1).closed)).toBe(true);
+  const stopped=reads; await page.clock.runFor(120000); expect(reads).toBe(stopped);
+  await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>false});document.dispatchEvent(new Event('visibilitychange'));});
+  await expect.poll(()=>page.evaluate(()=>(window as any).activityStreams.length)).toBe(2);
+  await expect.poll(()=>reads).toBeGreaterThan(stopped);
+});
+
+for (const view of ['AI 품질 관리','운영 현황']) test(`idle ${view} stops its background lists`, async ({page}) => {
+  await page.clock.install(); await setup(page);
+  await page.getByText('관리자 메뉴',{exact:true}).first().click();
+  await page.getByRole('button',{name:view,exact:true}).click();
+  let reads=0; page.on('request',r=>{if(r.method()==='GET'&&/\/api\/(operations|evaluations|audit)/.test(new URL(r.url()).pathname))reads++;});
+  await page.clock.runFor(300100); const stopped=reads;
+  await expect(page.getByText("자동 새로고침 일시 중지 · 화면을 조작하면 재개됩니다.",{exact:true})).toBeVisible();
+  await page.clock.runFor(120000); expect(reads).toBe(stopped);
+  await page.keyboard.press('Shift'); await expect.poll(()=>reads).toBeGreaterThan(stopped);
+});
