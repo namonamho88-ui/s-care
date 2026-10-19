@@ -9,7 +9,7 @@ export async function waitForLoginServer(signal, { request = fetch, pause = ms =
       const response = await request('/api/readiness', { cache: 'no-store', signal: AbortSignal.any([deadline, AbortSignal.timeout(5000)]) });
       if (response.ok && (await response.json()).ready === true) return;
     } catch { signal.throwIfAborted(); if (deadline.aborted) throw unavailable(); }
-    if (attempt < 9) await pause(1000);
+    if (attempt < 9) await pause(Math.min(5000, 1000 * 2 ** attempt));
   }
   throw unavailable();
 }
