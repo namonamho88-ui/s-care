@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { usePageActivity } from "@/components/use-page-activity";
 
 export const PAGE_SIZE = 10;
 type Row = Record<string, any>;
@@ -38,9 +39,10 @@ export function useRemotePage(path:string,api:(path:string)=>Promise<any>,enable
   const [requested,setPage]=useState(1),[data,setData]=useState<{items:Row[];page:number;total:number;running?:boolean}|null>(null);
   const [loading,setLoading]=useState(false),[error,setError]=useState("");
   const [retry,setRetry]=useState(0);
+  const keepLive=usePageActivity(!!data?.running);
   useEffect(()=>{setData(null);setPage(1);setError("");},[identity]);
   useEffect(()=>{
-    if(!enabled)return;
+    if(!enabled||!keepLive){setLoading(false);return;}
     let active=true,pending=false,nextPoll=0;
     const load=async()=>{
       if(pending||document.hidden||Date.now()<nextPoll)return;pending=true;setLoading(true);
@@ -50,9 +52,9 @@ export function useRemotePage(path:string,api:(path:string)=>Promise<any>,enable
       catch(e){if(active)setError((e as Error).message);}
       finally{pending=false;if(active)setLoading(false);}
     };
-    void load();const visible=()=>{if(!document.hidden){nextPoll=0;void load();}};document.addEventListener("visibilitychange",visible);const interval=setInterval(load,15000);
-    return()=>{active=false;clearInterval(interval);document.removeEventListener("visibilitychange",visible);};
-  },[api,path,enabled,requested,revision,retry,identity]);
+    void load();const interval=setInterval(load,15000);
+    return()=>{active=false;clearInterval(interval);};
+  },[api,path,enabled,requested,revision,retry,identity,keepLive]);
   return {items:data?.items||[],page:data?.page||1,total:data?.total||0,running:data?.running??false,loading,error,ready:!!data,setPage,reload:()=>setRetry(n=>n+1)};
 }
 

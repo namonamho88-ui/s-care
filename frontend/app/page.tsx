@@ -33,6 +33,8 @@ import { Button } from "@/components/ui/button";
 import ManualKnowledge from "@/components/manual-knowledge";
 import DemoSettings from "@/components/demo-settings";
 import ModelWarmup from "@/components/model-warmup";
+import { usePageActivity } from "@/components/use-page-activity";
+import { isIncidentProcessing } from "@/lib/page-activity.mjs";
 import OperationsPanel from "@/components/operations-panel";
 import SkillEditor from "@/components/skill-editor";
 import AccountCenter from "@/components/account-center";
@@ -323,8 +325,6 @@ export default function Home() {
   const isAdmin = user.role === "ADMIN" || isDemo;
   const [loginMode, setLoginMode] = useState("login"), [loginName, setLoginName] = useState(""), [password, setPassword] = useState(""), [inviteCode, setInviteCode] = useState("");
   const [syncProgress, setSyncProgress] = useState("");
-  const [pageVisible,setPageVisible]=useState(true);
-  useEffect(()=>{const update=()=>setPageVisible(!document.hidden);document.addEventListener("visibilitychange",update);update();return()=>document.removeEventListener("visibilitychange",update);},[]);
   const [notice, setNotice] = useState("");
   const [requestLabel, setRequestLabel] = useState("");
   const [view, setView] = useState("dashboard"),
@@ -361,6 +361,7 @@ export default function Home() {
   const [newTitle, setNewTitle] = useState(""),
     [newObservations, setNewObservations] = useState(""),
     [newAsset, setNewAsset] = useState("CMP-01");
+  const keepLive = usePageActivity(incidents.some(isIncidentProcessing) || isIncidentProcessing(detail));
   const selectedRef = useRef(selected);
   selectedRef.current = selected;
   const detailRef = useRef(detail);
@@ -439,7 +440,7 @@ export default function Home() {
     window.addEventListener("brain-session-expired", expired);
     return () => window.removeEventListener("brain-session-expired", expired);
   }, [clearSession, auth]);
-  useEffect(()=>{if(!auth||!isDemo)return;const timer=setInterval(()=>{if(!document.hidden)void api("/auth/me").catch(()=>{});},5000);return()=>clearInterval(timer);},[auth,isDemo]);
+  useEffect(()=>{if(!auth||!isDemo||!keepLive)return;const check=()=>{void api("/auth/me").catch(()=>{});};check();const timer=setInterval(check,5000);return()=>clearInterval(timer);},[auth,isDemo,keepLive]);
   useEffect(() => {
     api("/config").catch(async(error)=>{if(error.status!==401)throw error;const response=await fetch("/api/session",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({mode:"demo"})});if(!response.ok)throw new Error("로그인이 필요합니다.");return api("/config");})
       .then((c) => {
@@ -460,7 +461,7 @@ export default function Home() {
       .catch((e) => setError("기초 정보 조회 실패: " + e.message));
   }, [auth]);
   useEffect(() => {
-    if (!auth || !pageVisible) return;
+    if (!auth || !keepLive) return;
     refresh().catch((e) => {
       setOnline(false);
       setError("화면 정보 조회 실패: " + e.message);
@@ -474,10 +475,10 @@ export default function Home() {
       60000,
     );
     return () => clearInterval(interval);
-  }, [auth, refresh, pageVisible]);
+  }, [auth, refresh, keepLive]);
   useEffect(() => {
     if (!selected) { setDetail(null); return; }
-    if (!pageVisible) return;
+    if (!keepLive) return;
     setDetail(current=>current?.id===selected?current:null);
     loadDetail(selected).catch((e) => setError("장애 상세 조회 실패: " + e.message));
     const source = new EventSource("/api/incidents/" + selected + "/events");
@@ -519,7 +520,7 @@ export default function Home() {
       source.close();
       setLive(false);
     };
-  }, [selected, loadDetail, pageVisible]);
+  }, [selected, loadDetail, keepLive]);
   useEffect(() => {
     if (!error) return;
     const timer = setTimeout(() => setError(""), 12000);
@@ -735,9 +736,9 @@ export default function Home() {
             <ChevronRight size={12} />
             <span>가상 금융 IT 운영센터</span>
             <span className="divider" />
-            <Chip tone={online ? "green" : "red"}>
+            <Chip tone={!keepLive ? "amber" : online ? "green" : "red"}>
               <span className="live-dot" />
-              {online ? "서버 연결됨" : "서버 연결 끊김"}
+              {!keepLive ? "자동 갱신 일시 중지" : online ? "서버 연결됨" : "서버 연결 끊김"}
             </Chip>
           </div>
           <div className="flex-row">
@@ -754,6 +755,7 @@ export default function Home() {
             </button>
           </div>
         </header>
+        {!keepLive && <p className="small muted" role="status" style={{margin:"8px 18px"}}>자동 새로고침 일시 중지 · 화면을 조작하면 재개됩니다.</p>}
         <main className={"page" + (view === "dashboard" ? " dashboard-page" : "")}>
           <div className="heading">
             <div>

@@ -80,9 +80,32 @@ npm.cmd --prefix frontend start
 
 Neo4j Aura를 쓰면 neo4j 서비스 대신 실제 Aura의 URI/사용자/DB명을 지정한다. Supabase는 Neo4j를 대체하지 않는다.
 
+### 사용자 부재 시 절전과 비용 절감
+
+Railway의 Serverless는 사용자 수가 아니라 **송신 네트워크 활동**으로 유휴 상태를 판정한다. 서비스별 Settings → Deploy → Serverless를 활성화하고 재배포해야 새 컨테이너에 적용된다. DB 연결 유지, 큐 조회, 상태 확인 요청도 활동에 포함된다. 마지막 송신 후 약 5~10분 동안 조용해야 절전할 수 있으므로 기능 설정과 애플리케이션의 유휴 처리를 함께 적용한다. [Railway Serverless](https://docs.railway.com/deployments/serverless).
+
+| 서비스 | 절전 정책 | 유지할 동작 |
+|---|---|---|
+| backend | Serverless 활성화, 단일 replica 유지 | 진행 중 작업·평가 및 승인 후 복구의 완료, DB 작업 임대·결과 저장·감사 기록 |
+| jevos | Serverless 활성화 | REAL 선택 또는 명시적인 관리자 워밍업 요청 때만 모델 사용 |
+| hermes | Serverless 활성화, `/data/hermes` 볼륨 유지 | REAL 지식 검색·초안 생성, 승인된 Skill 게시·동기화 |
+| neo4j | DB는 상시 사용 가능 상태 유지 | 기존 그래프·볼륨과 트랜잭션 보존, 사용량 보고 비활성화 |
+
+Railway는 연결을 유지하는 작업자와 DB를 일반적인 Serverless 적용에 적합하지 않은 대상으로 설명한다. 이 프로젝트는 백엔드의 유휴 DB 조회를 멈추도록 조정하되, Neo4j에 강제 종료나 사용자 수에 따른 DB 중단을 추가하지 않는다. Neo4j의 자원 사용은 남는다. [Railway 유휴 비용 안내](https://docs.railway.com/guides/cut-idle-costs-serverless).
+
+cloud 프로필은 `APP_IDLE_ENABLED=true`, `APP_IDLE_AFTER_SECONDS=60`을 기본으로 사용한다. 인증된 요청이 사라지고 진행 중 작업이 없으면 주기적인 유휴 DB 조회를 멈춘다. Hikari는 `DB_POOL_MIN_IDLE=0`, `DB_POOL_IDLE_TIMEOUT_MS=30000`, `DB_POOL_KEEPALIVE_MS=0`, `DB_TCP_KEEPALIVE=false`로 유휴 연결을 반환하며, Neo4j 드라이버도 활성 쿼리가 끝난 뒤 연결을 닫고 다음 요청에서 다시 연다. 최대 DB 연결 수 5와 기존 트랜잭션·잠금은 유지한다.
+
+작업 큐는 시작·인증된 재접속·커밋된 작업 등록·작업 완료 시 깨운다. 대기 작업의 실행 시각과 임대 만료는 예약하고 실행 중 작업의 임대 갱신과 제한된 재시도는 계속 수행한다. 유휴 시 SLA 알림 검사는 보류하며 다음 접속 후 30초 이내 다시 확인한다. 이미 등록한 가상 알림은 최대 3회 전달 시도를 마친다. 따라서 절전을 위해 승인·복구를 생략하거나 DB 작업을 버리지 않는다.
+
+시연 기본값은 **DEMO Mock**이다. 이 모드의 분류·지식 검색·초안 생성은 외부 모델을 호출하지 않으며, REAL 선택과 실제 호출 비용을 분리한다. 주기적인 AI 워밍업이나 외부 uptime 요청으로 서비스를 계속 깨우지 않는다. 관리자가 필요할 때 실행하는 워밍업에는 기존 호출 제한과 비용 표시를 유지한다. Hermes의 `HF_HUB_DISABLE_TELEMETRY=1`, `DO_NOT_TRACK=1`은 해당 설정을 지원하는 Hugging Face 클라이언트의 사용량 전송을 끈다. 모든 외부 통신을 차단하는 설정이나 절전 성공 보장은 아니다. [Hugging Face 환경변수](https://huggingface.co/docs/huggingface_hub/package_reference/environment_variables).
+
+절전 후 첫 접근에는 기동 대기 또는 일시적인 502가 발생할 수 있다. 로그인 서버 연결 실패를 비밀번호 오류로 표시하지 않고 재시도 가능한 상태로 안내한다. 시연 직전에 사이트에 한 번 접속하면 백엔드 기동 여부를 확인할 수 있다. REAL 모델은 기동 후 첫 추론 준비 시간이 별도로 필요하다. 절전 도입 이후의 실제 기동 시간·사용량은 결제 복구 후 클라우드에서 측정하며, 로컬 테스트만으로 비용 절감률을 확정하지 않는다.
+
+절전 중에는 실행 자원 사용을 줄일 수 있지만 영구 볼륨의 저장 비용과 요금제 최소 금액은 남는다. backend↔Jev/Hermes/Neo4j 통신은 기존 private network를 유지한다. 임의의 비용 상한으로 서비스를 다시 차단하거나, 메모리 한도를 과도하게 낮추거나, 기존 DB·볼륨·모델을 삭제하지 않는다. 결제와 지출 상한 결정은 프로젝트 소유자가 수행한다. [Railway 비용 제어](https://docs.railway.com/pricing/cost-control), [볼륨 과금](https://docs.railway.com/volumes/reference).
+
 ### 자원 한도와 빌드 범위
 
-Railway Trial은 서비스당 RAM 1GB, 영구 볼륨 0.5GB이며, 종료 후 Free 플랜은 RAM 0.5GB와 월 $1 크레딧으로 한도가 줄어든다. Trial에서 성공했다고 지속 무료 운영이 가능하다고 표시하지 않는다. 2026-10-10 Vercel → Railway backend/Jev/Hermes/Neo4j → Supabase의 DEMO 및 실제 AI 시연을 CLOSED까지 확인했다. 현재 유료 전환은 하지 않았다. 최종 발표 전에 요금제와 자원을 확인하고 부하 리허설을 수행한다.
+2026-10-10 검증 당시 Railway Trial의 서비스당 RAM은 1GB, 영구 볼륨은 0.5GB였다. Trial에서 성공했다고 지속 무료 운영이 가능하다고 표시하지 않는다. 당시 Vercel → Railway backend/Jev/Hermes/Neo4j → Supabase의 DEMO 및 실제 AI 시연을 CLOSED까지 확인했다. 결제·Trial 만료로 플랫폼이 서비스를 중단한 상태는 비밀번호 오류나 절전 상태와 다르다. 복구 시 현재 요금제와 서비스 상태를 확인하고, 결제는 프로젝트 소유자가 수행한 뒤 배포·로그인을 검증한다.
 
 Jev Dockerfile은 `--threads 2 --warmup 0 --batch-tokens 0 --state-cache 0 --state-cache-tokens 0`을 사용한다. 공식 jevos의 모델과 `/v1/systemone` 계약을 유지하면서 유휴 시간의 모든 입력 길이 사전 컴파일, 요청 병합, 상태 캐시를 끈다. 첫 요청 지연과 반복 요청 성능은 달라질 수 있다. Railway에서 동일한 Start Command로 가상 장애를 RESOURCE/P1/PLATFORM으로 분류했고 입력 1,176 토큰, cgroup 최고 메모리 703,369,216 bytes(약 671MiB), OOM kill 0을 확인했다. 이 한 건의 검증은 부하 테스트나 0.5GB Free 실행 보장이 아니다. 증적: `evidence/railway-jev-trial.json`.
 
@@ -96,8 +119,8 @@ GitHub 자동 배포의 Watch Paths는 backend `/backend/**`, jevos `/infra/jevo
 
 - backend만 공개 HTTPS 주소를 만들고 Vercel BACKEND_URL에 넣는다. DB/jevos/Hermes/bridge는 같은 프로젝트의 private network로 연결한다. 예제의 `*.railway.internal`은 실제 서비스 주소로 바꾼다.
 - Hermes는 OPENAI_API_KEY, HERMES_API_KEY, 별도의 HERMES_PUBLISH_KEY를 받는다. 백엔드는 내부 인증 키 두 개만 받는다. bridge에는 upstream OpenAI 키를 전달하지 않는다.
-- **backend는 항상 실행되는 단일 replica**로 운영한다. 현재 Harness의 스레드/시작 시 중단 복구 정책은 여러 인스턴스의 동시 실행을 지원하지 않는다. 수평 확장은 향후 작업 큐/lease가 필요하다.
-- 배포는 활성 장애·평가가 없을 때 진행한다. 실행 중 재시작되면 FAILED로 보존되고 UI에서 명시적으로 재시도한다. 중단 없이 자동 재개한다고 표시하지 않는다.
+- **backend는 단일 replica**로 운영한다. 유휴 절전과 단일 인스턴스 제약은 별개다. 장애 작업은 PostgreSQL 큐·임대·완료 단계 재사용으로 재시작 후 이어받지만, 평가의 동시 실행 제한 때문에 수평 확장은 하지 않는다.
+- 배포는 진행 중 분석·복구·평가가 없을 때 진행한다. 재시작 시 DB 큐의 재시도 정책과 임대를 적용하며 사람 승인·검토, 중단·삭제, 실패 상태를 우회하지 않는다. 승인을 기다리는 장애를 절전 때문에 승인하거나 종료하지 않는다.
 - backend PORT를 바꿔도 내부 A2A/MCP는 실제 포트를 따른다. 공개 Agent Card용 AGENT_BASE_URL은 공개 backend 주소다. INTERNAL_URL은 단일 프로세스 내부 호출용 loopback이며 외부 주소로 바꿀 필요가 없다.
 - 파일 게시가 실패해도 승인 원본은 PostgreSQL에 남는다. Hermes 볼륨 복구 후 **승인 지식 동기화**로 재구성한다. 한 API 요청은 최대 5개씩 게시하고 화면은 커서로 다음 묶음을 요청하며 진행 수량을 표시한다. 실패한 항목은 FAILED로 남으며 동기화를 다시 실행하면 재시도한다.
 

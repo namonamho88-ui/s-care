@@ -7,8 +7,20 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Service
 public class EvaluationService {
  private final Store s;private final JevRouter router;private final Harness harness;private final ExecutorService worker=Executors.newSingleThreadExecutor();private final AtomicBoolean active=new AtomicBoolean();
+ @org.springframework.beans.factory.annotation.Autowired(required=false) private BackgroundActivity activity;
  public EvaluationService(Store s,JevRouter router,Harness harness){this.s=s;this.router=router;this.harness=harness;}
- public String start(String mode,String provider){harness.validateMode(mode,provider);if(!active.compareAndSet(false,true))throw new IllegalStateException("평가가 이미 실행 중입니다.");String id=Store.id("EVAL-");s.db.update("INSERT INTO evaluations VALUES (?,?,?,'RUNNING',NULL,?)",id,mode,provider,Store.now());worker.submit(()->{try{Object result=evaluate(mode,provider);s.db.update("UPDATE evaluations SET status='COMPLETED',result_json=? WHERE id=?",s.encode(result),id);s.audit(null,"harness","EVALUATION_COMPLETED",Map.of("id",id));}catch(Exception e){s.db.update("UPDATE evaluations SET status='FAILED',result_json=? WHERE id=?",s.encode(Map.of("error",e.getClass().getSimpleName())),id);}finally{active.set(false);}});return id;}
+ public String start(String mode,String provider){
+  harness.validateMode(mode,provider);if(!active.compareAndSet(false,true))throw new IllegalStateException("평가가 이미 실행 중입니다.");
+  String id=Store.id("EVAL-");boolean inserted=false;if(activity!=null)activity.jobStarted();
+  try{
+   s.db.update("INSERT INTO evaluations VALUES (?,?,?,'RUNNING',NULL,?)",id,mode,provider,Store.now());inserted=true;
+   worker.submit(()->{try{Object result=evaluate(mode,provider);s.db.update("UPDATE evaluations SET status='COMPLETED',result_json=? WHERE id=?",s.encode(result),id);s.audit(null,"harness","EVALUATION_COMPLETED",Map.of("id",id));}catch(Exception e){s.db.update("UPDATE evaluations SET status='FAILED',result_json=? WHERE id=?",s.encode(Map.of("error",e.getClass().getSimpleName())),id);}finally{active.set(false);if(activity!=null)activity.jobFinished();}});return id;
+  }catch(RuntimeException e){
+   active.set(false);if(activity!=null)activity.jobFinished();
+   if(inserted)try{s.db.update("UPDATE evaluations SET status='FAILED',result_json=? WHERE id=?",s.encode(Map.of("error",e.getClass().getSimpleName())),id);}catch(RuntimeException storeError){e.addSuppressed(storeError);}
+   throw e;
+  }
+ }
  private boolean field(Map<String,Object> expected,String key,Object actual){return expected.get("expected_"+key)==null||expected.get("expected_"+key).equals(actual);}
  private boolean passes(Map<String,Object> expected,JevDecision d){if(Boolean.TRUE.equals(expected.get("expected_review")))return d.needsReview();return !d.needsReview()&&field(expected,"type",d.type())&&field(expected,"severity",d.severity())&&field(expected,"department",d.department())&&field(expected,"recurrence",d.recurrence());}
  public Map<String,Object> evaluate(String mode,String provider){var rows=s.db.queryForList("SELECT * FROM evaluation_cases ORDER BY id");var results=new ArrayList<Object>();var groups=new TreeMap<String,int[]>();int passed=0,baselinePassed=0,actualAi=0,actualAiPassed=0,errors=0,fallbacks=0,reviews=0,typeCorrect=0,severityCorrect=0,departmentCorrect=0,recurrenceCorrect=0;var denominators=new HashMap<String,Integer>();

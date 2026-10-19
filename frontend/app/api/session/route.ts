@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import {demoRequestAllowed,demoHeaders} from "@/lib/demo-access.mjs";
+import { sessionFailure } from "@/lib/session-error.mjs";
 const upstream = process.env.BACKEND_URL || "http://127.0.0.1:8080";
 function validOrigin(req: NextRequest) {
   const origin = req.headers.get("origin");
@@ -29,8 +30,11 @@ export async function POST(req: NextRequest) {
       body: mode === "admin" ? undefined : JSON.stringify({ login: body.login, password: body.password, ...(mode === "activate" ? { inviteCode: body.inviteCode } : {}) }),
       cache: "no-store", signal: AbortSignal.timeout(20000),
     });
+    if (!res.ok) {
+      const failure = sessionFailure(res.status, await res.json().catch(() => null));
+      return NextResponse.json(failure.body, { status: failure.status, headers: { "Cache-Control": "no-store" } });
+    }
     const data = await res.json();
-    if (!res.ok) return NextResponse.json({ error: data.error || "로그인 정보를 확인하세요." }, { status: res.status });
     const token = mode === "admin" ? body.token : data.token;
     if (typeof token !== "string" || !data.user) throw new Error("Invalid session response");
     const response = NextResponse.json({ ok: true, user: data.user }, { headers: { "Cache-Control": "no-store" } });

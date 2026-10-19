@@ -6,11 +6,17 @@ spring:
     password: ${DB_PASSWORD}
     hikari:
       schema: ${DB_SCHEMA:brain}
+      minimum-idle: ${DB_POOL_MIN_IDLE:0}
+      idle-timeout: ${DB_POOL_IDLE_TIMEOUT_MS:30000}
+      keepalive-time: ${DB_POOL_KEEPALIVE_MS:0}
+      data-source-properties:
+        tcpKeepAlive: ${DB_TCP_KEEPALIVE:false}
   flyway:
     schemas: ${DB_SCHEMA:brain}
     default-schema: ${DB_SCHEMA:brain}
     create-schemas: true
 brain:
+  idle-enabled: ${APP_IDLE_ENABLED:true}
   admin-token: ${ADMIN_TOKEN}
   neo4j-uri: ${NEO4J_URI}
   neo4j-password: ${NEO4J_PASSWORD}

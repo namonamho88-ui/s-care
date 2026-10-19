@@ -14,6 +14,8 @@ public class SecurityFilter extends OncePerRequestFilter {
  private final byte[] expected;
  private final AccountService accounts;
  @org.springframework.beans.factory.annotation.Autowired private DemoAccess demo;
+ @org.springframework.beans.factory.annotation.Autowired(required=false) private BackgroundActivity activity;
+ @org.springframework.beans.factory.annotation.Autowired(required=false) private DurableQueue queue;
  public SecurityFilter(@Value("${brain.admin-token}") String token,Environment env,AccountService accounts){
   this.accounts=accounts;
   if(token.length()<16)throw new IllegalArgumentException("ADMIN_TOKEN requires at least 16 characters");
@@ -25,8 +27,8 @@ public class SecurityFilter extends OncePerRequestFilter {
  @Override protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain chain)throws ServletException,IOException{
   response.setHeader("Cache-Control","no-store");
   String path=request.getRequestURI(),method=request.getMethod();
-  if(method.equals("GET")&&(path.equals("/api/health")||path.matches("/agents/[a-z]+/\\.well-known/agent-card\\.json"))||method.equals("POST")&&(path.equals("/api/auth/login")||path.equals("/api/auth/activate"))){chain.doFilter(request,response);return;}
-  if(path.equals("/api/demo/session")){if(!method.equals("POST")||!demo.gateway(request)){deny(response,403,"허용된 시연 게이트웨이가 아닙니다.");return;}chain.doFilter(request,response);return;}
+  if(method.equals("GET")&&(path.equals("/api/health")||path.matches("/agents/[a-z]+/\\.well-known/agent-card\\.json"))||method.equals("POST")&&(path.equals("/api/auth/login")||path.equals("/api/auth/activate"))){chain.doFilter(request,response);if(method.equals("POST")&&response.getStatus()<400)userActivity();return;}
+  if(path.equals("/api/demo/session")){if(!method.equals("POST")||!demo.gateway(request)){deny(response,403,"허용된 시연 게이트웨이가 아닙니다.");return;}chain.doFilter(request,response);if(response.getStatus()<400)userActivity();return;}
   if(path.equals("/api/demo/control")){if(!demo.control(request)){deny(response,403,"시연 설정 권한이 없습니다.");return;}chain.doFilter(request,response);return;}
   String auth=request.getHeader("Authorization");Access.Identity identity=null;
   if(auth!=null&&MessageDigest.isEqual(expected,auth.getBytes(StandardCharsets.UTF_8)))identity=new Access.Identity("bootstrap-admin","bootstrap-admin","초기 설정 관리자","ADMIN","","BOOTSTRAP","");
@@ -38,8 +40,11 @@ public class SecurityFilter extends OncePerRequestFilter {
   if(service&&!identity.kind().equals("BOOTSTRAP")||!identity.admin()&&!userAllowed(method,path)){
    deny(response,403,"이 작업을 수행할 권한이 없습니다.");return;
   }
-  try{if(identity.kind().equals("BOOTSTRAP")&&service&&request.getHeader("X-Work-Id")!=null)WorkContext.set(request.getHeader("X-Work-Id"),request.getHeader("X-Work-Token"));chain.doFilter(request,response);}finally{WorkContext.clear();}
+  boolean userRequest=!service&&!path.startsWith("/api/internal/");
+  if(userRequest){userActivity();if(activity!=null)activity.jobStarted();}
+  try{if(identity.kind().equals("BOOTSTRAP")&&service&&request.getHeader("X-Work-Id")!=null)WorkContext.set(request.getHeader("X-Work-Id"),request.getHeader("X-Work-Token"));chain.doFilter(request,response);}finally{WorkContext.clear();if(userRequest&&activity!=null)activity.jobFinished();}
  }
+ private void userActivity(){if(activity!=null){boolean resumed=activity.touch();if(queue!=null)queue.authenticatedVisit(resumed);}}
  private static boolean demoAllowed(String method,String path){
   if(path.equals("/api/auth/me")||path.equals("/api/auth/logout"))return true;
   return path.matches("/api/(?:config|catalog|graph|dashboard|incidents|simulate|skills|evaluations|audit|operations|notifications|message-intake|assets)(?:/.*)?");
