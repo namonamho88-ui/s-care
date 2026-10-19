@@ -55,3 +55,36 @@ test('mobile lab graph, comparison and controls fit; motion can be disabled',asy
 test('normal users cannot start an experiment and unexecuted evaluations are not shown',async({page})=>{
  const calls=await setup(page,false);await expect(page.getByRole('button',{name:'새 독립 실험',exact:true})).toBeDisabled();await expect(page.getByRole('button',{name:'자동 데모 실행',exact:true})).toBeDisabled();await page.getByRole('button',{name:'8 AI 성능 평가',exact:true}).click();await expect(page.getByText('아직 실행된 평가가 없습니다.',{exact:true})).toBeVisible();await expect(page.getByRole('button',{name:'평가 실행',exact:true})).toBeDisabled();expect(calls).toEqual([]);
 });
+
+async function evaluationFixture(page:Page){
+ await page.clock.install();await setup(page);
+ let reads=0,details=0,fail=false,status='RUNNING',pending:Promise<void>|undefined;
+ await page.route('**/api/twin/evaluations**',async route=>{
+  if(new URL(route.request().url()).pathname.endsWith('/TEVAL-test')){details++;await route.fulfill({json:{id:'TEVAL-test',status:'INTERRUPTED',error:'가상 중단',rows:[]}});return;}
+  reads++;if(pending)await pending;
+  await route.fulfill(fail?{status:503,json:{error:'가상 일시 오류'}}:{json:[{id:'TEVAL-test',status,completed:2,sampleCount:6}]});
+ });
+ await page.getByRole('button',{name:'8 AI 성능 평가',exact:true}).click();await page.getByRole('button',{name:'평가 결과 새로고침',exact:true}).click();
+ await expect(page.getByText('TEVAL-test · RUNNING',{exact:true})).toBeVisible();
+ return {reads:()=>reads,details:()=>details,setFail:(v:boolean)=>{fail=v;},finish:()=>{status='INTERRUPTED';},hold:(p:Promise<void>|undefined)=>{pending=p;}};
+}
+test('evaluation polls summaries only, pauses outside the screen and on hidden tabs, loads detail on demand',async({page})=>{
+ const f=await evaluationFixture(page);const first=f.reads();
+ await page.clock.runFor(5100);await expect.poll(f.reads).toBe(first+1);expect(f.details()).toBe(0);
+ await page.getByRole('button',{name:'1 인프라 맵',exact:true}).click();const away=f.reads();await page.clock.runFor(20000);expect(f.reads()).toBe(away);
+ await page.getByRole('button',{name:'8 AI 성능 평가',exact:true}).click();
+ await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});document.dispatchEvent(new Event('visibilitychange'));});
+ await page.clock.runFor(20000);expect(f.reads()).toBe(away);
+ await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>false});document.dispatchEvent(new Event('visibilitychange'));});
+ f.finish();await page.clock.runFor(5100);await expect(page.getByText('TEVAL-test · INTERRUPTED',{exact:true})).toBeVisible();
+ const done=f.reads();await page.clock.runFor(20000);expect(f.reads()).toBe(done);expect(f.details()).toBe(0);
+ await page.getByRole('button',{name:'평가 상세 결과 보기',exact:true}).click();await expect(page.getByText('가상 중단',{exact:true})).toBeVisible();expect(f.details()).toBe(1);
+});
+test('evaluation requests never overlap and failure stops polling until explicit refresh',async({page})=>{
+ const f=await evaluationFixture(page);let release!:()=>void;f.hold(new Promise<void>(r=>release=r));const first=f.reads();
+ await page.clock.runFor(5100);await expect.poll(f.reads).toBe(first+1);await page.clock.runFor(20000);expect(f.reads()).toBe(first+1);
+ f.setFail(true);f.hold(undefined);release();await expect(page.getByText('평가 자동 조회 중지 · 결과 새로고침으로 재개할 수 있습니다.',{exact:true})).toBeVisible();
+ const failed=f.reads();await page.clock.runFor(360000);expect(f.reads()).toBe(failed);
+ f.setFail(false);await page.getByRole('button',{name:'평가 결과 새로고침',exact:true}).click();await expect(page.getByText('평가 자동 조회 중지 · 결과 새로고침으로 재개할 수 있습니다.',{exact:true})).toHaveCount(0);
+ await page.clock.runFor(5100);await expect.poll(f.reads).toBe(failed+2);
+});

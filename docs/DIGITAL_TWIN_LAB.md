@@ -71,7 +71,7 @@ Jev 결과에는 요청/실제 Provider, 모델, 응답 신뢰도, 실행 시간
 | twin_simulate | runId | 저장된 전략을 동일 장애 복사본에서 계산; 현재 상태나 승인 변경 없음 |
 | twin_results | runId | 저장된 비교 결과·승인·실행 로그 읽기 |
 
-REST: `GET /api/twin/catalog`, `GET/POST /api/twin/runs`, `GET /api/twin/runs/{id}`, `POST /api/twin/runs/{id}/{inject|advance|stop|reset|analyze|strategies|simulate|recommend|request|decision}`, `GET .../{id}/report`, `GET/POST /api/twin/evaluations`. 변경 요청은 현재 `version` 필수. 보고서는 실제 저장 JSON 다운로드와 브라우저 인쇄/PDF 저장을 제공한다.
+REST: `GET /api/twin/catalog`, `GET/POST /api/twin/runs`, `GET /api/twin/runs/{id}`, `POST /api/twin/runs/{id}/{inject|advance|stop|reset|analyze|strategies|simulate|recommend|request|decision}`, `GET .../{id}/report`, `GET/POST /api/twin/evaluations` (목록은 경량 진행 정보), `GET /api/twin/evaluations/{id}` (본인 평가 상세). 변경 요청은 현재 `version` 필수. 보고서는 실제 저장 JSON 다운로드와 브라우저 인쇄/PDF 저장을 제공한다.
 
 ## 시연과 평가
 
@@ -106,3 +106,14 @@ API 통합 테스트: H2 마이그레이션, 상태 전이, 명시적 승인, �
 새 Lab의 **실제 외부 Jev/Hermes 응답과 운영 클라우드 시연은 미검증·미배포**다. 로컬 서버를 연결한 별도 수동 브라우저 리허설은 프런트엔드 시작 명령이 자동 승인 검토에서 차단되어 완료하지 않았다. 이를 완료된 검증으로 계산하지 않는다. 배포 후 관리자 계정/격리 DEMO 세션으로 자동 데모와 REAL 모드를 별도 리허설해야 한다.
 
 기존 Vercel frontend / Railway backend 배포 구조를 유지한다. 적용 후 rollback은 구 버전 코드로 되돌릴 수 있으며 V14 신규 테이블의 데이터를 파괴하는 down migration은 제공하지 않는다.
+
+
+## Railway 유휴 최적화 보완 (2026-10-19)
+
+- 평가 목록/자동 조회는 ID·상태·완료 건수·전체 건수만 SELECT한다. 결과 JSON과 단계별 스냅샷은 `평가 상세 결과 보기`를 눌러 본인 평가 1건만 가져온다.
+- 평가 화면을 보고 있고 RUNNING 평가가 있을 때만 5초 간격으로 조회한다. 응답이 끝난 뒤 다음 요청을 예약하여 중첩 요청을 막는다. 완료·화면 이동·숨긴 탭에서는 중단한다. 조회 오류 시 자동 재시도를 중지하고 사용자의 결과 새로고침으로 재개한다. POST 평가 실행은 자동 재전송하지 않는다.
+- V15 Java Flyway migration은 기존 JSON을 보존하며 상태·완료 건수를 한 번만 추출한다. 상태 및 사용자/생성 시각 인덱스를 추가한다. 이후 서버 시작은 RUNNING 평가만 조회·중단 처리하므로 완료 기록 전체를 다시 읽지 않는다. V14 체크섬은 변경하지 않았다.
+- 기존 `BackgroundActivity` 작업 보호, cloud DB 유휴 연결 설정, 단일 인스턴스, DEMO 외부 모델 무호출, 로그인 준비 화면을 유지한다. 새로운 주기적 서버 작업·AI 워밍업은 추가하지 않는다.
+- 회귀 검증: 오류 후 6분 무요청, 느린 응답 중 요청 중첩 방지, 숨긴 탭/다른 화면의 요청 중단, 상세 결과 지연 조회, 완료 기록 미파싱 및 미완료 평가 복구, V14 기존 데이터에서 V15 업그레이드를 추가했다.
+
+운영 배포 전 기존 장애 218건과 삭제 표시 3건의 해시를 별도 보관했다. 진행 중 장애와 기존 평가가 없는 상태임을 확인했다. 배포 후 데이터 보존과 새 Lab 경로를 검증하며, 실제 절전 시간이나 청구액 감소율은 별도 사용량 관측 없이 확정하지 않는다.

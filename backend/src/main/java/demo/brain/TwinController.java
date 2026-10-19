@@ -16,5 +16,6 @@ public class TwinController {
  @PostMapping("/runs/{id}/{op}") public Object command(@PathVariable String id,@PathVariable String op,@RequestBody Map<String,Object> body){return lab.command(id,op,body);}
  @GetMapping("/runs/{id}/report") public ResponseEntity<byte[]> report(@PathVariable String id){return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).header("Content-Disposition","attachment; filename=\""+id+".json\"").body(s.encode(lab.get(id)).getBytes(java.nio.charset.StandardCharsets.UTF_8));}
  @GetMapping("/evaluations") public Object evaluations(){Access.admin();return lab.evaluations();}
+ @GetMapping("/evaluations/{id}") public Object evaluation(@PathVariable String id){return lab.evaluation(id);}
  @PostMapping("/evaluations") public Object evaluate(@RequestBody Map<String,String> body){return lab.evaluate(body.getOrDefault("mode","DEMO"),body.getOrDefault("provider","LOCAL"));}
 }
