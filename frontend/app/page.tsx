@@ -37,6 +37,7 @@ import ModelWarmup from "@/components/model-warmup";
 import { usePageActivity } from "@/components/use-page-activity";
 import { isIncidentProcessing } from "@/lib/page-activity.mjs";
 import OperationsPanel from "@/components/operations-panel";
+import TwinLab from "@/components/twin-lab";
 import SkillEditor from "@/components/skill-editor";
 import AccountCenter from "@/components/account-center";
 import ManualCenter from "@/components/manual-center";
@@ -618,6 +619,7 @@ export default function Home() {
     number,
   ][];
   const title: Row = {
+    twin: "AI Digital Twin & Chaos Lab",
     dashboard: "S-CARE · AI 장애 대응 관제센터",
     ontology: "시스템 연결과 영향 분석",
     incidents: "장애 이력 & 보고서",
@@ -629,6 +631,7 @@ export default function Home() {
     accounts: isAdmin ? "계정 & 권한 관리" : "내 계정",
   };
   const descriptions: Row = {
+    twin: "합성 인프라에서 장애 영향을 계산하고 복구 전략을 독립적으로 검증합니다.",
     dashboard: "문자 한 통에서 분석·승인·복구까지, 안내에 따라 장애 대응을 경험하세요.",
     operations: "상세 운영 지표와 처리 시간, 알림, 저장된 작업을 확인합니다.",
     ontology: "시스템이 무엇에 의존하는지 확인하고, 선택한 장애의 영향 가능성을 전체화면으로 살펴봅니다.",
@@ -702,6 +705,7 @@ export default function Home() {
           {[
             ["dashboard", LayoutDashboard, "통합 관제"],
             ["ontology", Network, "시스템 영향도"],
+            ["twin", BrainCircuit, "Digital Twin & Chaos Lab"],
             ["incidents", History, "장애 이력"],
             ["knowledge", BookOpen, "해결 지식"],
             ["technology", BrainCircuit, "사용 기술"],
@@ -777,7 +781,7 @@ export default function Home() {
         </header>
         {!keepLive && <p className="small muted" role="status" style={{margin:"8px 18px"}}>자동 새로고침 일시 중지 · 화면을 조작하면 재개됩니다.</p>}
         <main className={"page" + (view === "dashboard" ? " dashboard-page" : "")}>
-          <div className="heading">
+          {view !== "twin" && <div className="heading">
             <div>
               <div className="eyebrow">장애 대응 · {title[view]}</div>
               <h1>{title[view]}</h1>
@@ -788,10 +792,11 @@ export default function Home() {
               <Plus size={16} />
               장애 직접 등록
             </Button></div>}
-          </div>
+          </div>}
           {filtered && ["dashboard", "incidents", "ontology"].includes(view) && <div className="filter-notice" role="status"><span>집계 필터 적용 중 · {typeLabels[filterType] || "모든 유형"} · {catalog.assets.find((a: Row) => a.id === filterSystem)?.name || "모든 시스템"} · {from || "처음"} ~ {to || "현재 이후 포함"}</span><Button size="sm" variant="outline" onClick={resetFilters}>집계 필터 초기화</Button></div>}
           {view === "accounts" && !isDemo && <>{isAdmin&&<DemoSettings api={api}/>}<AccountCenter user={user} operators={catalog.operators} api={api} onPasswordChanged={() => { clearSession(); setError("비밀번호를 변경하고 모든 세션을 폐기했습니다. 새 비밀번호로 로그인하세요."); }} /></>}
           {view === "guide" && <ManualCenter />}
+          {view === "twin" && <TwinLab api={api} isAdmin={isAdmin}/>}
           {view === "technology" && <TechnologyGuide config={config} />}
           {view === "ontology" && <>
             <div className="ontology-context"><label>분석 기준 장애<select value={selected || ""} onChange={e => setSelected(e.target.value || null)}><option value="">선택 안 함 · 전체 구조</option>{incidents.map(i => <option key={i.id} value={i.id}>{i.id} · {i.title} · {statusLabels[i.status]}</option>)}</select></label><p className="small muted">저장된 분석 결과를 조회합니다. 영향도 분석 전 장애는 전체 구조만 표시됩니다.</p>{current && <Button size="sm" variant="outline" onClick={() => openIncident(current.id)}>선택 장애 상세 보기</Button>}</div>

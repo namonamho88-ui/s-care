@@ -4,6 +4,7 @@
 @import "./pagination.css";
 @import "./technology-guide.css";
 @import "./dashboard.css";
+@import "./twin-lab.css";
 @config "../tailwind.config.ts";
 :root {
   color-scheme: dark;
