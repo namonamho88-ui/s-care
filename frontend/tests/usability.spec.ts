@@ -437,6 +437,7 @@ test('user role hides administrator controls and allows only owned incident note
 test('login defaults to a personal account and keeps bootstrap and activation separate', async ({page}) => {
   const calls: any[]=[];
   await page.route('**/api/**',async route=>{
+    if(new URL(route.request().url()).pathname==='/api/readiness') return route.fulfill({json:{ready:true}});
     if(new URL(route.request().url()).pathname==='/api/session'&&route.request().postDataJSON().mode!=='demo') calls.push(route.request().postDataJSON());
     await route.fulfill({status:401,json:{error:'가상 인증 검증 오류'}});
   });
@@ -941,4 +942,24 @@ for (const view of ['AI 품질 관리','운영 현황']) test(`idle ${view} stop
   await expect(page.getByText("자동 새로고침 일시 중지 · 화면을 조작하면 재개됩니다.",{exact:true})).toBeVisible();
   await page.clock.runFor(120000); expect(reads).toBe(stopped);
   await page.keyboard.press('Shift'); await expect.poll(()=>reads).toBeGreaterThan(stopped);
+});
+
+for (const width of [390, 1280]) test(`login cold start guides waiting and sends credentials once at ${width}px`, async ({page}) => {
+  await page.setViewportSize({width,height:844});
+  let probes=0, writes=0;
+  await page.route('**/api/**',async route=>{
+    const path=new URL(route.request().url()).pathname;
+    if(path==='/api/readiness') return route.fulfill({status:++probes<3?503:200,json:{ready:probes>=3}});
+    if(path==='/api/session' && route.request().postDataJSON().mode==='login') writes++;
+    return route.fulfill({status:401,json:{error:'검증용 인증 실패'}});
+  });
+  await page.goto('/');
+  await page.getByLabel('아이디',{exact:true}).fill('fictional.user');
+  await page.getByLabel('비밀번호',{exact:true}).fill('fictional-password');
+  await page.getByRole('button',{name:'관제센터 시작'}).click();
+  await expect(page.getByRole('status')).toContainText('서버 연결을 준비하고 있습니다');
+  expect(writes).toBe(0);
+  await expect(page.getByRole('button',{name:'연결 중'})).toBeDisabled();
+  await expect(page.getByRole('alert')).toContainText('검증용 인증 실패');
+  expect(writes).toBe(1); expect(probes).toBe(3);
 });
