@@ -5,7 +5,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import java.util.*;
 import static org.assertj.core.api.Assertions.*;
 class RecoverySimulationTest {
- @ParameterizedTest @CsvSource({"FILE,입력 파일 누락","PERMISSION,Permission denied","LOCK,ORA-00060 deadlock detected","CONNECTION,ORA-12541 connection refused","MEMORY,Java heap space","DISK,No space left on device","DUPLICATE,ORA-00001 unique constraint","DATA,금액 불일치","DEPENDENCY,선행 작업 미완료","TIMEOUT,execution timeout"})
+ @ParameterizedTest @CsvSource({"FILE,입력 파일 누락","PERMISSION,Permission denied","LOCK,ORA-00060 deadlock detected","CONNECTION,ORA-12541 connection refused","MEMORY,Java heap space","DISK,No space left on device","DUPLICATE,ORA-00001 unique constraint","DATA,금액 불일치","DEPENDENCY,선행 작업 미완료","TIMEOUT,execution timeout","DATA,금액불일치","DATA,S0C7","MEMORY,S80A","DISK,SB37","TIMEOUT,S322"})
  @SuppressWarnings("unchecked")
  void batchCauseSelectsExecutableActionsWithBusinessChecks(String code,String text){
   var p=RecoverySimulation.plan(text,"APPLICATION",true);assertThat(p).containsEntry("profile",code).containsEntry("supported",true);
