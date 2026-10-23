@@ -60,8 +60,8 @@ test('demo dashboard guides the current step and keeps operations behind the adm
   await expect(page.getByRole('heading',{name:'처리 시간과 알림',exact:true})).toHaveCount(0);
   await expect(page.getByRole('button',{name:'AI 품질 관리',exact:true})).toBeHidden();
   expect(reads).not.toContain('/api/operations');expect(reads).not.toContain('/api/evaluations');
-  await journey.getByRole('button',{name:'대응 승인 위치로 이동',exact:true}).click();
-  await expect(page.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true');
+  await journey.getByRole('button',{name:'관리자 대응 승인 위치로 이동',exact:true}).click();
+  await expect(page.getByRole('tab',{name:/3\. 관리자 대응 승인/})).toHaveAttribute('aria-selected','true');
   await page.keyboard.press('Escape');
   await page.getByText('관리자 메뉴',{exact:true}).first().click();await page.getByRole('button',{name:'운영 현황',exact:true}).click();
   await expect(page.getByRole('heading',{name:'처리 시간과 알림',exact:true})).toBeVisible();
@@ -518,11 +518,11 @@ test('stepper shows named requests, truthful progress and automatically opens th
   await page.clock.runFor(2100);
   await expect(dialog.getByRole('status').filter({hasText:'판단 확인 근거 저장 중'})).toContainText('2초 경과');
   releaseReview();
-  await expect(dialog.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true');
+  await expect(dialog.getByRole('tab',{name:/3\. 관리자 대응 승인/})).toHaveAttribute('aria-selected','true');
   await expect(progress).toHaveAttribute('aria-valuenow','33');
   await expect(dialog.getByRole('textbox',{name:'확인 근거',exact:true})).toHaveCount(0);
   await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('영향 범위를 확인했으며 가상 복구만 승인합니다.');
-  await dialog.getByRole('button',{name:'대응 승인',exact:true}).click();
+  await dialog.getByRole('button',{name:'관리자 대응 승인',exact:true}).click();
   await expect(dialog.getByRole('tab',{name:/4\. 복구 검증/})).toHaveAttribute('aria-selected','true');
   await expect(progress).toHaveAttribute('aria-valuenow','50');
   record.status='RESOLVED';record.notes='';record.prevention='';
@@ -547,10 +547,10 @@ test('mobile stepper fits, separates user waiting from input, and browsing steps
   const mutations=await setup(page,undefined,'USER',{status:'WAITING_APPROVAL'});
   await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
   const dialog=page.getByRole('dialog',{name:'장애 상세'});
-  await expect(dialog.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true');
+  await expect(dialog.getByRole('tab',{name:/3\. 관리자 대응 승인/})).toHaveAttribute('aria-selected','true');
   await expect(dialog.getByText('관리자 승인 대기',{exact:true})).toBeVisible();
   await expect(dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true})).toHaveCount(0);
-  await expect(dialog.getByRole('button',{name:'대응 승인',exact:true})).toHaveCount(0);
+  await expect(dialog.getByRole('button',{name:'관리자 대응 승인',exact:true})).toHaveCount(0);
   await expect.poll(()=>dialog.locator('.workflow-drawer').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
   await expect.poll(()=>dialog.locator('.workflow-stepper').evaluate(el=>el.scrollWidth<=el.clientWidth)).toBe(true);
   await dialog.getByRole('tab',{name:/5\. 후기/}).click();
@@ -559,7 +559,7 @@ test('mobile stepper fits, separates user waiting from input, and browsing steps
   await dialog.getByRole('tab',{name:/5\. 후기/}).press('ArrowLeft');
   await expect(dialog.getByRole('tab',{name:/4\. 복구/})).toBeFocused();
   await dialog.getByRole('button',{name:'현재 단계로 돌아가기',exact:false}).click();
-  await expect(dialog.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true');
+  await expect(dialog.getByRole('tab',{name:/3\. 관리자 대응 승인/})).toHaveAttribute('aria-selected','true');
   await expect.poll(()=>dialog.evaluate(el=>{const target=el.querySelector('.workflow-content')!.getBoundingClientRect(),head=el.querySelector('.workflow-head')!.getBoundingClientRect();return target.top>=head.bottom-1 && target.top<window.innerHeight;})).toBe(true);
   expect(mutations).toEqual([]);
 });
@@ -570,9 +570,9 @@ test('failed request does not advance the stepper or clear the draft',async({pag
   await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
   const dialog=page.getByRole('dialog',{name:'장애 상세'});
   await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('가상 승인 검토 사유');
-  await dialog.getByRole('button',{name:'대응 승인',exact:true}).click();
+  await dialog.getByRole('button',{name:'관리자 대응 승인',exact:true}).click();
   await expect(dialog.getByRole('alert')).toContainText('처리 결과를 확인할 수 없습니다');
-  await expect(dialog.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true');
+  await expect(dialog.getByRole('tab',{name:/3\. 관리자 대응 승인/})).toHaveAttribute('aria-selected','true');
   await expect(dialog.getByRole('progressbar')).toHaveAttribute('aria-valuenow','33');
   await expect(dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true})).toHaveValue('가상 승인 검토 사유');
   expect(mutations).toEqual([]);
@@ -610,7 +610,7 @@ test('an old in-flight read cannot delay or reverse the next stage after approva
   delayNext=true;
   await page.clock.runFor(41000);
   await expect.poll(()=>delayed).toBe(true);
-  await dialog.getByRole('button',{name:'대응 승인',exact:true}).click();
+  await dialog.getByRole('button',{name:'관리자 대응 승인',exact:true}).click();
   await expect(dialog.getByRole('tab',{name:/4\. 복구/})).toHaveAttribute('aria-selected','true');
   release();
   await page.clock.runFor(500);
@@ -774,7 +774,7 @@ test('collapsed processing indication animates, respects reduced motion and stop
  await expect(panel.locator('.processing-dot')).toHaveCSS('animation-name','none');
  await expect(panel.locator('.analysis-processing .working-spinner')).toHaveCSS('animation-name','none');
  await page.route('**/api/incidents/INC-UI-RESOLVED',route=>route.fulfill({json:{...rows[0],...initial,status:'WAITING_APPROVAL'}}));
- await expect(dialog.getByRole('tab',{name:/3\. 대응 승인/})).toHaveAttribute('aria-selected','true',{timeout:15000});
+ await expect(dialog.getByRole('tab',{name:/3\. 관리자 대응 승인/})).toHaveAttribute('aria-selected','true',{timeout:15000});
  await expect(panel.locator('.analysis-processing')).toHaveCount(0);
  await expect(dialog.locator('.workflow-stepper .working-spinner')).toHaveCount(0);
  await expect(panel.locator('.analysis-current')).toHaveText('저장된 실행 결과');
@@ -997,11 +997,11 @@ test('unknown batch cause blocks approval and supplementary evidence refreshes t
  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
  const dialog=page.getByRole('dialog',{name:'장애 상세'});
  await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('합성 조치 계획 검토');
- await expect(dialog.getByRole('button',{name:'대응 승인',exact:true})).toBeDisabled();
+ await expect(dialog.getByRole('button',{name:'관리자 대응 승인',exact:true})).toBeDisabled();
  await dialog.getByRole('textbox',{name:'추가 오류 근거',exact:true}).fill('ORA-00060 deadlock detected');
  await dialog.getByRole('textbox',{name:'근거 확인 사유',exact:true}).fill('가상 실패 단계와 코드 확인');
  await dialog.getByRole('button',{name:'근거 저장 & 조치 계획 재검토',exact:true}).click();
- await expect(dialog.getByRole('button',{name:'대응 승인',exact:true})).toBeEnabled();
+ await expect(dialog.getByRole('button',{name:'관리자 대응 승인',exact:true})).toBeEnabled();
  await expect(dialog.getByRole('region',{name:'가상 조치 계획과 실행 근거'}).getByText('2. 합성 차단 트랜잭션 롤백',{exact:true})).toBeVisible();expect(supplements).toBe(1);
 });
 test('recovery notes show saved batch actions and reconciliation after user edits',async({page})=>{

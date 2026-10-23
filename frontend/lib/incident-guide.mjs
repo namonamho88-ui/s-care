@@ -4,7 +4,7 @@ import { analysisStages } from './analysis-performance.mjs';
 export const incidentSteps = [
   { label: '장애 접수', who: '사용자 / 관리자' },
   { label: '분석·판단 확인', who: '자동 · 필요 시 관리자' },
-  { label: '대응 승인', who: '관리자' },
+  { label: '관리자 대응 승인', who: '관리자 전용' },
   { label: '복구 검증', who: '자동' },
   { label: '후기 검토·저장', who: '담당자 / 관리자' },
   { label: '장애 종료', who: '관리자' },
@@ -58,8 +58,8 @@ export function incidentGuide(incident, options = {}) {
     case 'WAITING_APPROVAL':
       step = 2; tone = 'attention'; badge = isAdmin ? '지금 관리자 승인' : '관리자 승인 대기';
       title = isAdmin ? '영향 범위를 검토하고 대응 여부를 결정하세요' : '관리자의 대응 승인을 기다리고 있어요';
-      text = '분석과 안전 점검이 끝났습니다. 관리자가 사유를 작성해 승인하면 가상 복구를 시작합니다. 거부하면 이 흐름은 중단됩니다.';
-      action = isAdmin ? '대응 승인 위치로 이동' : '분석 결과 보기'; target = isAdmin ? 'approval' : 'analysis'; break;
+      text = '관리자 전용 단계입니다. 승인 입력란과 승인·거부 버튼은 관리자 권한 계정에만 표시됩니다. 일반 사용자는 진행 상태를 조회할 수 있습니다. 관리자가 승인하면 가상 복구를 시작합니다.';
+      action = isAdmin ? '관리자 대응 승인 위치로 이동' : '분석 결과 보기'; target = isAdmin ? 'approval' : 'analysis'; break;
     case 'RECOVERING':
       step = 3; badge = '자동 진행'; title = '가상 복구를 검증하고 보고서를 만들고 있어요';
       text = '승인된 가상 지표를 변경·검증한 뒤 보고서, 해결 절차 초안, 이력을 저장합니다. 실제 운영 시스템은 변경하지 않습니다.';
