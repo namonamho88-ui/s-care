@@ -10,14 +10,14 @@ import java.util.function.Supplier;
 @Service
 public class Harness {
  @org.springframework.beans.factory.annotation.Autowired(required=false) private DurableQueue queue;
- @org.springframework.beans.factory.annotation.Autowired private RecoveryPlans recoveryPlans;
+ private final RecoveryPlans recoveryPlans;
  private final Store s;private final JevRouter jev;private final Ontology graph;private final RpcClient rpc;private final LocalSkillStore skills;private final EvidencePolicy policy;private final KnowledgeEngine knowledge;private final long delay;
  private final ExecutorService workers=Executors.newFixedThreadPool(4);
  private final ExecutorService agents=new ThreadPoolExecutor(8,8,0,TimeUnit.MILLISECONDS,new ArrayBlockingQueue<>(32),new ThreadPoolExecutor.AbortPolicy());
  private final Set<CompletableFuture<Void>> agentRuns=ConcurrentHashMap.newKeySet();
  @Value("${brain.parallel-analysis:true}") private boolean parallelAnalysis=true;
  private final PerformanceTrace performance;
- public Harness(Store s,JevRouter jev,Ontology graph,RpcClient rpc,LocalSkillStore skills,EvidencePolicy policy,KnowledgeEngine knowledge,@Value("${brain.step-ms}") long delay){this.s=s;this.jev=jev;this.graph=graph;this.rpc=rpc;this.skills=skills;this.policy=policy;this.knowledge=knowledge;this.delay=delay;this.performance=new PerformanceTrace(s);}
+ public Harness(Store s,JevRouter jev,Ontology graph,RpcClient rpc,LocalSkillStore skills,EvidencePolicy policy,KnowledgeEngine knowledge,@Value("${brain.step-ms}") long delay){this.s=s;this.recoveryPlans=new RecoveryPlans(s);this.jev=jev;this.graph=graph;this.rpc=rpc;this.skills=skills;this.policy=policy;this.knowledge=knowledge;this.delay=delay;this.performance=new PerformanceTrace(s);}
  @EventListener(ApplicationReadyEvent.class) public void recoverStartup(){s.db.update("UPDATE evaluations SET status='FAILED' WHERE status='RUNNING'");try{graph.sync();}catch(Exception e){s.audit(null,"system","GRAPH_UNAVAILABLE",Map.of("reason",e.getMessage()));}}
  public synchronized String create(String scenarioId,String mode,String provider,String title,String asset,String observations,String owner){
   return createInternal(scenarioId,mode,provider,title,asset,observations,owner,null);

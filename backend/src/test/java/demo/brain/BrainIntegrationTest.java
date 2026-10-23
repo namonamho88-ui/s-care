@@ -196,7 +196,10 @@ class BrainIntegrationTest {
   assertThat(post("/api/incidents/"+id+"/manage/delete",management(id)).getStatusCode().value()).isEqualTo(200);
  }
  @Test @Order(26) void recoveryToolIsIdempotentAfterWorkerRestart(){
-  String id=lifecycleFixture("RECOVERING");s.db.update("INSERT INTO approvals VALUES (?,TRUE,'test','가상 승인',?)",id,Store.now());s.db.update("INSERT INTO simulated_metrics VALUES (?,?,?,FALSE)",id,"{}","{}");var tools=new SimulatedTools(s);tools.apply(id);tools.apply(id);assertThat(s.db.queryForObject("SELECT COUNT(*) FROM audit WHERE incident_id=? AND action='SIMULATED_RECOVERY'",Integer.class,id)).isEqualTo(1);assertThat(post("/api/incidents/"+id+"/manage/delete",management(id)).getStatusCode().value()).isEqualTo(200);
+  String id=lifecycleFixture("RECOVERING");s.db.update("INSERT INTO approvals VALUES (?,TRUE,'test','가상 승인',?)",id,Store.now());s.db.update("INSERT INTO simulated_metrics VALUES (?,?,?,FALSE)",id,"{}","{}");var tools=new SimulatedTools(s);tools.apply(id);tools.apply(id);
+  var corrupted=(Map<String,Object>)s.decode(s.one("SELECT current_json FROM simulated_metrics WHERE incident_id=?",id).get("current_json"));corrupted.put("errorRate",25);s.db.update("UPDATE simulated_metrics SET current_json=? WHERE incident_id=?",s.encode(corrupted),id);
+  assertThatThrownBy(()->tools.verify(id)).hasMessageContaining("verification failed");assertThat(s.db.queryForObject("SELECT COUNT(*) FROM events WHERE incident_id=? AND stage='RECOVERY_CHECKS' AND state='FAILED'",Integer.class,id)).isEqualTo(1);assertThat(s.incident(id).get("status")).isEqualTo("RECOVERING");
+  assertThat(s.db.queryForObject("SELECT COUNT(*) FROM audit WHERE incident_id=? AND action='SIMULATED_RECOVERY'",Integer.class,id)).isEqualTo(1);assertThat(post("/api/incidents/"+id+"/manage/delete",management(id)).getStatusCode().value()).isEqualTo(200);
  }
 
  @Test @Order(27) void competingQueueClaimSkipsLockedJob()throws Exception{

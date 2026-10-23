@@ -993,7 +993,7 @@ test('unknown batch cause blocks approval and supplementary evidence refreshes t
  await setup(page,undefined,'ADMIN',record);
  await page.route('**/api/incidents/INC-UI-RESOLVED',route=>route.fulfill({json:record}));
  let supplements=0;
- await page.route('**/api/incidents/INC-UI-RESOLVED/recovery-evidence',async route=>{expect(route.request().postDataJSON().evidence).toContain('ORA-00060');supplements++;record.events=[planEvent(batchPlan)];await route.fulfill({json:{accepted:true}});});
+ await page.route('**/api/incidents/INC-UI-RESOLVED/recovery-evidence',async route=>{expect(route.request().postDataJSON().evidence).toContain('ORA-00060');supplements++;record.events.push({...planEvent(batchPlan),id:102});await route.fulfill({json:{accepted:true}});});
  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
  const dialog=page.getByRole('dialog',{name:'장애 상세'});
  await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('합성 조치 계획 검토');

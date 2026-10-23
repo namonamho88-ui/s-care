@@ -4,8 +4,8 @@ import java.util.*;
 @Service
 public class SimulatedTools {
  private final Store s;
- @org.springframework.beans.factory.annotation.Autowired private RecoveryPlans plans;
- public SimulatedTools(Store s){this.s=s;}
+ private final RecoveryPlans plans;
+ public SimulatedTools(Store s){this.s=s;this.plans=new RecoveryPlans(s);}
  private void approval(String id){if(!s.incident(id).get("status").equals("RECOVERING")||s.db.queryForObject("SELECT COUNT(*) FROM approvals WHERE incident_id=? AND approved=TRUE",Integer.class,id)!=1)throw new IllegalStateException("Recovery requires an approved RECOVERING incident");}
  @SuppressWarnings("unchecked")
  public Object apply(String id){return s.active(id,()->{
