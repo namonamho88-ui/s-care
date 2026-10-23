@@ -1,5 +1,7 @@
 "use client";
 import IncidentImpact from "./incident-impact";
+import RecoveryEvidence from "./recovery-evidence";
+import {recoveryEvidence} from "@/lib/recovery-evidence.mjs";
 import SimilarPanel from "./similar-panel";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Check, LoaderCircle, Download } from "lucide-react";
@@ -111,6 +113,7 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
   function selectStep(index: number) { setFollow(false); setEvidence(""); setStep(index); }
   function returnToCurrent() { setFollow(true); setStep(activeStep); setEvidence(""); setScrollRequest(n=>n+1); }
   const command = (suffix: string, body: any, label: string, success: string) => perform(`/incidents/${id}/${suffix}`, "POST", body, label, success);
+  const recoveryPlan = recoveryEvidence(incident).plan;
   const latest = incident?.events?.filter((event: Row)=>event.stage!=="PERFORMANCE").at(-1);
   const decisionSource = incident?.decision ? categoryLabel(resultCategory(incident.decision)) : ["REGISTERED", "ANALYZING"].includes(status) ? incident?.mode === "DEMO" ? "DEMO Mock · 모의 판단 대기" : "모델 판단 결과 대기" : "저장된 모델 판단 기록 없음";
   const reviewReasons = readJson(incident?.events?.filter((e: Row) => e.stage === "HARNESS" && e.state === "COMPLETED").at(-1)?.data_json)?.reviewReasons || [];
@@ -181,10 +184,11 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
           </div> : <section className="workflow-card">{renderDecision(incident.decision)}</section>}
           {evidenceDetails}
         </>}
+        {[2,3,4].includes(step) && <RecoveryEvidence key={id} incident={incident} isAdmin={isAdmin} api={api} onRefresh={onRefresh}/> }
         {step === 2 && <div className="workflow-form-layout"><div className="workflow-context"><IncidentImpact incident={incident} assets={assets} edges={edges} api={api} summary onExpand={()=>{setFollow(false);setStep(1);setEvidence("");}}/><p>승인 후 가상 지표만 변경하며 실제 운영 시스템은 변경하지 않습니다.</p>{incident.impact?.affected&&<Button size="sm" variant="outline" onClick={onGraph}>영향 그래프 크게 보기</Button>}{evidenceDetails}</div>
-          <section className="workflow-card guide-target" id="guide-approval" tabIndex={-1}><h3>지금 작성할 내용 · 대응 사유</h3>{status === "WAITING_APPROVAL" && isAdmin ? <><label>승인 / 거부 사유<textarea readOnly={busy} rows={5} value={reason} onChange={e => setReason(e.target.value)} placeholder="영향 범위와 대응 방법을 검토한 내용을 작성하세요." /></label><p className="small muted">{reason.trim() ? "승인을 선택하면 가상 복구 검증 화면으로 이동합니다." : "사유를 입력하면 승인·거부 버튼이 활성화됩니다."}</p><div className="flex-row mt-4"><Button disabled={busy || !reason.trim()} onClick={() => command("approval",{approved:true,reason},"가상 대응 승인 요청 중","승인했습니다. 가상 복구 검증을 진행합니다.")}>대응 승인<ArrowRight size={14}/></Button><Button variant="danger" disabled={busy || !reason.trim()} onClick={() => command("approval",{approved:false,reason},"대응 거부 사유 저장 중","대응을 거부했습니다. 복구를 실행하지 않습니다.")}>대응 거부</Button></div></> : <p>{status === "WAITING_APPROVAL" ? "관리자의 승인을 기다리고 있습니다. 일반 사용자는 승인 사유를 작성하지 않습니다." : status === "REJECTED" ? "대응이 거부되었습니다. 아래 실행 기록에서 사유를 확인하세요." : step < activeStep ? "대응 승인이 완료되었습니다." : "분석·판단 확인이 끝난 후 관리자에게 승인 입력란이 표시됩니다."}</p>}</section>
+          <section className="workflow-card guide-target" id="guide-approval" tabIndex={-1}><h3>지금 작성할 내용 · 대응 사유</h3>{status === "WAITING_APPROVAL" && isAdmin ? <><label>승인 / 거부 사유<textarea readOnly={busy} rows={5} value={reason} onChange={e => setReason(e.target.value)} placeholder="영향 범위와 대응 방법을 검토한 내용을 작성하세요." /></label><p className="small muted">{reason.trim() ? "승인을 선택하면 가상 복구 검증 화면으로 이동합니다." : "사유를 입력하면 승인·거부 버튼이 활성화됩니다."}</p><div className="flex-row mt-4"><Button disabled={busy || !reason.trim() || recoveryPlan?.supported===false} onClick={() => command("approval",{approved:true,reason},"가상 대응 승인 요청 중","승인했습니다. 가상 복구 검증을 진행합니다.")}>대응 승인<ArrowRight size={14}/></Button><Button variant="danger" disabled={busy || !reason.trim()} onClick={() => command("approval",{approved:false,reason},"대응 거부 사유 저장 중","대응을 거부했습니다. 복구를 실행하지 않습니다.")}>대응 거부</Button></div></> : <p>{status === "WAITING_APPROVAL" ? "관리자의 승인을 기다리고 있습니다. 일반 사용자는 승인 사유를 작성하지 않습니다." : status === "REJECTED" ? "대응이 거부되었습니다. 아래 실행 기록에서 사유를 확인하세요." : step < activeStep ? "대응 승인이 완료되었습니다." : "분석·판단 확인이 끝난 후 관리자에게 승인 입력란이 표시됩니다."}</p>}</section>
         </div>}
-        {step === 3 && <section className="workflow-card">{status === "RECOVERING" ? automatic : <h3>{guide.step > 3 ? "가상 복구 검증 완료" : "승인 후 가상 복구를 검증합니다"}</h3>}{renderTimeline((incident.events || []).filter((e: Row) => ["RECOVERY","MCP_ACTION","VERIFY","REPORT","SKILL_DRAFT","HISTORY"].includes(e.stage)))}<p className="small muted">검증·보고서·이력 저장이 끝나면 조치 후기를 작성하는 5단계로 자동 이동합니다.</p></section>}
+        {step === 3 && <section className="workflow-card">{status === "RECOVERING" ? automatic : <h3>{guide.step > 3 ? "가상 복구 검증 완료" : "승인 후 가상 복구를 검증합니다"}</h3>}{renderTimeline((incident.events || []).filter((e: Row) => ["RECOVERY","RECOVERY_ACTION","RECOVERY_CHECKS","MCP_ACTION","VERIFY","REPORT","SKILL_DRAFT","HISTORY"].includes(e.stage)))}<p className="small muted">검증·보고서·이력 저장이 끝나면 조치 후기를 작성하는 5단계로 자동 이동합니다.</p></section>}
         {step === 4 && <section className="workflow-card guide-target" id="guide-notes" tabIndex={-1}><h3>지금 작성할 내용 · 조치 후기와 재발 방지 대책</h3>
           {!canEdit && <div className="banner">다른 담당자의 장애는 조회만 가능합니다. 담당자 또는 관리자에게 작성을 요청하세요.</div>}
           {draft && <div className="banner">가상 복구 검증 결과를 한국어 후기 초안으로 정리했습니다. 내용을 검토하고 보완한 뒤 저장하세요. 아직 보고서에 반영되지 않은 초안입니다.</div>}

@@ -6,6 +6,22 @@ export function recoveryNotesDraft(raw) {
   if (typeof raw !== "string") return null;
   try {
     const proof = JSON.parse(raw);
+    if (proof?.provider === "SYNTHETIC_ACTION_MODEL") {
+      if (proof.realChanges !== false || proof.plan?.version !== 2 || typeof proof.passed !== 'boolean'
+        || !Array.isArray(proof.steps) || !proof.steps.length || !Array.isArray(proof.checks) || !proof.checks.length
+        || proof.steps.some(step=>typeof step.label!=='string'||typeof step.passed!=='boolean')
+        || proof.checks.some(check=>typeof check.label!=='string'||typeof check.passed!=='boolean')) return null;
+      const allPassed=proof.steps.every(step=>step.passed)&&proof.checks.every(check=>check.passed);
+      if (proof.passed && !allPassed) return null;
+      return [
+        proof.passed?'가상 조치와 항목별 검증을 통과했습니다.':'가상 조치 검증 실패 · 추가 확인이 필요합니다.',
+        '선택한 시나리오: '+proof.plan.label,
+        '아래 상태·건수·금액은 규칙으로 만든 합성 데이터이며 실제 처리 결과가 아닙니다.',
+        ...proof.steps.map((step,index)=>`${index+1}. ${step.label} · ${step.passed?'완료':'실패'}`),
+        ...proof.checks.map(check=>`${check.label}: 기대 ${check.expected} / 결과 ${check.actual} · ${check.passed?'통과':'실패'}`),
+        '위 결과는 가상 시뮬레이션이며 실제 운영 시스템은 변경하지 않았습니다.',
+      ].join('\n');
+    }
     if (proof?.provider !== "SIMULATED_METRICS" || proof.realChanges !== false || typeof proof.passed !== "boolean") return null;
     for (const metrics of [proof.before, proof.after]) {
       if (!metrics || typeof metrics.healthyDependencies !== "boolean"

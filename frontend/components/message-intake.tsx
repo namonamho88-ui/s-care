@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 
 type Preview = { parsed: { kind: string; status: string; eligible: boolean; title: string; fields: Record<string,string>; warnings: string[] }; observations: string; existingIncidentId: string; suggestedAssetId: string; matchReason: string };
 const examples: Record<string,string> = {
+  "배치 DB 잠금": "[Web발신]\n[운영]ABEND: DEMO_BATCH_LOCK 가상정산배치 20261007 2026-10-07 15:01:00\n오류코드: ORA-00060 오류내용: deadlock detected",
+  "배치 파일 누락": "[Web발신]\n[운영]ABEND: DEMO_BATCH_FILE 가상파일집계 20261007 2026-10-07 15:02:00\n오류내용: 입력 파일 누락 file not found",
+  "배치 금액 불일치": "[Web발신]\n[운영]ABEND: DEMO_BATCH_DATA 가상금액대사 20261007 2026-10-07 15:03:00\n오류내용: 금액 불일치 amount mismatch",
+
   "배치 비정상 종료": "[Web발신]\n[운영]ABEND: DEMO_BATCH_001 가상해외정산배치.. 20261007 2026-10-07 14:57:40",
   "배치 종료 지연": "[Web발신]\n[운영]DELAY_END: DEMO_BATCH_002 가상환율정보배치.. 20261009 MUST BE END BY 11:00!",
   "TMS 오류율 초과": "[Web발신]\n[가상카드] TMS 온라인 비즈니스오류 임계치 초과 알림\n▶ IF아이디 : [DEMO_IF_001]\n▶ IF명 : [[개인]가상 해외예약목록조회]\n▶ 업무코드 : [DEMO]\n▶ 서비스코드 : [DEMO_SVC_001]\n▶ 대외기관 : [-]\n▶ 거래일자 : [20261008]\n▶ 거래시간 : [1550~1650](1시간)\n▶ 거래집계일시 : [2026-10-08 16:52:41]\n▶ 비교일수 : [5](영업일)동시간대\n▶ 비교기간평균거래건수 : [82]\n▶ 비교기간평균오류건수 : [47]\n▶ 비교기간평균오류율 : [57.35]%\n▶ 오류율임계치 : [95]%\n▶ 현재거래건수 : [46]\n▶ 현재오류건수 : [44]\n▶ 현재오류율 : [95.65]%\n▶ 메시지 수신자 : [가상담당자]\n▶ 메시지 발생일시 : [2026-10-08 17:04:12]",

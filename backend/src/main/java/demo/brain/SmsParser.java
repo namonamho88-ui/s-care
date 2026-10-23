@@ -39,15 +39,26 @@ public class SmsParser {
   Harness.text(name,120,"배치명");var f=new LinkedHashMap<String,String>();var warnings=new ArrayList<String>();
   f.put("배치ID",m.group(2));f.put("배치명",name);f.put("업무일자",day(m.group(4)));
   if(status.equals("DELAY_END")){
-   Matcher deadline=Pattern.compile("MUST BE END BY (\\d{2}:\\d{2})!").matcher(m.group(5));
+   Matcher deadline=Pattern.compile("MUST BE END BY (\\d{2}:\\d{2})!(?:\\s+(.+))?").matcher(m.group(5));
    if(!deadline.matches())throw bad("DELAY_END 종료기한은 MUST BE END BY HH:mm! 형식이어야 합니다.");
    try{LocalTime.parse(deadline.group(1),CLOCK);}catch(DateTimeException e){throw bad("종료기한 시간이 올바르지 않습니다.");}
-   f.put("종료기한",deadline.group(1));warnings.add("종료기한은 발생 시각이 아닙니다. 이 문자에는 실제 발생일시가 없어 등록 시각과 구분해 저장합니다.");
-  }else f.put("발생일시",stamp(m.group(5)));
+   f.put("종료기한",deadline.group(1));if(deadline.group(2)!=null)f.put("오류 상세",errorDetail(deadline.group(2)));warnings.add("종료기한은 발생 시각이 아닙니다. 이 문자에는 실제 발생일시가 없어 등록 시각과 구분해 저장합니다.");
+  }else {
+   Matcher timestamp=Pattern.compile("(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})(?:\\s+(.+))?").matcher(m.group(5));
+   if(!timestamp.matches())throw bad("발생일시 형식 또는 오류 상세 항목을 확인해 주세요.");
+   f.put("발생일시",stamp(timestamp.group(1)));if(timestamp.group(2)!=null)f.put("오류 상세",errorDetail(timestamp.group(2)));
+  }
   if(name.endsWith("..")||name.endsWith("…"))warnings.add("배치명이 생략되어 있습니다. 전체 이름을 추정하지 않으며 대상 구성요소를 확인해야 합니다.");
   String label=switch(status){case "END_OK"->"정상 종료";case "ABEND"->"비정상 종료";default->"종료 지연";};
   f.put("알림 상태",status);
   return new Parsed("BATCH",status,!status.equals("END_OK"),title("["+label+"] "+m.group(2)+" "+name),Collections.unmodifiableMap(f),List.copyOf(warnings));
+ }
+ private String errorDetail(String value){
+  if(!Pattern.compile("^(?:\\[?(?:오류\\s*(?:코드|내용|메시지|상세)|에러\\s*(?:코드|내용)|ERROR(?: CODE| MESSAGE)?|RC|SQLCODE)\\]?\\s*[:=]|ORA-\\d{5}|SQLSTATE[=:])",Pattern.CASE_INSENSITIVE).matcher(value).find())throw bad("추가 정보는 오류코드: 또는 오류내용: 항목으로 입력해 주세요.");
+  String safe=value.split("(?:메시지\\s*)?수신자|발신자|수신인",2)[0].strip();
+  safe=safe.replaceAll("(?i)(password|passwd|token|api[_ -]?key|secret)\\s*[:=]\\s*[^\\s,;]+","$1=[비공개]");
+  safe=safe.replaceAll("[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}","[이메일 제외]");
+  Harness.text(safe,1000,"오류 상세");return safe;
  }
  private Parsed tms(String input){
   Map<String,String> values=new HashMap<>();
