@@ -24,10 +24,10 @@ test('analysis uses the latest backend event rather than an old running event', 
   assert.equal(g.step,1);
   assert.match(stageLabel('AGENT_diagnosis'),/원인 후보 분석/);
 });
-test('repeated evidence review stays in analysis and never implies approval', () => {
+test('combined evidence review stays in analysis and never implies approval', () => {
   const g=incidentGuide({...base,status:'NEEDS_REVIEW',events:[{stage:'REVIEW',state:'COMPLETED'},{stage:'HARNESS',state:'COMPLETED'},{stage:'REVIEW',state:'WAITING'}]},admin);
   assert.equal(g.step,1);assert.equal(g.target,'review');
-  assert.equal(g.steps[2].state,'pending');assert.match(g.text,/추가 확인/);
+  assert.equal(g.steps[2].state,'pending');assert.match(g.text,/한 번 확정/);
 });
 test('normal users get waiting guidance and no administrator action target', () => {
   for(const [status,target] of [['NEEDS_REVIEW','analysis'],['WAITING_APPROVAL','analysis'],['FAILED','timeline'],['RESOLVED','report']]) {

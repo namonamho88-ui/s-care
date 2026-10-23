@@ -25,7 +25,7 @@ export const stageLabel = stage => stageNames[String(stage).toUpperCase()] || st
 export const eventStateLabel = state => ({ RUNNING: '진행 중', COMPLETED: '완료', WAITING: '확인 대기', NEEDS_REVIEW: '확인 필요', FAILED: '실패', REJECTED: '거부' }[state] || state);
 
 // Status is authoritative. Events explain the current automatic phase, never advance it on a timer.
-// Reviewing classification can lead to a second review of newly generated diagnosis evidence.
+// Classification, diagnosis and impact are gathered before a combined review.
 /** @param {Record<string, any> | null} incident
  * @param {{isAdmin?: boolean, canEdit?: boolean, dirty?: boolean, notes?: string, prevention?: string}} options */
 export function incidentGuide(incident, options = {}) {
@@ -52,7 +52,7 @@ export function incidentGuide(incident, options = {}) {
     case 'NEEDS_REVIEW':
       step = 1; tone = 'attention'; badge = isAdmin ? '지금 관리자 확인' : '관리자 확인 대기';
       title = isAdmin ? '관측과 AI 판단을 비교하고 확인 근거를 작성하세요' : '관리자가 AI 판단을 확인해야 합니다';
-      text = '근거가 부족해 분석이 멈췄습니다. 분류·심각도·부서를 검토하고 확인 근거를 입력하면 분석을 계속합니다. 새 원인 후보에 대한 추가 확인이 필요할 수 있습니다.';
+      text = '장애는 접수되어 있습니다. 분류·원인 후보·영향 범위를 함께 검토하고 확인 근거를 입력하세요. 한 번 확정하면 저장 후 대응 승인 준비를 계속합니다.';
       action = isAdmin ? '판단 확인 위치로 이동' : '분석 결과 보기'; target = isAdmin ? 'review' : 'analysis'; break;
     case 'WAITING_APPROVAL':
       step = 2; tone = 'attention'; badge = isAdmin ? '지금 관리자 승인' : '관리자 승인 대기';

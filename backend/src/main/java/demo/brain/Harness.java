@@ -60,7 +60,8 @@ public class Harness {
   try{d=i.get("decision_json")==null?performance.measure(id,"JEV",()->jev.decide(i.get("observations").toString(),i.get("mode").toString(),i.get("provider").toString())):decision(id);}
   catch(IllegalArgumentException invalid){s.active(id,()->{s.transition(id,"ANALYZING","NEEDS_REVIEW");s.event(id,"JEV","NEEDS_REVIEW",invalid.getMessage(),Map.of("schemaValid",false));s.audit(id,"harness","DECISION_REVIEW_REQUIRED",Map.of("reason",invalid.getMessage()));return null;});return;}
   d.validate();s.active(id,()->{s.db.update("UPDATE incidents SET decision_json=?,type=?,severity=?,owner_id=(SELECT id FROM operators WHERE department=? ORDER BY id LIMIT 1) WHERE id=?",s.encode(d),d.type(),d.severity(),d.department(),id);s.event(id,"JEV","COMPLETED",d.fallback()?"로컬 연결 실패 · 시뮬레이션 결과로 전환":d.simulated()?"Mock 시뮬레이션 판단 완료":"실제 Jev 모델 판단 완료",d);s.audit(id,"jev","DECISION",d);return null;});
-  if(d.needsReview()){s.active(id,()->{s.transition(id,"ANALYZING","NEEDS_REVIEW");s.event(id,"REVIEW","WAITING","판단 신뢰도 또는 근거 부족 · 담당자 확인 필요",Map.of("confidence",d.confidence(),"evidenceScore",d.evidenceScore()));return null;});return;}continueAnalysis(id);
+  // Gather diagnosis and impact before requesting one combined operator review.
+  continueAnalysis(id);
  }
  private void continueAnalysis(String id){var i=s.incident(id);Object impact=step(id,"ONTOLOGY","Ontology 영향 분석",()->graph.impact(i.get("asset_id").toString()));s.active(id,()->{s.db.update("UPDATE incidents SET impact_json=? WHERE id=?",s.encode(impact),id);return null;});
   runIndependentAgents(id);
@@ -95,7 +96,13 @@ public class Harness {
   catch(InterruptedException e){pending.forEach(f->f.cancel(true));Thread.currentThread().interrupt();throw new CancellationException("병렬 분석 중단");}
   catch(ExecutionException e){if(e.getCause() instanceof RuntimeException failure)throw failure;throw new IllegalStateException(e.getCause());}
  }
- private Object agent(String id,String name){s.ensureActive(id);var i=s.incident(id);Object result=rpc.agent(name,id,((Number)i.get("version")).longValue());if(!s.json.valueToTree(result).path("status").path("state").asText().equals("completed"))throw new IllegalStateException(name+" Agent failed");return result;}
+ private Object agent(String id,String name){s.ensureActive(id);
+  // Keep the exact diagnosis the operator saw; a review must not trigger a new hypothesis.
+  if(name.equals("diagnosis")){
+   var existing=s.db.queryForList("SELECT result_json FROM agent_tasks WHERE incident_id=? AND agent='diagnosis' AND status='completed' ORDER BY created_at DESC LIMIT 1",id);
+   if(!existing.isEmpty())return s.decode(existing.get(0).get("result_json"));
+  }
+  var i=s.incident(id);Object result=rpc.agent(name,id,((Number)i.get("version")).longValue());if(!s.json.valueToTree(result).path("status").path("state").asText().equals("completed"))throw new IllegalStateException(name+" Agent failed");return result;}
  public JevDecision decision(String id){try{return s.json.readValue(s.incident(id).get("decision_json").toString(),JevDecision.class);}catch(Exception e){throw new IllegalStateException("Decision is missing");}}
  public synchronized void review(String id,String type,String severity,String department,String reason){text(reason,1000,"확인 사유");if(!JevDecision.TYPES.contains(type)||!List.of("P1","P2","P3").contains(severity)||!JevDecision.DEPARTMENTS.contains(department))throw new IllegalArgumentException("Invalid review classification");var i=s.incident(id);JevDecision d=i.get("decision_json")==null?new JevDecision(type,severity,Integer.parseInt(severity.substring(1)),department,false,0,0,"OPERATOR","manual-review",0,false,false,"",false,List.of(i.get("observations").toString(),reason),Map.of()):decision(id).reviewed(type,severity,department,reason);
   s.tx(()->{s.transition(id,"NEEDS_REVIEW","ANALYZING");s.db.update("UPDATE incidents SET decision_json=?,type=?,severity=?,owner_id=(SELECT id FROM operators WHERE department=? ORDER BY id LIMIT 1) WHERE id=?",s.encode(d),type,severity,department,id);s.audit(id,Access.actor(),"REVIEW_DECISION",Map.of("reason",reason,"decision",d,"reviewedDiagnosis",reviewedDiagnosis(id)));s.event(id,"REVIEW","COMPLETED","담당자 판단 확인 완료",d);if(queue!=null)queue.enqueue(id,"CONTINUE");return null;});run(id,()->continueAnalysis(id));
