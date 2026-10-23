@@ -416,7 +416,7 @@ export default function Home() {
     return promise;
   }, []);
   // Scope feedback to its incident stage instead of keeping old intake notices visible.
-  useEffect(() => { setNotice(""); setError(""); }, [selected, detail?.status, view]);
+  useEffect(() => { setNotice(""); }, [selected, detail?.status, view]);
   useEffect(() => {
     if (!notice) return;
     const timer = setTimeout(() => setNotice(""), 5000);
