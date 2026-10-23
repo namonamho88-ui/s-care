@@ -17,7 +17,7 @@ public class RecoveryPlans {
   if(evidence!=null&&!evidence.isBlank())observations+="\n추가 오류 근거: "+evidence;
   var plan=RecoverySimulation.plan(observations,i.get("type").toString(),batch);
   plan.put("id",Store.id("PLAN-"));plan.put("createdAt",java.time.Instant.now().toString());
-  s.event(id,"RECOVERY_PLAN","COMPLETED","장애 유형별 가상 조치 계획 · "+plan.get("label"),plan);
+  s.event(id,"RECOVERY_PLAN","COMPLETED","장애 유형별 조치 계획 · "+plan.get("label"),plan);
   return plan;
  }
  public void evidence(String id,String evidence,String reason){
