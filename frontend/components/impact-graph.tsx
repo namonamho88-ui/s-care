@@ -58,6 +58,12 @@ function Canvas({ assets, edges, root, affected = EMPTY, direct, api, expanded, 
     return { nodes, edges: links };
   }, [visible, edges, root, impacted,directIds]);
   const chosen = assets.find(a => a.id === selectedId);
+  const chosenBasis = chosen?.id === root ? "빨강: 접수된 장애의 발생 구성요소입니다."
+    : chosen && impacted.has(chosen.id) ? directIds.has(chosen.id)
+      ? "주황: 발생 지점에 직접 의존하는 자산입니다(1단계)."
+      : "노랑: 다른 자산을 거쳐 발생 지점에 의존합니다(최대 6단계)."
+    : directOnly && chosen && affected.includes(chosen.id) ? "회색: 직접 영향 필터에서 제외된 간접 영향 자산입니다. 전체 영향으로 전환해 확인하세요."
+    : "회색: 저장된 최대 6단계 영향 범위에 포함되지 않았습니다. 정상 동작을 확인했다는 의미는 아닙니다.";
   const layoutKey = graph.nodes.map(n => n.id).join(",");
   return <div className={"graph-canvas " + (fullscreen ? "graph-canvas-full" : "")}>
     <div className="graph-toolbar">
@@ -82,10 +88,11 @@ function Canvas({ assets, edges, root, affected = EMPTY, direct, api, expanded, 
       </ReactFlowProvider>}
     </div>
     <div className="graph-info" aria-live="polite">
-      {chosen ? <><strong>{chosen.name}</strong><span>{kinds[chosen.kind] || chosen.kind} · {chosen.id} · {chosen.id === root ? "장애 발생 지점" : impacted.has(chosen.id) ? "영향 가능성 — 실제 장애 확정 아님" : "분석 영향 범위 밖"}</span><span>의존하는 자산 {edges.filter(e => e.source_id === chosen.id).length}개 · 이 자산을 사용하는 자산 {edges.filter(e => e.target_id === chosen.id).length}개</span></> : <span>자산을 클릭하면 종류와 연결 수를 확인할 수 있습니다. 드래그로 이동하고 휠 또는 + / − 버튼으로 확대·축소하세요.</span>}
+      {chosen ? <><strong>{chosen.name}</strong><span>{kinds[chosen.kind] || chosen.kind} · {chosen.id} · {chosen.id === root ? "장애 발생 지점" : impacted.has(chosen.id) ? "영향 가능성 — 실제 장애 확정 아님" : "분석 영향 범위 밖"}</span><span><strong>색상 근거</strong> · {chosenBasis}</span><span>의존하는 자산 {edges.filter(e => e.source_id === chosen.id).length}개 · 이 자산을 사용하는 자산 {edges.filter(e => e.target_id === chosen.id).length}개</span></> : <span>자산을 클릭하면 종류와 연결 수를 확인할 수 있습니다. 드래그로 이동하고 휠 또는 + / − 버튼으로 확대·축소하세요.</span>}
     </div>
     {chosen&&api&&<AssetContext key={chosen.id} id={chosen.id} api={api}/>}
-    <div className="graph-legend small"><span className="text-rose-300">● 장애 지점</span><span style={{color:"#fb923c"}}>● 직접 영향 가능</span><span style={{color:"#fde047"}}>● 간접 영향 가능</span><span>● 범위 밖</span><span>화살표: 사용하는 자산 → 의존 자산 · 장애 영향은 반대 방향으로 최대 6단계 탐색</span></div>
+    <div className="graph-legend small"><span className="text-rose-300">● 빨강: 접수한 장애 발생 지점</span><span style={{color:"#fb923c"}}>● 주황: 발생 지점에 직접 의존(1단계)</span><span style={{color:"#fde047"}}>● 노랑: 다른 자산을 거쳐 의존(2~6단계)</span><span>● 회색: 현재 표시 범위 밖 · 정상 확정 아님</span><span>화살표: 사용하는 자산 → 의존 자산 · 장애 영향은 반대 방향으로 최대 6단계 탐색</span></div>
+    <p className="small muted">색상은 AI 신뢰도나 장애 심각도가 아닌 의존 관계와 저장된 영향 범위로 구분합니다. 자산을 클릭하면 해당 색상의 근거를 확인할 수 있습니다. 직접 영향 필터에서는 간접 영향이 강조되지 않습니다.</p>
   </div>;
 }
 export default function ImpactGraph(props: Props) {

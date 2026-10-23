@@ -89,6 +89,13 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
     tick(); const timer = setInterval(tick, 1000); return () => clearInterval(timer);
   }, [operation]);
 
+  useEffect(() => { setMessage(""); setError(""); }, [id, status, step]);
+  useEffect(() => {
+    if (!message) return;
+    const timer = setTimeout(() => setMessage(""), 5000);
+    return () => clearTimeout(timer);
+  }, [message]);
+
   async function perform(path: string, method: string, body: any, label: string, success: string) {
     if (busy) return;
     setOperation({ label, since: Date.now() }); setError(""); setMessage("");
@@ -165,11 +172,11 @@ export default function IncidentWorkflow({ open, incident, isAdmin, canEdit, ope
         {step === 1 && <><IncidentImpact key={incident.id} incident={incident} assets={assets} edges={edges} api={api}/>
           {status === "ANALYZING" && automatic}
           {status === "NEEDS_REVIEW" ? <div className="workflow-form-layout">
-            <div>{observed}<div className="workflow-context"><h3>AI 판단 요약</h3><p>{typeNames[types.indexOf(incident.decision?.type)] || incident.type} · {incident.decision?.severity || incident.severity}</p><p>판단 신뢰도 {Math.round((incident.decision?.confidence || 0) * 100)}% · 근거 충분도 {Math.round((incident.decision?.evidenceScore || 0) * 100)}%</p>{reviewReasons.map((r: string) => <p key={r}>{r}</p>)}</div></div>
-            {isAdmin ? <section className="workflow-card guide-target" id="guide-review" tabIndex={-1}><h3>지금 작성할 내용 · 판단 확인</h3><p className="small muted">관측과 AI 판단을 비교한 뒤 아래 분류와 확인 근거를 입력하세요.</p>
+            <div>{observed}<div className="workflow-context"><h3>AI 판단 요약</h3><p>{typeNames[types.indexOf(incident.decision?.type)] || incident.type} · {incident.decision?.severity || incident.severity}</p>{diagnosis && <div className="mt-3">{renderAgent(diagnosis)}</div>}<p>판단 신뢰도 {Math.round((incident.decision?.confidence || 0) * 100)}% · 근거 충분도 {Math.round((incident.decision?.evidenceScore || 0) * 100)}%</p>{reviewReasons.map((r: string) => <p key={r}>{r}</p>)}</div></div>
+            {isAdmin ? <section className="workflow-card guide-target" id="guide-review" tabIndex={-1}><h3>지금 작성할 내용 · 판단 확인</h3><p className="small muted">접수된 관측·AI 분류·원인 후보·영향 범위를 함께 확인하세요. 아래 내용을 한 번 저장하면 분석이 이어집니다.</p>
               <div className="form-grid"><label>장애 유형<select disabled={busy} value={type} onChange={e => setType(e.target.value)}>{types.map((v,i) => <option key={v} value={v}>{typeNames[i]}</option>)}</select></label><label>심각도<select disabled={busy} value={severity} onChange={e => setSeverity(e.target.value)}>{["P1","P2","P3"].map(v => <option key={v}>{v}</option>)}</select></label><label>담당 부서<select disabled={busy} value={department} onChange={e => setDepartment(e.target.value)}>{depts.map((v,i) => <option key={v} value={v}>{deptNames[i]}</option>)}</select></label><label className="full">확인 근거<textarea readOnly={busy} value={reason} onChange={e => setReason(e.target.value)} placeholder="어떤 관측을 확인했는지, 왜 이 분류가 적절한지 작성하세요." /></label></div>
               <p className="small muted">{reason.trim() ? "확정 후 분석이 재개되고 다음 단계가 준비되면 자동 이동합니다." : "확인 근거를 입력하면 아래 버튼이 활성화됩니다."}</p>
-              <Button className="mt-4" disabled={busy || !reason.trim()} onClick={() => command("review",{type,severity,department,reason},"판단 확인 근거 저장 중","판단을 저장했습니다. 추가 분석 결과에 따라 다음 단계로 이동합니다.")}>판단 확정 & 분석 계속<ArrowRight size={14}/></Button>
+              <Button className="mt-4" disabled={busy || !reason.trim()} onClick={() => command("review",{type,severity,department,reason},"판단 확인 근거 저장 중","판단 확정 내용을 저장했습니다. 대응 승인 준비가 끝나면 자동으로 이동합니다.")}>판단 확정 & 분석 계속<ArrowRight size={14}/></Button>
             </section> : <div className="workflow-card">관리자가 판단을 확인해야 분석이 계속됩니다. 작성하거나 승인할 내용은 없습니다.</div>}
           </div> : <section className="workflow-card">{renderDecision(incident.decision)}</section>}
           {evidenceDetails}

@@ -415,6 +415,13 @@ export default function Home() {
     detailRequest.current = { id, promise };
     return promise;
   }, []);
+  // Scope feedback to its incident stage instead of keeping old intake notices visible.
+  useEffect(() => { setNotice(""); }, [selected, detail?.status, view]);
+  useEffect(() => {
+    if (!notice) return;
+    const timer = setTimeout(() => setNotice(""), 5000);
+    return () => clearTimeout(timer);
+  }, [notice]);
   const action = async (fn: () => Promise<any>, successMessage = "요청이 처리되었습니다.", label = "요청을 서버에서 처리 중") => {
     setBusy(true);
     setRequestLabel(label);
@@ -1498,7 +1505,7 @@ export default function Home() {
       </div>}
       {messageOpen && <MessageIntake assets={catalog.assets} initialMode={mode} provider={provider} api={api} onClose={() => setMessageOpen(false)} onRegistered={(id, duplicate) => {
         setMessageOpen(false); setSelected(id); setDrawer(true); setView("dashboard");
-        setNotice(duplicate ? "이미 등록된 문자의 장애 처리 화면을 열었습니다." : "문자 관측값을 저장했습니다. 현재 장애 처리 단계로 이동합니다.");
+        setNotice(duplicate ? "이미 등록된 문자의 장애 처리 화면을 열었습니다." : "장애가 접수되었습니다. AI 분석을 시작합니다.");
         void refresh().catch(() => setError("장애는 등록됐지만 목록 갱신에 실패했습니다. 잠시 후 다시 확인해 주세요."));
       }} />}
       {createOpen && (

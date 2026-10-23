@@ -963,3 +963,24 @@ for (const width of [390, 1280]) test(`login cold start guides waiting and sends
   await expect(page.getByRole('alert').filter({hasText:'검증용 인증 실패'})).toContainText('검증용 인증 실패');
   expect(writes).toBe(1); expect(probes).toBe(3);
 });
+
+test('intake feedback expires after five seconds instead of covering the next form', async ({page}) => {
+  await page.clock.install();
+  await setup(page);
+  await page.route('**/api/message-intake/preview', route => route.fulfill({json:smsPreview(false,'INC-UI-RESOLVED')}));
+  await page.getByRole('button',{name:/문자 붙여넣기/}).first().click();
+  await page.getByRole('textbox',{name:'수신 문자'}).fill('가상 배치 ABEND');
+  await page.getByRole('button',{name:'내용 분석',exact:true}).click();
+  await page.getByRole('button',{name:'기존 장애 열기'}).click();
+  await page.clock.runFor(5100);
+  await expect(page.getByRole('status').filter({hasText:'이미 등록된 문자의 장애 처리 화면을 열었습니다.'})).toHaveCount(0);
+});
+
+test('impact legend explains dependency distance rather than AI confidence', async ({page}) => {
+  await setup(page,undefined,'ADMIN',{status:'NEEDS_REVIEW'});
+  await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+  const dialog=page.getByRole('dialog',{name:'장애 상세'});
+  await expect(dialog.getByText('● 주황: 발생 지점에 직접 의존(1단계)',{exact:true})).toBeVisible();
+  await expect(dialog.getByText('● 노랑: 다른 자산을 거쳐 의존(2~6단계)',{exact:true})).toBeVisible();
+  await expect(dialog.getByText(/색상은 AI 신뢰도나 장애 심각도가 아닌/)).toBeVisible();
+});
