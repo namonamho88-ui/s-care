@@ -42,4 +42,10 @@ class SmsParserTest {
  @ParameterizedTest @ValueSource(strings={"24:00","11:60","-1:00"}) void invalidDeadlineIsRejected(String clock){assertThatThrownBy(()->parser.parse(DELAY.replace("11:00",clock))).isInstanceOf(IllegalArgumentException.class);}
  @ParameterizedTest @ValueSource(strings={"101","NaN","-2","95.1"}) void invalidOrInconsistentCurrentRatesAreRejected(String rate){assertThatThrownBy(()->parser.parse(TMS.replace("95.65",rate))).isInstanceOf(IllegalArgumentException.class);}
  @Test void unknownMissingOrOversizedInputsAreRejected(){for(String input:new String[]{"hello",ABEND.replace("ABEND","UNKNOWN"),TMS.replace("▶ IF아이디 : [DEMO_IF_001]",""),"x".repeat(10001),TMS.replace("[44]","[47]"),TMS.replace("1550~1650","2550~1650")})assertThatThrownBy(()->parser.parse(input)).isInstanceOf(IllegalArgumentException.class);}
+ @Test void batchErrorDetailsSurviveParsingWithoutRecipientsOrSecrets(){
+  var p=parser.parse(ABEND+"\n오류코드: ORA-00060 오류내용: deadlock detected token=fictional-secret 수신자: 가상수신자");
+  assertThat(p.fields().get("오류 상세")).contains("ORA-00060","deadlock","[비공개]").doesNotContain("가상수신자","fictional-secret");
+  assertThat(RecoverySimulation.plan(p.observations(),"APPLICATION",true)).containsEntry("profile","LOCK");
+  assertThat(parser.parse(DELAY+" 오류내용: execution timeout").fields()).containsKey("오류 상세");
+ }
 }

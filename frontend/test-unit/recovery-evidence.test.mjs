@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {recoveryEvidence,stateChanges} from '../lib/recovery-evidence.mjs';
+import {recoveryNotesDraft} from '../lib/recovery-notes.mjs';
+const plan={version:2,label:'DB 잠금·교착',profile:'LOCK',batch:true,supported:true};
+const proof={provider:'SYNTHETIC_ACTION_MODEL',realChanges:false,passed:true,plan,steps:[{code:'REMEDIATE',label:'합성 잠금 해제',passed:true,before:{blockingTransactions:2},after:{blockingTransactions:0}}],checks:[{label:'처리 금액 일치',expected:'10000000',actual:'10000000',passed:true}]};
+test('execution and verification are read from saved events even after notes are edited',()=>{const d=recoveryEvidence({notes:'사용자 후기',events:[{stage:'RECOVERY_PLAN',state:'COMPLETED',data_json:JSON.stringify(plan)},{stage:'VERIFY',state:'COMPLETED',data_json:JSON.stringify(proof)}]});assert.deepEqual(d.plan,plan);assert.deepEqual(d.execution,proof);assert.deepEqual(stateChanges(proof.steps[0]),['차단 트랜잭션 수: 2 → 0']);});
+test('new notes record the action and business checks and identify synthetic values',()=>{const draft=recoveryNotesDraft(JSON.stringify(proof));assert.match(draft,/합성 잠금 해제/);assert.match(draft,/처리 금액 일치/);assert.match(draft,/합성 데이터/);assert.doesNotMatch(draft,/오류율:/);});
+test('a missing check or failed check cannot produce a successful draft',()=>{for(const p of [{...proof,checks:[]},{...proof,checks:[{...proof.checks[0],passed:false}]},{...proof,realChanges:true}])assert.equal(recoveryNotesDraft(JSON.stringify(p)),null);});
+test('legacy records do not gain invented actions',()=>{assert.deepEqual(recoveryEvidence({events:[{stage:'VERIFY',state:'COMPLETED',data_json:JSON.stringify({provider:'SIMULATED_METRICS'})}]}),{plan:null,execution:null});});

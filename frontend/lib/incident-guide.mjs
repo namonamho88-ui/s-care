@@ -11,6 +11,7 @@ export const incidentSteps = [
 ];
 
 const stageNames = {
+  RECOVERY_PLAN: '가상 조치 계획', RECOVERY_ACTION: '가상 조치 실행', RECOVERY_CHECKS: '항목별 복구 검증',
   FORCE_STOP: '강제 종료', MANAGEMENT: '관리자 처리', INCIDENT: '장애 접수', MESSAGE_INTAKE: '문자 관측값 확인', JEV: 'AI 장애 판단 · Jev', ONTOLOGY: '영향 범위 분석 · Ontology',
   AGENT_INCIDENT: '업무 조정 · Incident Agent', AGENT_DIAGNOSIS: '원인 후보 분석 · Diagnosis Agent',
   AGENT_IMPACT: '영향 분석 · Impact Agent', AGENT_KNOWLEDGE: '해결 지식 검색 · Knowledge Agent',

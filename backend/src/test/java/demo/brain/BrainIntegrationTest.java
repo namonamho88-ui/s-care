@@ -69,6 +69,13 @@ class BrainIntegrationTest {
   assertThat(s.db.queryForObject("SELECT COUNT(*) FROM incidents",Integer.class)).isEqualTo(count+1);assertThat(s.one("SELECT * FROM message_intakes WHERE incident_id=?",id)).containsEntry("created_by","bootstrap-admin");
   assertThat(s.db.queryForObject("SELECT COUNT(*) FROM events WHERE incident_id=? AND stage='MESSAGE_INTAKE'",Integer.class,id)).isEqualTo(1);
   assertThat(post("/api/message-intake/preview",Map.of("message",SmsParserTest.ABEND)).getBody()).containsEntry("existingIncidentId",id).containsEntry("suggestedAssetId","CMP-01");
+  assertThat(post("/api/incidents/"+id+"/review",Map.of("type","APPLICATION","severity","P2","department","APPLICATION","reason","원인 미확정 및 배치 오류 추가 확인 필요")).getStatusCode().value()).isEqualTo(200);waitFor(id,"WAITING_APPROVAL");
+  assertThat(post("/api/incidents/"+id+"/approval",Map.of("approved",true,"reason","근거 없이 재실행 시도")).getStatusCode().value()).isEqualTo(409);
+  assertThat(post("/api/incidents/"+id+"/recovery-evidence",Map.of("evidence","ORA-00060 deadlock detected","reason","합성 오류 코드와 DB 갱신 실패 단계를 확인")).getStatusCode().value()).isEqualTo(200);
+  assertThat(post("/api/incidents/"+id+"/approval",Map.of("approved",true,"reason","가상 잠금 해제 및 멱등 재처리 계획 검토")).getStatusCode().value()).isEqualTo(200);waitFor(id,"RESOLVED");
+  var proof=s.json.readTree(s.incident(id).get("notes").toString());assertThat(proof.path("plan").path("profile").asText()).isEqualTo("LOCK");assertThat(proof.path("checks").size()).isGreaterThan(5);
+  assertThat(post("/api/incidents/"+id+"/recovery-evidence",Map.of("evidence","timeout","reason","승인 이후 변경 시도")).getStatusCode().value()).isEqualTo(409);
+
  }
  @Test @Order(17) void userCanRegisterTmsAndNoRawRecipientsReachStoredEvidence()throws Exception{
   var accounts=new AccountChecks(s,http,token);var inv=accounts.invite("fictional.sms","USER","OP-15");String personal=accounts.activate("fictional.sms",inv.get("inviteCode")).get("token").toString();
@@ -189,7 +196,10 @@ class BrainIntegrationTest {
   assertThat(post("/api/incidents/"+id+"/manage/delete",management(id)).getStatusCode().value()).isEqualTo(200);
  }
  @Test @Order(26) void recoveryToolIsIdempotentAfterWorkerRestart(){
-  String id=lifecycleFixture("RECOVERING");s.db.update("INSERT INTO approvals VALUES (?,TRUE,'test','가상 승인',?)",id,Store.now());s.db.update("INSERT INTO simulated_metrics VALUES (?,?,?,FALSE)",id,"{}","{}");var tools=new SimulatedTools(s);tools.apply(id);tools.apply(id);assertThat(s.db.queryForObject("SELECT COUNT(*) FROM audit WHERE incident_id=? AND action='SIMULATED_RECOVERY'",Integer.class,id)).isEqualTo(1);assertThat(post("/api/incidents/"+id+"/manage/delete",management(id)).getStatusCode().value()).isEqualTo(200);
+  String id=lifecycleFixture("RECOVERING");s.db.update("INSERT INTO approvals VALUES (?,TRUE,'test','가상 승인',?)",id,Store.now());s.db.update("INSERT INTO simulated_metrics VALUES (?,?,?,FALSE)",id,"{}","{}");var tools=new SimulatedTools(s);tools.apply(id);tools.apply(id);
+  var corrupted=(Map<String,Object>)s.decode(s.one("SELECT current_json FROM simulated_metrics WHERE incident_id=?",id).get("current_json"));corrupted.put("errorRate",25);s.db.update("UPDATE simulated_metrics SET current_json=? WHERE incident_id=?",s.encode(corrupted),id);
+  assertThatThrownBy(()->tools.verify(id)).hasMessageContaining("verification failed");assertThat(s.db.queryForObject("SELECT COUNT(*) FROM events WHERE incident_id=? AND stage='RECOVERY_CHECKS' AND state='FAILED'",Integer.class,id)).isEqualTo(1);assertThat(s.incident(id).get("status")).isEqualTo("RECOVERING");
+  assertThat(s.db.queryForObject("SELECT COUNT(*) FROM audit WHERE incident_id=? AND action='SIMULATED_RECOVERY'",Integer.class,id)).isEqualTo(1);assertThat(post("/api/incidents/"+id+"/manage/delete",management(id)).getStatusCode().value()).isEqualTo(200);
  }
 
  @Test @Order(27) void competingQueueClaimSkipsLockedJob()throws Exception{

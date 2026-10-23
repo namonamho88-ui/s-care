@@ -984,3 +984,34 @@ test('impact legend explains dependency distance rather than AI confidence', asy
   await expect(dialog.getByText('● 노랑: 다른 자산을 거쳐 의존(2~6단계)',{exact:true})).toBeVisible();
   await expect(dialog.getByText(/색상은 AI 신뢰도나 장애 심각도가 아닌/)).toBeVisible();
 });
+
+const batchPlan:any={id:'PLAN-UI',version:2,profile:'LOCK',label:'DB 잠금·교착',batch:true,supported:true,basis:['잠금 코드: ORA-00060'],dataSource:'합성 초기 상태·데이터입니다. 실제 측정값이 아닙니다.',caution:'실제 운영 시스템 변경 없음',actions:[{code:'PRECHECK',label:'가상 사전 점검'},{code:'REMEDIATE',label:'합성 차단 트랜잭션 롤백'},{code:'RERUN',label:'합성 미처리 구간 재실행'},{code:'RECONCILE',label:'합성 건수·금액 대사'}]};
+const planEvent=(plan:any)=>({id:101,stage:'RECOVERY_PLAN',state:'COMPLETED',data_json:JSON.stringify(plan),message:'조치 계획',created_at:'2026-10-10T12:01:00Z'});
+test('unknown batch cause blocks approval and supplementary evidence refreshes the plan',async({page})=>{
+ const unknown={...batchPlan,profile:'UNKNOWN',label:'배치 원인 근거 부족',supported:false,actions:[]};
+ const record:any={...rows[0],status:'WAITING_APPROVAL',events:[planEvent(unknown)]};
+ await setup(page,undefined,'ADMIN',record);
+ await page.route('**/api/incidents/INC-UI-RESOLVED',route=>route.fulfill({json:record}));
+ let supplements=0;
+ await page.route('**/api/incidents/INC-UI-RESOLVED/recovery-evidence',async route=>{expect(route.request().postDataJSON().evidence).toContain('ORA-00060');supplements++;record.events.push({...planEvent(batchPlan),id:102});await route.fulfill({json:{accepted:true}});});
+ await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+ const dialog=page.getByRole('dialog',{name:'장애 상세'});
+ await dialog.getByRole('textbox',{name:'승인 / 거부 사유',exact:true}).fill('합성 조치 계획 검토');
+ await expect(dialog.getByRole('button',{name:'대응 승인',exact:true})).toBeDisabled();
+ await dialog.getByRole('textbox',{name:'추가 오류 근거',exact:true}).fill('ORA-00060 deadlock detected');
+ await dialog.getByRole('textbox',{name:'근거 확인 사유',exact:true}).fill('가상 실패 단계와 코드 확인');
+ await dialog.getByRole('button',{name:'근거 저장 & 조치 계획 재검토',exact:true}).click();
+ await expect(dialog.getByRole('button',{name:'대응 승인',exact:true})).toBeEnabled();
+ await expect(dialog.getByRole('region',{name:'가상 조치 계획과 실행 근거'}).getByText('2. 합성 차단 트랜잭션 롤백',{exact:true})).toBeVisible();expect(supplements).toBe(1);
+});
+test('recovery notes show saved batch actions and reconciliation after user edits',async({page})=>{
+ const proof={plan:batchPlan,provider:'SYNTHETIC_ACTION_MODEL',realChanges:false,passed:true,before:{jobStatus:'ABEND',blockingTransactions:2,processedCount:984,processedAmount:9840000},after:{jobStatus:'END_OK',blockingTransactions:0,processedCount:1000,processedAmount:10000000},steps:[{code:'REMEDIATE',label:'합성 잠금 해제',passed:true,before:{blockingTransactions:2},after:{blockingTransactions:0}}],checks:[{label:'처리 금액 일치',expected:'10000000',actual:'10000000',passed:true}]};
+ await setup(page,undefined,'ADMIN',{notes:'담당자가 편집한 후기',prevention:'검토한 예방 대책',events:[planEvent(batchPlan),{id:102,stage:'VERIFY',state:'COMPLETED',data_json:JSON.stringify(proof),message:'검증 완료',created_at:'2026-10-10T12:02:00Z'}]});
+ await page.getByRole('button',{name:/INC-UI-RESOLVED/}).click();
+ const dialog=page.getByRole('dialog',{name:'장애 상세'});
+ await dialog.getByRole('tab',{name:/5\. 후기/}).click();
+ await expect(dialog.getByRole('heading',{name:'수행한 가상 조치와 검증',exact:true})).toBeVisible();
+ await expect(dialog.getByText('차단 트랜잭션 수: 2 → 0',{exact:true})).toBeVisible();
+ await expect(dialog.getByText(/처리 금액 일치 · 기대 10000000/)).toBeVisible();
+ await expect(dialog.getByRole('textbox',{name:'조치 후기',exact:true})).toHaveValue('담당자가 편집한 후기');
+});

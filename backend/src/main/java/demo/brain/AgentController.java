@@ -7,6 +7,7 @@ import java.time.Instant;
 @RestController
 public class AgentController {
  public static final List<String> AGENTS=List.of("incident","diagnosis","knowledge","impact","recovery","report");
+ @org.springframework.beans.factory.annotation.Autowired private RecoveryPlans recoveryPlans;
  private final Store s;private final LocalSkillStore skills;private final DiagnosisEngine diagnosis;private final KnowledgeEngine knowledge;private final String base;
  public AgentController(Store s,LocalSkillStore skills,DiagnosisEngine diagnosis,KnowledgeEngine knowledge,@Value("${brain.agent-base-url:${brain.internal-url}}") String base){this.s=s;this.skills=skills;this.diagnosis=diagnosis;this.knowledge=knowledge;this.base=base.replaceAll("/+$","");}
  @GetMapping("/agents/{agent}/.well-known/agent-card.json") public Object card(@PathVariable String agent){check(agent);return Map.ofEntries(Map.entry("protocolVersion","0.3.0"),Map.entry("name",agent+" Agent"),Map.entry("description","Fictional incident specialist with persisted tasks"),Map.entry("url",base+"/a2a/"+agent),Map.entry("version","3.0.0"),Map.entry("preferredTransport","JSONRPC"),Map.entry("capabilities",Map.of("streaming",false,"pushNotifications",false)),Map.entry("defaultInputModes",List.of("application/json")),Map.entry("defaultOutputModes",List.of("application/json")),Map.entry("securitySchemes",Map.of("bearer",Map.of("type","http","scheme","bearer"))),Map.entry("security",List.of(Map.of("bearer",List.of()))),Map.entry("skills",List.of(Map.of("id",agent,"name",agent,"description","Analyze fictional incidents","tags",List.of("incident")))));}
@@ -45,7 +46,7 @@ public class AgentController {
   case "diagnosis"->{var result=diagnosis.assess(i);result.put("similarIncidents",new SimilarIncidents(s).find(i));yield result;}
   case "knowledge"->knowledge.search(i);
   case "impact"->{if(i.get("impact_json")==null)throw new IllegalStateException("Ontology analysis required");yield s.decode(i.get("impact_json"));}
-  case "recovery"->{if(!i.get("status").equals("RECOVERING"))throw new IllegalStateException("Approval required");var approved=skills.search(type);yield Map.of("guideSource","APPROVED_SKILLS","approvedSkills",approved.get("skills"),"manuals",approved.get("manuals"),"tools",List.of("apply_simulated_recovery","verify_simulated_recovery"),"realChanges",false);}
+  case "recovery"->{if(!i.get("status").equals("RECOVERING"))throw new IllegalStateException("Approval required");var approved=skills.search(type);yield Map.of("plan",Objects.requireNonNullElseGet(recoveryPlans.latest(i.get("id").toString()),()->Map.of("legacy",true)),"guideSource","APPROVED_SKILLS","approvedSkills",approved.get("skills"),"manuals",approved.get("manuals"),"tools",List.of("apply_simulated_recovery","verify_simulated_recovery"),"realChanges",false);}
   case "report"->Map.of("title",i.get("title"),"summary","가상 장애의 판단·영향 분석·승인·복구 검증을 완료했습니다.","decision",s.decode(i.get("decision_json")),"impact",s.decode(i.get("impact_json")),"verification",i.get("notes"),"fictional",true,"agentResults",s.db.queryForList("SELECT agent,status,result_json FROM agent_tasks WHERE incident_id=? AND agent<>'report' ORDER BY created_at",i.get("id")),"approvals",s.db.queryForList("SELECT * FROM approvals WHERE incident_id=?",i.get("id")));
   default->throw new IllegalArgumentException("Unknown agent");};}
 }

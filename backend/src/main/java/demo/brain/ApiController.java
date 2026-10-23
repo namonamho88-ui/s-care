@@ -42,6 +42,8 @@ public class ApiController {
    String owner=b.getOrDefault("ownerId",i.get("owner_id").toString());s.one("SELECT id FROM operators WHERE id=?",owner);
    s.db.update("UPDATE incidents SET title=?,notes=?,prevention=?,owner_id=?,version=version+1 WHERE id=?",title,notes,prevention,owner,id);s.audit(id,Access.actor(),"EDIT",b);s.event(id,"EDIT","COMPLETED","담당자가 장애 기록을 수정했습니다.",Map.of());return null;});return detail(id);
  }
+ @org.springframework.beans.factory.annotation.Autowired private RecoveryPlans recoveryPlans;
+ @PostMapping("/incidents/{id}/recovery-evidence") public Object recoveryEvidence(@PathVariable String id,@RequestBody Map<String,String> b){recoveryPlans.evidence(id,b.get("evidence"),b.get("reason"));return Map.of("accepted",true);}
  @PostMapping("/incidents/{id}/review") public Object review(@PathVariable String id,@RequestBody Map<String,String> b){h.review(id,b.get("type"),b.get("severity"),b.get("department"),b.get("reason"));return Map.of("accepted",true);}
  @PostMapping("/incidents/{id}/approval") public Object approval(@PathVariable String id,@RequestBody Map<String,Object> b){if(!(b.get("approved") instanceof Boolean))throw new IllegalArgumentException("approved boolean required");h.approve(id,(Boolean)b.get("approved"),Objects.toString(b.get("reason"),""));return Map.of("accepted",true);}
  @PostMapping("/incidents/{id}/retry") public Object retry(@PathVariable String id){h.retry(id);return Map.of("accepted",true);}
