@@ -16,7 +16,7 @@ public class SimulatedTools {
   var after=new LinkedHashMap<String,Object>((Map<String,Object>)execution.get("after"));after.put("execution",execution);
   s.db.update("UPDATE simulated_metrics SET before_json=?,current_json=?,applied=TRUE WHERE incident_id=?",s.encode(execution.get("before")),s.encode(after),id);
   s.audit(id,"mcp","SIMULATED_RECOVERY",execution);
-  for(var step:(List<Map<String,Object>>)execution.get("steps"))s.event(id,"RECOVERY_ACTION",Boolean.TRUE.equals(step.get("passed"))?"COMPLETED":"FAILED","가상 조치 · "+step.get("label"),step);
+  for(var step:(List<Map<String,Object>>)execution.get("steps"))s.event(id,"RECOVERY_ACTION",Boolean.TRUE.equals(step.get("passed"))?"COMPLETED":"FAILED","조치 · "+step.get("label"),step);
   return execution;
  });}
  @SuppressWarnings("unchecked")
@@ -32,7 +32,7 @@ public class SimulatedTools {
    var metrics=s.json.valueToTree(current);boolean passed=Boolean.TRUE.equals(row.get("applied"))&&metrics.path("errorRate").asDouble(100)<0.1&&metrics.path("latencyMs").asDouble(10000)<500&&metrics.path("healthyDependencies").asBoolean();
    result=new LinkedHashMap<>(Map.of("passed",passed,"provider","SIMULATED_METRICS","before",s.decode(row.get("before_json")),"after",current,"realChanges",false,"legacy",true));
   }
-  s.audit(id,"mcp","RECOVERY_VERIFICATION",result);s.event(id,"RECOVERY_CHECKS",Boolean.TRUE.equals(result.get("passed"))?"COMPLETED":"FAILED","가상 조치 후 항목별 검증",result);
+  s.audit(id,"mcp","RECOVERY_VERIFICATION",result);s.event(id,"RECOVERY_CHECKS",Boolean.TRUE.equals(result.get("passed"))?"COMPLETED":"FAILED","조치 후 항목별 검증",result);
   return result;
  });if(!Boolean.TRUE.equals(verification.get("passed")))throw new IllegalStateException("Recovery verification failed; incident cannot be resolved");return verification;}
 }

@@ -10,18 +10,24 @@ import java.util.*;
 public class Reports {
  private final Store s;public Reports(Store s){this.s=s;}
  private Map<String,Object> ready(String id){var i=s.incident(id);if(!List.of("RESOLVED","CLOSED").contains(i.get("status")))throw new IllegalStateException("복구 검증 후 보고서를 다운로드할 수 있습니다.");return i;}
- private LinkedHashMap<String,String> content(String id){var i=ready(id);var data=new LinkedHashMap<String,String>();data.put("장애 번호",id);data.put("제목",i.get("title").toString());data.put("가상 시스템",String.valueOf(i.get("system_name")));data.put("구성요소",i.get("asset_name").toString());data.put("상태 / 심각도",i.get("status")+" / "+i.get("severity"));data.put("담당자",i.get("owner_name")+" / "+i.get("department"));data.put("발생 / 복구",i.get("created_at")+" / "+i.get("resolved_at"));data.put("관측",i.get("observations").toString());data.put("판단",String.valueOf(i.get("decision_json")));data.put("영향 분석",String.valueOf(i.get("impact_json")));data.put("조치 후기",i.get("notes").toString());data.put("재발 방지",i.get("prevention").toString());data.put("가상 조치·검증 증적",recoverySummary(id));return data;}
+ private LinkedHashMap<String,String> content(String id){var i=ready(id);var data=new LinkedHashMap<String,String>();data.put("장애 번호",id);data.put("제목",i.get("title").toString());data.put("가상 시스템",String.valueOf(i.get("system_name")));data.put("구성요소",i.get("asset_name").toString());data.put("상태 / 심각도",i.get("status")+" / "+i.get("severity"));data.put("담당자",i.get("owner_name")+" / "+i.get("department"));data.put("발생 / 복구",i.get("created_at")+" / "+i.get("resolved_at"));data.put("관측",i.get("observations").toString());data.put("판단",String.valueOf(i.get("decision_json")));data.put("영향 분석",String.valueOf(i.get("impact_json")));data.put("조치 후기",i.get("notes").toString());data.put("재발 방지",i.get("prevention").toString());data.put("조치·검증 내역",recoverySummary(id));return data;}
  private String recoverySummary(String id){
   var rows=s.db.queryForList("SELECT data_json FROM audit WHERE incident_id=? AND action='RECOVERY_VERIFICATION' ORDER BY id DESC LIMIT 1",id);
   if(rows.isEmpty())return "조치 증적 미기록";
   var proof=s.json.valueToTree(s.decode(rows.get(0).get("data_json")));
   if(!"SYNTHETIC_ACTION_MODEL".equals(proof.path("provider").asText()))return "이전 지표 검증 기록 · 구체적인 조치 과정 미기록";
-  var lines=new ArrayList<String>();lines.add("합성 상태·데이터 기반 시뮬레이션 · 실제 운영 시스템 변경 없음");lines.add("선택한 조치: "+proof.path("plan").path("label").asText());
+  var lines=new ArrayList<String>();lines.add("시연 환경의 처리 기록 · 실제 운영 시스템 변경 없음");lines.add("선택한 조치: "+proof.path("plan").path("label").asText());
   for(var basis:proof.path("plan").path("basis"))lines.add("선택 근거: "+basis.asText());
   for(var step:proof.path("steps"))lines.add("조치: "+step.path("label").asText()+" / "+(step.path("passed").asBoolean()?"완료":"실패"));
   for(var check:proof.path("checks"))lines.add("검증: "+check.path("label").asText()+" / 기대 "+check.path("expected").asText()+" / 결과 "+check.path("actual").asText()+" / "+(check.path("passed").asBoolean()?"통과":"실패"));
-  return String.join("\n",lines);
+  return recoveryText(String.join("\n",lines));
  }
+ private String recoveryText(String text){return text
+  .replace("합성 멱등키 확인 후 미처리 구간만 재실행","기존 처리 이력을 확인하고 미처리 구간만 재실행")
+  .replace("가상 대상·복구 전 상태와 재실행 안전성 점검","대상 시스템·장애 상태 및 재실행 조건 확인")
+  .replace("합성 상태를 기반으로 오류율·응답시간·의존성 재측정","오류율·응답시간·연결 상태 재측정")
+  .replace("합성 오류 레코드를 격리하고 검증된 합성 데이터로 재처리","오류 레코드를 분리하고 검증된 데이터로 재처리")
+  .replace("멱등키","기존 처리 이력").replaceAll("(^|[\\s·])합성\\s+","$1").replaceAll("(^|[\\s·])가상\\s+","$1");}
  public byte[] xlsx(String id)throws IOException{return xlsx(id,true);}
  public byte[] xlsx(String id,boolean includeAudit)throws IOException{var data=content(id);try(var book=new XSSFWorkbook();var out=new ByteArrayOutputStream()){
   var sheet=book.createSheet("장애 보고서");var header=book.createCellStyle();header.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());header.setFillPattern(FillPatternType.SOLID_FOREGROUND);var font=book.createFont();font.setColor(IndexedColors.WHITE.getIndex());font.setBold(true);header.setFont(font);var wrap=book.createCellStyle();wrap.setWrapText(true);wrap.setVerticalAlignment(VerticalAlignment.TOP);
@@ -67,7 +73,7 @@ public class Reports {
     for (var approval : s.db.queryForList("SELECT * FROM approvals WHERE incident_id=?", id))
      writer.field("대응 승인", approval.get("actor") + " / " + time(approval.get("created_at")) + " / " + approval.get("reason"));
     writer.section("04  복구 검증과 재발 방지");
-    writer.field("수행한 가상 조치와 검증 근거", recoverySummary(id));
+    writer.field("수행한 조치와 검증 근거", recoverySummary(id));
     var metrics = s.db.queryForList("SELECT * FROM simulated_metrics WHERE incident_id=?", id);
     if (!metrics.isEmpty()) {
      var before = s.json.valueToTree(s.decode(metrics.get(0).get("before_json")));

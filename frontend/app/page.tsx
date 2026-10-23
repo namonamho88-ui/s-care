@@ -44,6 +44,7 @@ import ManualCenter from "@/components/manual-center";
 import DashboardWorkbench from "@/components/dashboard-workbench";
 import IncidentWorkflow from "@/components/incident-workflow";
 import MessageIntake from "@/components/message-intake";
+import {operationalText} from "@/lib/recovery-evidence.mjs";
 import PaginatedList, { RemoteList, useRemotePage } from "@/components/pagination";
 import TechnologyGuide, { TechnologyContext } from "@/components/technology-guide";
 import { stageTechnologyLabel } from "@/lib/technology-guide.mjs";
@@ -225,7 +226,7 @@ function Timeline({ events }: { events: Row[] }) {
               </small>
             </div>
             {stageTechnologyLabel(e.stage) && <small className="event-technology">사용 기술 · {stageTechnologyLabel(e.stage)}</small>}
-            <p>{e.message}</p>
+            <p>{["RECOVERY","RECOVERY_PLAN","RECOVERY_ACTION","RECOVERY_CHECKS","MCP_ACTION","VERIFY"].includes(e.stage)?operationalText(e.message):e.message}</p>
             <Json value={e.data_json} />
           </div>
         ))

@@ -11,15 +11,15 @@ export const incidentSteps = [
 ];
 
 const stageNames = {
-  RECOVERY_PLAN: '가상 조치 계획', RECOVERY_ACTION: '가상 조치 실행', RECOVERY_CHECKS: '항목별 복구 검증',
+  RECOVERY_PLAN: '조치 계획', RECOVERY_ACTION: '조치 실행', RECOVERY_CHECKS: '항목별 복구 검증',
   FORCE_STOP: '강제 종료', MANAGEMENT: '관리자 처리', INCIDENT: '장애 접수', MESSAGE_INTAKE: '문자 관측값 확인', JEV: 'AI 장애 판단 · Jev', ONTOLOGY: '영향 범위 분석 · Ontology',
   AGENT_INCIDENT: '업무 조정 · Incident Agent', AGENT_DIAGNOSIS: '원인 후보 분석 · Diagnosis Agent',
   AGENT_IMPACT: '영향 분석 · Impact Agent', AGENT_KNOWLEDGE: '해결 지식 검색 · Knowledge Agent',
   TASK_INCIDENT: '업무 조정 · Incident Agent', TASK_DIAGNOSIS: '원인 후보 분석 · Diagnosis Agent', TASK_IMPACT: '영향 분석 · Impact Agent', PERFORMANCE: '실행 시간 측정',
   AGENT_RECOVERY: '복구 가이드 · Recovery Agent', AGENT_REPORT: '보고서 작성 · Report Agent',
   HERMES: '승인된 해결 절차 검색 · Hermes', HARNESS: '판단 근거·실행 정책 검증 · Harness',
-  REVIEW: '관리자 판단 확인', APPROVAL: '관리자 대응 승인', RECOVERY: '가상 복구 가이드',
-  MCP_ACTION: '가상 복구 조치 · MCP', VERIFY: '가상 지표 검증', REPORT: '보고서 생성',
+  REVIEW: '관리자 판단 확인', APPROVAL: '관리자 대응 승인', RECOVERY: '복구 조치 가이드',
+  MCP_ACTION: '조치 실행 · MCP', VERIFY: '복구 결과 검증', REPORT: '보고서 생성',
   SKILL_DRAFT: '해결 해결 절차 초안 생성', HISTORY: '보고서·장애 이력 저장', CLOSE: '장애 종료', FAILURE: '실행 중단',
 };
 export const stageLabel = stage => stageNames[String(stage).toUpperCase()] || stage;
@@ -61,8 +61,8 @@ export function incidentGuide(incident, options = {}) {
       text = '관리자 전용 단계입니다. 승인 입력란과 승인·거부 버튼은 관리자 권한 계정에만 표시됩니다. 일반 사용자는 진행 상태를 조회할 수 있습니다. 관리자가 승인하면 가상 복구를 시작합니다.';
       action = isAdmin ? '관리자 대응 승인 위치로 이동' : '분석 결과 보기'; target = isAdmin ? 'approval' : 'analysis'; break;
     case 'RECOVERING':
-      step = 3; badge = '자동 진행'; title = '가상 복구를 검증하고 보고서를 만들고 있어요';
-      text = '승인된 가상 지표를 변경·검증한 뒤 보고서, 해결 절차 초안, 이력을 저장합니다. 실제 운영 시스템은 변경하지 않습니다.';
+      step = 3; badge = '자동 진행'; title = '복구 결과를 검증하고 보고서를 만들고 있어요';
+      text = '승인된 조치를 실행·검증한 뒤 보고서, 해결 절차 초안, 이력을 저장합니다. 실제 운영 시스템은 변경하지 않습니다.';
       action = '실행 기록 보기'; target = 'timeline'; break;
     case 'RESOLVED':
       step = needsSave ? 4 : 5; tone = 'attention';
