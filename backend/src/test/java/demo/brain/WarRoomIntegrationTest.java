@@ -14,7 +14,7 @@ import java.util.concurrent.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT,properties={"spring.datasource.url=jdbc:h2:mem:war_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1","spring.datasource.username=sa","spring.datasource.password=","brain.neo4j-uri=disabled","brain.graph-required=false","brain.step-ms=0","WAR_ROOM_ENABLED=true","WAR_ROOM_GATEWAY_KEY=fictional-war-test-gateway-1234567890","WAR_ROOM_ALLOWED_ORIGINS=http://127.0.0.1:3100"})
+@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.RANDOM_PORT,properties={"spring.datasource.url=${TEST_DB_URL:jdbc:h2:mem:war_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}","spring.datasource.username=${TEST_DB_USER:sa}","spring.datasource.password=${TEST_DB_PASSWORD:}","brain.neo4j-uri=disabled","brain.graph-required=false","brain.step-ms=0","WAR_ROOM_ENABLED=true","WAR_ROOM_GATEWAY_KEY=fictional-war-test-gateway-1234567890","WAR_ROOM_ALLOWED_ORIGINS=http://127.0.0.1:3100"})
 @org.junit.jupiter.api.TestInstance(org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS)
 class WarRoomIntegrationTest {
  @Autowired TestRestTemplate http; @Autowired WarRoom rooms; @Autowired Store store; @Autowired TwinLab lab; @Autowired KnowledgeCases knowledge;
