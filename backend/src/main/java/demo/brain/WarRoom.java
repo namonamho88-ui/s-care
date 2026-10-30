@@ -48,7 +48,7 @@ public class WarRoom {
  private void persist(Room r){store.tx(()->{if(store.db.update("UPDATE war_rooms SET run_id=?,incident_id=?,mapped_node=?,updated_at=? WHERE id=?",r.runId,r.incidentId,r.mappedNode,Store.now(),r.id)==0)store.db.update("INSERT INTO war_rooms(id,run_id,incident_id,mapped_node,updated_at) VALUES (?,?,?,?,?)",r.id,r.runId,r.incidentId,r.mappedNode,Store.now());return null;});}
  public synchronized Map<String,Object> join(String id,String resume){
   enabled();cleanup();room(id);long now=System.currentTimeMillis();String token=resume;Guest g=resume==null?null:guests.get(hash(resume));
-  if(g==null||!g.room.equals(id)){if(guests.size()>=160)throw new IllegalStateException("게스트 세션 한도에 도달했습니다. 잠시 후 다시 시도하세요.");if(guests.values().stream().filter(p->p.room.equals(id)).count()>=CAPACITY)throw new IllegalStateException("방 정원은 20명입니다. 잠시 후 다시 시도하세요.");g=new Guest(id,now);token=secret();guests.put(hash(token),g);}
+  if(g==null||!g.room.equals(id)){if(guests.size()>=160)throw new IllegalStateException("게스트 세션 한도에 도달했습니다. 잠시 후 다시 시도하세요.");if(guests.values().stream().filter(p->p.room.equals(id)).count()>=CAPACITY)throw new IllegalStateException("방 정원은 20명입니다. 잠시 후 다시 시도하세요.");g=new Guest(id,now);if(id.startsWith("city-")){String base=List.of("파란수달","차분한곰","든든한펭귄","빠른여우").get(Math.floorMod(g.id.hashCode(),4))+"-"+g.id.substring(0,4);Set<String> used=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->used.add(p.name));String chosen=base;for(int suffix=2;used.contains(chosen);suffix++)chosen=base+"-"+suffix;g.name=chosen;}token=secret();guests.put(hash(token),g);}
   // Every socket gets a one-use, 20-second admission ticket; the resumable secret stays in an HttpOnly BFF cookie.
   String ticket=secret();String key=hash(token);tickets.entrySet().removeIf(e->e.getValue().guest().equals(key));tickets.put(hash(ticket),new Ticket(key,now+20_000));
   return Map.of("resume",token,"ticket",ticket,"id",g.id,"name",g.name,"expiresAt",g.expires);
@@ -58,11 +58,19 @@ public class WarRoom {
  private void spawn(Guest g){if(g.room.startsWith("city-"))for(int i=0;i<4;i++){double x=-7+i*4.5;if(free(g,x,3.4)){g.x=x;g.z=3.4;return;}}for(int i=0;i<40;i++){double x=-8+(i%10)*1.6,z=4+Math.floor(i/10)*.75;if(free(g,x,z)){g.x=x;g.z=z;return;}}throw new IllegalStateException("입장 위치가 혼잡합니다.");}
  private boolean free(Guest g,double x,double z){
   if(Math.abs(x)>9||Math.abs(z)>6)return false;
-  if(g.room.startsWith("city-")&&g.floor==1&&Math.abs(x)<2.8&&z>4.1&&z<5.5)return false;
-  if(g.floor<=2 && z>-4.4&&z<-.4 && x>-7.5&&x<7.5)return false; // rack bays
-  if(g.floor<=2 && z>-.7&&z<1.05&&x>-.6&&x<8.2)return false; // response consoles
-  if(g.floor==3&&Math.abs(x)<3.3&&Math.abs(z)<1.8)return false; // war table
-  if(g.floor==4&&Math.abs(x)<7.5&&z>-3.5&&z<-.5)return false; // all five control consoles
+  if(g.room.startsWith("city-")){
+   // Geometry contract with city-scene.tsx: table, rack alcove, perimeter desks.
+   if(x*x/(3.5*3.5)+z*z/(2.2*2.2)<1)return false;
+   if(x< -6.9&&z<2.3)return false;
+   if(x>5.1&&((z> -4.5&&z< -1.3)||(z>-.1&&z<3.1)))return false;
+   if(x> -5.4&&x< -2.2&&z< -3.1)return false;
+   if(z< -6.1)return false;
+  }else{
+   if(g.floor<=2 && z>-4.4&&z<-.4 && x>-7.5&&x<7.5)return false;
+   if(g.floor<=2 && z>-.7&&z<1.05&&x>-.6&&x<8.2)return false;
+   if(g.floor==3&&Math.abs(x)<3.3&&Math.abs(z)<1.8)return false;
+   if(g.floor==4&&Math.abs(x)<7.5&&z>-3.5&&z<-.5)return false;
+  }
   return guests.values().stream().noneMatch(p->p!=g&&p.connection!=null&&p.room.equals(g.room)&&p.floor==g.floor&&Math.hypot(p.x-x,p.z-z)<.65);
  }
  public static double finite(JsonNode value){if(!value.isNumber()||!Double.isFinite(value.asDouble()))throw new IllegalArgumentException("유효한 숫자가 필요합니다.");return value.asDouble();}
@@ -72,12 +80,12 @@ public class WarRoom {
   switch(msg.path("type").asText()){
    case "training" -> {r.training.apply(g.id,g.name,msg,now);}
    case "profile" -> {String name=msg.path("name").asText().strip();if(name.isEmpty()||name.length()>16||name.codePoints().anyMatch(Character::isISOControl))throw new IllegalArgumentException("닉네임은 1~16자로 입력하세요.");if(guests.values().stream().anyMatch(p->p!=g&&p.room.equals(g.room)&&p.name.equals(name)))throw new IllegalArgumentException("같은 방에서 사용 중인 닉네임입니다.");g.name=name;}
-   case "city-visit" -> {String zone=msg.path("zone").asText();int i=CityTraining.ZONES.indexOf(zone);if(i<0)throw new IllegalArgumentException("구역 오류");g.floor=1;double[][] points={{-7,3.4},{-6,1.8},{-3,1.8},{0,1.8},{3,1.8},{6,1.8}};for(int slot=0;slot<25;slot++){double x=points[i][0]+(slot%5-2)*.8,z=points[i][1]+(slot/5)*.8;if(free(g,x,z)){g.x=x;g.z=z;break;}}}
+   case "city-visit" -> {String zone=msg.path("zone").asText();int i=CityTraining.ZONES.indexOf(zone);if(i<0)throw new IllegalArgumentException("구역 오류");g.floor=1;double[][] points={{0,3.2},{-3.8,-2.5},{-5.6,-3.8},{-5.6,.8},{4.3,-3.3},{4.3,1.1}};for(int slot=0;slot<25;slot++){double x=points[i][0]+(slot%5-2)*.8,z=points[i][1]+(slot/5)*.8;if(free(g,x,z)){g.x=x;g.z=z;break;}}}
    case "ping", "sync" -> {return;}
    case "move" -> {if(now-g.lastMove<75)return;double dx=finite(msg.path("x")),dz=finite(msg.path("z"));double length=Math.hypot(dx,dz);if(length>1.01)throw new IllegalArgumentException("이동 벡터 범위 초과");double dt=Math.min(.15,(now-g.lastMove)/1000.0);g.lastMove=now;double x=g.x+dx*3*dt,z=g.z+dz*3*dt;if(free(g,x,z)){g.x=x;g.z=z;}if(length>.01)g.direction=Math.atan2(dx,dz);}
    case "floor" -> {int f=msg.path("floor").asInt();if(f<1||f>4)throw new IllegalArgumentException("층 범위 오류");g.floor=f;spawn(g);}
    case "role" -> {String role=msg.path("role").asText();if(!Set.of("분석","인프라","대응","검증","관리자 시연").contains(role))throw new IllegalArgumentException("역할 오류");g.role=role;}
-   case "chat" -> {String text=msg.path("text").asText().strip();if(text.isEmpty()||text.length()>240||now-g.lastChat<1000)throw new IllegalArgumentException("채팅은 1초 간격, 240자 이내입니다.");g.lastChat=now;r.chat.add(Map.of("id",UUID.randomUUID().toString(),"name",g.name,"text",text,"at",now));if(r.chat.size()>60)r.chat.remove(0);}
+   case "chat" -> {String text=msg.path("text").asText().strip();if(text.isEmpty()||text.length()>240||text.codePoints().anyMatch(Character::isISOControl)||now-g.lastChat<1000)throw new IllegalArgumentException("채팅은 1초 간격, 240자 이내입니다.");g.lastChat=now;r.chat.add(Map.of("id",UUID.randomUUID().toString(),"player",g.id,"name",g.name,"text",text,"at",now));if(r.chat.size()>60)r.chat.remove(0);}
    case "inspect" -> {String node=msg.path("node").asText();TwinEngine.node(TwinEngine.initial(42),node);if(r.run!=null&&g.floor==nodeFloor(node)&&r.checks.add(g.id+":"+node)){g.contributions++;}}
    default -> throw new IllegalArgumentException("허용되지 않은 게스트 이벤트");
   }

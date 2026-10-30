@@ -120,4 +120,21 @@ class WarRoomIntegrationTest {
    peer.await(m->m.path("players").size()==1);ok("linked-flow","unlink",Map.of());assertThat(rooms.state("linked-flow").get("incident")).isNull();
   }
  }
+ @Test void missionControlAutomaticNamesChatIdentityAndFurnitureCollision(){
+  var isolated=new WarRoom(store,lab,knowledge,true);
+  var a=isolated.join("city-control",null);var b=isolated.join("city-control",null);
+  var ga=isolated.connect(a.get("ticket").toString(),"control-a");var gb=isolated.connect(b.get("ticket").toString(),"control-b");
+  assertThat(ga.name).doesNotStartWith("게스트-").isNotEqualTo(gb.name);
+  long revision=((Number)isolated.trainingState("control-a").get("revision")).longValue();
+  isolated.input("control-a",store.json.valueToTree(Map.of("type","chat","text","<b>가상 로그 확인</b>","player",gb.id,"name",gb.name)));
+  var messages=store.json.valueToTree(isolated.state("city-control").get("chat"));assertThat(messages.get(0).path("player").asText()).isEqualTo(ga.id);assertThat(messages.get(0).path("name").asText()).isEqualTo(ga.name);
+  assertThat(isolated.trainingState("control-a").get("revision")).isEqualTo(revision);
+  assertThatThrownBy(()->isolated.input("control-a",store.json.valueToTree(Map.of("type","chat","text","연속 요청")))).isInstanceOf(IllegalArgumentException.class);
+  ga.lastChat=0;assertThatThrownBy(()->isolated.input("control-a",store.json.valueToTree(Map.of("type","chat","text","x".repeat(241))))).isInstanceOf(IllegalArgumentException.class);
+  ga.x=0;ga.z=2.3;ga.lastMove=System.currentTimeMillis()-150;isolated.input("control-a",store.json.valueToTree(Map.of("type","move","x",0,"z",-1)));assertThat(ga.z).isEqualTo(2.3);
+  for(String zone:CityTraining.ZONES){isolated.input("control-a",store.json.valueToTree(Map.of("type","city-visit","zone",zone)));assertThat(ga.x*ga.x/(3.5*3.5)+ga.z*ga.z/(2.2*2.2)).isGreaterThanOrEqualTo(1);}
+  isolated.disconnect("control-a");var resumed=isolated.join("city-control",a.get("resume").toString());assertThat(resumed.get("name")).isEqualTo(a.get("name"));
+  isolated.disconnect("control-b");
+ }
+
 }
