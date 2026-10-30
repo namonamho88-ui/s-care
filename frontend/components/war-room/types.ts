@@ -1,7 +1,7 @@
 export type Node={id:string;name:string;kind:string;status:string;availability:number;latency:number;errorRate:number;cpu:number;memory:number};
 export type Edge={source:string;target:string;relation:string;group:string};
 export type Snapshot={nodes:Node[];edges:Edge[];faults:{target:string;type:string}[]};
-export type Player={id:string;name:string;role:string;floor:number;x:number;z:number;direction:number;contributions:number};
+export type Player={id:string;name:string;role:string;floor:number;x:number;z:number;direction:number;contributions:number;appearance?:number};
 export type Result={strategyId:string;outcome:string;recoverySeconds:number;availability:number;latency:number;errorRate:number;residualRisk:number;steps:{action:string;target:string;reason:string;applied:boolean;snapshot:Snapshot}[];after:Snapshot};
 export type Run={id?:string;status:string;current:Snapshot;baseline?:Snapshot;faultSnapshot?:Snapshot;analysis?:{cause:string;target:string;source:string;reason:string;actualModelCall:boolean;modelCallAttempted?:boolean;evidence:Node[];affected:string[]};generation?:{source:string;reason:string};strategies?:{id:string;name:string;risk:string;preconditions:string;expectedEffect:string}[];results?:Result[];recommendation?:{strategyId:string;reason:string};selectedStrategy?:string};
 export type IncidentView={stage:string;status:string;node:string;version:number;eventId:number;approved:boolean;completedSteps:string[];totalSteps:number;aiSource:string;timeline?:{id:number;stage:string;state:string}[]};

@@ -124,7 +124,7 @@ class WarRoomIntegrationTest {
   var isolated=new WarRoom(store,lab,knowledge,true);
   var a=isolated.join("city-control",null);var b=isolated.join("city-control",null);
   var ga=isolated.connect(a.get("ticket").toString(),"control-a");var gb=isolated.connect(b.get("ticket").toString(),"control-b");
-  assertThat(ga.name).doesNotStartWith("게스트-").isNotEqualTo(gb.name);
+  assertThat(ga.name).doesNotStartWith("게스트-").isNotEqualTo(gb.name);assertThat(ga.appearance).isEqualTo(0);assertThat(gb.appearance).isEqualTo(1);
   long revision=((Number)isolated.trainingState("control-a").get("revision")).longValue();
   isolated.input("control-a",store.json.valueToTree(Map.of("type","chat","text","<b>가상 로그 확인</b>","player",gb.id,"name",gb.name)));
   var messages=store.json.valueToTree(isolated.state("city-control").get("chat"));assertThat(messages.get(0).path("player").asText()).isEqualTo(ga.id);assertThat(messages.get(0).path("name").asText()).isEqualTo(ga.name);

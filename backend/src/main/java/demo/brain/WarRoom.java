@@ -20,9 +20,9 @@ public class WarRoom {
  record Ticket(String guest,long expires){}
  static class Guest {
   String id=UUID.randomUUID().toString(), name="게스트-"+UUID.randomUUID().toString().substring(0,4), room, connection, role="분석";
-  long expires, lastSeen, window, lastMove, lastChat; int count, contributions, floor=1; double x,z,direction;
+  long expires, lastSeen, window, lastMove, lastChat; int count, contributions, appearance, floor=1; double x,z,direction;
   Guest(String room,long now){this.room=room;expires=now+3_600_000;lastSeen=now;}
-  Map<String,Object> view(){return Map.of("id",id,"name",name,"role",role,"floor",floor,"x",x,"z",z,"direction",direction,"contributions",contributions);}
+  Map<String,Object> view(){return Map.of("id",id,"name",name,"role",role,"floor",floor,"x",x,"z",z,"direction",direction,"contributions",contributions,"appearance",appearance);}
  }
  static class Room {
   final CityTraining training=new CityTraining();
@@ -48,7 +48,7 @@ public class WarRoom {
  private void persist(Room r){store.tx(()->{if(store.db.update("UPDATE war_rooms SET run_id=?,incident_id=?,mapped_node=?,updated_at=? WHERE id=?",r.runId,r.incidentId,r.mappedNode,Store.now(),r.id)==0)store.db.update("INSERT INTO war_rooms(id,run_id,incident_id,mapped_node,updated_at) VALUES (?,?,?,?,?)",r.id,r.runId,r.incidentId,r.mappedNode,Store.now());return null;});}
  public synchronized Map<String,Object> join(String id,String resume){
   enabled();cleanup();room(id);long now=System.currentTimeMillis();String token=resume;Guest g=resume==null?null:guests.get(hash(resume));
-  if(g==null||!g.room.equals(id)){if(guests.size()>=160)throw new IllegalStateException("게스트 세션 한도에 도달했습니다. 잠시 후 다시 시도하세요.");if(guests.values().stream().filter(p->p.room.equals(id)).count()>=CAPACITY)throw new IllegalStateException("방 정원은 20명입니다. 잠시 후 다시 시도하세요.");g=new Guest(id,now);if(id.startsWith("city-")){String base=List.of("파란수달","차분한곰","든든한펭귄","빠른여우").get(Math.floorMod(g.id.hashCode(),4))+"-"+g.id.substring(0,4);Set<String> used=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->used.add(p.name));String chosen=base;for(int suffix=2;used.contains(chosen);suffix++)chosen=base+"-"+suffix;g.name=chosen;}token=secret();guests.put(hash(token),g);}
+  if(g==null||!g.room.equals(id)){if(guests.size()>=160)throw new IllegalStateException("게스트 세션 한도에 도달했습니다. 잠시 후 다시 시도하세요.");if(guests.values().stream().filter(p->p.room.equals(id)).count()>=CAPACITY)throw new IllegalStateException("방 정원은 20명입니다. 잠시 후 다시 시도하세요.");g=new Guest(id,now);if(id.startsWith("city-")){Set<Integer> styles=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->styles.add(p.appearance));while(styles.contains(g.appearance))g.appearance++;String base=List.of("파란수달","차분한곰","든든한펭귄","빠른여우").get(g.appearance%4)+"-"+g.id.substring(0,4);Set<String> used=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->used.add(p.name));String chosen=base;for(int suffix=2;used.contains(chosen);suffix++)chosen=base+"-"+suffix;g.name=chosen;}token=secret();guests.put(hash(token),g);}
   // Every socket gets a one-use, 20-second admission ticket; the resumable secret stays in an HttpOnly BFF cookie.
   String ticket=secret();String key=hash(token);tickets.entrySet().removeIf(e->e.getValue().guest().equals(key));tickets.put(hash(ticket),new Ticket(key,now+20_000));
   return Map.of("resume",token,"ticket",ticket,"id",g.id,"name",g.name,"expiresAt",g.expires);
