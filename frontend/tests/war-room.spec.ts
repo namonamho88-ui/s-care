@@ -1,5 +1,7 @@
 import {test,expect,type Page} from '@playwright/test';
 import fixture from './fixtures/twin-lab.json';
+// Several WebGL interactions share one software renderer on CI.
+test.describe.configure({timeout:60000});
 
 async function setup(page:Page,admin=false){
  const calls:string[]=[];const moves:{x:number;z:number}[]=[];

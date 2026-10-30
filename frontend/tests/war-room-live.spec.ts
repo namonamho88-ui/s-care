@@ -3,11 +3,11 @@ import {test,expect} from '@playwright/test';
 // Opt-in: scripts/verify-war-room-live.ps1 starts an isolated H2 backend, no cloud access.
 test('real BFF cookies, two browser guests, admin approval and shared knowledge draft',async({browser})=>{
  test.skip(process.env.WAR_ROOM_LIVE!=='true','Requires isolated local backend');test.setTimeout(120000);
- const a=await browser.newContext({reducedMotion:'reduce'}),b=await browser.newContext({reducedMotion:'reduce'}),admin=await browser.newContext({reducedMotion:'reduce'});
+ const a=await browser.newContext({reducedMotion:'reduce',viewport:{width:800,height:700}}),b=await browser.newContext({reducedMotion:'reduce',viewport:{width:800,height:700}}),admin=await browser.newContext({reducedMotion:'reduce',viewport:{width:800,height:700}});
  try{
   const pa=await a.newPage(),pb=await b.newPage();const identities:string[]=[];
   for(const page of [pa,pb]){await page.goto('/war-room?room=live-qa');const reply=page.waitForResponse(r=>r.url().endsWith('/api/war-session'));await page.getByRole('button',{name:'3D 워룸 입장'}).click();identities.push((await (await reply).json()).id);await expect(page.locator('.wr-header-state')).toContainText('연결됨');}
-  await expect(pa.locator('.wr-header-state')).toContainText('2/20');await expect(pb.locator('.wr-header-state')).toContainText('2/20');
+  await expect(pa.locator('.wr-top-actions')).toContainText('2/20');await expect(pb.locator('.wr-top-actions')).toContainText('2/20');
   const cookie=(await a.cookies('http://127.0.0.1:3100/api/war-session')).find(c=>c.name==='war_guest');expect(cookie?.httpOnly).toBe(true);expect(cookie?.sameSite).toBe('Strict');
   expect((await a.request.get('/api/incidents')).status()).toBe(401);
   expect((await a.request.post('/api/war-room/rooms/live-qa/decision',{data:{approved:true,revision:0,reason:'guest attempt'},headers:{Origin:'http://127.0.0.1:3100'}})).status()).toBe(401);
