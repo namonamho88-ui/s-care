@@ -111,3 +111,20 @@ test('touch joystick sends bounded movement and releases it',async({page})=>{
  await page.mouse.move(box.x+box.width-5,box.y+box.height/2);await page.mouse.down();await expect.poll(()=>moves.length).toBeGreaterThan(0);await page.mouse.up();const count=moves.length;await page.waitForTimeout(250);expect(moves.length).toBe(count);expect(moves.every(m=>Math.hypot(m.x,m.z)<=1.001)).toBe(true);
  await page.screenshot({path:'test-results/war-room-after-mobile.png'});
 });
+
+for(const viewport of [{width:1440,height:900},{width:390,height:844}])test(`presentation shows all operators without the explanation covering the scene at ${viewport.width}px`,async({page})=>{
+ await page.setViewportSize(viewport);const {calls}=await setup(page);
+ await page.getByRole('button',{name:'장애 대응 시연 시작',exact:true}).click();await page.getByRole('button',{name:'일시정지',exact:true}).click();
+ const workflow=page.locator('.wr-workflow');await workflow.locator('summary').first().click();await page.getByLabel('시연 단계',{exact:true}).selectOption('2');
+ await page.getByRole('button',{name:'자동 재생',exact:true}).click();
+ const operator=page.locator('[data-npc="1"]');const before=await operator.getAttribute('data-position');await expect.poll(()=>operator.getAttribute('data-position')).not.toBe(before);
+ await page.getByRole('button',{name:'일시정지',exact:true}).click();await page.getByRole('button',{name:'시연 시야 맞춤',exact:true}).click();
+ await expect.poll(async()=>{
+  const view=(await page.locator('.wr-viewport').boundingBox())!;
+  return (await page.locator('[data-npc]').all()).length===5&&(await Promise.all((await page.locator('[data-npc]').all()).map(async label=>{const box=await label.boundingBox();return !!box&&box.x>=view.x&&box.x+box.width<=view.x+view.width&&box.y>=view.y&&box.y+box.height<=view.y+view.height;}))).every(Boolean);
+ },{timeout:10000}).toBe(true);
+ const view=(await page.locator('.wr-viewport').boundingBox())!,panel=(await workflow.boundingBox())!;
+ expect(view.x>=panel.x+panel.width||view.y+view.height<=panel.y).toBe(true);
+ await page.screenshot({path:`test-results/war-room-wide-${viewport.width}.png`});
+ await page.getByRole('button',{name:'시연 종료',exact:true}).click();await expect(page.locator('main.wr')).toHaveAttribute('data-presentation','false');expect(calls).toEqual([]);
+});
