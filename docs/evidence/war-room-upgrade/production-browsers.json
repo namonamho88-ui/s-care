@@ -1,0 +1,56 @@
+{
+  "at": "2026-10-30T03:53:13.304Z",
+  "site": "https://s-care-mu.vercel.app",
+  "room": "release-mvufsymw",
+  "checks": [
+    {
+      "name": "three separate Chromium browsers show three real avatars",
+      "details": true
+    },
+    {
+      "name": "remote movement converges",
+      "details": true
+    },
+    {
+      "name": "secure per-tab guest cookie",
+      "details": true
+    },
+    {
+      "name": "anonymous incident access and approval rejected",
+      "details": true
+    },
+    {
+      "name": "authoritative resync snapshot",
+      "details": true
+    },
+    {
+      "name": "reconnect retains guest identity",
+      "details": true
+    },
+    {
+      "name": "same-browser extra tab has unique identity and leave propagates",
+      "details": true
+    },
+    {
+      "name": "mobile emulation touch movement reaches remote browser",
+      "details": true
+    },
+    {
+      "name": "seven-stage automatic local demo restores live state",
+      "details": true
+    },
+    {
+      "name": "pause restart and local demo produce no command requests",
+      "details": true
+    },
+    {
+      "name": "opaque production WebGL context",
+      "details": true
+    },
+    {
+      "name": "no browser runtime errors",
+      "details": true
+    }
+  ],
+  "errors": []
+}

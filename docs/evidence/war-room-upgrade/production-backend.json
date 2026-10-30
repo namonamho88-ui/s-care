@@ -1,0 +1,23 @@
+{
+  "at": "2026-10-30T03:49:37.878Z",
+  "site": "https://s-care-mu.vercel.app",
+  "room": "release-mvufoceu",
+  "checks": [
+    {
+      "name": "production WSS three peers",
+      "details": 3
+    },
+    {
+      "name": "new backend sync protocol",
+      "details": {
+        "snapshots": 4,
+        "revision": 3
+      }
+    },
+    {
+      "name": "movement isolated from workflow",
+      "details": true
+    }
+  ],
+  "errors": []
+}
