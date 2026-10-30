@@ -25,6 +25,7 @@ public class WarRoom {
   Map<String,Object> view(){return Map.of("id",id,"name",name,"role",role,"floor",floor,"x",x,"z",z,"direction",direction,"contributions",contributions);}
  }
  static class Room {
+  final CityTraining training=new CityTraining();
   String id,runId,incidentId,mappedNode,knowledgeId; long revision,started,completed; boolean busy; String operation="",error="";
   Map<String,Object> run,incident; long refreshed; final List<Map<String,Object>> chat=new ArrayList<>(); final Set<String> checks=new HashSet<>();
   Room(String id){this.id=id;}
@@ -54,9 +55,10 @@ public class WarRoom {
  }
  synchronized Guest connect(String ticket,String connection){cleanup();Ticket t=tickets.remove(hash(ticket));if(t==null||t.expires()<System.currentTimeMillis())throw Access.denied();Guest g=guests.get(t.guest());if(g==null)throw Access.denied();if(g.connection!=null)throw new IllegalStateException("이미 접속 중입니다. 이전 창을 닫고 재시도하세요.");g.connection=connection;g.lastSeen=System.currentTimeMillis();spawn(g);room(g.room).revision++;return g;}
  synchronized void disconnect(String connection){guests.values().stream().filter(g->connection.equals(g.connection)).forEach(g->{g.connection=null;g.lastSeen=System.currentTimeMillis();room(g.room).revision++;});}
- private void spawn(Guest g){for(int i=0;i<40;i++){double x=-8+(i%10)*1.6,z=4+Math.floor(i/10)*.75;if(free(g,x,z)){g.x=x;g.z=z;return;}}throw new IllegalStateException("입장 위치가 혼잡합니다.");}
+ private void spawn(Guest g){if(g.room.startsWith("city-"))for(int i=0;i<4;i++){double x=-7+i*4.5;if(free(g,x,3.4)){g.x=x;g.z=3.4;return;}}for(int i=0;i<40;i++){double x=-8+(i%10)*1.6,z=4+Math.floor(i/10)*.75;if(free(g,x,z)){g.x=x;g.z=z;return;}}throw new IllegalStateException("입장 위치가 혼잡합니다.");}
  private boolean free(Guest g,double x,double z){
   if(Math.abs(x)>9||Math.abs(z)>6)return false;
+  if(g.room.startsWith("city-")&&g.floor==1&&Math.abs(x)<2.8&&z>4.1&&z<5.5)return false;
   if(g.floor<=2 && z>-4.4&&z<-.4 && x>-7.5&&x<7.5)return false; // rack bays
   if(g.floor<=2 && z>-.7&&z<1.05&&x>-.6&&x<8.2)return false; // response consoles
   if(g.floor==3&&Math.abs(x)<3.3&&Math.abs(z)<1.8)return false; // war table
@@ -68,6 +70,9 @@ public class WarRoom {
   Guest g=guests.values().stream().filter(p->connection.equals(p.connection)).findFirst().orElseThrow(Access::denied);long now=System.currentTimeMillis();if(now>=g.expires)throw Access.denied();
   if(now-g.window>=1000){g.window=now;g.count=0;}if(++g.count>25)throw new IllegalArgumentException("초당 이벤트 한도 초과");g.lastSeen=now;Room r=room(g.room);
   switch(msg.path("type").asText()){
+   case "training" -> {r.training.apply(g.id,g.name,msg,now);}
+   case "profile" -> {String name=msg.path("name").asText().strip();if(name.isEmpty()||name.length()>16||name.codePoints().anyMatch(Character::isISOControl))throw new IllegalArgumentException("닉네임은 1~16자로 입력하세요.");if(guests.values().stream().anyMatch(p->p!=g&&p.room.equals(g.room)&&p.name.equals(name)))throw new IllegalArgumentException("같은 방에서 사용 중인 닉네임입니다.");g.name=name;}
+   case "city-visit" -> {String zone=msg.path("zone").asText();int i=CityTraining.ZONES.indexOf(zone);if(i<0)throw new IllegalArgumentException("구역 오류");g.floor=1;double[][] points={{-7,3.4},{-6,1.8},{-3,1.8},{0,1.8},{3,1.8},{6,1.8}};for(int slot=0;slot<25;slot++){double x=points[i][0]+(slot%5-2)*.8,z=points[i][1]+(slot/5)*.8;if(free(g,x,z)){g.x=x;g.z=z;break;}}}
    case "ping", "sync" -> {return;}
    case "move" -> {if(now-g.lastMove<75)return;double dx=finite(msg.path("x")),dz=finite(msg.path("z"));double length=Math.hypot(dx,dz);if(length>1.01)throw new IllegalArgumentException("이동 벡터 범위 초과");double dt=Math.min(.15,(now-g.lastMove)/1000.0);g.lastMove=now;double x=g.x+dx*3*dt,z=g.z+dz*3*dt;if(free(g,x,z)){g.x=x;g.z=z;}if(length>.01)g.direction=Math.atan2(dx,dz);}
    case "floor" -> {int f=msg.path("floor").asInt();if(f<1||f>4)throw new IllegalArgumentException("층 범위 오류");g.floor=f;spawn(g);}
@@ -82,6 +87,7 @@ public class WarRoom {
  synchronized Set<String> liveConnections(){cleanup();var ids=new HashSet<String>();for(Guest g:guests.values())if(g.connection!=null&&System.currentTimeMillis()-g.lastSeen<=45_000)ids.add(g.connection);return ids;}
  synchronized boolean live(String connection){return liveConnections().contains(connection);}
  synchronized String connectionRoom(String connection){return guests.values().stream().filter(g->connection.equals(g.connection)).map(g->g.room).findFirst().orElse(null);}
+ synchronized Map<String,Object> trainingState(String connection){Guest g=guests.values().stream().filter(p->connection.equals(p.connection)).findFirst().orElseThrow(Access::denied);return room(g.room).training.view(g.id,System.currentTimeMillis());}
  public synchronized Map<String,Object> state(String id){
   Room r=room(id);refreshIncident(r);Map<String,Object> out=new LinkedHashMap<>();out.put("type","state");out.put("room",id);out.put("revision",r.revision);out.put("fictional",true);out.put("players",guests.values().stream().filter(g->g.room.equals(id)&&g.connection!=null).map(Guest::view).toList());out.put("chat",List.copyOf(r.chat));out.put("busy",r.busy);out.put("operation",r.operation);out.put("error",r.error);out.put("started",r.started);out.put("completed",r.completed);out.put("incidentLinked",r.incidentId!=null);out.put("checks",r.checks.size());out.put("incident",r.incident);
   // Only dedicated synthetic runs are public. No incident records, tokens, audit actors or approval free text.
