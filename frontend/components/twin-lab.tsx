@@ -67,6 +67,7 @@ export default function TwinLab({api,isAdmin}:{api:(path:string,method?:string,b
  async function startDemo(){await perform('자동 데모 준비',async()=>{await create();setMode('DEMO');setTab(0);setPhase(0);setSeconds(0);setDemo(true);});}
  const stageAction=(label:string,op:string,body:Row={},nextTab?:number)=>void perform(label,async()=>{const r=await command(op,body);if(op==="reset"||op==="stop"){setPhase(-1);setDemo(false);}if(nextTab!==undefined)setTab(nextTab);return r;});
  return <div className={`twin-lab ${motion?"":"twin-reduced"}`}>
+  <nav aria-label="디지털 트윈 보기" className="twin-toolbar"><strong>기존 디지털 트윈 보기</strong><a href="/war-room">3D 워룸 보기 ↗</a></nav>
   <div className="twin-intro"><div><span className="twin-kicker">S-CARE 2.0 / SYNTHETIC LAB</span><h2>AI Digital Twin & Chaos Lab</h2><p>장애를 주입하고, 같은 조건에서 복구 전략을 검증하세요.</p><small>Synthetic Data 기반 모델 · 실제 운영 복제 아님 · 모든 변경은 가상 상태에만 적용</small></div><span className="twin-state"><Activity size={16}/>{stateNames[run?.status]||"실험 준비"}</span></div>
   {error&&<div role="alert" className="banner">{error}<Button variant="outline" onClick={()=>{setError('');if(run)void perform('새로고침',async()=>choose(await api(`/twin/runs/${run.id}`)));}}>최신 상태 확인</Button></div>}
   <div className="twin-toolbar">

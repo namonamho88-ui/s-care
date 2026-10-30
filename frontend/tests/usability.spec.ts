@@ -643,7 +643,7 @@ test('briefing shows verified fictional before and after without mutating the in
   await page.getByRole('button',{name:/INC-UI-RESOLVED/}).first().click();
   const brief=page.locator('.incident-briefing');await brief.locator('summary').first().click();
   await expect(brief).toContainText('오류율: 12.5% → 0.02%');await expect(brief).toContainText('3,200ms → 120ms');
-  await expect(brief).toContainText('아직 판단 전입니다');await expect(brief).toContainText('가상 지표 검증');expect(mutations).toEqual([]);
+  await expect(brief).toContainText('아직 판단 전입니다');await expect(brief).toContainText('시연 환경의 검증 기록이며 실제 운영 시스템은 변경하지 않았습니다');expect(mutations).toEqual([]);
 });
 
 test('briefing does not invent recovery results before verification and fits mobile',async({page})=>{

@@ -27,6 +27,8 @@ public class SecurityFilter extends OncePerRequestFilter {
  @Override protected void doFilterInternal(HttpServletRequest request,HttpServletResponse response,FilterChain chain)throws ServletException,IOException{
   response.setHeader("Cache-Control","no-store");
   String path=request.getRequestURI(),method=request.getMethod();
+  // Exact admission routes only: separate synthetic guest capability, never an account principal.
+  if((method.equals("POST")&&path.equals("/api/war-room/guest"))||(method.equals("GET")&&path.equals("/api/war-room/socket"))){chain.doFilter(request,response);return;}
   if(method.equals("GET")&&(path.equals("/api/health")||path.matches("/agents/[a-z]+/\\.well-known/agent-card\\.json"))||method.equals("POST")&&(path.equals("/api/auth/login")||path.equals("/api/auth/activate"))){chain.doFilter(request,response);if(method.equals("POST")&&response.getStatus()<400)userActivity();return;}
   if(path.equals("/api/demo/session")){if(!method.equals("POST")||!demo.gateway(request)){deny(response,403,"허용된 시연 게이트웨이가 아닙니다.");return;}chain.doFilter(request,response);if(response.getStatus()<400)userActivity();return;}
   if(path.equals("/api/demo/control")){if(!demo.control(request)){deny(response,403,"시연 설정 권한이 없습니다.");return;}chain.doFilter(request,response);return;}

@@ -467,6 +467,11 @@ export default function Home() {
   }, []);
   useEffect(() => {
     if (!auth) return;
+    const params = new URLSearchParams(window.location.search);
+    const requestedView = params.get('view');
+    if (requestedView && ['twin','knowledge'].includes(requestedView)) setView(requestedView);
+    const requestedIncident = params.get('incident');
+    if (requestedIncident && /^[A-Za-z0-9_-]{1,64}$/.test(requestedIncident)) { setSelected(requestedIncident); setDrawer(true); }
     Promise.all([api("/catalog"), api("/graph")])
       .then(([c, g]) => {
         setCatalog(c);
@@ -687,6 +692,7 @@ export default function Home() {
             <br /><span aria-live="off">{loginSeconds}초 경과</span></div>
           </div>}
           <Button className="w-full mt-5" disabled={busy}>{busy ? "연결 중…" : loginMode === "activate" ? "계정 활성화 & 시작" : "관제센터 시작"}<ArrowUpRight size={16} /></Button>
+          <a href="/war-room" className="small" style={{display:'block',marginTop:16}}>디지털 트윈 · 회원가입 없이 3D 워룸 입장 ↗</a>
           <p className="small" style={{ margin: "20px 0 0" }}>{loginMode === "admin" ? "첫 관리자 계정 생성 또는 계정 복구 시에만 토큰을 사용하세요." : loginMode === "activate" ? "관리자에게 받은 24시간 유효한 1회용 코드와 새 비밀번호(12~128자)를 입력하세요." : "계정이 없거나 비밀번호를 잊으셨다면 관리자에게 초대 코드 발급을 요청하세요."}<br />모든 업무 자산·담당자·장애·지표는 가상 데이터입니다.</p>
           {error && (
             <div role="alert" className="banner error mt-4">
