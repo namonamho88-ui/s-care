@@ -131,3 +131,22 @@
 @media(max-width:600px){.wr-immersive .wr-room-switch{max-width:min(143px,calc(100vw - 245px));min-width:0}.wr-immersive .wr-room-switch>svg{display:none}.wr-immersive .wr-brand{flex-shrink:0}}
 @media(max-width:600px){.wr-immersive .wr-dock{padding:7px 9px}.wr-immersive .wr-dock button{min-width:54px;padding:8px}.wr-immersive .wr-dock button span{font-size:10px}}
 .wr-immersive .wr-viewport{isolation:isolate;z-index:0}
+/* Opaque control surfaces leave the WebGL canvas crisp. No scene-wide filters. */
+.wr-immersive{background:#b8c7d4;--panel:#172b40;--mint:#a4d6e7;--muted:#b7c7d7}
+.wr-immersive .wr-brand,.wr-immersive .wr-room-switch,.wr-immersive .wr-top-actions,.wr-immersive .wr-dock,.wr-immersive .wr-incident-pill{background:#183149;backdrop-filter:none;border-color:#658095;border-radius:14px}
+.wr-immersive .wr-panel,.wr-immersive .wr-drawer{background:#172b40;backdrop-filter:none}
+.wr-immersive .wr-name{background:#f7fafc;color:#1c334a;border-color:#9caebf;text-shadow:none}
+.wr-immersive .wr-name.self{color:#173a5d;border-color:#246696}
+.wr-immersive .wr-joystick{backdrop-filter:none;background:#284862}
+.wr-workflow{position:absolute;z-index:4;left:24px;top:145px;width:300px;max-height:calc(100dvh - 320px);overflow:auto;padding:18px;background:#f5f8fc;color:#223b53;border:1px solid #9aafc1;border-radius:14px;box-shadow:0 8px 24px #1c314526;font-size:12px}
+.wr-workflow-title{display:flex;flex-direction:column;gap:6px}.wr-workflow-title>span{font-size:10px;letter-spacing:1px;color:#526e87}.wr-workflow-title>strong{font-size:19px}
+.wr-stage-track{display:flex;justify-content:space-between;margin:14px 0}.wr-stage-track>span{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#dce4ec;color:#526b82}.wr-stage-track .current{background:#235e88;color:#fff}
+.wr-workflow p{line-height:1.65;margin:8px 0}.wr-workflow small{display:block;color:#4f6377;font-size:10px;line-height:1.6}.wr-workflow label{display:block;margin-top:10px}.wr-workflow progress{width:100%;accent-color:#287f84}.wr-workflow .wr-playback{display:flex;flex-wrap:wrap;gap:6px;margin-top:13px}
+.wr-immersive .wr-workflow button{background:#e1eaf2;color:#234665;border:1px solid #b0c1d0;font-size:11px;min-height:34px;padding:7px 10px;border-radius:8px}.wr-immersive .wr-workflow button:hover{background:#d1e0ec}.wr-immersive .wr-workflow select{background:#fff;color:#234665;border-color:#b0c1d0;font-size:12px;padding:6px;margin:4px 0;width:100%}
+.wr-workflow details{margin-top:10px}.wr-workflow summary{cursor:pointer;font-size:11px}.wr-immersive:not([data-panel=none]) .wr-workflow{display:none}
+.wr-workflow{--text:#223b53;--muted:#526b82;--mint:#235e88}.wr-workflow summary,.wr-workflow label{color:#37566f}.wr-operations-monitor span{word-break:keep-all}
+.wr-npc-label{white-space:nowrap;background:#203d53;color:#fff;padding:4px 8px;border:1px solid #9eb6c9;border-radius:5px;font-size:10px}
+.wr-operations-monitor{background:#112e45;color:#e4f2fa;border:5px solid #42586b;padding:12px 28px;min-width:240px;display:flex;flex-direction:column;gap:7px;text-align:center}.wr-operations-monitor strong{font-size:22px}.wr-operations-monitor small,.wr-operations-monitor span{font-size:10px;letter-spacing:1px}
+.wr-fault-tag{white-space:nowrap;background:#913a38;color:white;padding:5px 9px;border-radius:5px;font-size:11px}
+@media(max-width:900px){.wr-workflow{left:14px;top:126px;width:255px;padding:12px}.wr-workflow-title>strong{font-size:16px}}
+@media(max-width:600px){.wr-workflow{left:12px;right:12px;top:116px;width:auto;max-height:185px;padding:10px 12px}.wr-workflow-title{flex-direction:row;align-items:center;gap:10px}.wr-workflow-title>strong{font-size:14px}.wr-workflow-title>span{font-size:8px}.wr-stage-track{margin:8px 0}.wr-stage-track>span{width:19px;height:19px;font-size:9px}.wr-workflow p{font-size:10px;margin:4px 0}.wr-workflow small{font-size:9px}.wr-workflow .wr-playback{margin-top:6px}.wr-immersive .wr-workflow button{font-size:10px;min-height:30px}}

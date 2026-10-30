@@ -30,11 +30,11 @@ async function setup(page:Page,admin=false){
    if(m.type==='chat'){state.chat.push({id:String(Date.now()),name:'게스트-가람',text:m.text,at:Date.now()});publish(state);}
   });
  });
- await page.goto('/war-room');await expect(page.getByRole('button',{name:'3D 워룸 입장'})).toBeEnabled();await page.getByRole('button',{name:'3D 워룸 입장'}).click();await expect(page.getByRole('heading',{name:'Digital Twin War Room'})).toBeVisible();return {calls,moves};
+ await page.goto('/war-room');await expect(page.getByRole('button',{name:'3D 워룸 입장'})).toBeEnabled();await page.getByRole('button',{name:'3D 워룸 입장'}).click();await expect(page.getByRole('heading',{name:'Digital Twin War Room'})).toBeVisible();return {calls,moves,state,publish:(value:any)=>publish(value)};
 }
 test('guest sees real 3D scene, shared state, chat and never admin controls',async({page})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.setViewportSize({width:1512,height:1100});await setup(page);
- await expect(page.locator('.wr-viewport canvas')).toBeVisible();await expect(page.locator('.wr-name.self')).toContainText('나');
+ await expect(page.locator('.wr-viewport canvas')).toBeVisible();expect(await page.locator('.wr-viewport canvas').evaluate((canvas:HTMLCanvasElement)=>canvas.getContext('webgl2')?.getContextAttributes()?.alpha)).toBe(false);await expect(page.locator('.wr-name.self')).toContainText('나');
  await expect(page.getByText('3D 화면을 시작하지 못했습니다.')).toHaveCount(0);
  await page.getByRole('button',{name:'대화',exact:true}).click();await page.getByLabel('팀 채팅 메시지').fill('<script>공동 확인</script>');await page.getByRole('button',{name:'전송',exact:true}).click();await expect(page.getByRole('log')).toContainText('<script>공동 확인</script>');
  await page.getByRole('button',{name:'열린 패널 닫기'}).click();await page.getByRole('button',{name:'참여자 2명'}).click();await page.getByLabel('나의 시연 역할').selectOption('관리자 시연');await expect(page.getByRole('button',{name:'시나리오 시작',exact:true})).toHaveCount(0);
@@ -65,4 +65,45 @@ test('space starts uncluttered and click movement sends bounded inputs; panels s
  await page.keyboard.press('Escape');await expect(page.locator('.wr-chat')).toBeHidden();
  expect(await page.evaluate(()=>document.documentElement.scrollHeight<=innerHeight)).toBe(true);
  await page.screenshot({path:'test-results/war-room-immersive.png',fullPage:true});
+});
+
+
+test('seven-stage local presentation pauses, restarts, restores live state and never calls commands',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});const {calls}=await setup(page);
+ const workflow=page.locator('.wr-workflow');await expect(workflow).toHaveAttribute('data-source','twin');
+ await page.getByRole('button',{name:'장애 대응 시연 시작',exact:true}).click();
+ await expect(workflow).toHaveAttribute('data-stage','NORMAL');
+ await workflow.locator('summary').first().click();await page.getByLabel('시연 속도',{exact:true}).selectOption('4');
+ await expect(workflow).toHaveAttribute('data-stage','FAULT',{timeout:10000});await expect(page.locator('[data-fault="DATABASE"]')).toBeVisible();
+ await page.getByRole('button',{name:'일시정지',exact:true}).click();const pausedStage=await workflow.getAttribute('data-stage');await page.waitForTimeout(2300);await expect(workflow).toHaveAttribute('data-stage',pausedStage!);
+ await page.getByLabel('시연 단계',{exact:true}).selectOption('2');await page.getByRole('button',{name:'자동 재생',exact:true}).click();
+ await expect(workflow).toHaveAttribute('data-stage','ANALYSIS');await expect(page.locator('[data-npc="1"]')).toBeAttached();
+ await expect(workflow).toHaveAttribute('data-stage','APPROVAL',{timeout:10000});
+ await expect(workflow).toHaveAttribute('data-stage','RECOVERY',{timeout:10000});await expect(workflow.getByText('시연 연출 진행',{exact:true})).toBeVisible();
+ await page.getByLabel('시연 단계',{exact:true}).selectOption('4');await page.getByLabel('시연 속도',{exact:true}).selectOption('1');await page.getByRole('button',{name:'자동 재생',exact:true}).click();await page.waitForTimeout(5300);await page.getByRole('button',{name:'일시정지',exact:true}).click();await page.waitForTimeout(300);await page.screenshot({path:'test-results/war-room-recovery.png'});await page.getByLabel('시연 속도',{exact:true}).selectOption('4');await page.getByRole('button',{name:'자동 재생',exact:true}).click();
+ await expect(workflow).toHaveAttribute('data-stage','VERIFY',{timeout:10000});
+ await expect(workflow).toHaveAttribute('data-stage','COMPLETE',{timeout:10000});
+ await expect(workflow).toHaveAttribute('data-source','twin',{timeout:10000});expect(calls).toEqual([]);
+ await page.getByRole('button',{name:'장애 대응 시연 시작',exact:true}).click();await page.getByRole('button',{name:'재시작',exact:true}).click();await expect(workflow).toHaveAttribute('data-stage','NORMAL');
+ await page.getByRole('button',{name:'시연 종료',exact:true}).click();await expect(workflow).toHaveAttribute('data-source','twin');
+});
+
+test('incident snapshots reject stale events, preserve failure and animate assigned NPC',async({page})=>{
+ await page.setViewportSize({width:1440,height:900});const {state,publish}=await setup(page);
+ const linked=(stage:string,revision:number)=>({...state,revision,incident:{stage,status:stage,node:'db-primary',version:revision,eventId:revision,approved:stage==='RECOVERY',completedSteps:[],totalSteps:6,aiSource:'DEMO'}});
+ publish(linked('FAULT',10));await expect(page.locator('[data-fault="DATABASE"]')).toBeVisible();
+ publish(linked('ANALYSIS',11));await expect(page.locator('.wr-workflow')).toHaveAttribute('data-stage','ANALYSIS');
+ const npc=page.locator('[data-npc="1"]');await expect(npc).toBeAttached();const position=await npc.getAttribute('data-position');await expect.poll(()=>npc.getAttribute('data-position')).not.toBe(position);
+ publish(linked('APPROVAL',12));await expect(page.locator('.wr-workflow')).toHaveAttribute('data-stage','APPROVAL');
+ publish(linked('FAULT',9));await page.waitForTimeout(250);await expect(page.locator('.wr-workflow')).toHaveAttribute('data-stage','APPROVAL');
+ publish(linked('RECOVERY',13));await expect(page.locator('.wr-workflow')).toHaveAttribute('data-stage','RECOVERY');
+ publish(linked('FAILED',14));await expect(page.locator('.wr-workflow')).toHaveAttribute('data-stage','FAILED');await expect(page.locator('[data-fault="DATABASE"]')).toBeVisible();
+ publish(linked('COMPLETE',15));await expect(page.locator('.wr-workflow')).toHaveAttribute('data-stage','COMPLETE');await expect(page.locator('[data-fault]')).toHaveCount(0);
+ await page.screenshot({path:'test-results/war-room-after.png'});
+});
+
+test('touch joystick sends bounded movement and releases it',async({page})=>{
+ await page.setViewportSize({width:390,height:844});const {moves}=await setup(page);const joystick=page.getByRole('group',{name:'터치 이동 조이스틱'});const box=(await joystick.boundingBox())!;
+ await page.mouse.move(box.x+box.width-5,box.y+box.height/2);await page.mouse.down();await expect.poll(()=>moves.length).toBeGreaterThan(0);await page.mouse.up();const count=moves.length;await page.waitForTimeout(250);expect(moves.length).toBe(count);expect(moves.every(m=>Math.hypot(m.x,m.z)<=1.001)).toBe(true);
+ await page.screenshot({path:'test-results/war-room-after-mobile.png'});
 });
