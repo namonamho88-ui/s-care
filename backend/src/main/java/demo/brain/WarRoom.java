@@ -26,7 +26,7 @@ public class WarRoom {
  }
  static class Room {
   String id,runId,incidentId,mappedNode,knowledgeId; long revision,started,completed; boolean busy; String operation="",error="";
-  Map<String,Object> run; final List<Map<String,Object>> chat=new ArrayList<>(); final Set<String> checks=new HashSet<>();
+  Map<String,Object> run,incident; long refreshed; final List<Map<String,Object>> chat=new ArrayList<>(); final Set<String> checks=new HashSet<>();
   Room(String id){this.id=id;}
  }
  public WarRoom(Store store,TwinLab lab,KnowledgeCases knowledge,@Value("${WAR_ROOM_ENABLED:false}") boolean enabled){this.store=store;this.lab=lab;this.knowledge=knowledge;this.enabled=enabled;}
@@ -58,6 +58,7 @@ public class WarRoom {
  private boolean free(Guest g,double x,double z){
   if(Math.abs(x)>9||Math.abs(z)>6)return false;
   if(g.floor<=2 && z>-4.4&&z<-.4 && x>-7.5&&x<7.5)return false; // rack bays
+  if(g.floor<=2 && z>-.7&&z<1.05&&x>-.6&&x<8.2)return false; // response consoles
   if(g.floor==3&&Math.abs(x)<3.3&&Math.abs(z)<1.8)return false; // war table
   if(g.floor==4&&Math.abs(x)<7.5&&z>-3.5&&z<-.5)return false; // all five control consoles
   return guests.values().stream().noneMatch(p->p!=g&&p.connection!=null&&p.room.equals(g.room)&&p.floor==g.floor&&Math.hypot(p.x-x,p.z-z)<.65);
@@ -67,7 +68,7 @@ public class WarRoom {
   Guest g=guests.values().stream().filter(p->connection.equals(p.connection)).findFirst().orElseThrow(Access::denied);long now=System.currentTimeMillis();if(now>=g.expires)throw Access.denied();
   if(now-g.window>=1000){g.window=now;g.count=0;}if(++g.count>25)throw new IllegalArgumentException("초당 이벤트 한도 초과");g.lastSeen=now;Room r=room(g.room);
   switch(msg.path("type").asText()){
-   case "ping" -> {return;}
+   case "ping", "sync" -> {return;}
    case "move" -> {if(now-g.lastMove<75)return;double dx=finite(msg.path("x")),dz=finite(msg.path("z"));double length=Math.hypot(dx,dz);if(length>1.01)throw new IllegalArgumentException("이동 벡터 범위 초과");double dt=Math.min(.15,(now-g.lastMove)/1000.0);g.lastMove=now;double x=g.x+dx*3*dt,z=g.z+dz*3*dt;if(free(g,x,z)){g.x=x;g.z=z;}if(length>.01)g.direction=Math.atan2(dx,dz);}
    case "floor" -> {int f=msg.path("floor").asInt();if(f<1||f>4)throw new IllegalArgumentException("층 범위 오류");g.floor=f;spawn(g);}
    case "role" -> {String role=msg.path("role").asText();if(!Set.of("분석","인프라","대응","검증","관리자 시연").contains(role))throw new IllegalArgumentException("역할 오류");g.role=role;}
@@ -82,17 +83,38 @@ public class WarRoom {
  synchronized boolean live(String connection){return liveConnections().contains(connection);}
  synchronized String connectionRoom(String connection){return guests.values().stream().filter(g->connection.equals(g.connection)).map(g->g.room).findFirst().orElse(null);}
  public synchronized Map<String,Object> state(String id){
-  Room r=room(id);Map<String,Object> out=new LinkedHashMap<>();out.put("type","state");out.put("room",id);out.put("revision",r.revision);out.put("fictional",true);out.put("players",guests.values().stream().filter(g->g.room.equals(id)&&g.connection!=null).map(Guest::view).toList());out.put("chat",List.copyOf(r.chat));out.put("busy",r.busy);out.put("operation",r.operation);out.put("error",r.error);out.put("started",r.started);out.put("completed",r.completed);out.put("incidentLinked",r.incidentId!=null);out.put("checks",r.checks.size());
+  Room r=room(id);refreshIncident(r);Map<String,Object> out=new LinkedHashMap<>();out.put("type","state");out.put("room",id);out.put("revision",r.revision);out.put("fictional",true);out.put("players",guests.values().stream().filter(g->g.room.equals(id)&&g.connection!=null).map(Guest::view).toList());out.put("chat",List.copyOf(r.chat));out.put("busy",r.busy);out.put("operation",r.operation);out.put("error",r.error);out.put("started",r.started);out.put("completed",r.completed);out.put("incidentLinked",r.incidentId!=null);out.put("checks",r.checks.size());out.put("incident",r.incident);
   // Only dedicated synthetic runs are public. No incident records, tokens, audit actors or approval free text.
   var run=new LinkedHashMap<String,Object>();if(r.run!=null)for(String k:List.of("id","version","status","current","baseline","faultSnapshot","propagation","analysis","generation","strategies","results","recommendation","selectedStrategy"))if(r.run.containsKey(k))run.put(k,r.run.get(k));
   if(r.run==null){run.put("status","NORMAL");run.put("current",TwinEngine.initial(42));}out.put("run",run);out.put("knowledgeId",r.knowledgeId);return out;
  }
+ // Explicit administrator mapping publishes only a coarse, anonymous visualization.
+ // Titles, observations, people, approval text and AI evidence remain behind existing auth.
+ private void refreshIncident(Room r){
+  if(r.incidentId==null||System.currentTimeMillis()-r.refreshed<1000)return;
+  r.refreshed=System.currentTimeMillis();
+  Map<String,Object> next=store.tx(()->{
+   var i=store.one("SELECT status,version,deleted_at,mode,decision_json FROM incidents WHERE id=? FOR UPDATE",r.incidentId);
+   String status=i.get("status").toString();boolean stopped=i.get("deleted_at")!=null||status.equals("CANCELLED");
+   var events=store.db.queryForList("SELECT id,stage,state FROM events WHERE incident_id=? ORDER BY id",r.incidentId);
+   boolean approved=store.db.queryForObject("SELECT COUNT(*) FROM approvals WHERE incident_id=? AND approved=TRUE",Integer.class,r.incidentId)>0;
+   var latest=new LinkedHashMap<String,String>();for(var e:events)latest.put(e.get("stage").toString(),e.get("state").toString());
+   String stage=switch(status){case "REGISTERED"->"FAULT";case "ANALYZING","NEEDS_REVIEW"->"ANALYSIS";case "WAITING_APPROVAL","REJECTED"->"APPROVAL";case "RECOVERING"->approved?(latest.containsKey("VERIFY")?"VERIFY":"RECOVERY"):"APPROVAL";case "RESOLVED","CLOSED"->approved&&"COMPLETED".equals(latest.get("VERIFY"))?"COMPLETE":"VERIFY";case "FAILED"->"FAILED";default->"FAULT";};
+   if(stopped)stage="STOPPED";
+   var steps=List.of("RECOVERY","MCP_ACTION","VERIFY","REPORT","SKILL_DRAFT","HISTORY");
+   var completed=steps.stream().filter(s->"COMPLETED".equals(latest.get(s))).toList();
+   var decision=store.json.valueToTree(store.decode(i.get("decision_json")));
+   var value=new LinkedHashMap<String,Object>();value.put("status",status);value.put("stage",stage);value.put("node",r.mappedNode);value.put("version",i.get("version"));value.put("eventId",events.isEmpty()?0:events.get(events.size()-1).get("id"));value.put("approved",approved);value.put("completedSteps",completed);value.put("totalSteps",steps.size());value.put("timeline",events.stream().skip(Math.max(0,events.size()-20)).toList());value.put("aiSource",decision==null||decision.isNull()?"PENDING":decision.path("fallback").asBoolean()?"MOCK_FALLBACK":decision.path("simulated").asBoolean()?"DEMO":"MODEL_RESPONSE");return value;
+  });
+  if(!Objects.equals(r.incident,next)){r.incident=next;r.revision++;}
+ }
  public synchronized Map<String,Object> context(String id){enabled();admin();Room r=room(id);var out=new LinkedHashMap<String,Object>();out.put("incidentId",r.incidentId);out.put("mappedNode",r.mappedNode);return out;}
  public Map<String,Object> command(String id,String op,Map<String,Object> body){
   enabled();admin();Room r;
-  synchronized(this){r=room(id);if(r.busy)throw new IllegalStateException("이 방에서 작업이 실행 중입니다.");if(!(body.get("revision") instanceof Number n)||n.longValue()!=r.revision)throw new IllegalStateException("상태가 변경되었습니다. 최신 상태에서 다시 실행하세요.");r.busy=true;r.operation=op;r.error="";r.revision++;}
+  synchronized(this){r=room(id);if(r.busy)throw new IllegalStateException("이 방에서 작업이 실행 중입니다.");if(r.incidentId!=null&&!Set.of("link","unlink").contains(op))throw new IllegalStateException("연결 장애는 기존 장애 화면에서 처리하세요. 독립 실험은 연결 해제 후 가능합니다.");if(!(body.get("revision") instanceof Number n)||n.longValue()!=r.revision)throw new IllegalStateException("상태가 변경되었습니다. 최신 상태에서 다시 실행하세요.");r.busy=true;r.operation=op;r.error="";r.revision++;}
   try{
    if(op.equals("link")){String incident=Objects.toString(body.get("incidentId"),"");String node=Objects.toString(body.get("node"),"");TwinEngine.node(TwinEngine.initial(42),node);var i=store.incident(incident);if(i.get("deleted_at")!=null)throw new IllegalArgumentException("삭제된 장애입니다.");synchronized(this){r.incidentId=incident;r.mappedNode=node;persist(r);}store.audit(incident,Access.actor(),"WAR_ROOM_LINK",Map.of("room",id,"node",node,"basis","관리자 지정 시연 매핑; 자동 온톨로지 추론 아님"));}
+   else if(op.equals("unlink")){synchronized(this){r.incidentId=null;r.mappedNode=null;r.incident=null;r.refreshed=0;persist(r);}}
    else if(op.equals("knowledge")){
     if(r.run==null||!"APPROVED".equals(r.run.get("status")))throw new IllegalStateException("승인한 가상 검증 결과만 지식 초안으로 저장할 수 있습니다.");
     if(r.knowledgeId==null){String skill=store.tx(()->{var draft=store.json.valueToTree(knowledge.create(Map.of("title","워룸 합성 복구 기록 · "+r.runId,"type","APPLICATION","conditions","독립 합성 TwinEngine 실험 "+r.runId,"symptoms",store.encode(r.run.get("analysis")),"checks",store.encode(Map.of("runId",r.runId,"strategyId",r.run.get("selectedStrategy"),"status",r.run.get("status"))),"solution","승인 전략: "+r.run.get("selectedStrategy")+". 원본 실험 보고서에서 단계별 결과와 잔여 위험을 확인하세요.","cautions","합성 모델 결과. 운영 성공률이나 AI 정확도가 아닙니다. 관리자 검토 후에만 검색에 공개됩니다.","assetIds",List.of())));String value=draft.path("id").asText();store.db.update("UPDATE war_rooms SET knowledge_id=?,updated_at=? WHERE id=?",value,Store.now(),r.id);return value;});synchronized(this){r.knowledgeId=skill;}}

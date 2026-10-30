@@ -93,4 +93,31 @@ class WarRoomIntegrationTest {
    assertThat(peer.await(m->!m.path("knowledgeId").isMissingNode()&&!m.path("knowledgeId").isNull()).path("run").path("status").asText()).isEqualTo("APPROVED");
   }
  }
+ @Test void linkedIncidentUsesApprovalAndVerificationEvidenceAndResyncsLatePeers()throws Exception{
+  String id="INC-WAR-LINK";var asset=store.one("SELECT id,owner_id FROM assets ORDER BY id LIMIT 1");
+  store.db.update("INSERT INTO incidents(id,title,asset_id,owner_id,type,severity,status,mode,provider,observations,created_at) VALUES (?,?,?,?,'DATABASE','P2','REGISTERED','DEMO','MOCK',?,?)",id,"private title",asset.get("id"),asset.get("owner_id"),"private observations",Store.now());
+  Map g=join("linked-flow");try(Peer peer=new Peer(g.get("ticket").toString())){
+   peer.await(m->m.path("type").asText().equals("state"));ok("linked-flow","link",Map.of("incidentId",id,"node","db-primary"));
+   var fault=peer.await(m->m.path("incident").path("stage").asText().equals("FAULT"));assertThat(fault.toString()).doesNotContain("private title","private observations",id);
+   assertThat(command("linked-flow","decision",Map.of("approved",true),true).getStatusCode().is4xxClientError()).isTrue();
+   store.db.update("UPDATE incidents SET status='RECOVERING',version=version+1 WHERE id=?",id);
+   peer.await(m->m.path("incident").path("stage").asText().equals("APPROVAL"));
+   store.db.update("INSERT INTO approvals VALUES (?,TRUE,?,?,?)",id,"private actor","private reason",Store.now());
+   peer.await(m->m.path("incident").path("stage").asText().equals("RECOVERY"));
+   store.event(id,"VERIFY","RUNNING","private evidence",Map.of());
+   peer.await(m->m.path("incident").path("stage").asText().equals("VERIFY"));
+   store.db.update("UPDATE incidents SET status='FAILED',version=version+1 WHERE id=?",id);store.event(id,"VERIFY","FAILED","private failure",Map.of());
+   peer.await(m->m.path("incident").path("stage").asText().equals("FAILED"));
+   store.db.update("UPDATE incidents SET status='RESOLVED',version=version+1 WHERE id=?",id);
+   // A terminal status without verification proof is never green.
+   peer.await(m->m.path("incident").path("stage").asText().equals("VERIFY"));
+   store.event(id,"VERIFY","COMPLETED","private proof",Map.of());
+   var complete=peer.await(m->m.path("incident").path("stage").asText().equals("COMPLETE"));assertThat(complete.toString()).doesNotContain("private reason","private actor","private proof");
+   try(Peer late=new Peer(join("linked-flow").get("ticket").toString())){
+    var state=late.await(m->m.path("type").asText().equals("state"));assertThat(state.path("incident").path("stage").asText()).isEqualTo("COMPLETE");
+    late.send(Map.of("type","sync"));assertThat(late.await(m->m.path("type").asText().equals("state")).path("incident")).isEqualTo(state.path("incident"));
+   }
+   peer.await(m->m.path("players").size()==1);ok("linked-flow","unlink",Map.of());assertThat(rooms.state("linked-flow").get("incident")).isNull();
+  }
+ }
 }

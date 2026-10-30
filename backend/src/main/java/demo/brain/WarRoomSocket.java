@@ -22,7 +22,7 @@ public class WarRoomSocket extends TextWebSocketHandler {
  }
  @Override protected void handleTextMessage(WebSocketSession raw,TextMessage message)throws Exception{
   Client c=clients.get(raw.getId());if(c==null)return;
-  try{var msg=store.json.readTree(message.getPayload());if(rooms.connectionRoom(raw.getId())==null){if(!"join".equals(msg.path("type").asText()))throw Access.denied();var g=rooms.connect(msg.path("ticket").asText(),raw.getId());send(c,Map.of("type","welcome","id",g.id));}else rooms.input(raw.getId(),msg);}
+  try{var msg=store.json.readTree(message.getPayload());if(rooms.connectionRoom(raw.getId())==null){if(!"join".equals(msg.path("type").asText()))throw Access.denied();var g=rooms.connect(msg.path("ticket").asText(),raw.getId());send(c,Map.of("type","welcome","id",g.id));}else {rooms.input(raw.getId(),msg);if("sync".equals(msg.path("type").asText()))sent.remove(raw.getId());}}
   catch(Exception e){send(c,Map.of("type","error","message","요청이 거부되었습니다. 입력 또는 접속 상태를 확인하세요."));close(c);}
  }
  private void send(Client c,Object value)throws Exception{c.session().sendMessage(new TextMessage(store.encode(value)));}
