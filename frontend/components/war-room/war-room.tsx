@@ -54,7 +54,7 @@ export default function WarRoom(){
   </header>
   <div className="wr-notice"><ShieldCheck size={12}/> 합성 데이터로 함께 연습하는 공간 · 실제 시스템은 변경되지 않습니다.</div>
   {!state?<section className="wr-lobby">
-   <div className="wr-lobby-copy"><div className="wr-eyebrow"><Radio size={14}/> A LITTLE SPACE, A BETTER TEAM</div><h1>잠깐 모여,<br/>함께 해결해요.</h1><p>내 캐릭터로 둘러보고, 동료와 이야기하고.<br/>작은 데이터센터에서 시작하는 장애 대응 연습.</p><div className="wr-lobby-features"><span><Move/>눌러서 이동</span><span><Users/>함께 둘러보기</span><span><MessageSquare/>가볍게 대화</span></div>
+   <div className="wr-lobby-copy"><div className="wr-eyebrow"><Radio size={14}/> 실시간 협업 관제센터</div><h1>3D 장애 대응<br/>워룸</h1><p>동료와 같은 공간에서 장애를 확인하고,<br/>분석부터 복구까지 함께 살펴보세요.</p><div className="wr-lobby-features"><span><Users/>실시간 동료 접속</span><span><Activity/>7단계 대응 시연</span><span><MessageSquare/>팀 채팅</span></div>
     <form onSubmit={e=>{e.preventDefault();void room.join(roomName);}}><label htmlFor="wr-room">함께 입장할 방</label><div><input id="wr-room" value={roomName} maxLength={32} pattern="[a-z0-9\-]+" onChange={e=>setRoomName(e.target.value)} required/><button disabled={webgl===false||room.status==='입장 중'}>3D 워룸 입장 <ArrowUpRight size={18}/></button></div><small>회원가입 없이 자동 게스트로 입장합니다. 같은 방 이름을 공유하세요.</small></form>
     {(room.error||error)&&<p role="alert" className="wr-error">{room.error||error}</p>}{webgl===false&&<p role="alert">이 환경은 WebGL 2를 지원하지 않습니다. <a href="/?view=twin">기존 디지털 트윈 보기</a></p>}
    </div><div className="wr-lobby-building" aria-label="4층 디지털 트윈 건물 구성">{[4,3,2,1].map(f=><div key={f} className={`wr-blueprint floor-${f}`}><span>0{f}</span><strong>{FLOORS[f-1]}</strong><i/><i/><i/><i/><small>{['INFRASTRUCTURE','DEPENDENCIES','COLLABORATION','INTELLIGENCE'][f-1]}</small></div>)}</div>

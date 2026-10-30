@@ -107,24 +107,31 @@
 .wr-immersive .wr-wall-board{color:#e4edce;background:#335d4f;border-color:#bed0b0;border-radius:12px;padding:18px 32px}
 .wr-immersive .wr-wall-board strong{font-size:17px;letter-spacing:0}
 .wr-immersive .wr-wall-board span,.wr-immersive .wr-wall-board small{font-size:10px;color:#bdd2b6}
-.wr-welcome{background:radial-gradient(ellipse at 75% 35%,#456b57 0,#203e35 45%,#162e29 100%);--mint:#c3e5b8;--muted:#b4c9b8}
-.wr-welcome .wr-header{background:none;border:0;height:88px}
-.wr-welcome .wr-back{margin-left:auto}
-.wr-welcome .wr-brand>span{background:#6c9c7b;color:#eef5dd;border:0}
-.wr-welcome .wr-notice{background:none;color:#b4c7b5;font-size:11px}
-.wr-welcome .wr-lobby{min-height:calc(100dvh - 120px);padding-top:45px;padding-bottom:65px}
-.wr-welcome .wr-lobby h1{font-size:58px;font-weight:500;color:#f3f0df;letter-spacing:-2.5px}
-.wr-welcome .wr-lobby-copy>p{color:#c5d3bf;font-size:15px}
-.wr-welcome .wr-lobby-features{color:#c6d7bc}
-.wr-welcome .wr-lobby form input{background:#15352f;border-color:#8aab8a;color:#eef1de;border-radius:15px;font-size:14px}
-.wr-welcome .wr-lobby form button{background:#d0e5b9;border-color:#d0e5b9;color:#294c36;border-radius:15px}
-.wr-welcome .wr-lobby form label,.wr-welcome .wr-lobby form small{color:#bdcfb6}
-.wr-welcome .wr-lobby-building{transform:rotate(-7deg) skewY(7deg);gap:20px}
-.wr-welcome .wr-blueprint{background:linear-gradient(140deg,#93bda2,#4d7a62);border-color:#c1d1aa;border-radius:15px;box-shadow:12px 14px 0 #264f40,12px 15px 0 #9fba91}
-.wr-welcome .wr-blueprint>strong{color:#f1f0d8;font-size:14px}
-.wr-welcome .wr-blueprint>span{color:#e5ebc2}
-.wr-welcome .wr-blueprint small{color:#d2ddbd}
-.wr-welcome .wr-blueprint>i{border-color:#dfebc7;background:#315a4b;box-shadow:3px 4px #264737;border-radius:7px}
+.wr-welcome{background:#f3f6fb;color:#152c45;--mint:#1558c0;--muted:#4a6078;--line:#b9c9da}
+.wr-welcome .wr-header{background:#fff;border-bottom:1px solid #d2dce7;height:80px}
+.wr-welcome .wr-brand{color:#152c45!important}.wr-welcome .wr-brand small{color:#4a6078}
+.wr-welcome .wr-back{margin-left:auto;color:#234c78;background:#f3f6fb;white-space:nowrap;flex-shrink:0;font-size:12px;width:auto}
+.wr-welcome .wr-brand>span{background:#1558c0;color:#fff;border:0;font-style:normal}
+.wr-welcome .wr-notice{background:#e5edf7;color:#334f6d;font-size:12px;line-height:1.6}
+.wr-welcome .wr-notice svg{flex-shrink:0}
+.wr-welcome .wr-lobby{min-height:calc(100dvh - 120px);padding-top:48px;padding-bottom:48px;gap:64px}
+.wr-welcome .wr-lobby h1{font-size:58px;font-weight:800;color:#102b49;letter-spacing:-2px;line-height:1.17;margin:20px 0}
+.wr-welcome .wr-lobby-copy>p{color:#40556d;font-size:16px;line-height:1.8;word-break:keep-all}
+.wr-welcome .wr-eyebrow{font-size:12px;letter-spacing:1px;font-weight:700;color:#1558c0}
+.wr-welcome .wr-lobby-features{color:#284767;gap:18px;flex-wrap:wrap;margin:25px 0;font-size:12px}
+.wr-welcome .wr-lobby form{max-width:510px;padding:22px;background:#fff;border:1px solid #bdccdd;border-radius:14px}
+.wr-welcome .wr-lobby form input{background:#fff;border:1px solid #8199b3;color:#152c45;border-radius:8px;font-size:16px;min-height:52px;min-width:0;width:100%}
+.wr-welcome .wr-lobby form button{background:#1558c0;border-color:#1558c0;color:#fff;border-radius:8px;font-size:15px;font-weight:700;min-height:52px;white-space:nowrap}
+.wr-welcome .wr-lobby form button:hover:not(:disabled){background:#0c4095}
+.wr-welcome .wr-lobby form label{color:#233d59;font-size:13px;font-weight:700}
+.wr-welcome .wr-lobby form small{color:#4a6078;font-size:12px;line-height:1.7}
+.wr-welcome .wr-lobby-building{transform:none;gap:14px;padding:0;max-width:460px;width:100%;justify-self:center}
+.wr-welcome .wr-lobby-building:before{display:none}
+.wr-welcome .wr-blueprint{background:#fff;border:1px solid #aebfd1;border-left:5px solid #1558c0;border-radius:10px;box-shadow:none;padding:17px 20px}
+.wr-welcome .wr-blueprint>strong{color:#183b61;font-size:15px;font-weight:700}
+.wr-welcome .wr-blueprint>span{color:#1558c0;font-size:22px;font-weight:700}
+.wr-welcome .wr-blueprint small{color:#4a6078;font-size:10px}
+.wr-welcome .wr-blueprint>i{border:1px solid #6184aa;background:#e5edf7;box-shadow:none;border-radius:4px}
 @media(max-width:900px){.wr-immersive .wr-header{top:14px;left:14px;right:14px;gap:7px}.wr-immersive .wr-brand small{display:none}.wr-immersive .wr-brand{padding:8px 11px;gap:7px!important}.wr-immersive .wr-brand>span{width:26px;height:26px;font-size:20px}.wr-immersive .wr-header-state{display:none}.wr-immersive .wr-room-switch{font-size:11px;padding:10px 12px;min-height:43px}.wr-immersive .wr-top-actions button{min-width:36px;padding:8px}.wr-immersive .wr-top-actions span{font-size:10px}.wr-immersive .wr-joystick{display:flex;left:22px;bottom:145px;width:78px;height:78px;background:#35574655;border:1px solid #eff5dd99;color:#f0f5dd;backdrop-filter:blur(4px);z-index:3}.wr-immersive .wr-joystick span{display:none}.wr-immersive .wr-dock{bottom:39px;padding:7px 12px}.wr-immersive .wr-footer{bottom:132px;font-size:10px}.wr-immersive .wr-notice{bottom:10px;font-size:8px}.wr-welcome .wr-lobby h1{font-size:42px}.wr-welcome .wr-lobby-building{max-width:330px}.wr-welcome .wr-lobby{padding-top:25px}}
 @media(max-width:600px){.wr-immersive{min-height:420px}.wr-immersive .wr-header{flex-wrap:wrap;align-items:flex-start;top:12px;left:12px;right:12px}.wr-immersive .wr-brand{font-size:14px}.wr-immersive .wr-brand div{display:none}.wr-immersive .wr-brand{padding:8px;border-radius:50%}.wr-immersive .wr-room-switch{max-width:143px;gap:5px}.wr-immersive .wr-top-actions{gap:0;padding:3px}.wr-immersive .wr-top-actions button{min-width:30px;min-height:36px;padding:7px}.wr-immersive .wr-top-actions button svg{width:15px}.wr-immersive .wr-top-actions span{font-size:9px}.wr-immersive .wr-incident-pill{top:74px;font-size:11px;min-height:34px;padding:8px 13px}.wr-immersive .wr-left,.wr-immersive .wr-right,.wr-immersive .wr-chat,.wr-immersive .wr-mission,.wr-immersive .wr-people,.wr-immersive .wr-drawer{top:70px;right:12px;bottom:132px;width:calc(100vw - 24px);border-radius:22px}.wr-immersive .wr-panel-close{top:82px;right:27px}.wr-immersive .wr-dock{gap:0}.wr-immersive .wr-dock button{min-width:66px;padding:8px 10px}.wr-immersive .wr-footer{font-size:9px}.wr-immersive .wr-notice svg{display:none}.wr-immersive .wr-progress,.wr-immersive .wr-complete{bottom:172px;font-size:11px}.wr-immersive .wr-error{top:118px;font-size:11px}.wr-immersive .wr-toast{top:72px;width:90%}}
 @media(max-height:600px){.wr-immersive{min-height:360px}.wr-immersive .wr-footer{display:none}.wr-immersive .wr-dock{bottom:27px}.wr-immersive .wr-dock button{padding:4px 10px;gap:4px}.wr-immersive .wr-left,.wr-immersive .wr-right,.wr-immersive .wr-chat,.wr-immersive .wr-mission,.wr-immersive .wr-people,.wr-immersive .wr-drawer{bottom:105px}.wr-immersive .wr-joystick{bottom:110px;width:64px;height:64px}}
@@ -148,5 +155,7 @@
 .wr-npc-label{white-space:nowrap;background:#203d53;color:#fff;padding:4px 8px;border:1px solid #9eb6c9;border-radius:5px;font-size:10px}
 .wr-operations-monitor{background:#112e45;color:#e4f2fa;border:5px solid #42586b;padding:12px 28px;min-width:240px;display:flex;flex-direction:column;gap:7px;text-align:center}.wr-operations-monitor strong{font-size:22px}.wr-operations-monitor small,.wr-operations-monitor span{font-size:10px;letter-spacing:1px}
 .wr-fault-tag{white-space:nowrap;background:#913a38;color:white;padding:5px 9px;border-radius:5px;font-size:11px}
+@media(max-width:900px){.wr-welcome .wr-lobby{padding:32px 24px;gap:36px}.wr-welcome .wr-lobby-building{max-width:510px}.wr-welcome .wr-lobby h1{font-size:44px}}
+@media(max-width:600px){.wr-welcome .wr-header{height:72px;padding:0 18px;gap:12px}.wr-welcome .wr-brand{font-size:20px;gap:9px!important}.wr-welcome .wr-brand small{font-size:9px;letter-spacing:.5px}.wr-welcome .wr-back{padding:10px;font-size:11px}.wr-welcome .wr-notice{padding:12px 18px;font-size:11px;align-items:flex-start}.wr-welcome .wr-lobby{padding:28px 20px 36px;gap:32px;min-height:0}.wr-welcome .wr-lobby h1{font-size:40px;margin:16px 0;letter-spacing:-1.5px}.wr-welcome .wr-lobby-copy>p{font-size:14px}.wr-welcome .wr-lobby-features{font-size:11px;gap:12px;margin:20px 0}.wr-welcome .wr-lobby form{padding:18px}.wr-welcome .wr-lobby form>div{flex-direction:column;gap:12px}.wr-welcome .wr-lobby form button{width:100%;font-size:16px;min-height:54px}.wr-welcome .wr-lobby form small{font-size:11px}.wr-welcome .wr-blueprint{padding:14px 16px}.wr-welcome .wr-blueprint>strong{font-size:14px}}
 @media(max-width:900px){.wr-workflow{left:14px;top:126px;width:255px;padding:12px}.wr-workflow-title>strong{font-size:16px}}
 @media(max-width:600px){.wr-workflow{left:12px;right:12px;top:116px;width:auto;max-height:185px;padding:10px 12px}.wr-workflow-title{flex-direction:row;align-items:center;gap:10px}.wr-workflow-title>strong{font-size:14px}.wr-workflow-title>span{font-size:8px}.wr-stage-track{margin:8px 0}.wr-stage-track>span{width:19px;height:19px;font-size:9px}.wr-workflow p{font-size:10px;margin:4px 0}.wr-workflow small{font-size:9px}.wr-workflow .wr-playback{margin-top:6px}.wr-immersive .wr-workflow button{font-size:10px;min-height:30px}}
