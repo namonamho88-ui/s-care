@@ -5,3 +5,129 @@
 @media(prefers-reduced-motion:reduce){.wr *{transition:none!important;animation:none!important}}
 .wr-chat button{flex-shrink:0;min-width:50px;white-space:nowrap}
 @media(max-width:600px){.wr-header{gap:8px;padding:0 12px}.wr-brand{font-size:17px;gap:8px!important}.wr-brand>span{width:32px;height:34px;flex-shrink:0}.wr-brand small{font-size:7px;letter-spacing:1px;max-width:112px}.wr-header-state{font-size:9px;gap:4px;white-space:nowrap}.wr-header-state>svg{display:none}.wr-back{width:76px;flex-shrink:0;font-size:8px}}
+/* Immersive space: the world is primary; tools open only when requested. */
+.wr-immersive{height:100dvh;min-height:560px;overflow:hidden;position:relative;background:#c3d6d2;--panel:#172f32f5;--line:#ffffff20;--mint:#b6e2cd;--text:#f1f3e9;--muted:#afc2bb;font-size:14px}
+.wr-sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.wr-immersive button{border-radius:14px;min-height:42px;font-size:13px;background:#ffffff0b;border-color:#ffffff25}
+.wr-immersive button:hover:not(:disabled){background:#ffffff20}
+.wr-immersive .wr-header{position:absolute;z-index:5;top:20px;left:24px;right:24px;height:auto;padding:0;border:0;background:none;gap:10px;pointer-events:none}
+.wr-immersive .wr-header>*{pointer-events:auto}
+.wr-immersive .wr-brand{font-size:16px;letter-spacing:.4px;gap:9px!important;background:#193a36db;border:1px solid #ffffff40;backdrop-filter:blur(16px);padding:9px 15px;border-radius:22px;color:#f3f1e7!important}
+.wr-immersive .wr-brand>span{width:30px;height:30px;background:#689d88;color:#eff5e9;border:0;font-size:23px;border-radius:11px}
+.wr-immersive .wr-brand small{font-size:9px;letter-spacing:.8px;color:#c0d5c8}
+.wr-immersive .wr-room-switch{background:#193a36db;backdrop-filter:blur(16px);padding:12px 16px;border-radius:22px;gap:9px}
+.wr-immersive .wr-header-state{margin:0;font-size:10px;color:#36574c;gap:7px;background:#ecf1e3d9;padding:7px 12px;border-radius:20px}
+.wr-immersive .wr-header-state>strong{font-size:10px;max-width:100px;overflow:hidden;text-overflow:ellipsis;display:block}
+.wr-immersive .wr-top-actions{margin-left:auto;display:flex;gap:2px;background:#193a36db;border:1px solid #ffffff40;backdrop-filter:blur(16px);border-radius:24px;padding:4px}
+.wr-immersive .wr-top-actions button{background:transparent;border:0;border-radius:20px;min-width:42px;padding:10px}
+.wr-immersive .wr-top-actions span{font-size:11px}
+.wr-immersive .wr-notice{position:absolute;z-index:3;left:50%;bottom:10px;transform:translateX(-50%);width:max-content;max-width:95%;justify-content:center;background:none;padding:0;color:#e8f2e6;font-size:10px;text-shadow:0 1px 5px #19382a}
+.wr-immersive .wr-workspace{display:block;margin:0;height:100%;position:static}
+.wr-immersive .wr-viewport{height:100%;width:100%;min-height:0;border:0;border-radius:0;position:absolute;inset:0;background:#c3d6d2}
+.wr-immersive .wr-viewport-tools{top:88px;left:27px;right:auto;display:none}
+.wr-immersive .wr-incident-pill{position:absolute;z-index:4;top:89px;left:50%;transform:translateX(-50%);margin:0;padding:10px 17px;background:#234c3de0;backdrop-filter:blur(12px);border:1px solid #ffffff40;border-radius:24px;font-size:12px;gap:8px;max-width:90%;box-shadow:0 3px 20px #1d463b16}
+.wr-immersive .wr-dock{position:absolute;z-index:5;bottom:42px;left:50%;transform:translateX(-50%);display:flex;gap:6px;padding:8px 15px;background:#1f3832dc;border:1px solid #ffffff55;backdrop-filter:blur(20px);border-radius:34px;box-shadow:0 8px 30px #213a3625}
+.wr-immersive .wr-dock button{display:flex;flex-direction:column;gap:7px;background:none;border:0;border-radius:22px;min-width:72px;padding:8px 12px;color:#e5e9da}
+.wr-immersive .wr-dock button[aria-expanded=true]{background:#aac6a72b;color:#d0f0d0}
+.wr-immersive .wr-dock button span{font-size:11px}
+.wr-immersive .wr-footer{position:absolute;bottom:139px;left:50%;transform:translateX(-50%);padding:0;z-index:2;width:max-content;max-width:95%;font-size:11px;color:#fffbe9;text-shadow:0 1px 6px #183728;pointer-events:none}
+.wr-immersive .wr-left,.wr-immersive .wr-right,.wr-immersive .wr-chat,.wr-immersive .wr-mission,.wr-immersive .wr-people{display:none}
+.wr-immersive[data-panel=infra] .wr-left,.wr-immersive[data-panel=detail] .wr-right,.wr-immersive[data-panel=chat] .wr-chat,.wr-immersive[data-panel=mission] .wr-mission,.wr-immersive[data-panel=people] .wr-people{display:block}
+.wr-immersive .wr-left,.wr-immersive .wr-right,.wr-immersive .wr-chat,.wr-immersive .wr-mission,.wr-immersive .wr-people,.wr-immersive .wr-drawer{position:absolute;z-index:11;top:86px;right:24px;bottom:140px;width:min(390px,calc(100vw - 48px));height:auto;max-height:none;border:1px solid #ffffff40;border-radius:24px;background:var(--panel);backdrop-filter:blur(24px);padding:10px 6px 16px;overflow-y:auto;box-shadow:0 20px 70px #14352d35;scrollbar-width:thin;scrollbar-color:#718b7c transparent}
+.wr-immersive .wr-panel-scrim{position:absolute;inset:0;width:100%;height:100%;min-height:0;background:#08261d25;border:0;border-radius:0;z-index:10;cursor:default}
+.wr-immersive .wr-panel-scrim:hover:not(:disabled){background:#08261d25}
+.wr-immersive .wr-panel-close{position:absolute;z-index:12;top:98px;right:39px;border:0;border-radius:50%;width:34px;height:34px;min-height:34px;padding:5px;background:#ffffff13}
+.wr-immersive .wr-panel-heading{padding:17px 18px 20px;gap:9px}
+.wr-immersive .wr-panel-heading h2{font-size:15px;color:#f2f4e6}
+.wr-immersive .wr-panel-heading>span{margin-right:34px;font-size:10px}
+.wr-immersive .wr-panel h3{font-size:18px;line-height:1.5}
+.wr-immersive .wr-panel p{font-size:12px;line-height:1.9;color:#becfc7}
+.wr-immersive .wr-panel small{font-size:11px}
+.wr-immersive .wr-floor-nav button{padding:15px 12px;font-size:14px;border-radius:15px;margin-bottom:6px}
+.wr-immersive .wr-floor-nav button[aria-pressed=true]{background:#729b7b35;box-shadow:none}
+.wr-immersive .wr-floor-nav span{font-size:14px}
+.wr-immersive .wr-floor-nav small{font-size:9px;margin-top:3px;letter-spacing:.5px}
+.wr-immersive .wr-infra-list button{padding:12px;font-size:12px;border-radius:12px}
+.wr-immersive .wr-infra-list button[aria-pressed=true]{background:#729b7b30}
+.wr-immersive .wr-infra-list span{font-size:12px}
+.wr-immersive .wr-detail{padding:0 18px 22px}
+.wr-immersive .wr-detail .wr-eyebrow{font-size:10px}
+.wr-immersive .wr-metrics{background:#ffffff20;border-color:#ffffff25;border-radius:14px}
+.wr-immersive .wr-metrics>div{background:#294740;padding:16px}
+.wr-immersive .wr-metrics strong{font-size:22px}
+.wr-immersive .wr-metrics small{font-size:11px}
+.wr-immersive details summary{font-size:12px;margin:16px 0 10px}
+.wr-immersive .wr-dependency{font-size:11px;line-height:1.8}
+.wr-immersive input,.wr-immersive select,.wr-immersive textarea{font-size:13px;background:#0e2828;border-color:#ffffff30;padding:12px;border-radius:12px}
+.wr-immersive .wr-presenter{padding:0 18px 18px}
+.wr-immersive .wr-presenter label,.wr-immersive .wr-presenter button{font-size:12px}
+.wr-immersive .wr-presenter select,.wr-immersive .wr-presenter textarea{font-size:12px}
+.wr-immersive .wr-guest-policy{padding:20px;font-size:12px}
+.wr-immersive .wr-guest-policy a{font-size:12px}
+.wr-immersive .wr-strategy{border-color:#ffffff25;border-radius:14px;padding:14px}
+.wr-immersive .wr-strategy.active{background:#517d5c35;border-color:#a0c7a3}
+.wr-immersive .wr-strategy strong{font-size:13px}
+.wr-immersive .wr-strategy span{font-size:12px}
+.wr-immersive .wr-bottom{display:contents;margin:0}
+.wr-immersive .wr-messages{height:calc(100% - 135px);min-height:120px;padding:0 18px;font-size:13px}
+.wr-immersive .wr-messages p{background:#ffffff08;border-radius:14px;padding:11px 13px;margin:8px 0;overflow-wrap:anywhere}
+.wr-immersive .wr-messages b{display:block;font-size:11px;margin-bottom:4px;color:#a3d7bc}
+.wr-immersive .wr-chat form{padding:12px;gap:8px}
+.wr-immersive .wr-chat input{font-size:13px}
+.wr-immersive .wr-chat button{font-size:12px}
+.wr-immersive .wr-steps{display:grid;grid-template-columns:1fr;padding:0 20px;gap:0}
+.wr-immersive .wr-steps>div{flex-direction:row;gap:14px;padding:12px 0}
+.wr-immersive .wr-steps>div+div:before{display:none}
+.wr-immersive .wr-steps small{font-size:14px}
+.wr-immersive .wr-steps span{width:33px;height:33px;font-size:12px;border-color:#95b5a16b}
+.wr-immersive .wr-steps .done span{background:#689a77;color:#fff;border-color:#93b99a}
+.wr-immersive .wr-mission-detail{margin:15px 20px 0;max-width:calc(100% - 40px);background:#78a38325}
+.wr-immersive .wr-mission p{padding:16px 20px;font-size:11px}
+.wr-immersive .wr-people>label{display:block;padding:0 20px;font-size:13px}
+.wr-immersive .wr-people select{width:100%;margin-top:10px;font-size:13px}
+.wr-immersive .wr-people>small{padding:10px 20px;font-size:11px}
+.wr-immersive .wr-participants{padding:10px 20px;display:grid;max-height:none;gap:10px}
+.wr-immersive .wr-participants span{font-size:13px;padding:14px;border-radius:13px;background:#ffffff09}
+.wr-immersive .wr-settings>label{padding:14px 20px;font-size:13px;display:flex;gap:10px;align-items:center}
+.wr-immersive .wr-settings p{padding:18px 20px;font-size:12px}
+.wr-immersive .wr-settings>a{margin:10px 20px}
+.wr-immersive .wr-progress,.wr-immersive .wr-complete{z-index:3;bottom:170px;top:auto;background:#224e40ed;border-color:#d6e7c57a;border-radius:20px;font-size:12px;padding:14px 20px}
+.wr-immersive .wr-error{position:absolute;z-index:9;top:139px;left:50%;transform:translateX(-50%);margin:0;width:max-content;max-width:90%;border-radius:15px;font-size:12px}
+.wr-immersive .wr-toast{position:absolute;z-index:20;top:85px;left:50%;transform:translateX(-50%);padding:13px 20px;background:#f0f2e4;color:#345447;border-radius:18px;font-size:12px;max-width:90%;text-align:center}
+.wr-immersive .wr-name{color:#304d41;background:#f0eddbed;border:1px solid #fffae9b3;border-radius:18px;font-size:11px;padding:6px 12px;box-shadow:0 2px 8px #34514020}
+.wr-immersive .wr-name.self{color:#355747;border-color:#fff9e3}
+.wr-avatar-caption{display:flex;flex-direction:column;align-items:center;gap:8px}
+.wr-speech{display:block;width:max-content;max-width:210px;font-size:13px;line-height:1.5;background:#fffbed;color:#334d42;padding:12px 16px;border-radius:18px 18px 18px 3px;overflow-wrap:anywhere;box-shadow:0 4px 15px #1a473b30}
+.wr-immersive .wr-agent-label{font-size:12px;color:#355747;background:#eef2e2ed;border-color:#fff9;border-radius:16px;padding:8px 12px}
+.wr-immersive .wr-agent-label small{font-size:10px;color:#698373}
+.wr-immersive .wr-rack-label{font-size:11px;background:#244d40ed;color:#f6f4e5;border-color:#b2d9bc;border-radius:16px;padding:7px 12px}
+.wr-space-sign{white-space:nowrap;font-size:18px;letter-spacing:3px;color:#426458;background:#edf0dfdf;border:1px solid #ffffffe0;border-radius:10px;padding:12px 25px}
+.wr-space-sign b{display:block;text-align:center;font-size:12px;font-weight:400;letter-spacing:2px;margin-top:8px}
+.wr-immersive .wr-lift-label{color:#e7f2de;font-size:16px;font-weight:700}
+.wr-immersive .wr-wall-board{color:#e4edce;background:#335d4f;border-color:#bed0b0;border-radius:12px;padding:18px 32px}
+.wr-immersive .wr-wall-board strong{font-size:17px;letter-spacing:0}
+.wr-immersive .wr-wall-board span,.wr-immersive .wr-wall-board small{font-size:10px;color:#bdd2b6}
+.wr-welcome{background:radial-gradient(ellipse at 75% 35%,#456b57 0,#203e35 45%,#162e29 100%);--mint:#c3e5b8;--muted:#b4c9b8}
+.wr-welcome .wr-header{background:none;border:0;height:88px}
+.wr-welcome .wr-back{margin-left:auto}
+.wr-welcome .wr-brand>span{background:#6c9c7b;color:#eef5dd;border:0}
+.wr-welcome .wr-notice{background:none;color:#b4c7b5;font-size:11px}
+.wr-welcome .wr-lobby{min-height:calc(100dvh - 120px);padding-top:45px;padding-bottom:65px}
+.wr-welcome .wr-lobby h1{font-size:58px;font-weight:500;color:#f3f0df;letter-spacing:-2.5px}
+.wr-welcome .wr-lobby-copy>p{color:#c5d3bf;font-size:15px}
+.wr-welcome .wr-lobby-features{color:#c6d7bc}
+.wr-welcome .wr-lobby form input{background:#15352f;border-color:#8aab8a;color:#eef1de;border-radius:15px;font-size:14px}
+.wr-welcome .wr-lobby form button{background:#d0e5b9;border-color:#d0e5b9;color:#294c36;border-radius:15px}
+.wr-welcome .wr-lobby form label,.wr-welcome .wr-lobby form small{color:#bdcfb6}
+.wr-welcome .wr-lobby-building{transform:rotate(-7deg) skewY(7deg);gap:20px}
+.wr-welcome .wr-blueprint{background:linear-gradient(140deg,#93bda2,#4d7a62);border-color:#c1d1aa;border-radius:15px;box-shadow:12px 14px 0 #264f40,12px 15px 0 #9fba91}
+.wr-welcome .wr-blueprint>strong{color:#f1f0d8;font-size:14px}
+.wr-welcome .wr-blueprint>span{color:#e5ebc2}
+.wr-welcome .wr-blueprint small{color:#d2ddbd}
+.wr-welcome .wr-blueprint>i{border-color:#dfebc7;background:#315a4b;box-shadow:3px 4px #264737;border-radius:7px}
+@media(max-width:900px){.wr-immersive .wr-header{top:14px;left:14px;right:14px;gap:7px}.wr-immersive .wr-brand small{display:none}.wr-immersive .wr-brand{padding:8px 11px;gap:7px!important}.wr-immersive .wr-brand>span{width:26px;height:26px;font-size:20px}.wr-immersive .wr-header-state{display:none}.wr-immersive .wr-room-switch{font-size:11px;padding:10px 12px;min-height:43px}.wr-immersive .wr-top-actions button{min-width:36px;padding:8px}.wr-immersive .wr-top-actions span{font-size:10px}.wr-immersive .wr-joystick{display:flex;left:22px;bottom:145px;width:78px;height:78px;background:#35574655;border:1px solid #eff5dd99;color:#f0f5dd;backdrop-filter:blur(4px);z-index:3}.wr-immersive .wr-joystick span{display:none}.wr-immersive .wr-dock{bottom:39px;padding:7px 12px}.wr-immersive .wr-footer{bottom:132px;font-size:10px}.wr-immersive .wr-notice{bottom:10px;font-size:8px}.wr-welcome .wr-lobby h1{font-size:42px}.wr-welcome .wr-lobby-building{max-width:330px}.wr-welcome .wr-lobby{padding-top:25px}}
+@media(max-width:600px){.wr-immersive{min-height:420px}.wr-immersive .wr-header{flex-wrap:wrap;align-items:flex-start;top:12px;left:12px;right:12px}.wr-immersive .wr-brand{font-size:14px}.wr-immersive .wr-brand div{display:none}.wr-immersive .wr-brand{padding:8px;border-radius:50%}.wr-immersive .wr-room-switch{max-width:143px;gap:5px}.wr-immersive .wr-top-actions{gap:0;padding:3px}.wr-immersive .wr-top-actions button{min-width:30px;min-height:36px;padding:7px}.wr-immersive .wr-top-actions button svg{width:15px}.wr-immersive .wr-top-actions span{font-size:9px}.wr-immersive .wr-incident-pill{top:74px;font-size:11px;min-height:34px;padding:8px 13px}.wr-immersive .wr-left,.wr-immersive .wr-right,.wr-immersive .wr-chat,.wr-immersive .wr-mission,.wr-immersive .wr-people,.wr-immersive .wr-drawer{top:70px;right:12px;bottom:132px;width:calc(100vw - 24px);border-radius:22px}.wr-immersive .wr-panel-close{top:82px;right:27px}.wr-immersive .wr-dock{gap:0}.wr-immersive .wr-dock button{min-width:66px;padding:8px 10px}.wr-immersive .wr-footer{font-size:9px}.wr-immersive .wr-notice svg{display:none}.wr-immersive .wr-progress,.wr-immersive .wr-complete{bottom:172px;font-size:11px}.wr-immersive .wr-error{top:118px;font-size:11px}.wr-immersive .wr-toast{top:72px;width:90%}}
+@media(max-height:600px){.wr-immersive{min-height:360px}.wr-immersive .wr-footer{display:none}.wr-immersive .wr-dock{bottom:27px}.wr-immersive .wr-dock button{padding:4px 10px;gap:4px}.wr-immersive .wr-left,.wr-immersive .wr-right,.wr-immersive .wr-chat,.wr-immersive .wr-mission,.wr-immersive .wr-people,.wr-immersive .wr-drawer{bottom:105px}.wr-immersive .wr-joystick{bottom:110px;width:64px;height:64px}}
+@media(max-width:600px){.wr-immersive .wr-room-switch{max-width:min(143px,calc(100vw - 245px));min-width:0}.wr-immersive .wr-room-switch>svg{display:none}.wr-immersive .wr-brand{flex-shrink:0}}
+@media(max-width:600px){.wr-immersive .wr-dock{padding:7px 9px}.wr-immersive .wr-dock button{min-width:54px;padding:8px}.wr-immersive .wr-dock button span{font-size:10px}}
+.wr-immersive .wr-viewport{isolation:isolate;z-index:0}

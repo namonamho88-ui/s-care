@@ -1,105 +1,77 @@
 'use client';
 import {useEffect,useMemo,useRef} from 'react';
-import {Canvas,useFrame,useThree} from '@react-three/fiber';
+import {Canvas,useFrame,useThree,type ThreeEvent} from '@react-three/fiber';
 import {Html,Line,OrbitControls,RoundedBox} from '@react-three/drei';
 import * as THREE from 'three';
 import type {OrbitControls as OrbitControlsImpl} from 'three-stdlib';
 import {COLORS,FLOORS,NODE_FLOOR,nodePosition,type Node,type Player,type RoomState} from './types';
 
-function Box({at,size,color='#182c3b',glow=false}:{at:[number,number,number];size:[number,number,number];color?:string;glow?:boolean}){
- return <mesh position={at} castShadow receiveShadow><boxGeometry args={size}/><meshStandardMaterial color={color} roughness={.55} metalness={.4} emissive={glow?color:'#000'} emissiveIntensity={glow?.7:0}/></mesh>;
+// All meshes are original procedural assets. No downloaded models or textures.
+function Box({at,size,color='#294c58',glow=false}:{at:[number,number,number];size:[number,number,number];color?:string;glow?:boolean}){
+ return <mesh position={at} castShadow receiveShadow><boxGeometry args={size}/><meshStandardMaterial color={color} roughness={.75} emissive={glow?color:'#000'} emissiveIntensity={glow?.35:0}/></mesh>;
 }
-function RackSlots({color}:{color:string}){
- const slots=useRef<THREE.InstancedMesh>(null),lights=useRef<THREE.InstancedMesh>(null),vents=useRef<THREE.InstancedMesh>(null);
- useEffect(()=>{const o=new THREE.Object3D();for(let i=0;i<7;i++){for(const [ref,x,z] of [[slots,0,.61],[lights,-.4,.65],[vents,.23,.65]] as const){o.position.set(x,-.82+i*.26,z);o.updateMatrix();ref.current?.setMatrixAt(i,o.matrix);}}for(const ref of [slots,lights,vents])if(ref.current)ref.current.instanceMatrix.needsUpdate=true;},[]);
- return <><instancedMesh ref={slots} args={[undefined,undefined,7]}><boxGeometry args={[1.04,.2,.06]}/><meshStandardMaterial color="#385266"/></instancedMesh><instancedMesh ref={lights} args={[undefined,undefined,7]}><boxGeometry args={[.05,.06,.02]}/><meshBasicMaterial color={color}/></instancedMesh><instancedMesh ref={vents} args={[undefined,undefined,7]}><boxGeometry args={[.4,.035,.02]}/><meshStandardMaterial color="#0b1521"/></instancedMesh></>;
-}
-function Rack({node,selected,onSelect}:{node:Node;selected:boolean;onSelect:(id:string)=>void}){
- const pos=nodePosition(node.id),color=COLORS[node.status]||COLORS.HEALTHY;
- return <group position={pos} onClick={e=>{e.stopPropagation();onSelect(node.id);}}>
-  <RoundedBox args={[1.35,2.25,1.1]} radius={.06} smoothness={2} castShadow receiveShadow><meshStandardMaterial color={selected?'#4b758a':'#294558'} roughness={.5} metalness={.45}/></RoundedBox>
-  <Box at={[0,0,.57]} size={[1.13,2.03,.04]} color="#060f1b"/>
-  <RackSlots color={color}/>
-  <Box at={[0,1.15,0]} size={[1.3,.05,1.05]} color={color} glow/>
-  <Html position={[0,1.6,0]} center distanceFactor={28} style={{pointerEvents:'none'}}><span className={`wr-rack-label ${selected?'selected':''}`}><i style={{background:color}}/>{node.name}</span></Html>
-  {node.status!=='HEALTHY'&&<mesh position={[0,-1.18,0]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.8,1,32]}/><meshBasicMaterial color={color} transparent opacity={.7} side={THREE.DoubleSide}/></mesh>}
- </group>;
-}
-function Tiles({floor}:{floor:number}){
- const mesh=useRef<THREE.InstancedMesh>(null);
- useEffect(()=>{if(!mesh.current)return;const o=new THREE.Object3D();let i=0;for(let x=-9;x<=9;x+=2)for(let z=-6;z<=6;z+=2){o.position.set(x,0,z);o.updateMatrix();mesh.current.setMatrixAt(i++,o.matrix);}mesh.current.instanceMatrix.needsUpdate=true;},[]);
- return <instancedMesh ref={mesh} args={[undefined,undefined,70]} position={[0,(floor-1)*5.5+.02,0]} receiveShadow><boxGeometry args={[1.94,.035,1.94]}/><meshStandardMaterial color={floor%2?'#203448':'#233c4d'} roughness={.8}/></instancedMesh>;
-}
-function Floor({floor,active}:{floor:number;active:boolean}){
- const y=(floor-1)*5.5;
+function Plant({at}:{at:[number,number,number]}){return <group position={at}><mesh position={[0,.28,0]} castShadow><cylinderGeometry args={[.35,.25,.55,12]}/><meshStandardMaterial color="#e6d6bd"/></mesh><Box at={[0,.8,0]} size={[.09,.8,.09]} color="#73583d"/>{[-1,0,1].map((n)=><mesh key={n} position={[n*.22,1.1+Math.abs(n)*.18,n*.12]} rotation={[0,n,.4*n]} scale={[.32,.62,.25]} castShadow><sphereGeometry args={[1,10,8]}/><meshStandardMaterial color={n===0?'#5e986f':'#83ac75'} roughness={.9}/></mesh>)}</group>;}
+function FloorBoards({y}:{y:number}){const ref=useRef<THREE.InstancedMesh>(null);useEffect(()=>{const o=new THREE.Object3D();for(let i=0;i<28;i++){o.position.set(0,0,-6.75+i*.5);o.updateMatrix();ref.current?.setMatrixAt(i,o.matrix);}if(ref.current)ref.current.instanceMatrix.needsUpdate=true;},[]);return <instancedMesh ref={ref} args={[undefined,undefined,28]} position={[0,y,0]} receiveShadow><boxGeometry args={[19.8,.04,.48]}/><meshStandardMaterial color="#c4ad8e" roughness={.9}/></instancedMesh>;}
+function Floor({floor,overview,onMove}:{floor:number;overview:boolean;onMove:(x:number,z:number)=>void}){
+ const y=(floor-1)*5.5,down=useRef<[number,number]|null>(null);
+ const move=(e:ThreeEvent<PointerEvent>)=>{if(!down.current||overview)return;const dist=Math.hypot(e.clientX-down.current[0],e.clientY-down.current[1]);down.current=null;if(dist>6)return;e.stopPropagation();onMove(THREE.MathUtils.clamp(e.point.x,-8.9,8.9),THREE.MathUtils.clamp(e.point.z,-5.9,5.9));};
  return <group>
-  <Box at={[0,y-.22,0]} size={[20,.4,14]} color="#102537"/>
-  <Tiles floor={floor}/>
-  <Box at={[0,y-.3,7.04]} size={[20,.08,.06]} color={active?'#7bffe1':'#375b70'} glow={active}/>
-  <Box at={[-10,y+1.5,0]} size={[.18,3.1,14]} color="#20374b"/>
-  <Box at={[0,y+1.5,-7]} size={[20,3.1,.18]} color="#20374b"/>
-  {[-8,-4,0,4,8].map(x=><group key={x}><Box at={[x,y+1.6,-6.87]} size={[2.8,1.2,.04]} color="#0a1629"/><Box at={[x,y+2.25,-6.82]} size={[2.8,.03,.04]} color="#53cbd3" glow/></group>)}
-  {[-9.6,9.6].map(x=><Box key={x} at={[x,y+1.6,-6.6]} size={[.3,3.2,.3]} color="#567183"/>)}
-  <Html position={[-9.6,y+.2,7.3]} style={{pointerEvents:'none'}}><span className={`wr-floor-label ${active?'active':''}`}>0{floor} / {FLOORS[floor-1]}</span></Html>
-  <Box at={[8.7,y+.04,4.8]} size={[1.5,.06,1.5]} color="#3a8093"/>
-  <Html position={[8.7,y+.15,4.8]} center style={{pointerEvents:'none'}}><span className="wr-lift-label">LIFT</span></Html>
-  {floor===3&&<>
-   <RoundedBox position={[0,y+.7,0]} args={[6,1.3,2.8]} radius={.25} smoothness={3}><meshStandardMaterial color="#30495c" metalness={.5} roughness={.4}/></RoundedBox>
-   <Box at={[0,y+1.39,0]} size={[4.6,.04,1.8]} color="#37a6bc" glow/>
-   {[-4,4].map(x=>[-1.3,1.3].map(z=><group key={`${x}-${z}`}><Box at={[x,y+.55,z]} size={[.7,.2,.7]} color="#4f687a"/><Box at={[x,y+.25,z]} size={[.12,.5,.12]}/><Box at={[x,y+1,z+.3]} size={[.7,.7,.14]} color="#4f687a"/></group>))}
-   <Box at={[0,y+2.05,-6.6]} size={[8,2.1,.14]} color="#061d30"/>
-  </>}
-  {floor===4&&[-6,-3,0,3,6].map(x=><group key={x}><Box at={[x,y+.5,-2]} size={[2.5,1,1.4]} color="#354e61"/><Box at={[x,y+1.35,-2.4]} size={[2.2,.9,.15]} color="#1a647b" glow/><Box at={[x,y+1.02,-1.7]} size={[1.8,.04,.5]} color="#162b40"/></group>)}
+  <Box at={[0,y-.18,0]} size={[20,.34,14]} color="#d9d7ca"/>
+  <FloorBoards y={y}/>
+  <mesh position={[0,y+.04,0]} rotation={[-Math.PI/2,0,0]} onPointerDown={e=>{down.current=[e.clientX,e.clientY];}} onPointerUp={move}><planeGeometry args={[20,14]}/><meshBasicMaterial transparent opacity={0} depthWrite={false}/></mesh>
+  <Box at={[0,y+.7,-7]} size={[20,1.4,.2]} color="#e5e2d4"/>
+  <Box at={[-10,y+.7,0]} size={[.2,1.4,14]} color="#e5e2d4"/>
+  {[-6.8,0,6.8].map(z=><Box key={z} at={[-10,y+2.1,z]} size={[.18,4.2,.18]} color="#6f8077"/>)}
+  <Box at={[-10,y+4.15,0]} size={[.22,.18,14]} color="#6f8077"/>
+  <Box at={[-9.85,y+1.4,0]} size={[.38,.1,14]} color="#a48a69"/>
+  {[-9.8,-5,0,5,9.8].map(x=><Box key={x} at={[x,y+2.1,-7]} size={[.18,4.2,.22]} color="#6f8077"/>)}
+  <Box at={[0,y+4.15,-7]} size={[20,.18,.23]} color="#6f8077"/>
+  <Box at={[0,y+1.4,-6.85]} size={[20,.1,.38]} color="#a48a69"/>
+  {[-7.5,-2.5,2.5,7.5].map(x=><mesh key={x} position={[x,y+2.7,-7.03]}><planeGeometry args={[4.75,2.7]}/><meshStandardMaterial color="#bbdce0" transparent opacity={.18} roughness={.2} metalness={.15}/></mesh>)}
+  <Plant at={[9,y,-5.9]}/><Plant at={[-9,y,-5.9]}/>
+  <Box at={[8.65,y+.02,4.8]} size={[1.45,.04,1.45]} color="#729b91"/>
+  <Html position={[8.65,y+.14,4.8]} center style={{pointerEvents:'none'}}><span className="wr-lift-label">{floor}F</span></Html>
+  <Html position={[0,y+3.3,-6.75]} center distanceFactor={18} style={{pointerEvents:'none'}}><span className="wr-space-sign">S-CARE <b>{FLOORS[floor-1]}</b></span></Html>
+  {floor===3&&<><RoundedBox position={[0,y+.75,0]} args={[6,1.3,2.8]} radius={.3} smoothness={3} castShadow><meshStandardMaterial color="#e0c19a" roughness={.7}/></RoundedBox><Box at={[0,y+1.43,0]} size={[4.7,.05,1.8]} color="#527e7b"/>{[-4,4].map(x=>[-1.3,1.3].map(z=><group key={`${x}-${z}`}><RoundedBox position={[x,y+.55,z]} args={[.8,.25,.8]} radius={.12} smoothness={2}><meshStandardMaterial color="#789d91"/></RoundedBox><Box at={[x,y+.25,z]} size={[.13,.5,.13]} color="#b7a48d"/><Box at={[x,y+1,z+.32]} size={[.8,.8,.15]} color="#789d91"/></group>))}</>}
+  {floor===4&&[-6,-3,0,3,6].map(x=><group key={x}><Box at={[x,y+.5,-2]} size={[2.5,1,1.4]} color="#c2b59e"/><Box at={[x,y+1.35,-2.4]} size={[2.2,.9,.15]} color="#356e76" glow/><Box at={[x,y+1.02,-1.7]} size={[1.8,.04,.5]} color="#dce5df"/></group>)}
  </group>;
 }
-function Avatar({player,self,reduced}:{player:Player;self:boolean;reduced:boolean}){
- const root=useRef<THREE.Group>(null),legs=useRef<THREE.Group>(null),last=useRef(new THREE.Vector3(player.x,0,player.z));
- const color=self?'#71f3d3':['#ffbb78','#90b9ff','#dba7ff','#ffd974'][player.id.charCodeAt(0)%4];
- useFrame((s,dt)=>{if(!root.current)return;const target=new THREE.Vector3(player.x,(player.floor-1)*5.5+.12,player.z);if(Math.abs(root.current.position.y-target.y)>1)root.current.position.copy(target);else root.current.position.lerp(target,1-Math.exp(-dt*16));root.current.rotation.y=THREE.MathUtils.damp(root.current.rotation.y,player.direction,12,dt);const moving=last.current.distanceTo(target)>.003;last.current.copy(target);if(legs.current)legs.current.rotation.z=!reduced&&moving?Math.sin(s.clock.elapsedTime*14)*.16:0;});
- return <group ref={root} position={[player.x,(player.floor-1)*5.5+.12,player.z]}>
-  <group ref={legs}><Box at={[-.16,.25,0]} size={[.22,.5,.25]} color="#152534"/><Box at={[.16,.25,0]} size={[.22,.5,.25]} color="#152534"/></group>
-  <RoundedBox position={[0,.8,0]} args={[.65,.65,.35]} radius={.12} smoothness={2} castShadow><meshStandardMaterial color={color}/></RoundedBox>
-  <mesh position={[0,1.36,0]} castShadow><sphereGeometry args={[.25,12,10]}/><meshStandardMaterial color="#e7d5bf"/></mesh>
-  <Box at={[0,1.42,.21]} size={[.34,.1,.08]} color="#123446"/>
-  <mesh rotation={[-Math.PI/2,0,0]} position={[0,.02,0]}><ringGeometry args={[.35,.4,24]}/><meshBasicMaterial color={color}/></mesh>
-  <Html position={[0,1.95,0]} center style={{pointerEvents:'none'}}><span className={`wr-name ${self?'self':''}`}>{player.name}{self?' · 나':''}<small>{player.role}</small></span></Html>
+function RackSlots({color}:{color:string}){const ref=useRef<THREE.InstancedMesh>(null);useEffect(()=>{const o=new THREE.Object3D();for(let i=0;i<6;i++){o.position.set(0,-.67+i*.28,.58);o.updateMatrix();ref.current?.setMatrixAt(i,o.matrix);}if(ref.current)ref.current.instanceMatrix.needsUpdate=true;},[]);return <><instancedMesh ref={ref} args={[undefined,undefined,6]}><boxGeometry args={[.95,.19,.05]}/><meshStandardMaterial color="#3e5f67"/></instancedMesh>{[0,1,2].map(i=><Box key={i} at={[-.36,.65-i*.28,.63]} size={[.06,.06,.03]} color={color} glow/>)}</>;}
+function Rack({node,selected,onSelect,overview}:{node:Node;selected:boolean;onSelect:(id:string)=>void;overview:boolean}){const color=COLORS[node.status]||COLORS.HEALTHY;return <group position={nodePosition(node.id)} onClick={e=>{if(e.delta>6)return;e.stopPropagation();onSelect(node.id);}}><RoundedBox args={[1.35,2.25,1.1]} radius={.1} smoothness={2} castShadow receiveShadow><meshStandardMaterial color={selected?'#77afa5':'#c4d6d2'} roughness={.65}/></RoundedBox><Box at={[0,0,.57]} size={[1.08,1.92,.04]} color="#23424c"/><RackSlots color={color}/><Box at={[0,1.15,0]} size={[1.2,.06,.95]} color={color} glow/>{!overview&&(selected||node.status!=='HEALTHY')&&<Html position={[0,1.65,0]} center distanceFactor={15} style={{pointerEvents:'none'}}><span className="wr-rack-label"><i style={{background:color}}/>{node.name}</span></Html>}{node.status!=='HEALTHY'&&<mesh position={[0,-1.2,0]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.8,1.05,28]}/><meshBasicMaterial color={color} transparent opacity={.8}/></mesh>}</group>;}
+function Avatar({player,self,reduced,message}:{player:Player;self:boolean;reduced:boolean;message?:string}){
+ const root=useRef<THREE.Group>(null),left=useRef<THREE.Group>(null),right=useRef<THREE.Group>(null),last=useRef(new THREE.Vector3(player.x,(player.floor-1)*5.5,player.z)),motion=useRef(0),arm=useRef<THREE.Group>(null);
+ const color=self?'#69aa98':['#cf9971','#7e9fbe','#b49bc5','#d3b66a'][player.id.charCodeAt(0)%4];
+ useFrame((s,dt)=>{if(!root.current)return;const target=new THREE.Vector3(player.x,(player.floor-1)*5.5+.07,player.z);if(Math.abs(root.current.position.y-target.y)>1)root.current.position.copy(target);else root.current.position.lerp(target,1-Math.exp(-dt*15));const angle=THREE.MathUtils.euclideanModulo(player.direction-root.current.rotation.y+Math.PI,Math.PI*2)-Math.PI;root.current.rotation.y+=angle*(1-Math.exp(-dt*12));if(last.current.distanceTo(target)>.008)motion.current=.18;else motion.current=Math.max(0,motion.current-dt);last.current.copy(target);const stride=!reduced&&motion.current>0?Math.sin(s.clock.elapsedTime*12)*.38:0;if(left.current)left.current.rotation.x=stride;if(right.current)right.current.rotation.x=-stride;if(arm.current)arm.current.rotation.z=message?.includes('👋')?(!reduced?2.3+Math.sin(s.clock.elapsedTime*8)*.3:2.3):.12;});
+ return <group ref={root} position={[player.x,(player.floor-1)*5.5+.07,player.z]}>
+  <group ref={left} position={[-.17,.51,0]}><RoundedBox position={[0,-.24,0]} args={[.25,.5,.29]} radius={.1} smoothness={2} castShadow><meshStandardMaterial color="#ece9dc"/></RoundedBox><Box at={[0,-.46,.08]} size={[.27,.12,.4]} color="#647a75"/></group><group ref={right} position={[.17,.51,0]}><RoundedBox position={[0,-.24,0]} args={[.25,.5,.29]} radius={.1} smoothness={2} castShadow><meshStandardMaterial color="#ece9dc"/></RoundedBox><Box at={[0,-.46,.08]} size={[.27,.12,.4]} color="#647a75"/></group>
+  <RoundedBox position={[0,.88,0]} args={[.73,.78,.43]} radius={.17} smoothness={3} castShadow><meshStandardMaterial color="#f0ecdf" roughness={.9}/></RoundedBox><RoundedBox position={[0,.87,.21]} args={[.48,.58,.07]} radius={.08} smoothness={2}><meshStandardMaterial color={color}/></RoundedBox>
+  {[-1,1].map(n=><group ref={n===1?arm:undefined} key={n} position={[n*.45,.87,0]} rotation={[0,0,n*.12]}><mesh castShadow><capsuleGeometry args={[.12,.39,4,8]}/><meshStandardMaterial color="#f0ecdf"/></mesh><mesh position={[0,-.31,0]}><sphereGeometry args={[.13,10,8]}/><meshStandardMaterial color="#e4bb94"/></mesh></group>)}
+  <mesh position={[0,1.54,0]} castShadow><sphereGeometry args={[.39,20,16]}/><meshStandardMaterial color="#e6bf9b" roughness={.9}/></mesh><mesh position={[0,1.69,-.025]} castShadow><sphereGeometry args={[.395,16,12,0,Math.PI*2,0,Math.PI*.48]}/><meshStandardMaterial color="#514c41" roughness={1}/></mesh>
+  {[-.12,.12].map(x=><mesh key={x} position={[x,1.54,.37]}><sphereGeometry args={[.029,8,8]}/><meshStandardMaterial color="#393b36"/></mesh>)}<mesh position={[0,1.43,.375]} rotation={[0,0,Math.PI]}><torusGeometry args={[.065,.012,6,14,Math.PI]}/><meshStandardMaterial color="#875b4c"/></mesh>
+  <mesh rotation={[-Math.PI/2,0,0]} position={[0,.015,0]}><circleGeometry args={[.46,24]}/><meshBasicMaterial color="#485a52" transparent opacity={.15} depthWrite={false}/></mesh>
+  <Html position={[0,2.13,0]} center distanceFactor={10} style={{pointerEvents:'none'}}><div className="wr-avatar-caption">{message&&<span className="wr-speech">{message}</span>}<span className={`wr-name ${self?'self':''}`}>{self?'나':player.name}</span></div></Html>
  </group>;
 }
-function Agent({x,label,active,done,reduced}:{x:number;label:string;active:boolean;done:boolean;reduced:boolean}){
- const group=useRef<THREE.Group>(null);useFrame(s=>{if(group.current)group.current.position.y=18.1+(!reduced&&active?Math.sin(s.clock.elapsedTime*3)*.12:0);});
- const color=active?'#65e0ff':done?'#64efb2':'#748eb2';
- return <group ref={group} position={[x,18.1,1.2]}>
-  <mesh><octahedronGeometry args={[.48,0]}/><meshStandardMaterial color={color} emissive={color} emissiveIntensity={active?1.3:.25} metalness={.7} roughness={.25}/></mesh>
-  <mesh rotation={[Math.PI/2,0,0]} position={[0,-.7,0]}><torusGeometry args={[.65,.035,8,32]}/><meshBasicMaterial color={color}/></mesh>
-  <Html position={[0,.8,0]} center style={{pointerEvents:'none'}}><span className="wr-agent-label">{label}<small>{active?'실행 중':done?'결과 수신':'대기'}</small></span></Html>
- </group>;
-}
-function Connections({state,visibleFloor,reduced}:{state:RoomState;visibleFloor:number;reduced:boolean}){
- const snapshot=state.run.current;const affected=useMemo(()=>new Set(snapshot.nodes.filter(n=>n.status!=='HEALTHY').map(n=>n.id)),[snapshot]);
- return <group>{snapshot.edges.filter(e=>NODE_FLOOR(e.source)<=visibleFloor&&NODE_FLOOR(e.target)<=visibleFloor).map((e,i)=>{
-  const a=nodePosition(e.source),b=nodePosition(e.target),bad=affected.has(e.source)&&affected.has(e.target);const points:[number,number,number][]=[[a[0],a[1]+1.3,a[2]],[a[0],a[1]+1.7,a[2]+1.2],[b[0],b[1]+1.7,b[2]+1.2],[b[0],b[1]+1.3,b[2]]];
-  return <group key={`${e.source}-${e.target}`}><Line points={points} color={bad?'#ff7b71':e.relation==='REPLICATES_TO'?'#a49cec':'#40748a'} lineWidth={bad?2:1} transparent opacity={bad?.85:.25}/>{bad&&!reduced&&<Pulse points={points} offset={i*.11}/>}</group>;
- })}</group>;
-}
-function Pulse({points,offset}:{points:[number,number,number][];offset:number}){const mesh=useRef<THREE.Mesh>(null);const curve=useMemo(()=>new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p))),[points]);useFrame(s=>{mesh.current?.position.copy(curve.getPoint(1-(s.clock.elapsedTime*.3+offset)%1));});return <mesh ref={mesh}><sphereGeometry args={[.07,6,6]}/><meshBasicMaterial color="#ffb393"/></mesh>;}
-function Camera({floor,overview,reduced}:{floor:number;overview:boolean;reduced:boolean}){
- const controls=useRef<OrbitControlsImpl>(null),transition=useRef(true);const {camera,size}=useThree();
+function Agent({x,y,label,active,done,reduced,onSelect}:{x:number;y:number;label:string;active:boolean;done:boolean;reduced:boolean;onSelect:()=>void}){const ref=useRef<THREE.Group>(null);useFrame(s=>{if(ref.current)ref.current.position.y=y+1.6+(!reduced?Math.sin(s.clock.elapsedTime*2+x)*.08:0);});const color=active?'#65cde5':done?'#7dbd91':'#a8c4c0';return <group ref={ref} position={[x,y+1.6,1]} onClick={e=>{if(e.delta>6)return;e.stopPropagation();onSelect();}}><RoundedBox args={[.85,.7,.55]} radius={.2} smoothness={3} castShadow><meshStandardMaterial color={color}/></RoundedBox><Box at={[0,.02,.29]} size={[.6,.27,.04]} color="#25444b"/>{[-.17,.17].map(dx=><Box key={dx} at={[dx,.03,.32]} size={[.08,.08,.03]} color="#a9eee3" glow/>)}<mesh position={[0,.5,0]}><sphereGeometry args={[.09,10,8]}/><meshStandardMaterial color="#e0b878"/></mesh><Html position={[0,.8,0]} center distanceFactor={14} style={{pointerEvents:'none'}}><span className="wr-agent-label">{label}<small>{active?'생각하는 중…':done?'결과 도착':'대기 중'}</small></span></Html></group>;}
+function Connections({state,floor,overview,selected}:{state:RoomState;floor:number;overview:boolean;selected:string}){return <group>{state.run.current.edges.filter(e=>(overview||NODE_FLOOR(e.source)===floor&&NODE_FLOOR(e.target)===floor)&&(e.source===selected||e.target===selected||state.run.current.nodes.some(n=>n.id===e.source&&n.status!=='HEALTHY'))).map(e=>{const a=nodePosition(e.source),b=nodePosition(e.target);return <Line key={`${e.source}-${e.target}`} points={[[a[0],a[1]+1.4,a[2]],[b[0],b[1]+1.4,b[2]]]} color="#d58b66" lineWidth={2} transparent opacity={.65}/>;})}</group>;}
+function Camera({player,floor,overview,reduced}:{player?:Player;floor:number;overview:boolean;reduced:boolean}){
+ const controls=useRef<OrbitControlsImpl>(null),transition=useRef(true);const {camera,size}=useThree();const target=useMemo(()=>new THREE.Vector3(),[]),delta=useMemo(()=>new THREE.Vector3(),[]);
  useEffect(()=>{transition.current=true;},[floor,overview,size.width,size.height,reduced]);
- useFrame((_,dt)=>{if(!controls.current||!transition.current)return;const y=(floor-1)*5.5,scale=Math.max(1,Math.min(1.7,.95/(size.width/size.height)));const target=new THREE.Vector3(0,overview?8:y+.9,0);const position=new THREE.Vector3((overview?30:23)*scale,(overview?8:y)+ (overview?22:19)*scale,(overview?34:25)*scale);const blend=reduced?1:1-Math.exp(-dt*4);camera.position.lerp(position,blend);controls.current.target.lerp(target,blend);controls.current.update();if(camera.position.distanceTo(position)<.06)transition.current=false;});
- return <OrbitControls ref={controls} makeDefault onStart={()=>{transition.current=false;}} minDistance={14} maxDistance={65} maxPolarAngle={Math.PI/2.05} enableDamping/>;
+ useFrame((_,dt)=>{const c=controls.current;if(!c)return;const y=(floor-1)*5.5,portrait=size.width<size.height;target.set(overview?0:player?.x||0,overview?8:y+1,overview?0:player?.z||3);const blend=reduced?1:1-Math.exp(-dt*5);if(transition.current){const pos=overview?new THREE.Vector3(30,29,34):new THREE.Vector3(target.x+2.5,target.y+(portrait?5:3.7),target.z+(portrait?9.5:7.5));camera.position.lerp(pos,blend);c.target.lerp(target,blend);if(camera.position.distanceTo(pos)<.05)transition.current=false;}else{delta.copy(target).sub(c.target).multiplyScalar(blend);c.target.add(delta);camera.position.add(delta);}c.update();});
+ return <OrbitControls ref={controls} makeDefault onStart={()=>{transition.current=false;}} enablePan={false} minDistance={overview?22:4} maxDistance={overview?65:17} minPolarAngle={.25} maxPolarAngle={Math.PI/2.15} enableDamping/>;
 }
-export default function Scene({state,id,floor,overview,selected,onSelect,low,reduced}:{state:RoomState;id:string;floor:number;overview:boolean;selected:string;onSelect:(id:string)=>void;low:boolean;reduced:boolean}){
- const visible=overview?4:floor;
- return <Canvas shadows={!low} dpr={low?1:[1,1.5]} camera={{position:[30,30,34],fov:43,near:.1,far:150}} gl={{antialias:!low,powerPreference:low?'low-power':'high-performance'}} onCreated={({gl})=>{gl.setClearColor('#081521');}}>
-  <fog attach="fog" args={['#081521',65,135]}/><ambientLight intensity={1.4}/><hemisphereLight args={['#c3ebff','#182e46',1.5]}/><directionalLight position={[15,30,20]} intensity={2.6} castShadow={!low} shadow-mapSize={[1024,1024]} shadow-camera-left={-22} shadow-camera-right={22} shadow-camera-top={32} shadow-camera-bottom={-22}/>
-  <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.55,0]} receiveShadow><planeGeometry args={[200,200]}/><meshStandardMaterial color="#0c1d2c" roughness={1}/></mesh>
-  <gridHelper args={[140,70,'#213b4f','#162c3e']} position={[0,-.5,0]}/>
-  {Array.from({length:visible},(_,i)=><Floor key={i} floor={i+1} active={i+1===floor}/>)}
-  {state.run.current.nodes.filter(n=>NODE_FLOOR(n.id)<=visible).map(n=><Rack key={n.id} node={n} selected={selected===n.id} onSelect={onSelect}/>)}
-  <Connections state={state} visibleFloor={visible} reduced={reduced}/>
-  {state.players.filter(p=>p.floor<=visible).map(p=><Avatar key={p.id} player={p} self={id===p.id} reduced={reduced}/>)}
-  {visible===4&&<>{[['원인 · 영향 분석','analyze',!!state.run.analysis],['복구 전략 · 정책','strategies',!!state.run.strategies],['시뮬레이션 검증','simulate',!!state.run.results]].map(([label,op,done],i)=><Agent key={String(op)} x={-4+i*4} label={String(label)} active={state.busy&&state.operation===op} done={!!done} reduced={reduced}/>)}</>}
-  {visible>=3&&<Html position={[0,13.1,-6.45]} transform distanceFactor={8} style={{pointerEvents:'none'}}><div className="wr-wall-board"><small>INCIDENT COMMAND</small><strong>{state.run.status}</strong><span>{state.players.length} OPERATORS · SYNTHETIC</span></div></Html>}
-  <Camera floor={floor} overview={overview} reduced={reduced}/>
+export default function Scene({state,id,floor,overview,selected,onSelect,onMove,onAgent,low,reduced}:{state:RoomState;id:string;floor:number;overview:boolean;selected:string;onSelect:(id:string)=>void;onMove:(x:number,z:number)=>void;onAgent:()=>void;low:boolean;reduced:boolean}){
+ const floors=overview?[1,2,3,4]:[floor],me=state.players.find(p=>p.id===id);
+ return <Canvas shadows={!low} dpr={low?1:[1,1.5]} camera={{position:[-5,5,12],fov:48,near:.1,far:180}} gl={{antialias:!low,powerPreference:low?'low-power':'high-performance'}} onCreated={({gl})=>{gl.setClearColor('#c3d6d2');}}>
+  <fog attach="fog" args={['#c3d6d2',40,100]}/><ambientLight intensity={1.7}/><hemisphereLight args={['#fff4df','#8ba99b',1.5]}/><directionalLight position={[6,28,14]} intensity={2.6} castShadow={!low} shadow-mapSize={[1024,1024]} shadow-camera-left={-20} shadow-camera-right={20} shadow-camera-top={35} shadow-camera-bottom={-20} shadow-normalBias={.04}/>
+  <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.5,0]} receiveShadow><planeGeometry args={[200,200]}/><meshStandardMaterial color="#a4b9a3" roughness={1}/></mesh>
+  {[-26,-16,-5,8,20,30].map((x,i)=><group key={x} position={[x,0,-15-i%2*4]}><Box at={[0,2,0]} size={[.5,4,.5]} color="#8b8871"/><mesh position={[0,5,0]} scale={[3,4,3]}><icosahedronGeometry args={[1,2]}/><meshStandardMaterial color={i%2?'#7b9d7d':'#94ac89'} roughness={1}/></mesh></group>)}
+  {floors.map(f=><Floor key={f} floor={f} overview={overview} onMove={onMove}/>)}
+  {state.run.current.nodes.filter(n=>overview||NODE_FLOOR(n.id)===floor).map(n=><Rack key={n.id} node={n} selected={selected===n.id} onSelect={onSelect} overview={overview}/>)}
+  <Connections state={state} floor={floor} overview={overview} selected={selected}/>
+  {state.players.filter(p=>overview||p.floor===floor).map(p=><Avatar key={p.id} player={p} self={p.id===id} reduced={reduced} message={state.players.filter(other=>other.name===p.name).length===1?state.chat.filter(m=>m.name===p.name&&Date.now()-m.at<6500).at(-1)?.text:undefined}/>)}
+  {floors.includes(4)&&[['원인 · 영향 분석','analyze',!!state.run.analysis],['복구 전략','strategies',!!state.run.strategies],['복구 검증','simulate',!!state.run.results]].map(([label,op,done],i)=><Agent key={String(op)} x={-4+i*4} y={16.5} label={String(label)} active={state.busy&&state.operation===op} done={!!done} reduced={reduced} onSelect={onAgent}/>)}
+  {floors.includes(3)&&<Html position={[0,12.7,-6.65]} center distanceFactor={18} style={{pointerEvents:'none'}}><div className="wr-wall-board"><small>함께 해결하는 공간</small><strong>{state.run.status==='NORMAL'?'오늘도 평온해요':state.run.status==='APPROVED'?'복구 결과를 확인해요':'함께 확인해 볼까요?'}</strong><span>{state.players.length}명 함께 · 합성 시뮬레이션</span></div></Html>}
+  <Camera player={me} floor={floor} overview={overview} reduced={reduced}/>
  </Canvas>;
 }
