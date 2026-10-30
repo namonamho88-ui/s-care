@@ -34,7 +34,11 @@ async function setup(page:Page,admin=false){
 }
 test('guest sees real 3D scene, shared state, chat and never admin controls',async({page})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.setViewportSize({width:1512,height:1100});await setup(page);
- await expect(page.locator('.wr-viewport canvas')).toBeVisible();expect(await page.locator('.wr-viewport canvas').evaluate((canvas:HTMLCanvasElement)=>canvas.getContext('webgl2')?.getContextAttributes()?.alpha)).toBe(false);await expect(page.locator('.wr-name.self')).toContainText('나');
+ await expect(page.locator('.wr-viewport canvas')).toBeVisible();
+ // Canvas mounts before R3F configures its renderer. An early getContext() would
+ // create the default alpha=true context itself and alter the application under test.
+ await expect(page.locator('.wr-name.self')).toContainText('나');
+ expect(await page.locator('.wr-viewport canvas').evaluate((canvas:HTMLCanvasElement)=>canvas.getContext('webgl2')?.getContextAttributes()?.alpha)).toBe(false);
  await expect(page.getByText('3D 화면을 시작하지 못했습니다.')).toHaveCount(0);
  await page.getByRole('button',{name:'대화',exact:true}).click();await page.getByLabel('팀 채팅 메시지').fill('<script>공동 확인</script>');await page.getByRole('button',{name:'전송',exact:true}).click();await expect(page.getByRole('log')).toContainText('<script>공동 확인</script>');
  await page.getByRole('button',{name:'열린 패널 닫기'}).click();await page.getByRole('button',{name:'참여자 2명'}).click();await page.getByLabel('나의 시연 역할').selectOption('관리자 시연');await expect(page.getByRole('button',{name:'시나리오 시작',exact:true})).toHaveCount(0);
