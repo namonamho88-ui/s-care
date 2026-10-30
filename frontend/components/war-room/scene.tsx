@@ -1,5 +1,5 @@
 'use client';
-import {useEffect,useMemo,useRef} from 'react';
+import {useEffect,useMemo,useRef,type RefObject} from 'react';
 import {Canvas,useFrame,useThree,type ThreeEvent} from '@react-three/fiber';
 import {Html,Line,OrbitControls,RoundedBox} from '@react-three/drei';
 import * as THREE from 'three';
@@ -42,7 +42,7 @@ function Floor({floor,overview,onMove}:{floor:number;overview:boolean;onMove:(x:
 }
 function RackSlots({color}:{color:string}){const ref=useRef<THREE.InstancedMesh>(null);useEffect(()=>{const o=new THREE.Object3D();for(let i=0;i<6;i++){o.position.set(0,-.67+i*.28,.58);o.updateMatrix();ref.current?.setMatrixAt(i,o.matrix);}if(ref.current)ref.current.instanceMatrix.needsUpdate=true;},[]);return <><instancedMesh ref={ref} args={[undefined,undefined,6]}><boxGeometry args={[.95,.19,.05]}/><meshStandardMaterial color="#3e5f67"/></instancedMesh>{[0,1,2].map(i=><Box key={i} at={[-.36,.65-i*.28,.63]} size={[.06,.06,.03]} color={color} glow/>)}</>;}
 function Rack({node,selected,onSelect,overview}:{node:Node;selected:boolean;onSelect:(id:string)=>void;overview:boolean}){const color=COLORS[node.status]||COLORS.HEALTHY;return <group position={nodePosition(node.id)} onClick={e=>{if(e.delta>6)return;e.stopPropagation();onSelect(node.id);}}><RoundedBox args={[1.35,2.25,1.1]} radius={.1} smoothness={2} castShadow receiveShadow><meshStandardMaterial color={selected?'#617e98':'#526477'} roughness={.65}/></RoundedBox><Box at={[0,0,.57]} size={[1.08,1.92,.04]} color="#23424c"/><RackSlots color={color}/><Box at={[0,1.15,0]} size={[1.2,.06,.95]} color={color} glow/>{!overview&&(selected||node.status!=='HEALTHY')&&<Html position={[0,1.65,0]} center distanceFactor={15} style={{pointerEvents:'none'}}><span className="wr-rack-label"><i style={{background:color}}/>{node.name}</span></Html>}{node.status!=='HEALTHY'&&<mesh position={[0,-1.2,0]} rotation={[-Math.PI/2,0,0]}><ringGeometry args={[.8,1.05,28]}/><meshBasicMaterial color={color} transparent opacity={.8}/></mesh>}</group>;}
-function Avatar({player,self,reduced,message}:{player:Player;self:boolean;reduced:boolean;message?:string}){
+export function Avatar({player,self,reduced,message,fixedLabels=false,portal}:{player:Player;self:boolean;reduced:boolean;message?:string;fixedLabels?:boolean;portal?:RefObject<HTMLElement>}){
  const caption=useRef<HTMLSpanElement>(null);
  const root=useRef<THREE.Group>(null),left=useRef<THREE.Group>(null),right=useRef<THREE.Group>(null),last=useRef(new THREE.Vector3(player.x,(player.floor-1)*5.5,player.z)),motion=useRef(0),arm=useRef<THREE.Group>(null);
  const color=playerColor(player.id);
@@ -54,7 +54,7 @@ function Avatar({player,self,reduced,message}:{player:Player;self:boolean;reduce
   <mesh position={[0,1.54,0]} castShadow><sphereGeometry args={[.39,20,16]}/><meshStandardMaterial color="#e6bf9b" roughness={.9}/></mesh><mesh position={[0,1.69,-.025]} castShadow><sphereGeometry args={[.395,16,12,0,Math.PI*2,0,Math.PI*.48]}/><meshStandardMaterial color="#514c41" roughness={1}/></mesh>
   {[-.12,.12].map(x=><mesh key={x} position={[x,1.54,.37]}><sphereGeometry args={[.029,8,8]}/><meshStandardMaterial color="#393b36"/></mesh>)}<mesh position={[0,1.43,.375]} rotation={[0,0,Math.PI]}><torusGeometry args={[.065,.012,6,14,Math.PI]}/><meshStandardMaterial color="#875b4c"/></mesh>
   <mesh rotation={[-Math.PI/2,0,0]} position={[0,.015,0]}><circleGeometry args={[.46,24]}/><meshBasicMaterial color="#485a52" transparent opacity={.15} depthWrite={false}/></mesh>
-  <Html position={[0,2.13,0]} center distanceFactor={10} style={{pointerEvents:'none'}}><div className="wr-avatar-caption">{message&&<span className="wr-speech">{message}</span>}<span ref={caption} data-player-id={player.id} className={`wr-name ${self?'self':''}`}>{self?`나 · ${player.name}`:player.name}</span></div></Html>
+  <Html portal={portal} position={[0,2.13,0]} center distanceFactor={fixedLabels?undefined:10} style={{pointerEvents:'none',...(fixedLabels?{transform:'translate(-50%, -100%)'}:{})}}><div className="wr-avatar-caption">{message&&!fixedLabels&&<span className="wr-speech">{message}</span>}<span ref={caption} data-player-id={player.id} className={`wr-name ${self?'self':''}`}>{self?`나 · ${player.name}`:player.name}{fixedLabels&&message&&<small className="city-avatar-role">{message}</small>}</span></div></Html>
  </group>;
 }
 function Agent({x,y,label,active,done,reduced,onSelect}:{x:number;y:number;label:string;active:boolean;done:boolean;reduced:boolean;onSelect:()=>void}){const ref=useRef<THREE.Group>(null);useFrame(s=>{if(ref.current)ref.current.position.y=y+1.6+(!reduced?Math.sin(s.clock.elapsedTime*2+x)*.08:0);});const color=active?'#65cde5':done?'#7dbd91':'#a8c4c0';return <group ref={ref} position={[x,y+1.6,1]} onClick={e=>{if(e.delta>6)return;e.stopPropagation();onSelect();}}><RoundedBox args={[.85,.7,.55]} radius={.2} smoothness={3} castShadow><meshStandardMaterial color={color}/></RoundedBox><Box at={[0,.02,.29]} size={[.6,.27,.04]} color="#25444b"/>{[-.17,.17].map(dx=><Box key={dx} at={[dx,.03,.32]} size={[.08,.08,.03]} color="#a9eee3" glow/>)}<mesh position={[0,.5,0]}><sphereGeometry args={[.09,10,8]}/><meshStandardMaterial color="#e0b878"/></mesh><Html position={[0,.8,0]} center distanceFactor={14} style={{pointerEvents:'none'}}><span className="wr-agent-label">{label}<small>{active?'생각하는 중…':done?'결과 도착':'대기 중'}</small></span></Html></group>;}
@@ -70,7 +70,7 @@ function Camera({player,floor,overview,reduced,focus,presentation,reset}:{player
 }
 // Three r180 requests an alpha context even with renderer alpha:false. Create the
 // opaque context explicitly: this full-screen scene never needs canvas compositing.
-function opaqueRenderer(canvas:HTMLCanvasElement,low:boolean){
+export function opaqueRenderer(canvas:HTMLCanvasElement,low:boolean){
  const powerPreference=low?'low-power':'high-performance';
  const context=canvas.getContext('webgl2',{alpha:false,antialias:true,powerPreference});
  if(!context)throw new Error('WebGL 2 context unavailable');
