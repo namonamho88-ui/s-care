@@ -45,7 +45,7 @@ async function setup(page: Page, recoveryNotes?: string, role = "ADMIN", initial
     }
     await route.fulfill({json:data});
   });
-  await page.goto('/');
+  await page.goto('/operations');
   await expect(page.getByRole('heading',{name:'S-CARE · AI 장애 대응 관제센터'})).toBeVisible();
   return mutations;
 }
@@ -441,7 +441,7 @@ test('login defaults to a personal account and keeps bootstrap and activation se
     if(new URL(route.request().url()).pathname==='/api/session'&&route.request().postDataJSON().mode!=='demo') calls.push(route.request().postDataJSON());
     await route.fulfill({status:401,json:{error:'가상 인증 검증 오류'}});
   });
-  await page.goto('/');
+  await page.goto('/operations');
   await expect(page.getByRole('tab',{name:'개인 계정',exact:true})).toHaveAttribute('aria-selected','true');
   await expect(page.getByRole('alert').filter({hasText:'세션이 만료'})).toHaveCount(0);
   await expect(page.getByLabel('관리자 토큰')).toHaveCount(0);
@@ -953,7 +953,7 @@ for (const width of [390, 1280]) test(`login cold start guides waiting and sends
     if(path==='/api/session' && route.request().postDataJSON().mode==='login') writes++;
     return route.fulfill({status:401,json:{error:'검증용 인증 실패'}});
   });
-  await page.goto('/');
+  await page.goto('/operations');
   await page.getByLabel('아이디',{exact:true}).fill('fictional.user');
   await page.getByLabel('비밀번호',{exact:true}).fill('fictional-password');
   await page.getByRole('button',{name:'관제센터 시작'}).click();

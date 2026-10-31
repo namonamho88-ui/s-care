@@ -38,7 +38,7 @@ export function useRoom(){
     ws.onmessage=e=>{if(turn!==generation.current||socket.current!==ws)return;try{
      const value=JSON.parse(e.data);
      if(value.type==='welcome'){clearTimeout(deadline);timers.current.delete(deadline);failures=0;setStatus('연결됨');setError('');}
-     if(value.type==='state'&&value.room===room&&value.revision>=revision){revision=value.revision;players.current=value.players;setState(value);}
+     if(value.type==='state'&&value.room===room&&value.revision>=revision){revision=value.revision;players.current=value.players;setState(value);if(typeof value.serverNow==='number')setClockOffset(value.serverNow-Date.now());}
      // Movement never changes incident state or its revision.
      if(value.type==='presence'){players.current=value.players;setState(s=>s?{...s,players:value.players}:s);}
      if(value.type==='collaboration')setState(s=>s?{...s,chat:value.chat,checks:value.checks}:s);
