@@ -20,9 +20,14 @@ public class WarRoom {
  record Ticket(String guest,long expires){}
  static class Guest {
   String id=UUID.randomUUID().toString(), name="게스트-"+UUID.randomUUID().toString().substring(0,4), room, connection, role="분석";
-  long expires, lastSeen, window, lastMove, lastChat; int count, contributions, appearance, floor=1; double x,z,direction;
-  Guest(String room,long now){this.room=room;expires=now+3_600_000;lastSeen=now;}
-  Map<String,Object> view(){return Map.of("id",id,"name",name,"role",role,"floor",floor,"x",x,"z",z,"direction",direction,"contributions",contributions,"appearance",appearance);}
+  long expires, lastSeen, window, lastMove, lastChat, lastPeace, ritualAt, ritualSequence; int count, contributions, appearance, floor=1, ritualStep, stones; double x,z,direction,stoneX,stoneZ,stoneDirection;
+  String ritualKind="rest",ritualResult="idle"; final LinkedHashSet<String> peaceRequests=new LinkedHashSet<>();
+  Guest(String room,long now){this.room=room;expires=now+3_600_000;lastSeen=now;if(peace(room))role="함께 쉬는 중";}
+  Map<String,Object> view(){
+   var out=new LinkedHashMap<String,Object>(Map.of("id",id,"name",name,"role",role,"floor",floor,"x",x,"z",z,"direction",direction,"contributions",contributions,"appearance",appearance));
+   if(peace(room)){String result=ritualKind.equals("cross")&&System.currentTimeMillis()-ritualAt>=4000?"complete":ritualResult;out.put("ritual",Map.of("kind",ritualKind,"at",ritualAt,"sequence",ritualSequence,"step",ritualStep,"stones",stones,"result",result,"stoneX",stoneX,"stoneZ",stoneZ,"stoneDirection",stoneDirection));}
+   return out;
+  }
  }
  static class Room {
   final CityTraining training=new CityTraining();
@@ -36,11 +41,12 @@ public class WarRoom {
  static void admin(){Access.admin();if(!"ACCOUNT".equals(Access.current().kind())||!"ADMIN".equals(Access.current().role()))throw Access.denied();}
  private String secret(){byte[] b=new byte[32];random.nextBytes(b);return Base64.getUrlEncoder().withoutPadding().encodeToString(b);}
  private static String hash(String s){try{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(s.getBytes(java.nio.charset.StandardCharsets.UTF_8)));}catch(Exception e){throw new IllegalStateException(e);}}
+ static boolean peace(String id){return id!=null&&id.startsWith("peace-");}
  private Room room(String id){
   if(id==null||!id.matches("[a-z0-9-]{1,32}"))throw new IllegalArgumentException("방 이름: 영문 소문자·숫자·하이픈, 최대 32자");
   Room existing=rooms.get(id);if(existing!=null)return existing;
   if(rooms.size()>=8)throw new IllegalStateException("최대 8개 방까지 열 수 있습니다.");
-  Room r=new Room(id);var rows=store.db.queryForList("SELECT * FROM war_rooms WHERE id=?",id);
+  Room r=new Room(id);var rows=peace(id)?List.<Map<String,Object>>of():store.db.queryForList("SELECT * FROM war_rooms WHERE id=?",id);
   if(!rows.isEmpty()){var row=rows.get(0);r.runId=(String)row.get("run_id");r.incidentId=(String)row.get("incident_id");r.mappedNode=(String)row.get("mapped_node");r.knowledgeId=(String)row.get("knowledge_id");if(r.runId!=null)r.run=loadRun(r.runId);}
   rooms.put(id,r);return r;
  }
@@ -48,17 +54,24 @@ public class WarRoom {
  private void persist(Room r){store.tx(()->{if(store.db.update("UPDATE war_rooms SET run_id=?,incident_id=?,mapped_node=?,updated_at=? WHERE id=?",r.runId,r.incidentId,r.mappedNode,Store.now(),r.id)==0)store.db.update("INSERT INTO war_rooms(id,run_id,incident_id,mapped_node,updated_at) VALUES (?,?,?,?,?)",r.id,r.runId,r.incidentId,r.mappedNode,Store.now());return null;});}
  public synchronized Map<String,Object> join(String id,String resume){
   enabled();cleanup();room(id);long now=System.currentTimeMillis();String token=resume;Guest g=resume==null?null:guests.get(hash(resume));
-  if(g==null||!g.room.equals(id)){if(guests.size()>=160)throw new IllegalStateException("게스트 세션 한도에 도달했습니다. 잠시 후 다시 시도하세요.");if(guests.values().stream().filter(p->p.room.equals(id)).count()>=CAPACITY)throw new IllegalStateException("방 정원은 20명입니다. 잠시 후 다시 시도하세요.");g=new Guest(id,now);if(id.startsWith("city-")){Set<Integer> styles=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->styles.add(p.appearance));while(styles.contains(g.appearance))g.appearance++;String base=List.of("파란수달","차분한곰","든든한펭귄","빠른여우").get(g.appearance%4)+"-"+g.id.substring(0,4);Set<String> used=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->used.add(p.name));String chosen=base;for(int suffix=2;used.contains(chosen);suffix++)chosen=base+"-"+suffix;g.name=chosen;}token=secret();guests.put(hash(token),g);}
+  if(g==null||!g.room.equals(id)){if(guests.size()>=160)throw new IllegalStateException("게스트 세션 한도에 도달했습니다. 잠시 후 다시 시도하세요.");if(guests.values().stream().filter(p->p.room.equals(id)).count()>=CAPACITY)throw new IllegalStateException("방 정원은 20명입니다. 잠시 후 다시 시도하세요.");g=new Guest(id,now);if(id.startsWith("city-")||peace(id)){Set<Integer> styles=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->styles.add(p.appearance));while(styles.contains(g.appearance))g.appearance++;String base=List.of("파란수달","차분한곰","든든한펭귄","빠른여우").get(g.appearance%4)+"-"+g.id.substring(0,4);Set<String> used=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->used.add(p.name));String chosen=base;for(int suffix=2;used.contains(chosen);suffix++)chosen=base+"-"+suffix;g.name=chosen;}token=secret();guests.put(hash(token),g);}
   // Every socket gets a one-use, 20-second admission ticket; the resumable secret stays in an HttpOnly BFF cookie.
   String ticket=secret();String key=hash(token);tickets.entrySet().removeIf(e->e.getValue().guest().equals(key));tickets.put(hash(ticket),new Ticket(key,now+20_000));
   return Map.of("resume",token,"ticket",ticket,"id",g.id,"name",g.name,"expiresAt",g.expires);
  }
  synchronized Guest connect(String ticket,String connection){cleanup();Ticket t=tickets.remove(hash(ticket));if(t==null||t.expires()<System.currentTimeMillis())throw Access.denied();Guest g=guests.get(t.guest());if(g==null)throw Access.denied();if(g.connection!=null)throw new IllegalStateException("이미 접속 중입니다. 이전 창을 닫고 재시도하세요.");g.connection=connection;g.lastSeen=System.currentTimeMillis();spawn(g);room(g.room).revision++;return g;}
  synchronized void disconnect(String connection){guests.values().stream().filter(g->connection.equals(g.connection)).forEach(g->{g.connection=null;g.lastSeen=System.currentTimeMillis();room(g.room).revision++;});}
- private void spawn(Guest g){if(g.room.startsWith("city-"))for(int i=0;i<4;i++){double x=-7+i*4.5;if(free(g,x,3.4)){g.x=x;g.z=3.4;return;}}for(int i=0;i<40;i++){double x=-8+(i%10)*1.6,z=4+Math.floor(i/10)*.75;if(free(g,x,z)){g.x=x;g.z=z;return;}}throw new IllegalStateException("입장 위치가 혼잡합니다.");}
+ private void spawn(Guest g){if(peace(g.room)){for(int i=0;i<20;i++){double x=-3+(i%4)*2,z=1.2+(i/4)*.85;if(free(g,x,z)){g.x=x;g.z=z;return;}}}if(g.room.startsWith("city-"))for(int i=0;i<4;i++){double x=-7+i*4.5;if(free(g,x,3.4)){g.x=x;g.z=3.4;return;}}for(int i=0;i<40;i++){double x=-8+(i%10)*1.6,z=4+Math.floor(i/10)*.75;if(free(g,x,z)){g.x=x;g.z=z;return;}}throw new IllegalStateException("입장 위치가 혼잡합니다.");}
  private boolean free(Guest g,double x,double z){
   if(Math.abs(x)>9||Math.abs(z)>6)return false;
-  if(g.room.startsWith("city-")){
+  if(peace(g.room)){
+   // Geometry contract with peace-scene.tsx: central tree planter.
+   if(Math.hypot(x,z+3.85)<1.85)return false;
+   // Hanok stream is crossed only on its wooden bridge; alcove seats stay solid.
+   if(Math.abs(z-(5.2+Math.sin(x*.5)*.25))<1.0&&!(x>1.55&&x<3.65))return false;
+   if(Math.abs(Math.abs(x)-7.8)<.65&&Math.abs(z+1.3)<1.25)return false;
+   if(Math.abs(Math.abs(x)-3.4)<1.2&&Math.abs(z+5.15)<.65)return false;
+  }else if(g.room.startsWith("city-")){
    // Geometry contract with city-scene.tsx: table, rack alcove, perimeter desks.
    if(x*x/(3.5*3.5)+z*z/(2.2*2.2)<1)return false;
    if(x< -6.9&&z<2.3)return false;
@@ -77,18 +90,50 @@ public class WarRoom {
  synchronized void input(String connection,JsonNode msg){
   Guest g=guests.values().stream().filter(p->connection.equals(p.connection)).findFirst().orElseThrow(Access::denied);long now=System.currentTimeMillis();if(now>=g.expires)throw Access.denied();
   if(now-g.window>=1000){g.window=now;g.count=0;}if(++g.count>25)throw new IllegalArgumentException("초당 이벤트 한도 초과");g.lastSeen=now;Room r=room(g.room);
-  switch(msg.path("type").asText()){
+  String type=msg.path("type").asText();
+  if(peace(g.room)&&!Set.of("peace-action","chat","move","ping","sync").contains(type))throw new IllegalArgumentException("평온의 방에서는 휴식 동작·이동·채팅만 사용할 수 있습니다.");
+  switch(type){
+   case "peace-action" -> peaceAction(g,msg,now);
    case "training" -> {r.training.apply(g.id,g.name,msg,now);}
    case "profile" -> {String name=msg.path("name").asText().strip();if(name.isEmpty()||name.length()>16||name.codePoints().anyMatch(Character::isISOControl))throw new IllegalArgumentException("닉네임은 1~16자로 입력하세요.");if(guests.values().stream().anyMatch(p->p!=g&&p.room.equals(g.room)&&p.name.equals(name)))throw new IllegalArgumentException("같은 방에서 사용 중인 닉네임입니다.");g.name=name;}
    case "city-visit" -> {String zone=msg.path("zone").asText();int i=CityTraining.ZONES.indexOf(zone);if(i<0)throw new IllegalArgumentException("구역 오류");g.floor=1;double[][] points={{0,3.2},{-3.8,-2.5},{-5.6,-3.8},{-5.6,.8},{4.3,-3.3},{4.3,1.1}};for(int slot=0;slot<25;slot++){double x=points[i][0]+(slot%5-2)*.8,z=points[i][1]+(slot/5)*.8;if(free(g,x,z)){g.x=x;g.z=z;break;}}}
    case "ping", "sync" -> {return;}
-   case "move" -> {if(now-g.lastMove<75)return;double dx=finite(msg.path("x")),dz=finite(msg.path("z"));double length=Math.hypot(dx,dz);if(length>1.01)throw new IllegalArgumentException("이동 벡터 범위 초과");double dt=Math.min(.15,(now-g.lastMove)/1000.0);g.lastMove=now;double x=g.x+dx*3*dt,z=g.z+dz*3*dt;if(free(g,x,z)){g.x=x;g.z=z;}if(length>.01)g.direction=Math.atan2(dx,dz);}
+   case "move" -> {if(now-g.lastMove<75)return;double dx=finite(msg.path("x")),dz=finite(msg.path("z"));double length=Math.hypot(dx,dz);if(length>1.01)throw new IllegalArgumentException("이동 벡터 범위 초과");double dt=Math.min(.15,(now-g.lastMove)/1000.0);g.lastMove=now;double x=g.x+dx*3*dt,z=g.z+dz*3*dt;if(free(g,x,z)){if(peace(g.room)&&Math.hypot(x-g.x,z-g.z)>.001&&!g.ritualKind.equals("rest")){g.ritualKind="rest";g.ritualAt=now;g.ritualSequence++;g.ritualStep=0;g.ritualResult="idle";}g.x=x;g.z=z;}if(length>.01)g.direction=Math.atan2(dx,dz);}
    case "floor" -> {int f=msg.path("floor").asInt();if(f<1||f>4)throw new IllegalArgumentException("층 범위 오류");g.floor=f;spawn(g);}
    case "role" -> {String role=msg.path("role").asText();if(!Set.of("분석","인프라","대응","검증","관리자 시연").contains(role))throw new IllegalArgumentException("역할 오류");g.role=role;}
    case "chat" -> {String text=msg.path("text").asText().strip();if(text.isEmpty()||text.length()>240||text.codePoints().anyMatch(Character::isISOControl)||now-g.lastChat<1000)throw new IllegalArgumentException("채팅은 1초 간격, 240자 이내입니다.");g.lastChat=now;r.chat.add(Map.of("id",UUID.randomUUID().toString(),"player",g.id,"name",g.name,"text",text,"at",now));if(r.chat.size()>60)r.chat.remove(0);}
    case "inspect" -> {String node=msg.path("node").asText();TwinEngine.node(TwinEngine.initial(42),node);if(r.run!=null&&g.floor==nodeFloor(node)&&r.checks.add(g.id+":"+node)){g.contributions++;}}
    default -> throw new IllegalArgumentException("허용되지 않은 게스트 이벤트");
   }
+ }
+ // Public gestures only, held with the guest in memory. No religious affiliation, private wish or prayer text is stored.
+ private void peaceAction(Guest g,JsonNode msg,long now){
+  if(!peace(g.room))throw new IllegalArgumentException("평온의 방에서만 사용할 수 있는 동작입니다.");
+  String request=msg.path("requestId").asText();
+  if(!request.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"))throw new IllegalArgumentException("유효한 동작 요청 ID가 필요합니다.");
+  request=request.toLowerCase(Locale.ROOT);if(g.peaceRequests.contains(request))return;
+  String kind=msg.path("kind").asText();
+  if(!Set.of("cross","rosary","bow","beads","prayer","dua","rest","stone").contains(kind))throw new IllegalArgumentException("지원하지 않는 휴식 동작입니다.");
+  if(!kind.equals("rest")&&now-g.lastPeace<250)throw new IllegalArgumentException("휴식 동작은 0.25초 간격으로 사용할 수 있습니다.");
+  if(kind.equals("cross")&&g.ritualKind.equals("cross")&&now-g.ritualAt<4000)throw new IllegalStateException("성호 동작을 마친 뒤 다시 시작하세요. 다른 동작이나 쉬기로 전환할 수 있습니다.");
+  double offset=msg.has("offset")?finite(msg.get("offset")):0;
+  if(Math.abs(offset)>1)throw new IllegalArgumentException("돌 놓기 위치는 -1~1 사이입니다.");
+  if(msg.has("safe")&&!msg.get("safe").isBoolean())throw new IllegalArgumentException("돌 쌓기 모드가 올바르지 않습니다.");
+  if(msg.has("reset")&&!msg.get("reset").isBoolean())throw new IllegalArgumentException("돌탑 초기화 값이 올바르지 않습니다.");
+  boolean reset=msg.path("reset").asBoolean(false);
+  if(reset&&!kind.equals("stone"))throw new IllegalArgumentException("돌탑만 초기화할 수 있습니다.");
+  boolean safe=msg.path("safe").asBoolean(true);String result=kind.equals("rest")?"idle":"active";
+  int step=Set.of("rosary","beads").contains(kind)?(kind.equals(g.ritualKind)?g.ritualStep+1:1):0;
+  if(kind.equals("stone")){
+   g.stoneX=g.x;g.stoneZ=g.z;g.stoneDirection=g.direction;
+   // Deterministic balance model. A fallen new stone leaves the old stack intact.
+   if(reset){g.stones=0;result="cleared";}
+   else if(g.stones>=7)result="complete";
+   else if(safe||Math.abs(offset)<=Math.max(.2,.72-.07*g.stones)){g.stones++;result="placed";}
+   else result="fallen";
+  }
+  g.ritualKind=kind;g.ritualAt=now;g.ritualSequence++;g.ritualStep=step;g.ritualResult=result;g.lastPeace=now;
+  g.peaceRequests.add(request);if(g.peaceRequests.size()>128)g.peaceRequests.remove(g.peaceRequests.iterator().next());
  }
  static int nodeFloor(String id){return Set.of("gateway","lb","external-api","web-1","web-2","partner").contains(id)?2:1;}
  synchronized void cleanup(){long now=System.currentTimeMillis();tickets.entrySet().removeIf(e->e.getValue().expires()<now);guests.entrySet().removeIf(e->{Guest g=e.getValue();return now>=g.expires||(g.connection==null&&now-g.lastSeen>120_000);});rooms.entrySet().removeIf(e->!e.getValue().busy&&guests.values().stream().noneMatch(g->g.room.equals(e.getKey())));}
@@ -97,7 +142,7 @@ public class WarRoom {
  synchronized String connectionRoom(String connection){return guests.values().stream().filter(g->connection.equals(g.connection)).map(g->g.room).findFirst().orElse(null);}
  synchronized Map<String,Object> trainingState(String connection){Guest g=guests.values().stream().filter(p->connection.equals(p.connection)).findFirst().orElseThrow(Access::denied);return room(g.room).training.view(g.id,System.currentTimeMillis());}
  public synchronized Map<String,Object> state(String id){
-  Room r=room(id);refreshIncident(r);Map<String,Object> out=new LinkedHashMap<>();out.put("type","state");out.put("room",id);out.put("revision",r.revision);out.put("fictional",true);out.put("players",guests.values().stream().filter(g->g.room.equals(id)&&g.connection!=null).map(Guest::view).toList());out.put("chat",List.copyOf(r.chat));out.put("busy",r.busy);out.put("operation",r.operation);out.put("error",r.error);out.put("started",r.started);out.put("completed",r.completed);out.put("incidentLinked",r.incidentId!=null);out.put("checks",r.checks.size());out.put("incident",r.incident);
+  Room r=room(id);refreshIncident(r);Map<String,Object> out=new LinkedHashMap<>();out.put("type","state");out.put("room",id);out.put("revision",r.revision);out.put("serverNow",System.currentTimeMillis());out.put("fictional",true);out.put("players",guests.values().stream().filter(g->g.room.equals(id)&&g.connection!=null).map(Guest::view).toList());out.put("chat",List.copyOf(r.chat));out.put("busy",r.busy);out.put("operation",r.operation);out.put("error",r.error);out.put("started",r.started);out.put("completed",r.completed);out.put("incidentLinked",r.incidentId!=null);out.put("checks",r.checks.size());out.put("incident",r.incident);
   // Only dedicated synthetic runs are public. No incident records, tokens, audit actors or approval free text.
   var run=new LinkedHashMap<String,Object>();if(r.run!=null)for(String k:List.of("id","version","status","current","baseline","faultSnapshot","propagation","analysis","generation","strategies","results","recommendation","selectedStrategy"))if(r.run.containsKey(k))run.put(k,r.run.get(k));
   if(r.run==null){run.put("status","NORMAL");run.put("current",TwinEngine.initial(42));}out.put("run",run);out.put("knowledgeId",r.knowledgeId);return out;
@@ -124,7 +169,7 @@ public class WarRoom {
  }
  public synchronized Map<String,Object> context(String id){enabled();admin();Room r=room(id);var out=new LinkedHashMap<String,Object>();out.put("incidentId",r.incidentId);out.put("mappedNode",r.mappedNode);return out;}
  public Map<String,Object> command(String id,String op,Map<String,Object> body){
-  enabled();admin();Room r;
+  enabled();admin();if(peace(id))throw new IllegalArgumentException("평온의 방은 장애 대응 명령과 연결할 수 없습니다.");Room r;
   synchronized(this){r=room(id);if(r.busy)throw new IllegalStateException("이 방에서 작업이 실행 중입니다.");if(r.incidentId!=null&&!Set.of("link","unlink").contains(op))throw new IllegalStateException("연결 장애는 기존 장애 화면에서 처리하세요. 독립 실험은 연결 해제 후 가능합니다.");if(!(body.get("revision") instanceof Number n)||n.longValue()!=r.revision)throw new IllegalStateException("상태가 변경되었습니다. 최신 상태에서 다시 실행하세요.");r.busy=true;r.operation=op;r.error="";r.revision++;}
   try{
    if(op.equals("link")){String incident=Objects.toString(body.get("incidentId"),"");String node=Objects.toString(body.get("node"),"");TwinEngine.node(TwinEngine.initial(42),node);var i=store.incident(incident);if(i.get("deleted_at")!=null)throw new IllegalArgumentException("삭제된 장애입니다.");synchronized(this){r.incidentId=incident;r.mappedNode=node;persist(r);}store.audit(incident,Access.actor(),"WAR_ROOM_LINK",Map.of("room",id,"node",node,"basis","관리자 지정 시연 매핑; 자동 온톨로지 추론 아님"));}

@@ -39,13 +39,15 @@ public class WarRoomSocket extends TextWebSocketHandler {
    String id=c.session().getId(),room=rooms.connectionRoom(id);
    if(room==null){if(System.currentTimeMillis()-c.opened()>5000)close(c);continue;}
    if(!rooms.live(id)){close(c);continue;}
-   var exercise=rooms.trainingState(id);int exerciseHash=exercise.hashCode();
-   if(!Objects.equals(training.get(id),exerciseHash)||!sent.containsKey(id)){send(c,Map.of("type","training","room",room,"training",exercise,"serverNow",System.currentTimeMillis()));training.put(id,exerciseHash);}
+   if(!WarRoom.peace(room)){
+    var exercise=rooms.trainingState(id);int exerciseHash=exercise.hashCode();
+    if(!Objects.equals(training.get(id),exerciseHash)||!sent.containsKey(id)){send(c,Map.of("type","training","room",room,"training",exercise,"serverNow",System.currentTimeMillis()));training.put(id,exerciseHash);}
+   }
    var state=snapshots.computeIfAbsent(room,rooms::state);long revision=((Number)state.get("revision")).longValue();
    int fingerprint=state.get("players").hashCode(),discussion=31*state.get("chat").hashCode()+state.get("checks").hashCode();
    if(!Objects.equals(sent.get(id),revision)){send(c,state);sent.put(id,revision);presence.put(id,fingerprint);collaboration.put(id,discussion);}
    else {
-    if(!Objects.equals(presence.get(id),fingerprint)){send(c,Map.of("type","presence","players",state.get("players")));presence.put(id,fingerprint);}
+    if(!Objects.equals(presence.get(id),fingerprint)){send(c,Map.of("type","presence","players",state.get("players"),"serverNow",System.currentTimeMillis()));presence.put(id,fingerprint);}
     if(!Objects.equals(collaboration.get(id),discussion)){send(c,Map.of("type","collaboration","chat",state.get("chat"),"checks",state.get("checks")));collaboration.put(id,discussion);}
    }
   }catch(Exception e){close(c);}
