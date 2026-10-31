@@ -15,7 +15,7 @@ function GardenCamera({reset,reduced,focus,panelOpen}:{reset:number;reduced:bool
  const frame=useMemo(()=>{
   const portrait=size.width/size.height<.85;
   if(focus){const target=new THREE.Vector3(focus.x,1.4+gardenFloorY(focus.x,focus.z),focus.z);if(portrait&&panelOpen)target.y-=1.45;return {target,position:target.clone().add(new THREE.Vector3(Math.abs(focus.x)>6?-Math.sign(focus.x)*6:.7,Math.abs(focus.x)>6?2.3:3.4,Math.abs(focus.x)>6?3.2:7.1)),distance:8};}
-  const target=new THREE.Vector3(0,1.25,-.7),offset=portrait?new THREE.Vector3(1.8,19,30):new THREE.Vector3(4.5,9.4,17.2);return {target,position:target.clone().add(offset),distance:offset.length()};
+  const target=new THREE.Vector3(0,2,-2),offset=portrait?new THREE.Vector3(1,13,33):new THREE.Vector3(3,8,22);return {target,position:target.clone().add(offset),distance:offset.length()};
  },[size.width,size.height,focus?.x,focus?.z,!!focus&&panelOpen]);
  useEffect(()=>{moving.current=true;gl.domElement.dataset.cameraSettled='false';},[reset,frame,gl]);
  useFrame((_,dt)=>{if(!controls.current||!moving.current)return;const blend=first.current||reduced?1:1-Math.exp(-dt*5);camera.position.lerp(frame.position,blend);controls.current.target.lerp(frame.target,blend);controls.current.update();first.current=false;if(camera.position.distanceTo(frame.position)<.02){moving.current=false;gl.domElement.dataset.cameraSettled='true';}});
@@ -23,7 +23,7 @@ function GardenCamera({reset,reduced,focus,panelOpen}:{reset:number;reduced:bool
 }
 function PeaceScene({players,chat,id,low,reduced,quiet,now,reset,closeView,panelOpen=false,onMove}:{players:PeacePlayer[];chat:RoomState['chat'];id:string;low:boolean;reduced:boolean;quiet:boolean;now:number;reset:number;closeView:boolean;panelOpen?:boolean;onMove:(x:number,z:number)=>void}){
  const [labels,setLabels]=useState<HTMLDivElement|null>(null),portal=useMemo(()=>labels?{current:labels}:undefined,[labels]);const wish=chat.filter(m=>m.text.startsWith('🌿 소원 · ')).at(-1);
- return <><div ref={setLabels} className="peace-label-host"/>{labels&&<Canvas frameloop="demand" shadows={!low} dpr={low?[1,1.5]:[1,2]} camera={{position:[8,13,20],fov:44,near:.1,far:150}} gl={defaults=>{const gl=opaqueRenderer(defaults.canvas as HTMLCanvasElement,low);gl.toneMapping=THREE.NoToneMapping;gl.outputColorSpace=THREE.SRGBColorSpace;return gl;}} onCreated={({gl})=>gl.setClearColor('#d7d7be',1)}>
+ return <><div ref={setLabels} className="peace-label-host"/>{labels&&<Canvas frameloop="demand" shadows={!low} dpr={low?[1,1.5]:[1,2]} camera={{position:[8,13,20],fov:44,near:.1,far:150}} gl={defaults=>{const gl=opaqueRenderer(defaults.canvas as HTMLCanvasElement,low);gl.toneMapping=THREE.NoToneMapping;gl.outputColorSpace=THREE.SRGBColorSpace;return gl;}} onCreated={({gl})=>gl.setClearColor('#dfe9e4',1)}>
   <Cadence low={low}/><ambientLight intensity={.35}/><hemisphereLight args={['#fff6df','#8a9275',.85]}/><directionalLight color="#fff3d9" position={[-7,15,6]} intensity={1.5} castShadow={!low} shadow-mapSize={[1024,1024]} shadow-camera-left={-14} shadow-camera-right={14} shadow-camera-top={13} shadow-camera-bottom={-13} shadow-camera-near={1} shadow-camera-far={40} shadow-bias={-.00015} shadow-normalBias={.035}/>
   <HanokGarden low={low} reduced={reduced} onMove={onMove}/>
   {wish&&!quiet&&<Html portal={portal} position={[1.3,2.15,-2.3]} center style={{pointerEvents:'none'}}><span className="peace-wish-label">{wish.text.slice('🌿 소원 · '.length,68)}</span></Html>}
