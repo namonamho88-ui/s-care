@@ -28,7 +28,7 @@ async function setup(page:Page,admin=true){
   }
   await route.fulfill({json:data});
  });
- await page.goto('/operations');await page.getByRole('button',{name:'Digital Twin & Chaos Lab',exact:true}).click();await expect(page.getByRole('heading',{name:'가상 금융 서비스 의존 관계'})).toBeVisible();return calls;
+ await page.goto('/');await page.getByRole('button',{name:'Digital Twin & Chaos Lab',exact:true}).click();await expect(page.getByRole('heading',{name:'가상 금융 서비스 의존 관계'})).toBeVisible();return calls;
 }
 test('automatic demo pauses, skips presentation only, and never auto-approves',async({page})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));const calls=await setup(page);

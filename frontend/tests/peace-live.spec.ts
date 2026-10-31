@@ -20,15 +20,19 @@ async function close(page:Page){if(await page.getByRole('button',{name:'패널 �
 async function practice(page:Page,style:string,menu='기도하기'){await open(page,menu);await page.getByRole('button',{name:new RegExp('^'+style)}).click();}
 async function immersive(page:Page){const world=(await page.locator('.peace-world').boundingBox())!,v=page.viewportSize()!;expect(world.width).toBeGreaterThanOrEqual(v.width*.98);expect(world.height).toBeGreaterThanOrEqual(v.height*.95);expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+2&&document.documentElement.scrollHeight<=innerHeight+2)).toBe(true);for(const b of await page.locator('.peace-dock button').all()){await expect(b).toBeInViewport();expect((await b.boundingBox())!.height).toBeGreaterThanOrEqual(44);}await expect(page.locator('.peace-panel')).toHaveCount(0);}
 
-test('auto entry gathers root and legacy links in one garden, preserves reload identity and keeps operations links',async({browser})=>{
+test('auto entry stays at peace-room while the root remains incident response',async({browser})=>{
  const ca=await browser.newContext({viewport:{width:1280,height:800}}),cb=await browser.newContext({viewport:{width:1280,height:800}});
  try{
-  const a=await ca.newPage(),b=await cb.newPage();await setup(a,'',true,'/');await setup(b,'old-private-room');
+  const a=await ca.newPage(),b=await cb.newPage();await setup(a,'',true,'/peace-room');await setup(b,'old-private-room');
   for(const p of [a,b]){await expect(p.locator('.wr-name')).toHaveCount(2);await expect(p.getByLabel('닉네임',{exact:true})).toHaveCount(0);await expect(p.getByLabel('함께 머무를 방 이름')).toHaveCount(0);expect(await p.evaluate(()=>(window as any).__peaceRoom)).toBe('peace-together');}
   const id=await a.locator('.wr-name.self').getAttribute('data-player-id'),name=await a.locator('.wr-name.self').innerText();
   await a.reload();await expect(a.locator('.peace-connection')).toContainText('연결됨',{timeout:30000});await expect(a.locator('.wr-name.self')).toHaveAttribute('data-player-id',id!);expect(await a.locator('.wr-name.self').innerText()).toBe(name);await expect(b.locator('.wr-name')).toHaveCount(2);
   await a.getByRole('button',{name:'나가기',exact:true}).click();await expect(a.getByRole('button',{name:'다시 들어가기',exact:true})).toBeVisible();await a.waitForTimeout(1000);await expect(b.locator('.wr-name')).toHaveCount(1);await a.getByRole('button',{name:'다시 들어가기',exact:true}).click();await expect(b.locator('.wr-name')).toHaveCount(2);
-  const ops=await ca.newPage();await ops.goto('/?view=twin&incident=INC-COMPAT');await expect(ops).toHaveURL(/\/operations\?view=twin&incident=INC-COMPAT$/);await expect(ops.locator('main.peace')).toHaveCount(0);await expect(ops.getByRole('button',{name:'관제센터 시작',exact:true})).toBeVisible();await ops.close();
+  await expect(a.locator('.peace-brand')).toHaveAttribute('href','/peace-room');
+  await a.evaluate(()=>Object.defineProperty(navigator,'clipboard',{configurable:true,value:{writeText:async(value:string)=>{(window as any).__sharedGarden=value;}}}));await a.getByRole('button',{name:'방 링크 공유',exact:true}).click();expect(await a.evaluate(()=>(window as any).__sharedGarden)).toBe(new URL('/peace-room',a.url()).href);
+  const ops=await ca.newPage();let guestRequests=0;ops.on('request',r=>{if(new URL(r.url()).pathname==='/api/war-session')guestRequests++;});
+  for(const path of ['/','/?view=twin&incident=INC-COMPAT','/operations?view=twin&incident=INC-COMPAT']){await ops.goto(path);expect(new URL(ops.url()).pathname).toBe('/');await expect(ops.locator('main.peace')).toHaveCount(0);await expect(ops.getByRole('button',{name:'관제센터 시작',exact:true})).toBeVisible();if(path.includes('?')){expect(new URL(ops.url()).searchParams.get('view')).toBe('twin');expect(new URL(ops.url()).searchParams.get('incident')).toBe('INC-COMPAT');}}
+  expect(guestRequests).toBe(0);await ops.close();
  }finally{await ca.close();await cb.close();}
 });
 
