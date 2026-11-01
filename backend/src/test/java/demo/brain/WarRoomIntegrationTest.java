@@ -20,6 +20,12 @@ class WarRoomIntegrationTest {
  @Autowired TestRestTemplate http; @Autowired WarRoom rooms; @Autowired Store store; @Autowired TwinLab lab; @Autowired KnowledgeCases knowledge;
  @LocalServerPort int port; @Value("${brain.admin-token}") String token;
  String accountSession;
+ // Each case owns its rooms; admission capacity must not depend on test order.
+ @org.junit.jupiter.api.AfterEach void releaseTestRooms(){
+  synchronized(rooms){for(String field:List.of("rooms","guests","tickets")){
+   ((Map<?,?>)org.springframework.test.util.ReflectionTestUtils.getField(rooms,field)).clear();
+  }}
+ }
  synchronized String accountToken(){if(accountSession!=null)return accountSession;String operator="OP-WAR-"+UUID.randomUUID().toString().substring(0,8);store.db.update("INSERT INTO operators(id,name,department) VALUES (?,?,?)",operator,"워룸 가상 시험 담당자","PLATFORM");var h=new HttpHeaders();h.setBearerAuth(token);var invite=http.postForEntity("/api/auth/users",new HttpEntity<>(Map.of("login","war-room-admin","displayName","워룸 가상 관리자","role","ADMIN","operatorId",operator),h),Map.class);assertThat(invite.getStatusCode().is2xxSuccessful()).as("invite status %s",invite.getStatusCode()).isTrue();var activated=http.postForEntity("/api/auth/activate",Map.of("login","war-room-admin","inviteCode",invite.getBody().get("inviteCode"),"password","Fictional-test-pass-123!"),Map.class);assertThat(activated.getStatusCode().is2xxSuccessful()).isTrue();accountSession=activated.getBody().get("token").toString();return accountSession;}
  Map join(String room){return join(room,null);}
  Map join(String room,String resume){var h=new HttpHeaders();h.set("X-War-Gateway","fictional-war-test-gateway-1234567890");var b=new HashMap<String,String>();b.put("room",room);if(resume!=null)b.put("resume",resume);var r=http.postForEntity("/api/war-room/guest",new HttpEntity<>(b,h),Map.class);assertThat(r.getStatusCode().is2xxSuccessful()).as(r.toString()).isTrue();return r.getBody();}
@@ -33,6 +39,19 @@ class WarRoomIntegrationTest {
   void send(Object value){ws.sendText(store.encode(value),true).join();}
   JsonNode await(java.util.function.Predicate<JsonNode> predicate)throws Exception{long end=System.nanoTime()+8_000_000_000L;while(System.nanoTime()<end){var m=queue.poll(100,TimeUnit.MILLISECONDS);if(m!=null&&predicate.test(m))return m;}throw new AssertionError("Expected socket event was not received");}
   public void close(){if(!ws.isOutputClosed())ws.sendClose(1000,"test done").join();}
+ }
+ @Test void campusSocketsSharePortalsAndRejectTraining()throws Exception{
+  Map a=join("campus-sockets"),b=join("campus-sockets");
+  try(Peer one=new Peer(a.get("ticket").toString());Peer two=new Peer(b.get("ticket").toString())){
+   two.await(m->m.path("players").size()==2);
+   one.send(Map.of("type","campus-portal","world",4));
+   var changed=two.await(m->m.path("players").findValues("floor").stream().anyMatch(v->v.asInt()==5));
+   assertThat(changed.path("players").findValues("floor").stream().filter(v->v.asInt()==1).count()).isEqualTo(1);
+   one.send(Map.of("type","chat","text","AI 세계에서 확인 중"));
+   assertThat(two.await(m->m.path("chat").toString().contains("AI 세계에서 확인 중")).path("chat").size()).isEqualTo(1);
+   one.send(Map.of("type","training","action","start"));
+   assertThat(one.await(m->m.path("type").asText().equals("error")).path("message").asText()).contains("탐험");
+  }
  }
  @Test void twoRealSocketsShareMovementChatAndResumeWithoutAccountPrivileges()throws Exception{
   Map a=join("collab"),b=join("collab");

@@ -8,7 +8,7 @@ test('real BFF cookies, two browser guests, admin approval and shared knowledge 
  try{
   const pa=await a.newPage(),pb=await b.newPage();const identities:string[]=[];
   await pa.addInitScript(()=>{const Native=window.WebSocket;(window as any).__warSockets=[];window.WebSocket=class extends Native{constructor(url:string|URL,protocols?:string|string[]){super(url,protocols);(window as any).__warSockets.push(this);}};});
-  for(const page of [pa,pb]){await page.goto('/war-room?room=live-qa');const reply=page.waitForResponse(r=>r.url().endsWith('/api/war-session'));await page.getByRole('button',{name:'3D 워룸 입장'}).click();identities.push((await (await reply).json()).id);await expect(page.locator('.wr-header-state')).toContainText('연결됨');}
+  for(const page of [pa,pb]){await page.goto('/war-room/classic?room=live-qa');const reply=page.waitForResponse(r=>r.url().endsWith('/api/war-session'));await page.getByRole('button',{name:'3D 워룸 입장'}).click();identities.push((await (await reply).json()).id);await expect(page.locator('.wr-header-state')).toContainText('연결됨');}
   await expect(pa.locator('.wr-top-actions')).toContainText('2/20');await expect(pb.locator('.wr-top-actions')).toContainText('2/20');
   const cookie=(await a.cookies('http://127.0.0.1:3100/api/war-session')).find(c=>c.name.startsWith('war_guest_'));expect(cookie?.httpOnly).toBe(true);expect(cookie?.sameSite).toBe('Strict');
   expect((await a.request.get('/api/incidents')).status()).toBe(401);
@@ -18,7 +18,7 @@ test('real BFF cookies, two browser guests, admin approval and shared knowledge 
   expect((await admin.request.post('/api/war-room/rooms/live-qa/start',{data:{revision:0,scenario:'DATABASE'},headers:{Origin:'http://127.0.0.1:3100'}})).status()).toBe(403);
   const invitation=await admin.request.post('/api/auth/users',{data:{login:'war-browser-admin',displayName:'가상 브라우저 검증 관리자',role:'ADMIN',operatorId:'OP-01'},headers:{Origin:'http://127.0.0.1:3100'}});expect(invitation.ok()).toBe(true);
   const activated=await admin.request.post('/api/session',{data:{mode:'activate',login:'war-browser-admin',password:'Fictional-browser-pass-123!',inviteCode:(await invitation.json()).inviteCode},headers:{Origin:'http://127.0.0.1:3100'}});expect(activated.ok()).toBe(true);expect((await activated.json()).user.kind).toBe('ACCOUNT');
-  const pc=await admin.newPage();const states:string[]=[];pc.on('websocket',ws=>{ws.on('framereceived',e=>{try{const v=JSON.parse(String(e.payload));if(v.type==='state')states.push(`${v.revision}:${v.run.status}:${v.busy}`);}catch{}});ws.on('close',()=>states.push('socket closed'));});await pc.goto('/war-room?room=live-qa');await pc.getByRole('button',{name:'3D 워룸 입장'}).click();await expect(pa.locator('.wr-top-actions')).toContainText('3/20');await expect(pb.locator('.wr-top-actions')).toContainText('3/20');await expect(pc.locator('.wr-top-actions')).toContainText('3/20');
+  const pc=await admin.newPage();const states:string[]=[];pc.on('websocket',ws=>{ws.on('framereceived',e=>{try{const v=JSON.parse(String(e.payload));if(v.type==='state')states.push(`${v.revision}:${v.run.status}:${v.busy}`);}catch{}});ws.on('close',()=>states.push('socket closed'));});await pc.goto('/war-room/classic?room=live-qa');await pc.getByRole('button',{name:'3D 워룸 입장'}).click();await expect(pa.locator('.wr-top-actions')).toContainText('3/20');await expect(pb.locator('.wr-top-actions')).toContainText('3/20');await expect(pc.locator('.wr-top-actions')).toContainText('3/20');
   for(const page of [pa,pb])await page.getByRole('button',{name:'열린 패널 닫기'}).click();
   for(const page of [pa,pb,pc]){await expect(page.locator('[data-player-id]')).toHaveCount(3);for(const avatar of await page.locator('[data-player-id]').all())await expect(avatar).toBeVisible();}
   const remote=pb.locator(`[data-player-id="${identities[0]}"]`);const before=await remote.getAttribute('data-position');
@@ -40,7 +40,7 @@ test('real BFF cookies, two browser guests, admin approval and shared knowledge 
 
 test('ten real sockets exchange bounded movement independently of incident state',async({page})=>{
  test.skip(process.env.WAR_ROOM_LIVE!=='true','Requires isolated local backend');test.setTimeout(90000);
- await page.goto('/war-room');
+ await page.goto('/war-room/classic');
  const metrics=await page.evaluate(async()=>{
   const clients:{ws:WebSocket;id:string;state:any;bytes:number;frames:number}[]=[];
   const wait=async(predicate:()=>boolean)=>{const start=performance.now();while(!predicate()){if(performance.now()-start>12000)throw Error('socket synchronization timed out');await new Promise(r=>setTimeout(r,50));}};

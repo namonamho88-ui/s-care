@@ -42,7 +42,7 @@ export default function WarRoom(){
  const goFloor=(n:number)=>{setFocus(false);setFloor(n);setOverview(false);setPanel(null);destination.current=null;room.send({type:'floor',floor:n});};
  const walkTo=(x:number,z:number)=>{if(panelRef.current)return;destination.current={x,z,floor:activeFloor,at:Date.now(),lastX:me?.x||0,lastZ:me?.z||0,stuck:Date.now()};};
  const toggle=(name:typeof panel)=>setPanel(panel===name?null:name);
- async function share(){try{const url=new URL('/war-room',location.origin);url.searchParams.set('room',state!.room);await navigator.clipboard.writeText(url.toString());setCopied(true);}catch{setError('링크를 복사하지 못했습니다. 같은 방 이름을 알려주세요.');}}
+ async function share(){try{const url=new URL('/war-room/classic',location.origin);url.searchParams.set('room',state!.room);await navigator.clipboard.writeText(url.toString());setCopied(true);}catch{setError('링크를 복사하지 못했습니다. 같은 방 이름을 알려주세요.');}}
  useEffect(()=>{if(!greeting)return;const timer=setTimeout(()=>setGreeting(false),1500);return()=>clearTimeout(timer);},[greeting]);
  useEffect(()=>{if(!copied)return;const timer=setTimeout(()=>setCopied(false),2500);return()=>clearTimeout(timer);},[copied]);
  useEffect(()=>{destination.current=null;keys.current.clear();movement.current={x:0,z:0};const close=(e:KeyboardEvent)=>{if(e.key==='Escape')setPanel(null);};window.addEventListener('keydown',close);return()=>window.removeEventListener('keydown',close);},[panel]);

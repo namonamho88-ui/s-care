@@ -41,12 +41,13 @@ public class WarRoom {
  static void admin(){Access.admin();if(!"ACCOUNT".equals(Access.current().kind())||!"ADMIN".equals(Access.current().role()))throw Access.denied();}
  private String secret(){byte[] b=new byte[32];random.nextBytes(b);return Base64.getUrlEncoder().withoutPadding().encodeToString(b);}
  private static String hash(String s){try{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(s.getBytes(java.nio.charset.StandardCharsets.UTF_8)));}catch(Exception e){throw new IllegalStateException(e);}}
+ static boolean campus(String id){return id!=null&&id.startsWith("campus-");}
  static boolean peace(String id){return id!=null&&id.startsWith("peace-");}
  private Room room(String id){
   if(id==null||!id.matches("[a-z0-9-]{1,32}"))throw new IllegalArgumentException("방 이름: 영문 소문자·숫자·하이픈, 최대 32자");
   Room existing=rooms.get(id);if(existing!=null)return existing;
   if(rooms.size()>=8)throw new IllegalStateException("최대 8개 방까지 열 수 있습니다.");
-  Room r=new Room(id);var rows=peace(id)?List.<Map<String,Object>>of():store.db.queryForList("SELECT * FROM war_rooms WHERE id=?",id);
+  Room r=new Room(id);var rows=(peace(id)||campus(id))?List.<Map<String,Object>>of():store.db.queryForList("SELECT * FROM war_rooms WHERE id=?",id);
   if(!rows.isEmpty()){var row=rows.get(0);r.runId=(String)row.get("run_id");r.incidentId=(String)row.get("incident_id");r.mappedNode=(String)row.get("mapped_node");r.knowledgeId=(String)row.get("knowledge_id");if(r.runId!=null)r.run=loadRun(r.runId);}
   rooms.put(id,r);return r;
  }
@@ -54,14 +55,14 @@ public class WarRoom {
  private void persist(Room r){store.tx(()->{if(store.db.update("UPDATE war_rooms SET run_id=?,incident_id=?,mapped_node=?,updated_at=? WHERE id=?",r.runId,r.incidentId,r.mappedNode,Store.now(),r.id)==0)store.db.update("INSERT INTO war_rooms(id,run_id,incident_id,mapped_node,updated_at) VALUES (?,?,?,?,?)",r.id,r.runId,r.incidentId,r.mappedNode,Store.now());return null;});}
  public synchronized Map<String,Object> join(String id,String resume){
   enabled();cleanup();room(id);long now=System.currentTimeMillis();String token=resume;Guest g=resume==null?null:guests.get(hash(resume));
-  if(g==null||!g.room.equals(id)){if(guests.size()>=160)throw new IllegalStateException("게스트 세션 한도에 도달했습니다. 잠시 후 다시 시도하세요.");if(guests.values().stream().filter(p->p.room.equals(id)).count()>=CAPACITY)throw new IllegalStateException("방 정원은 20명입니다. 잠시 후 다시 시도하세요.");g=new Guest(id,now);if(id.startsWith("city-")||peace(id)){Set<Integer> styles=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->styles.add(p.appearance));while(styles.contains(g.appearance))g.appearance++;String base=List.of("파란수달","차분한곰","든든한펭귄","빠른여우").get(g.appearance%4)+"-"+g.id.substring(0,4);Set<String> used=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->used.add(p.name));String chosen=base;for(int suffix=2;used.contains(chosen);suffix++)chosen=base+"-"+suffix;g.name=chosen;}token=secret();guests.put(hash(token),g);}
+  if(g==null||!g.room.equals(id)){if(guests.size()>=160)throw new IllegalStateException("게스트 세션 한도에 도달했습니다. 잠시 후 다시 시도하세요.");if(guests.values().stream().filter(p->p.room.equals(id)).count()>=CAPACITY)throw new IllegalStateException("방 정원은 20명입니다. 잠시 후 다시 시도하세요.");g=new Guest(id,now);if(id.startsWith("city-")||peace(id)||campus(id)){Set<Integer> styles=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->styles.add(p.appearance));while(styles.contains(g.appearance))g.appearance++;String base=List.of("파란수달","차분한곰","든든한펭귄","빠른여우").get(g.appearance%4)+"-"+g.id.substring(0,4);Set<String> used=new HashSet<>();guests.values().stream().filter(p->p.room.equals(id)).forEach(p->used.add(p.name));String chosen=base;for(int suffix=2;used.contains(chosen);suffix++)chosen=base+"-"+suffix;g.name=chosen;}token=secret();guests.put(hash(token),g);}
   // Every socket gets a one-use, 20-second admission ticket; the resumable secret stays in an HttpOnly BFF cookie.
   String ticket=secret();String key=hash(token);tickets.entrySet().removeIf(e->e.getValue().guest().equals(key));tickets.put(hash(ticket),new Ticket(key,now+20_000));
   return Map.of("resume",token,"ticket",ticket,"id",g.id,"name",g.name,"expiresAt",g.expires);
  }
  synchronized Guest connect(String ticket,String connection){cleanup();Ticket t=tickets.remove(hash(ticket));if(t==null||t.expires()<System.currentTimeMillis())throw Access.denied();Guest g=guests.get(t.guest());if(g==null)throw Access.denied();if(g.connection!=null)throw new IllegalStateException("이미 접속 중입니다. 이전 창을 닫고 재시도하세요.");g.connection=connection;g.lastSeen=System.currentTimeMillis();spawn(g);room(g.room).revision++;return g;}
  synchronized void disconnect(String connection){guests.values().stream().filter(g->connection.equals(g.connection)).forEach(g->{g.connection=null;g.lastSeen=System.currentTimeMillis();room(g.room).revision++;});}
- private void spawn(Guest g){if(peace(g.room)){for(int i=0;i<20;i++){double x=-3+(i%4)*2,z=1.2+(i/4)*.85;if(free(g,x,z)){g.x=x;g.z=z;return;}}}if(g.room.startsWith("city-"))for(int i=0;i<4;i++){double x=-7+i*4.5;if(free(g,x,3.4)){g.x=x;g.z=3.4;return;}}for(int i=0;i<40;i++){double x=-8+(i%10)*1.6,z=4+Math.floor(i/10)*.75;if(free(g,x,z)){g.x=x;g.z=z;return;}}throw new IllegalStateException("입장 위치가 혼잡합니다.");}
+ private void spawn(Guest g){if(campus(g.room)){for(int i=0;i<25;i++){double x=-3.2+(i%5)*1.6,z=1.2+(i/5)*.9;if(free(g,x,z)){g.x=x;g.z=z;return;}}throw new IllegalStateException("도착 구역이 혼잡합니다.");}if(peace(g.room)){for(int i=0;i<20;i++){double x=-3+(i%4)*2,z=1.2+(i/4)*.85;if(free(g,x,z)){g.x=x;g.z=z;return;}}}if(g.room.startsWith("city-"))for(int i=0;i<4;i++){double x=-7+i*4.5;if(free(g,x,3.4)){g.x=x;g.z=3.4;return;}}for(int i=0;i<40;i++){double x=-8+(i%10)*1.6,z=4+Math.floor(i/10)*.75;if(free(g,x,z)){g.x=x;g.z=z;return;}}throw new IllegalStateException("입장 위치가 혼잡합니다.");}
  private boolean free(Guest g,double x,double z){
   if(Math.abs(x)>9||Math.abs(z)>6)return false;
   if(peace(g.room)){
@@ -71,6 +72,8 @@ public class WarRoom {
    if(Math.abs(z-(5.2+Math.sin(x*.5)*.25))<1.0&&!(x>1.55&&x<3.65))return false;
    if(Math.abs(Math.abs(x)-7.8)<.65&&Math.abs(z+1.3)<1.25)return false;
    if(Math.abs(Math.abs(x)-3.4)<1.2&&Math.abs(z+5.15)<.65)return false;
+  }else if(campus(g.room)){
+   if(z< -1.6)return false; // Portal and service structures occupy the rear strip.
   }else if(g.room.startsWith("city-")){
    // Geometry contract with city-scene.tsx: table, rack alcove, perimeter desks.
    if(x*x/(3.5*3.5)+z*z/(2.2*2.2)<1)return false;
@@ -92,7 +95,9 @@ public class WarRoom {
   if(now-g.window>=1000){g.window=now;g.count=0;}if(++g.count>25)throw new IllegalArgumentException("초당 이벤트 한도 초과");g.lastSeen=now;Room r=room(g.room);
   String type=msg.path("type").asText();
   if(peace(g.room)&&!Set.of("peace-action","chat","move","ping","sync").contains(type))throw new IllegalArgumentException("평온의 방에서는 휴식 동작·이동·채팅만 사용할 수 있습니다.");
+  if(campus(g.room)&&!Set.of("campus-portal","profile","chat","move","ping","sync").contains(type))throw new IllegalArgumentException("캠퍼스에서는 탐험·위치·대화만 공유합니다.");
   switch(type){
+   case "campus-portal" -> {if(!campus(g.room)||!msg.path("world").isInt())throw new IllegalArgumentException("캠퍼스 포털 오류");int world=msg.path("world").asInt();if(world<0||world>4)throw new IllegalArgumentException("세계 범위 오류");int previous=g.floor;g.floor=world+1;try{spawn(g);}catch(RuntimeException e){g.floor=previous;throw e;}}
    case "peace-action" -> peaceAction(g,msg,now);
    case "training" -> {r.training.apply(g.id,g.name,msg,now);}
    case "profile" -> {String name=msg.path("name").asText().strip();if(name.isEmpty()||name.length()>16||name.codePoints().anyMatch(Character::isISOControl))throw new IllegalArgumentException("닉네임은 1~16자로 입력하세요.");if(guests.values().stream().anyMatch(p->p!=g&&p.room.equals(g.room)&&p.name.equals(name)))throw new IllegalArgumentException("같은 방에서 사용 중인 닉네임입니다.");g.name=name;}
@@ -169,7 +174,7 @@ public class WarRoom {
  }
  public synchronized Map<String,Object> context(String id){enabled();admin();Room r=room(id);var out=new LinkedHashMap<String,Object>();out.put("incidentId",r.incidentId);out.put("mappedNode",r.mappedNode);return out;}
  public Map<String,Object> command(String id,String op,Map<String,Object> body){
-  enabled();admin();if(peace(id))throw new IllegalArgumentException("평온의 방은 장애 대응 명령과 연결할 수 없습니다.");Room r;
+  enabled();admin();if(campus(id))throw new IllegalArgumentException("캠퍼스 실험은 브라우저에서만 실행합니다.");if(peace(id))throw new IllegalArgumentException("평온의 방은 장애 대응 명령과 연결할 수 없습니다.");Room r;
   synchronized(this){r=room(id);if(r.busy)throw new IllegalStateException("이 방에서 작업이 실행 중입니다.");if(r.incidentId!=null&&!Set.of("link","unlink").contains(op))throw new IllegalStateException("연결 장애는 기존 장애 화면에서 처리하세요. 독립 실험은 연결 해제 후 가능합니다.");if(!(body.get("revision") instanceof Number n)||n.longValue()!=r.revision)throw new IllegalStateException("상태가 변경되었습니다. 최신 상태에서 다시 실행하세요.");r.busy=true;r.operation=op;r.error="";r.revision++;}
   try{
    if(op.equals("link")){String incident=Objects.toString(body.get("incidentId"),"");String node=Objects.toString(body.get("node"),"");TwinEngine.node(TwinEngine.initial(42),node);var i=store.incident(incident);if(i.get("deleted_at")!=null)throw new IllegalArgumentException("삭제된 장애입니다.");synchronized(this){r.incidentId=incident;r.mappedNode=node;persist(r);}store.audit(incident,Access.actor(),"WAR_ROOM_LINK",Map.of("room",id,"node",node,"basis","관리자 지정 시연 매핑; 자동 온톨로지 추론 아님"));}

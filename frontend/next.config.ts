@@ -5,6 +5,9 @@ const config: NextConfig = {
   outputFileTracingRoot: process.cwd(),
   turbopack: { root: process.cwd() },
   devIndicators: false,
-  experimental: { cpus: 2 },
+  experimental: {
+    cpus: process.env.SCARE_LOW_MEMORY_BUILD === '1' ? 1 : 2,
+    ...(process.env.SCARE_LOW_MEMORY_BUILD === '1' ? { webpackMemoryOptimizations: true } : {}),
+  },
 };
 export default config;

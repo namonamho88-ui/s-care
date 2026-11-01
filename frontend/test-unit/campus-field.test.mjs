@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {stripTypeScriptTypes} from 'node:module';
+import {simulate,settledAt} from '../components/war-room/campus-model.ts';
+const source=readFileSync(new URL('../components/war-room/campus-field.ts',import.meta.url),'utf8').replace("'./campus-model'",JSON.stringify(new URL('../components/war-room/campus-model.ts',import.meta.url).href));
+const {responseGuide,fieldPosition,fieldDestination}=await import('data:text/javascript;base64,'+Buffer.from(stripTypeScriptTypes(source)).toString('base64'));
+const e={target:'pg',type:'database',intensity:.8,duration:120,recoverAt:null};
+test('response starts at the injected source, requires inspection before approval guidance, and never mutates the experiment',()=>{const before=JSON.stringify(e);assert.equal(responseGuide(e,10,simulate(e,10),false).world,3);assert.equal(responseGuide(e,10,simulate(e,10),false).stage,1);assert.equal(responseGuide(e,10,simulate(e,10),true).stage,2);assert.equal(JSON.stringify(e),before);});
+test('approved release guides dependent services before results, and expiration is never called an approved repair',()=>{const recovered={...e,recoverAt:10};const g=responseGuide(recovered,11,simulate(recovered,11),true);assert.equal(g.stage,3);assert.notEqual(g.focus,'pg');assert.match(g.detail,/승인한/);const expired=responseGuide(e,121,simulate(e,121),false);assert.equal(expired.stage,3);assert.match(expired.detail,/자동 만료/);assert.equal(responseGuide(recovered,settledAt(recovered),simulate(recovered,settledAt(recovered)),true).stage,4);});
+test('an external failure begins in AI integration, not the default database zone',()=>{const ai={...e,target:'hermes',type:'external'};assert.equal(responseGuide(ai,0,simulate(ai,0),false).world,4);assert.equal(responseGuide(ai,0,simulate(ai,0),false).focus,'hermes');});
+test('field destinations preserve shared local movement boundaries and physical placements stay separate',()=>{assert.notDeepEqual(fieldPosition('pg'),fieldPosition('api'));const d=fieldDestination(-13,-23);assert.equal(d.world,3);assert(d.x>=-8&&d.x<=8);assert(d.z>=-1.4&&d.z<=5.5);});

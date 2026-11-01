@@ -534,7 +534,7 @@ test('stepper shows named requests, truthful progress and automatically opens th
   await dialog.getByRole('button',{name:'수정 내용 저장'}).click();
   await expect(dialog.getByRole('tab',{name:/6\. 장애 종료/})).toHaveAttribute('aria-selected','true');
   await expect(progress).toHaveAttribute('aria-valuenow','83');
-  await expect(dialog.getByText('가상 복구 지표를 확인했습니다.',{exact:true})).toBeVisible();
+  await expect(dialog.locator('#guide-report').getByText('가상 복구 지표를 확인했습니다.',{exact:true})).toBeVisible();
   expect(commands).toEqual(['review','approval','save']);
   await dialog.getByRole('button',{name:'장애 종료',exact:true}).click();
   await expect(progress).toHaveAttribute('aria-valuenow','100');
