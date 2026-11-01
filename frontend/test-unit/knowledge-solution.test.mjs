@@ -1,4 +1,5 @@
 import test from 'node:test';
+import * as evidence from '../lib/recovery-evidence.mjs';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
@@ -10,7 +11,7 @@ const require = createRequire(import.meta.url);
 const source = fs.readFileSync(new URL('../components/knowledge-solution.tsx', import.meta.url), 'utf8');
 const code = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2017, module: ts.ModuleKind.CommonJS, jsx: ts.JsxEmit.ReactJSX } }).outputText;
 const module = { exports: {} };
-new Function('require', 'module', 'exports', code)(require, module, module.exports);
+new Function('require', 'module', 'exports', code)(name => name === '@/lib/recovery-evidence.mjs' ? evidence : require(name), module, module.exports);
 const render = value => renderToStaticMarkup(React.createElement(module.exports.KnowledgeSolution, { value }));
 
 test('verification becomes readable steps and metrics without concealing failures', () => {

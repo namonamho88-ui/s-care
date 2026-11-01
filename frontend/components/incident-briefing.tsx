@@ -1,3 +1,4 @@
+import { recoveryEvidence, actionExplanation } from "@/lib/recovery-evidence.mjs";
 import { recoveryNotesDraft } from "@/lib/recovery-notes.mjs";
 import { technologyEvidence } from "@/lib/technology-guide.mjs";
 
@@ -11,6 +12,7 @@ export default function IncidentBriefing({ incident, nextAction }: {
   const raw = verification?.data_json ?? incident.notes;
   const recovery = recoveryNotesDraft(typeof raw === "string" ? raw : JSON.stringify(raw));
   const affected = incident.impact?.affected;
+  const { execution } = recoveryEvidence(incident);
   return <details className="incident-briefing">
     <summary><span>한눈에 보는 장애 대응</span><small>발표할 때 펼쳐 보세요 · 발생 → 분석 → 결과</small></summary>
     <div className="briefing-grid">
@@ -18,6 +20,10 @@ export default function IncidentBriefing({ incident, nextAction }: {
       <section><span className="briefing-number">02 · 어떤 판단을 했나요?</span><h3>{decision ? types[decision.type] || "분류 확인 필요" : "아직 판단 전입니다"}</h3><p>분류 결과이며, 확정된 장애 원인은 아닙니다.</p>{Number.isFinite(decision?.confidence) && <p>판단 신뢰도 {Math.round(decision.confidence * 100)}%</p>}<p>{Array.isArray(affected) ? `영향 가능 대상 ${affected.length}개 · 실제 장애 여부는 별도 확인` : "영향 범위 분석 기록 대기"}</p></section>
       <section><span className="briefing-number">03 · 지금 무엇을 하나요?</span><h3>{nextAction}</h3><p>담당자: {incident.owner_name || "미지정"}</p><p>화면 아래 현재 단계 안내에 따라 확인하거나 입력하세요.</p></section>
     </div>
+    <section className="briefing-result"><h3>어떻게 조치했나요?</h3><p>대상: {incident.asset_name || incident.asset_id || "대상 미기록"}</p>
+      {execution?.steps?.length ? <ol className="list-decimal pl-5 space-y-3">{execution.steps.map((step: any, i: number) => <li key={i}><strong>{step.label} · {step.passed === true ? "통과" : step.passed === false ? "실패" : "결과 미기록"}</strong><p className="whitespace-pre-line">{actionExplanation(step, execution)}</p></li>)}</ol> : <p>이 이력에는 구체적인 조치 과정이 저장되어 있지 않습니다. 아래 지표 변화만으로 어떤 방법을 수행했는지 확인할 수 없습니다.</p>}
+      {incident.notes && !recoveryNotesDraft(incident.notes) && <div><h4>담당자가 남긴 조치 기록</h4><p className="whitespace-pre-wrap break-words">{incident.notes}</p></div>}
+    </section>
     <section className="briefing-result"><h3>조치 전후 비교</h3><p style={{ whiteSpace: "pre-line" }}>{recovery || "확인 가능한 가상 복구 비교 기록이 아직 없습니다. 검증 결과가 저장되면 이곳에 표시됩니다."}</p></section>
     <details className="workflow-evidence"><summary>이 요약의 판단 출처 확인</summary>{technologyEvidence("jev", incident).map((line: string) => <p key={line}>{line}</p>)}</details>
     <p className="small muted">저장된 기록으로 구성한 요약입니다. 모든 장애·대상·복구 지표는 가상 데이터입니다.</p>
