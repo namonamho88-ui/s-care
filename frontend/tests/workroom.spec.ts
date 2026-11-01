@@ -32,3 +32,12 @@ test('detail read failure does not invent results and can be retried',async({pag
 test('mobile 3D exploration exposes a readable selected destination',async({page})=>{
  await page.setViewportSize({width:390,height:844});await connected(page);await page.goto('/war-room');await expect(page.locator('.office-canvas canvas')).toBeVisible();await page.getByRole('button',{name:'막힌 작업',exact:true}).click();await page.keyboard.press('Escape');await expect(page.locator('.office-task-label')).toContainText('정산 배치');await shot(page,'workroom-mobile-3d.png');await page.locator('.office-camera-controls').getByRole('button',{name:'내 시점',exact:true}).click();await page.locator('.office-scene-section').scrollIntoViewIfNeeded();await shot(page,'workroom-exploration-mobile.png');
 });
+
+test('infrastructure rack and list share repository facts and dependency navigation without writes',async({page})=>{
+ const api=await connected(page);await page.goto('/war-room');await page.getByRole('button',{name:'전체 보기',exact:true}).click();
+ await page.locator('.office-infra-label').filter({hasText:'PostgreSQL'}).filter({hasNotText:'작업 큐'}).click();
+ await expect(page.locator('.office-infrastructure-detail')).toContainText('원본 저장소');await expect(page.locator('.office-infrastructure-detail')).toContainText('실측 미연동');await expect(page.locator('.office-infrastructure-detail')).toContainText('Spring Boot API → PostgreSQL');
+ await page.getByRole('button',{name:'Spring Boot API 정보 보기',exact:true}).click();await expect(page.locator('.office-infrastructure-detail h3').first()).toHaveText('Spring Boot API');
+ await page.getByRole('button',{name:'업무 상세 닫기',exact:true}).click();await page.setViewportSize({width:390,height:844});await page.getByRole('button',{name:'인프라 목록',exact:true}).click();await page.getByRole('dialog',{name:'인프라 상세'}).getByRole('button',{name:/Neo4j/}).click();await expect(page.getByRole('dialog',{name:'인프라 상세'})).toContainText('자동 SQL 우회는 없습니다');
+ await shot(page,'workroom-infrastructure-mobile.png');await page.keyboard.press('Escape');await page.getByRole('button',{name:'막힌 작업',exact:true}).click();await expect(page.getByRole('dialog',{name:'업무 상세'})).toContainText('DEMO-03');expect(api.writes).toEqual([]);
+});
