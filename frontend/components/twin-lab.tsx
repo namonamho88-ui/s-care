@@ -3,7 +3,7 @@ import {useEffect,useRef,useState} from "react";
 import {ReactFlow,Background,Controls,MarkerType,Position,useNodesState} from "@xyflow/react";
 import {usePageActivity} from "@/components/use-page-activity";
 import {Button} from "@/components/ui/button";
-import {Activity,Play,Pause,RotateCcw,SkipForward,ShieldCheck,LoaderCircle,Box,ArrowRight} from "lucide-react";
+import {Activity,Play,Pause,RotateCcw,SkipForward,ShieldCheck,LoaderCircle} from "lucide-react";
 import "@xyflow/react/dist/style.css";
 type Row=Record<string,any>;
 const faultNames:Row={SERVER_DOWN:"서버 다운",CPU_OVERLOAD:"CPU 과부하",MEMORY_PRESSURE:"메모리 부족",DB_CONNECTION:"DB 연결 실패",DB_PRIMARY:"DB Primary 장애",REDIS_FAILURE:"Redis 장애",NETWORK_LATENCY:"네트워크 지연",NETWORK_PARTITION:"네트워크 단절",API_LATENCY:"API 응답 지연",TRAFFIC_SPIKE:"트래픽 급증",QUEUE_FAILURE:"Message Queue 장애"};
@@ -67,11 +67,6 @@ export default function TwinLab({api,isAdmin}:{api:(path:string,method?:string,b
  async function startDemo(){await perform('자동 데모 준비',async()=>{await create();setMode('DEMO');setTab(0);setPhase(0);setSeconds(0);setDemo(true);});}
  const stageAction=(label:string,op:string,body:Row={},nextTab?:number)=>void perform(label,async()=>{const r=await command(op,body);if(op==="reset"||op==="stop"){setPhase(-1);setDemo(false);}if(nextTab!==undefined)setTab(nextTab);return r;});
  return <div className={`twin-lab ${motion?"":"twin-reduced"}`}>
-  <div className="twin-room-entries">
-   <nav aria-label="평온의 방" className="twin-war-entry"><div className="twin-war-icon"><Box size={28}/></div><div className="twin-war-copy"><strong>평온의 방 · 오늘도 무사히</strong><p>같은 정원에서 성호, 염주, 돌탑으로 각자의 마음을 쉬어가세요.</p></div><a href="/peace-room">평온의 방 입장 <ArrowRight size={20} aria-hidden="true"/></a></nav>
-   <nav aria-label="워룸" className="twin-war-entry"><div className="twin-war-icon"><Activity size={28}/></div><div className="twin-war-copy"><strong>워룸 · 팀의 업무 공간</strong><p>진행 중인 업무와 검토할 작업을 한눈에 확인하세요.</p></div><a href="/war-room">워룸 입장 <ArrowRight size={20} aria-hidden="true"/></a></nav>
-  </div>
-  <a className="twin-room-training" href="/war-room/city">금융 장애 공동 대응 훈련 <ArrowRight size={16} aria-hidden="true"/></a>
   <div className="twin-intro"><div><span className="twin-kicker">S-CARE 2.0 / SYNTHETIC LAB</span><h2>AI Digital Twin & Chaos Lab</h2><p>장애를 주입하고, 같은 조건에서 복구 전략을 검증하세요.</p><small>Synthetic Data 기반 모델 · 실제 운영 복제 아님 · 모든 변경은 가상 상태에만 적용</small></div><span className="twin-state"><Activity size={16}/>{stateNames[run?.status]||"실험 준비"}</span></div>
   {error&&<div role="alert" className="banner">{error}<Button variant="outline" onClick={()=>{setError('');if(run)void perform('새로고침',async()=>choose(await api(`/twin/runs/${run.id}`)));}}>최신 상태 확인</Button></div>}
   <div className="twin-toolbar">

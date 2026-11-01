@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { waitForLoginServer } from "@/lib/login-readiness.mjs";
 import {
   Activity,
+  Users,
   BrainCircuit,
   LayoutDashboard,
   History,
@@ -39,6 +40,7 @@ import { usePageActivity } from "@/components/use-page-activity";
 import { isIncidentProcessing } from "@/lib/page-activity.mjs";
 import OperationsPanel from "@/components/operations-panel";
 import TwinLab from "@/components/twin-lab";
+import TeamSpaces from "@/components/team-spaces";
 import SkillEditor from "@/components/skill-editor";
 import AccountCenter from "@/components/account-center";
 import ManualCenter from "@/components/manual-center";
@@ -470,7 +472,7 @@ export default function Home() {
     if (!auth) return;
     const params = new URLSearchParams(window.location.search);
     const requestedView = params.get('view');
-    if (requestedView && ['twin','knowledge'].includes(requestedView)) setView(requestedView);
+    if (requestedView && ['twin','knowledge','spaces'].includes(requestedView)) setView(requestedView);
     const requestedIncident = params.get('incident');
     if (requestedIncident && /^[A-Za-z0-9_-]{1,64}$/.test(requestedIncident)) { setSelected(requestedIncident); setDrawer(true); }
     Promise.all([api("/catalog"), api("/graph")])
@@ -633,6 +635,7 @@ export default function Home() {
     number,
   ][];
   const title: Row = {
+    spaces: "팀 공간",
     twin: "AI Digital Twin & Chaos Lab",
     dashboard: "S-CARE · AI 장애 대응 관제센터",
     ontology: "시스템 연결과 영향 분석",
@@ -645,6 +648,7 @@ export default function Home() {
     accounts: isAdmin ? "계정 & 권한 관리" : "내 계정",
   };
   const descriptions: Row = {
+    spaces: "평온의 방에서 쉬고, 워룸에서 업무를 확인하고, 공동 대응 훈련에 함께 참여하세요.",
     twin: "합성 인프라에서 장애 영향을 계산하고 복구 전략을 독립적으로 검증합니다.",
     dashboard: "문자 한 통에서 분석·승인·복구까지, 안내에 따라 장애 대응을 경험하세요.",
     operations: "상세 운영 지표와 처리 시간, 알림, 저장된 작업을 확인합니다.",
@@ -720,6 +724,7 @@ export default function Home() {
           {[
             ["dashboard", LayoutDashboard, "통합 관제"],
             ["ontology", Network, "시스템 영향도"],
+            ["spaces", Users, "팀 공간"],
             ["twin", BrainCircuit, "Digital Twin & Chaos Lab"],
             ["incidents", History, "장애 이력"],
             ["knowledge", BookOpen, "해결 지식"],
@@ -802,7 +807,7 @@ export default function Home() {
               <h1>{title[view]}</h1>
               <p>{descriptions[view]}</p>
             </div>
-            {view !== "dashboard" && <div className="flex-row" style={{flexWrap:"wrap"}}><Button variant="outline" onClick={() => setMessageOpen(true)}>문자 붙여넣기</Button>
+            {view !== "dashboard" && view !== "spaces" && <div className="flex-row" style={{flexWrap:"wrap"}}><Button variant="outline" onClick={() => setMessageOpen(true)}>문자 붙여넣기</Button>
             <Button variant="outline" onClick={() => setCreateOpen(true)}>
               <Plus size={16} />
               장애 직접 등록
@@ -812,6 +817,7 @@ export default function Home() {
           {view === "accounts" && !isDemo && <>{isAdmin&&<DemoSettings api={api}/>}<AccountCenter user={user} operators={catalog.operators} api={api} onPasswordChanged={() => { clearSession(); setError("비밀번호를 변경하고 모든 세션을 폐기했습니다. 새 비밀번호로 로그인하세요."); }} /></>}
           {view === "guide" && <ManualCenter />}
           {view === "twin" && <TwinLab api={api} isAdmin={isAdmin}/>}
+          {view === "spaces" && <TeamSpaces/>}
           {view === "technology" && <TechnologyGuide config={config} />}
           {view === "ontology" && <>
             <div className="ontology-context"><label>분석 기준 장애<select value={selected || ""} onChange={e => setSelected(e.target.value || null)}><option value="">선택 안 함 · 전체 구조</option>{incidents.map(i => <option key={i.id} value={i.id}>{i.id} · {i.title} · {statusLabels[i.status]}</option>)}</select></label><p className="small muted">저장된 분석 결과를 조회합니다. 영향도 분석 전 장애는 전체 구조만 표시됩니다.</p>{current && <Button size="sm" variant="outline" onClick={() => openIncident(current.id)}>선택 장애 상세 보기</Button>}</div>
@@ -1498,7 +1504,7 @@ export default function Home() {
               </Panel>
             </>
           )}
-          <TechnologyContext view={view} onOpen={() => setView("technology")} />
+          {view !== "spaces" && <TechnologyContext view={view} onOpen={() => setView("technology")} />}
           <div className="footer-note">
             <span>S-CARE · 모든 데이터는 가상입니다.</span>
             <span>Jev / Ontology / A2A / Hermes Adapter / Harness</span>
