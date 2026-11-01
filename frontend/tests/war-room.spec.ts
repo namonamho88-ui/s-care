@@ -30,7 +30,7 @@ async function setup(page:Page,admin=false){
    if(m.type==='chat'){state.chat.push({id:String(Date.now()),name:'게스트-가람',text:m.text,at:Date.now()});publish(state);}
   });
  });
- await page.goto('/war-room');await expect(page.getByRole('button',{name:'3D 워룸 입장'})).toBeEnabled();await page.getByRole('button',{name:'3D 워룸 입장'}).click();await expect(page.getByRole('heading',{name:'Digital Twin War Room'})).toBeVisible();return {calls,moves,state,publish:(value:any)=>publish(value)};
+ await page.goto('/war-room/classic');await expect(page.getByRole('button',{name:'3D 워룸 입장'})).toBeEnabled();await page.getByRole('button',{name:'3D 워룸 입장'}).click();await expect(page.getByRole('heading',{name:'Digital Twin War Room'})).toBeVisible();return {calls,moves,state,publish:(value:any)=>publish(value)};
 }
 test('guest sees real 3D scene, shared state, chat and never admin controls',async({page})=>{
  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.setViewportSize({width:1512,height:1100});await setup(page);
@@ -53,7 +53,7 @@ test('mobile folds panels and supports floor selection without overflow',async({
  await page.getByRole('button',{name:'함께 해결',exact:true}).click();await page.getByRole('button',{name:'분석과 복구 결과 보기'}).click();await expect(page.getByRole('heading',{name:'분석 · 복구',exact:true})).toBeVisible();expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);await page.screenshot({path:'test-results/war-room-mobile.png',fullPage:true});
 });
 test('unsupported WebGL offers the existing twin',async({page})=>{
- await page.addInitScript(()=>{HTMLCanvasElement.prototype.getContext=(()=>null) as any;});await page.goto('/war-room');await expect(page.getByRole('button',{name:'3D 워룸 입장'})).toBeDisabled();await expect(page.getByRole('link',{name:'기존 디지털 트윈 보기',exact:true})).toHaveAttribute('href','/?view=twin');
+ await page.addInitScript(()=>{HTMLCanvasElement.prototype.getContext=(()=>null) as any;});await page.goto('/war-room/classic');await expect(page.getByRole('button',{name:'3D 워룸 입장'})).toBeDisabled();await expect(page.getByRole('link',{name:'기존 디지털 트윈 보기',exact:true})).toHaveAttribute('href','/?view=twin');
 });
 
 
