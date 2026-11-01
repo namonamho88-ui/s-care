@@ -39,5 +39,17 @@ test('touch drag, cancellation, short viewport and reduced motion',async({page,c
 });
 test('bead feedback is optional and local; peers never trigger vibration',async({page})=>{
  test.skip(process.env.PEACE_BEFORE==='true');await page.setViewportSize({width:390,height:844});await page.addInitScript(()=>{(window as any).__beadVibrations=[];Object.defineProperty(navigator,'vibrate',{configurable:true,value:(value:number)=>{(window as any).__beadVibrations.push(value);return true;}});});const f=await garden(page);
- await page.getByRole('button',{name:'정원 메뉴',exact:true}).click();await page.getByRole('button',{name:'소리와 움직임 설정',exact:true}).click();await expect(page.getByLabel('소리',{exact:true})).not.toBeChecked();await page.getByLabel('진동',{exact:true}).check();await page.getByRole('button',{name:'패널 닫기',exact:true}).click();await page.getByRole('button',{name:'묵주·염주',exact:true}).click();await page.getByRole('button',{name:'한 알 넘기기',exact:true}).click();expect(await page.evaluate(()=>(window as any).__beadVibrations.filter((n:number)=>n>0))).toEqual([12]);f.peerMove();await expect(page.getByLabel('현재 횟수')).toHaveText('1');expect(await page.evaluate(()=>(window as any).__beadVibrations.filter((n:number)=>n>0))).toEqual([12]);
+ await page.getByRole('button',{name:'정원 메뉴',exact:true}).click();await page.getByRole('button',{name:'소리와 움직임 설정',exact:true}).click();await expect(page.getByLabel('소리',{exact:true})).not.toBeChecked();await expect(page.getByLabel('진동',{exact:true})).toBeChecked();await page.getByRole('button',{name:'패널 닫기',exact:true}).click();await page.getByRole('button',{name:'묵주·염주',exact:true}).click();await page.getByRole('button',{name:'한 알 넘기기',exact:true}).click();expect(await page.evaluate(()=>(window as any).__beadVibrations.filter((n:number)=>n>0))).toEqual([12]);f.peerMove();await expect(page.getByLabel('현재 횟수')).toHaveText('1');expect(await page.evaluate(()=>(window as any).__beadVibrations.filter((n:number)=>n>0))).toEqual([12]);
+});
+
+for(const width of [390,1440])test(`ritual execution reveals avatar at ${width}px`,async({page})=>{
+ await page.setViewportSize({width,height:844});await garden(page);
+ for(const [panel,action,kind] of [['돌탑 쌓기','돌 올려놓기','stone'],['기도하기','성호 긋기','cross']]){
+  await page.getByRole('button',{name:panel,exact:true}).click();
+  await page.getByRole('button',{name:action,exact:true}).click();
+  await expect(page.locator('.peace-panel')).toBeHidden();
+  await expect(page.locator('.peace-world')).toHaveAttribute('data-camera-view','self');
+  await expect(page.locator('.peace-action-state')).toHaveAttribute('data-kind',kind);
+  await expect(page.locator('canvas')).toHaveAttribute('data-camera-settled','true');
+ }
 });
