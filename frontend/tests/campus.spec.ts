@@ -13,6 +13,7 @@ test('mobile DB fault → directional impact → approved recovery → retained 
  await page.getByRole('button',{name:'가상 장애 실행',exact:true}).click();
  await page.getByLabel('재생 속도').selectOption('10');
  await expect(page.locator('.campus-result').filter({hasText:'장애 이력·보고 조회'})).toContainText('PostgreSQL → Spring Boot API → Same-origin BFF → Next.js 관제 화면 → 장애 이력·보고 조회',{timeout:15000});
+ if(process.env.CAMPUS_SCREENSHOT_DIR)await page.screenshot({path:path.join(process.env.CAMPUS_SCREENSHOT_DIR,'campus-impact-mobile.png')});
  await expect(page.getByRole('button',{name:'승인한 가상 복구 실행'})).toBeDisabled();
  await page.getByLabel('실험 내 복구 승인:',{exact:false}).check();
  await page.getByRole('button',{name:'승인한 가상 복구 실행'}).click();
