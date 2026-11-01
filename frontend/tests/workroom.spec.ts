@@ -3,6 +3,29 @@ import path from 'node:path';
 import {demoRecords,demoUser} from '../components/war-room/workroom-demo';
 async function connected(page:Page,initial=demoRecords){let rows=structuredClone(initial),delayed='';const writes:string[]=[];page.on('request',r=>{if(!['GET','HEAD'].includes(r.method())&&r.url().includes('/api/'))writes.push(r.url());});await page.route('**/api/config',r=>r.fulfill({json:{user:demoUser,fictional:true}}));await page.route('**/api/incidents?*',r=>r.fulfill({json:rows}));await page.route('**/api/incidents',r=>r.fulfill({json:rows}));await page.route(/\/api\/incidents\/[^/?]+$/,async r=>{const id=decodeURIComponent(r.request().url().split('/').at(-1)!);if(id===delayed)await new Promise(resolve=>setTimeout(resolve,1200));await r.fulfill({json:rows.find(t=>t.id===id)}).catch(()=>{});});return{writes,setRows:(next:any[])=>{rows=structuredClone(next);},delay:(id:string)=>{delayed=id;}};}
 async function shot(page:Page,name:string){if(process.env.CAMPUS_SCREENSHOT_DIR){await expect(page.locator('.office-camera-notice')).toHaveCount(0,{timeout:15000});await page.screenshot({path:path.join(process.env.CAMPUS_SCREENSHOT_DIR,name),fullPage:(page.viewportSize()?.width||0)>900});}}
+test('mobile task sheets remain readable and leave the room visible behind them',async({page},testInfo)=>{
+ await page.setViewportSize({width:390,height:740});await connected(page);await page.goto('/war-room');
+ await page.getByRole('button',{name:'검토할 작업',exact:true}).click();
+ const list=page.getByRole('dialog',{name:'업무 목록'});
+ await expect(list).toBeInViewport();
+ const scrim=page.locator('.office-scrim');
+ await expect(scrim).toHaveCSS('background-color','rgba(7, 19, 29, 0.44)');
+ await page.mouse.move(5,5);
+ await expect(scrim).toHaveCSS('background-color','rgba(7, 19, 29, 0.44)');
+ await page.screenshot({path:testInfo.outputPath('mobile-review-list.png')});
+ await list.locator('[data-task="DEMO-02"]').click();
+ const detail=page.getByRole('dialog',{name:'업무 상세'});
+ await expect(detail.locator('.office-detail-title')).toBeInViewport();
+ await page.screenshot({path:testInfo.outputPath('mobile-task-detail.png')});
+ await detail.getByRole('button',{name:'활동',exact:true}).click();
+ await expect(detail.locator('.office-agent')).toContainText('recovery Agent');
+ await page.getByRole('button',{name:'업무 상세 닫기',exact:true}).click();
+ await page.getByRole('button',{name:'막힌 작업',exact:true}).click();
+ await expect(detail.locator('.office-detail-title')).toBeInViewport();
+ await page.getByRole('button',{name:'업무 상세 닫기',exact:true}).click();
+ await page.getByRole('button',{name:'인프라 목록',exact:true}).click();
+ await expect(page.getByRole('dialog',{name:'인프라 상세'}).getByRole('heading',{name:'인프라 목록'})).toBeInViewport();
+});
 test('central counts → blocked task → saved evidence → existing workflow link, without writes',async({page})=>{
  await page.setViewportSize({width:1600,height:1100});const api=await connected(page);await page.goto('/war-room');await expect(page.locator('.office-stat[data-status=running]')).toContainText('3');await expect(page.locator('.office-stat[data-status=review]')).toContainText('3');await expect(page.locator('.office-stat[data-status=done]')).toContainText('1');await expect(page.locator('.office-project-label')).toHaveCount(4);await shot(page,'workroom-desktop.png');await expect(page.locator('.office-zone-label')).toHaveCount(4);for(const label of await page.locator('.office-zone-label').all())await expect(label).toBeInViewport();
  await page.getByRole('button',{name:'막힌 작업',exact:true}).click();await expect(page.locator('.office-detail-title')).toContainText('DEMO-03');await expect(page.locator('.office-blocker')).toContainText('Provider 연결 실패');await expect(page.locator('.office-canvas')).toHaveAttribute('data-selected-task','DEMO-03');await expect(page.locator('.office-task-row[data-task="DEMO-03"]')).toHaveAttribute('aria-pressed','true');await expect(page.locator('.office-detail .office-action-link').first()).toHaveAttribute('href','/?incident=DEMO-03');await shot(page,'workroom-blocked-desktop.png');
