@@ -1,10 +1,10 @@
-import type {Component} from './campus-model';
+import {zones,type Component} from './campus-model';
 export const worlds=[
  {name:'중앙 광장',subtitle:'함께 만나고, 새로운 세계로',color:'#94c4ff',zone:-1},
- {name:'게이트웨이 시티',subtitle:'사용자 요청이 시작되는 세계',color:'#6dbaff',zone:0},
- {name:'서비스 아일랜드',subtitle:'기술을 사용자 기능으로 연결',color:'#8bdbbb',zone:1},
- {name:'데이터 코어',subtitle:'기억과 작업이 흐르는 세계',color:'#f0bf7c',zone:2},
- {name:'AI 오비탈',subtitle:'판단과 지식이 만나는 세계',color:'#c3a4ff',zone:3},
+ {name:zones[0],subtitle:'Next.js · BFF · Spring Boot API',color:'#6dbaff',zone:0},
+ {name:zones[1],subtitle:'장애 접수·분석 · 영향 분석 · 지식 초안 · 이력·보고',color:'#8bdbbb',zone:1},
+ {name:zones[2],subtitle:'PostgreSQL · Neo4j · PostgreSQL 작업 큐',color:'#f0bf7c',zone:2},
+ {name:zones[3],subtitle:'Jev · Hermes',color:'#c3a4ff',zone:3},
 ] as const;
 export const worldFor=(c:Component)=>c.zone+1;
 export async function campusRoomId(value:string){
