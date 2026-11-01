@@ -6,5 +6,5 @@ const spaces=[
  {name:'공동 대응 훈련',title:'공동 대응 훈련',description:'가상 금융 장애 상황에서 팀과 함께 대응 과정을 연습하세요.',href:'/war-room/city',Icon:Users},
 ];
 export default function TeamSpaces(){
- return <section className="team-space-cards" aria-label="팀 공간 입장">{spaces.map(({name,title,description,href,Icon})=><nav key={href} aria-label={name} className="team-space-entry"><div className="team-space-icon"><Icon size={28} aria-hidden="true"/></div><div className="team-space-copy"><strong>{title}</strong><p>{description}</p></div><a href={href}>{name} 입장 <ArrowRight size={20} aria-hidden="true"/></a></nav>)}</section>;
+ return <section className="team-space-cards" aria-label="메타버스 공간 입장">{spaces.map(({name,title,description,href,Icon})=><nav key={href} aria-label={name} className="team-space-entry"><div className="team-space-icon"><Icon size={28} aria-hidden="true"/></div><div className="team-space-copy"><strong>{title}</strong><p>{description}</p></div><a href={href}>{name} 입장 <ArrowRight size={20} aria-hidden="true"/></a></nav>)}</section>;
 }
