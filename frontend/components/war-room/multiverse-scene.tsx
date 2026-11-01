@@ -46,13 +46,12 @@ function Equipment({component:c,status,active}:{component:Component;status:strin
 }
 function Landscape({low}:{low:boolean}){
  return <>
- <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.15,-12]}><planeGeometry args={[220,220]}/><meshStandardMaterial color="#a5b8a1"/></mesh>
- <Box position={[0,-.03,-8]} size={[7,.1,82]} color="#ced3cd"/>
- {[-1,-23,19].map(z=><Box key={z} position={[0,.01,z+3]} size={[49,.12,6]} color="#c5ccc8"/>)}
- {Array.from({length:low?14:26},(_,i)=>{const side=i%2===0?-1:1,x=side*(32+i%3*3),z=22-Math.floor(i/2)*8;return <group key={i} position={[x,0,z]}><mesh position={[0,1.7,0]}><cylinderGeometry args={[.3,.45,3.4,8]}/><meshStandardMaterial color="#817968"/></mesh><mesh position={[0,4,0]} scale={[2.3,3,2.3]}><icosahedronGeometry args={[1,1]}/><meshStandardMaterial color={i%3?'#719777':'#87a280'}/></mesh></group>;})}
+ <mesh rotation={[-Math.PI/2,0,0]} position={[0,-.15,-12]}><planeGeometry args={[220,220]}/><meshStandardMaterial color="#647480"/></mesh>
+ <Box position={[0,-.03,-8]} size={[7,.1,82]} color="#80919c"/>
+ {[-1,-23,19].map(z=><Box key={z} position={[0,.01,z+3]} size={[49,.12,6]} color="#7d8c96"/>)}
+ {[-31,31].map(x=><group key={x}><Box position={[x,2,-13]} size={[.12,4,62]} color="#728da0"/><Box position={[x,4.4,-13]} size={[2,.15,62]} color="#465c6b"/></group>)}
  {[-24,24].flatMap(x=>[-15,8,28].map(z=><group key={`${x}:${z}`} position={[x,0,z]}><Box position={[0,2.4,0]} size={[.15,4.8,.15]} color="#667c82"/><Box position={[0,4.8,0]} size={[1.2,.12,.6]} color="#f2e6c4"/></group>))}
- {[-24,-16,-8,0,8,16,24].map((x,i)=><group key={'back'+x} position={[x,0,-53-(i%2)*4]}><Box position={[0,2,0]} size={[.45,4,.45]} color="#807665"/><mesh position={[0,5,0]} scale={[3,4,3]}><icosahedronGeometry args={[1,2]}/><meshStandardMaterial color={i%2?'#799a7a':'#628a73'}/></mesh></group>)}
- {[-65,-25,20,60].map((x,i)=><mesh key={'hill'+x} position={[x,1,-92]} scale={[32,9+i%2*4,24]}><sphereGeometry args={[1,24,12]}/><meshStandardMaterial color={i%2?'#86a697':'#9bb6a7'}/></mesh>)}
+ <Box position={[0,2,-53]} size={[62,4,.2]} color="#647784"/>
  <Box position={[0,.04,19]} size={[10,.08,6]} color="#b8c3bf"/>
  <Box position={[0,1,17]} size={[3.8,1.5,.7]} color="#496b7e"/>
  </>;
@@ -63,8 +62,8 @@ export default function MultiverseScene({world,players,id,results,onVisit,onMove
  const visible=players.slice().sort((a,b)=>Number(b.id===id)-Number(a.id===id)).slice(0,low?6:20);
  const focused=selected||focus,activeLinks=dependencies.filter(e=>e.from===focused||e.to===focused||results.some(r=>r.path.includes(e.from)&&r.path.includes(e.to)));
  function walk(x:number,z:number){const destination=fieldDestination(x,z);if(destination.world!==world)onVisit(destination.world);else onMove(destination.x,destination.z);}
- return <><div ref={labels} className="campus-label-root"/><Canvas camera={{position:[0,9,36],fov:66,near:.1,far:200}} dpr={low?1:[1,1.5]} frameloop="demand" gl={{antialias:!low}} onCreated={({gl})=>gl.setClearColor('#c6dce8')}>
- <fog attach="fog" args={['#c6dce8',65,155]}/><hemisphereLight args={['#edf8ff','#64735f',1.5]}/><directionalLight position={[-15,35,18]} intensity={2}/>
+ return <><div ref={labels} className="campus-label-root"/><Canvas camera={{position:[0,9,36],fov:66,near:.1,far:200}} dpr={low?1:[1,1.5]} frameloop="demand" gl={{antialias:!low}} onCreated={({gl})=>gl.setClearColor('#334957')}>
+ <hemisphereLight args={['#edf8ff','#3b4f61',1.5]}/><directionalLight position={[-15,35,18]} intensity={2}/>
  <FollowCamera position={rendered} goal={goal} heading={heading} zoom={zoom} world={world} low={low} reduced={reduced} onArrive={onArrive}/>
  <group onClick={e=>{e.stopPropagation();walk(e.point.x,e.point.z);}}><Landscape low={low}/></group>
  {worlds.slice(1).map((w,i)=>{const [x,z]=fieldAnchors[i+1],zoneResults=components.filter(c=>c.zone===i).map(c=>results.find(r=>r.id===c.id)!),bad=zoneResults.filter(r=>r.status!=='정상').length,guideZone=components.find(c=>c.id===focus)?.zone===i;return <group key={w.name} position={[x,0,z]}>

@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {stripTypeScriptTypes} from 'node:module';
+const source=readFileSync(new URL('../components/war-room/workroom-model.ts',import.meta.url),'utf8').replace("'../../lib/incident-guide.mjs'",JSON.stringify(new URL('../lib/incident-guide.mjs',import.meta.url).href));
+const {adaptWork,statusOf,groupProjects,allocateSlots,seatPosition,artifactRows,agentLabel,priority}=await import('data:text/javascript;base64,'+Buffer.from(stripTypeScriptTypes(source)).toString('base64'));
+const row=(id,status='ANALYZING',extra={})=>({id,title:id,status,system_id:'SYS',system_name:'시스템',owner_id:'OP-1',...extra});
+test('review/approval/post-recovery remain review; cancellation/rejection never become completion',()=>{for(const s of ['NEEDS_REVIEW','WAITING_APPROVAL','RESOLVED'])assert.equal(statusOf(s),'review');for(const s of ['FAILED','CANCELLED','REJECTED'])assert.equal(statusOf(s),'blocked');assert.equal(statusOf('CLOSED'),'done');});
+test('missing progress, owner, and timestamps remain unknown, not synthetic measurements',()=>{const t=adaptWork([row('A')],{})[0];assert.equal(t.progress,null);assert.equal(t.owner,'담당자 미지정');assert.equal(t.updated,'');assert.equal(adaptWork([row('B','ANALYZING',{progress:172})],{})[0].progress,null);});
+test('malformed collections and duplicate identities produce data errors',()=>{assert.throws(()=>adaptWork({items:[]},{}));assert.throws(()=>adaptWork([row('A'),row('A')],{}));assert.throws(()=>adaptWork([{id:'A',status:'FAILED'}],{}));});
+test('new tasks, result arrival, status changes and filtered input cannot move established seats',()=>{const first=allocateSlots({},['T-2','T-3']);const before=seatPosition(2,first['T-2']);const next=allocateSlots(first,['T-1','T-3','T-2']);assert.deepEqual(seatPosition(2,next['T-2']),before);assert.equal(next['T-1'],2);assert.equal(allocateSlots(next,['T-3'])['T-2'],first['T-2']);});
+test('system grouping and priority retain source task identities',()=>{const tasks=adaptWork([row('A','CLOSED'),row('B','FAILED'),row('C','RESOLVED')],{operatorId:'OP-1'});assert.equal(groupProjects(tasks).length,1);assert.deepEqual(priority(tasks).map(t=>t.id),['B','C','A']);assert.equal(tasks[2].guide.target,'notes');});
+test('artifacts exist only when saved data exists; unknown agent presence is not inferred',()=>{assert.deepEqual(artifactRows({tasks:[{id:'A',status:'working',result_json:'broken'}]}),[]);assert.equal(artifactRows({report:{summary:'saved'},tasks:[{id:'A',agent:'diagnosis',result_json:JSON.stringify({artifacts:[{parts:[{data:'saved'}]}]})}]}).length,2);assert.match(agentLabel({status:'input-required'}),/응답 대기/);assert.match(agentLabel({}),/상태 미기록/);});
