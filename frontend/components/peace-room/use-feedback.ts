@@ -2,9 +2,9 @@
 import {useCallback,useEffect,useRef,useState} from 'react';
 export type Sensation='bead'|'place'|'fall'|'gesture';
 const PATTERNS:Record<Sensation,number|number[]>={bead:12,place:22,fall:[30,45,22],gesture:14};
-/** Local, opt-in feedback only. An API return value is never treated as proof of physical vibration. */
+/** Local feedback only; vibration defaults on, sound stays opt-in. An API return value is never treated as proof of physical vibration. */
 export function useFeedback(){
- const [supported,setSupported]=useState(false),[vibration,setVibration]=useState(false),[sound,setSound]=useState(false);
+ const [supported,setSupported]=useState(false),[vibration,setVibration]=useState(true),[sound,setSound]=useState(false);
  const audio=useRef<AudioContext|null>(null),last=useRef(0),settings=useRef({vibration,sound});settings.current={vibration,sound};
  useEffect(()=>{setSupported(typeof navigator.vibrate==='function');const stop=()=>{if(document.hidden){navigator.vibrate?.(0);void audio.current?.suspend();}};document.addEventListener('visibilitychange',stop);return()=>{document.removeEventListener('visibilitychange',stop);navigator.vibrate?.(0);void audio.current?.close();};},[]);
  const unlock=useCallback(()=>{if(settings.current.sound){try{audio.current??=new AudioContext();void audio.current.resume().catch(()=>{});}catch{/* Sound remains optional. */}}},[]);
