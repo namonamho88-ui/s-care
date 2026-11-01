@@ -825,6 +825,21 @@ test('admin warmup displays unknown cost and never calls a model until one expli
  await page.screenshot({path:'test-results/model-warmup.png',fullPage:true});
 });
 
+test('knowledge solution presents readable verification without changing stored records',async({page})=>{
+ const solution='승인된 가상 복구 조치의 검증 기록: '+JSON.stringify({before:{processedCount:984,blockingTransactions:2},after:{processedCount:1000,blockingTransactions:0},steps:[{label:'차단 트랜잭션 확인과 잠금 해제',passed:true}],checks:[{label:'처리 건수 대사',expected:1000,actual:1000,passed:true}],passed:true});
+ const mutations=await setup(page,undefined,'ADMIN',{}, {skills:[{id:'SKL-READABLE',title:'가상 해결 지식',status:'APPROVED',solution,simulated:true,conditions:'가상 조건',checks:'가상 점검',cautions:'실제 변경 금지'}]});
+ await page.getByRole('button',{name:'해결 지식',exact:true}).click();
+ await expect(page.getByRole('table')).toContainText('처리 건수');
+ await expect(page.getByRole('table')).toContainText('984');
+ await expect(page.getByText('차단 트랜잭션 확인과 잠금 해제 · 통과')).toBeVisible();
+ await expect(page.locator('details pre').filter({hasText:'blockingTransactions'})).not.toBeVisible();
+ await page.getByText('원본 검증 기록 보기',{exact:true}).click();
+ await expect(page.locator('details pre').filter({hasText:'blockingTransactions'})).toBeVisible();
+ expect(mutations).toEqual([]);
+ await page.getByText('원본 검증 기록 보기',{exact:true}).click();
+ await page.screenshot({path:'test-results/knowledge-readable.png',fullPage:true});
+});
+
 test('skill draft saves versioned changes and exposes old and new values',async({page})=>{
  const skill:any={id:'SKL-UI-EDIT',type:'RESOURCE',title:'가상 초안',status:'DRAFT',conditions:'가상 적용 조건',checks:'가상 점검',solution:'기존 가상 조치',cautions:'가상 환경 전용',revision:0,simulated:true,incident_id:'INC-UI-RESOLVED'};
  await setup(page,undefined,'ADMIN',{}, {skills:[skill]});let history:any[]=[];

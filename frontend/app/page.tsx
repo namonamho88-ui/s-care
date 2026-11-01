@@ -1,4 +1,5 @@
 "use client";
+import { KnowledgeSolution } from "@/components/knowledge-solution";
 import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import { waitForLoginServer } from "@/lib/login-readiness.mjs";
@@ -1291,7 +1292,7 @@ export default function Home() {
                       ].map(([k, label]) => (
                         <div key={k}>
                           <dt>{label}</dt>
-                          <dd>{s[k]}</dd>
+                          <dd>{k === "solution" ? <KnowledgeSolution value={String(s[k] ?? "")} /> : s[k]}</dd>
                         </div>
                       ))}
                     </dl>
