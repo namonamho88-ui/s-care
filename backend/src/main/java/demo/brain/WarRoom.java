@@ -64,14 +64,13 @@ public class WarRoom {
  synchronized void disconnect(String connection){guests.values().stream().filter(g->connection.equals(g.connection)).forEach(g->{g.connection=null;g.lastSeen=System.currentTimeMillis();room(g.room).revision++;});}
  private void spawn(Guest g){if(campus(g.room)){for(int i=0;i<25;i++){double x=-3.2+(i%5)*1.6,z=1.2+(i/5)*.9;if(free(g,x,z)){g.x=x;g.z=z;return;}}throw new IllegalStateException("도착 구역이 혼잡합니다.");}if(peace(g.room)){for(int i=0;i<20;i++){double x=-3+(i%4)*2,z=1.2+(i/4)*.85;if(free(g,x,z)){g.x=x;g.z=z;return;}}}if(g.room.startsWith("city-"))for(int i=0;i<4;i++){double x=-7+i*4.5;if(free(g,x,3.4)){g.x=x;g.z=3.4;return;}}for(int i=0;i<40;i++){double x=-8+(i%10)*1.6,z=4+Math.floor(i/10)*.75;if(free(g,x,z)){g.x=x;g.z=z;return;}}throw new IllegalStateException("입장 위치가 혼잡합니다.");}
  private boolean free(Guest g,double x,double z){
-  if(Math.abs(x)>9||Math.abs(z)>6)return false;
+  if(peace(g.room)){if(Math.abs(x)>18||z< -20||z>22)return false;}else if(Math.abs(x)>9||Math.abs(z)>6)return false;
   if(peace(g.room)){
-   // Geometry contract with peace-scene.tsx: central tree planter.
-   if(Math.hypot(x,z+3.85)<1.85)return false;
+   // Geometry contract with hanok-garden.tsx: open center, tree at the left edge.
+   if(Math.hypot(x+12,z+10.85)<1.85)return false;
    // Hanok stream is crossed only on its wooden bridge; alcove seats stay solid.
-   if(Math.abs(z-(5.2+Math.sin(x*.5)*.25))<1.0&&!(x>1.55&&x<3.65))return false;
-   if(Math.abs(Math.abs(x)-7.8)<.65&&Math.abs(z+1.3)<1.25)return false;
-   if(Math.abs(Math.abs(x)-3.4)<1.2&&Math.abs(z+5.15)<.65)return false;
+   if(Math.abs(x)<10&&Math.abs(z-(5.2+Math.sin(x*.5)*.25))<1.4&&!(x>1.55&&x<3.65))return false;
+   if(Math.abs(Math.abs(x)-13.8)<.65&&(Math.abs(z+1.3)<1.25||Math.abs(z+9)<1.25))return false;
   }else if(campus(g.room)){
    if(z< -1.6)return false; // Portal and service structures occupy the rear strip.
   }else if(g.room.startsWith("city-")){
