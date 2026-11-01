@@ -635,7 +635,7 @@ export default function Home() {
     number,
   ][];
   const title: Row = {
-    spaces: "팀 공간",
+    spaces: "메타버스 공간",
     twin: "AI Digital Twin & Chaos Lab",
     dashboard: "S-CARE · AI 장애 대응 관제센터",
     ontology: "시스템 연결과 영향 분석",
@@ -648,7 +648,7 @@ export default function Home() {
     accounts: isAdmin ? "계정 & 권한 관리" : "내 계정",
   };
   const descriptions: Row = {
-    spaces: "평온의 방에서 쉬고, 워룸에서 업무를 확인하고, 공동 대응 훈련에 함께 참여하세요.",
+    spaces: "함께 쉬고, 일하고, 훈련하는 공간",
     twin: "합성 인프라에서 장애 영향을 계산하고 복구 전략을 독립적으로 검증합니다.",
     dashboard: "문자 한 통에서 분석·승인·복구까지, 안내에 따라 장애 대응을 경험하세요.",
     operations: "상세 운영 지표와 처리 시간, 알림, 저장된 작업을 확인합니다.",
@@ -724,7 +724,7 @@ export default function Home() {
           {[
             ["dashboard", LayoutDashboard, "통합 관제"],
             ["ontology", Network, "시스템 영향도"],
-            ["spaces", Users, "팀 공간"],
+            ["spaces", Users, "메타버스 공간"],
             ["twin", BrainCircuit, "Digital Twin & Chaos Lab"],
             ["incidents", History, "장애 이력"],
             ["knowledge", BookOpen, "해결 지식"],
