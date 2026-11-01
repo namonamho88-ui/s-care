@@ -12,3 +12,7 @@
 .office-canvas:not([data-camera=overview]) .wr-name.self{visibility:hidden}
 
 .office-canvas[data-camera=overview] .office-project-label{max-width:110px;overflow:hidden;text-overflow:ellipsis}.office-canvas[data-camera=overview] .wr-name.self{visibility:hidden}
+
+.office-workroom .office-infra-label{width:110px;padding:6px 8px;background:#203d50;border:1px solid #7497aa;font-size:11px}.office-infra-label small{display:block;font-size:10px;color:#c0d5df}.office-infra-label[aria-pressed=true]{outline:2px solid #89d9f4}.office-infra-edge{padding:12px 0;border-bottom:1px solid #405363}.office-infra-edge small{display:block;margin-bottom:8px}.office-infrastructure-detail dd{overflow-wrap:anywhere}.office-canvas:not([data-camera=overview]) .office-infra-label[aria-pressed=false]{display:none}
+@media(max-width:900px){.office-canvas[data-camera=overview] .office-infra-label{width:76px;font-size:10px;padding:4px}.office-canvas[data-camera=overview] .office-infra-label small{display:none}}
+.office-canvas[data-camera=overview] .office-infra-label{width:max-content;max-width:140px;white-space:nowrap;font-size:10px;padding:4px 6px;min-height:24px}.office-canvas[data-camera=overview] .office-infra-label small{display:none}@media(max-width:900px){.office-canvas[data-camera=overview] .office-infra-label{display:none}}
