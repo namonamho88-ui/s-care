@@ -39,7 +39,7 @@ public class WarRoomSocket extends TextWebSocketHandler {
    String id=c.session().getId(),room=rooms.connectionRoom(id);
    if(room==null){if(System.currentTimeMillis()-c.opened()>5000)close(c);continue;}
    if(!rooms.live(id)){close(c);continue;}
-   if(!WarRoom.peace(room)){
+   if(!WarRoom.peace(room)&&!WarRoom.campus(room)){
     var exercise=rooms.trainingState(id);int exerciseHash=exercise.hashCode();
     if(!Objects.equals(training.get(id),exerciseHash)||!sent.containsKey(id)){send(c,Map.of("type","training","room",room,"training",exercise,"serverNow",System.currentTimeMillis()));training.put(id,exerciseHash);}
    }

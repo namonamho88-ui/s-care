@@ -34,6 +34,19 @@ class WarRoomIntegrationTest {
   JsonNode await(java.util.function.Predicate<JsonNode> predicate)throws Exception{long end=System.nanoTime()+8_000_000_000L;while(System.nanoTime()<end){var m=queue.poll(100,TimeUnit.MILLISECONDS);if(m!=null&&predicate.test(m))return m;}throw new AssertionError("Expected socket event was not received");}
   public void close(){if(!ws.isOutputClosed())ws.sendClose(1000,"test done").join();}
  }
+ @Test void campusSocketsSharePortalsAndRejectTraining()throws Exception{
+  Map a=join("campus-sockets"),b=join("campus-sockets");
+  try(Peer one=new Peer(a.get("ticket").toString());Peer two=new Peer(b.get("ticket").toString())){
+   two.await(m->m.path("players").size()==2);
+   one.send(Map.of("type","campus-portal","world",4));
+   var changed=two.await(m->m.path("players").findValues("floor").stream().anyMatch(v->v.asInt()==5));
+   assertThat(changed.path("players").findValues("floor").stream().filter(v->v.asInt()==1).count()).isEqualTo(1);
+   one.send(Map.of("type","chat","text","AI 세계에서 확인 중"));
+   assertThat(two.await(m->m.path("chat").toString().contains("AI 세계에서 확인 중")).path("chat").size()).isEqualTo(1);
+   one.send(Map.of("type","training","action","start"));
+   assertThat(one.await(m->m.path("type").asText().equals("error")).path("message").asText()).contains("탐험");
+  }
+ }
  @Test void twoRealSocketsShareMovementChatAndResumeWithoutAccountPrivileges()throws Exception{
   Map a=join("collab"),b=join("collab");
   try(Peer one=new Peer(a.get("ticket").toString());Peer two=new Peer(b.get("ticket").toString())){

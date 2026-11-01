@@ -3,7 +3,7 @@ import path from 'node:path';
 test('mobile DB fault → directional impact → approved recovery → retained evidence, no operational API writes',async({page})=>{
  await page.setViewportSize({width:390,height:844});
  const writes:string[]=[];page.on('request',r=>{if(!['GET','HEAD'].includes(r.method())&&r.url().includes('/api/'))writes.push(r.url());});
- await page.goto('/war-room');await expect(page.getByRole('heading',{name:'● 정상'})).toBeVisible();
+ await page.goto('/war-room');await page.getByRole('button',{name:'전체 관제',exact:true}).click();await expect(page.getByRole('heading',{name:'● 정상'})).toBeVisible();
  if(process.env.CAMPUS_SCREENSHOT_DIR){await expect(page.locator('.campus-node-label')).toHaveCount(12);await page.screenshot({path:path.join(process.env.CAMPUS_SCREENSHOT_DIR,'campus-mobile.png')});}
  await page.getByRole('button',{name:'2D',exact:true}).click();
  await page.locator('.campus-selectors').getByRole('button',{name:/PostgreSQL/}).click();
@@ -25,14 +25,14 @@ test('mobile DB fault → directional impact → approved recovery → retained 
 });
 test('WebGL unavailable falls back to same-data view; keyboard sheet and all targets remain reachable',async({page})=>{
  await page.setViewportSize({width:360,height:800});await page.addInitScript(()=>{HTMLCanvasElement.prototype.getContext=(()=>null) as any;});
- await page.goto('/war-room');await expect(page.locator('.campus-map')).toHaveAttribute('data-view','2d');
+ await page.goto('/war-room');await page.getByRole('button',{name:'전체 관제',exact:true}).click();await expect(page.locator('.campus-map')).toHaveAttribute('data-view','2d');
  await expect(page.locator('.campus-flat>section:not(.campus-flat-links)>button')).toHaveCount(12);
  await page.locator('.campus-flat').getByRole('button',{name:/Neo4j/}).click();await expect(page.getByRole('dialog')).toContainText('자동 SQL 우회는 없습니다');
  await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).toHaveCount(0);
  await page.getByRole('button',{name:'목록',exact:true}).click();await expect(page.locator('.campus-flat')).toContainText('work_jobs');
 });
 test('3D desktop loads and selected dependency is focusable without hover',async({page})=>{
- await page.setViewportSize({width:1440,height:1000});const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/war-room');
+ await page.setViewportSize({width:1440,height:1000});const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/war-room');await page.getByRole('button',{name:'전체 관제',exact:true}).click();
  await expect(page.locator('.campus-map canvas')).toBeVisible({timeout:30000});
  await expect(page.locator('.campus-node-label')).toHaveCount(12);
  if(process.env.CAMPUS_SCREENSHOT_DIR)await page.screenshot({path:path.join(process.env.CAMPUS_SCREENSHOT_DIR,'campus-desktop.png')});
