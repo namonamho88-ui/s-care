@@ -16,6 +16,7 @@ public class RecoveryPlans {
   String observations=i.get("observations").toString();
   if(evidence!=null&&!evidence.isBlank())observations+="\n추가 오류 근거: "+evidence;
   var plan=RecoverySimulation.plan(observations,i.get("type").toString(),batch);
+  if(s.demoProgress(i))plan=RecoverySimulation.demoPlan(plan);
   plan.put("id",Store.id("PLAN-"));plan.put("createdAt",java.time.Instant.now().toString());
   s.event(id,"RECOVERY_PLAN","COMPLETED","장애 유형별 조치 계획 · "+plan.get("label"),plan);
   return plan;
@@ -29,6 +30,7 @@ public class RecoveryPlans {
   });
  }
  public void requireExecutable(String id){
-  var plan=latest(id);if(plan!=null&&!Boolean.TRUE.equals(plan.get("supported")))throw new IllegalStateException("배치 오류 코드·실패 단계 등 추가 오류 근거가 필요합니다. 복합 오류는 담당자 검토가 필요합니다.");
+  var plan=latest(id);if(plan!=null&&!Boolean.TRUE.equals(plan.get("supported"))&&s.demoProgress(s.incident(id))){plan=RecoverySimulation.demoPlan(plan);s.event(id,"RECOVERY_PLAN","COMPLETED","시연 모드 · 원인 미확정 기본 복구 절차",plan);s.audit(id,Access.actor(),"DEMO_RECOVERY_EVIDENCE_BYPASS",plan);}
+  if(plan!=null&&!Boolean.TRUE.equals(plan.get("supported")))throw new IllegalStateException("배치 오류 코드·실패 단계 등 추가 오류 근거가 필요합니다. 복합 오류는 담당자 검토가 필요합니다.");
  }
 }

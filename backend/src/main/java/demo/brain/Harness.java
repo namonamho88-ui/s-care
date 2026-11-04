@@ -76,7 +76,8 @@ public class Harness {
    s.active(id,()->{s.audit(id,"harness",Boolean.TRUE.equals(result.get("passed"))?"POLICY_VALIDATED":"POLICY_REVIEW_REQUIRED",result);return null;});return result;
   }));
   if(assessment.path("blocked").asBoolean())throw new IllegalStateException("Harness blocked: "+assessment.path("blockReasons"));
-  if(assessment.path("needsReview").asBoolean()){s.active(id,()->{s.transition(id,"ANALYZING","NEEDS_REVIEW");s.event(id,"REVIEW","WAITING","분류·원인 후보 교차 검증: 담당자 확인 필요",s.decode(assessment.toString()));return null;});return;}
+  if(assessment.path("needsReview").asBoolean()&&s.demoProgress(i)){s.active(id,()->{s.audit(id,"harness","DEMO_EVIDENCE_BYPASS",s.decode(assessment.toString()));s.event(id,"REVIEW","COMPLETED","시연 모드 · 원인 미확정 상태로 관리자 승인 단계 진행",Map.of("demoOnly",true,"causeConfirmed",false));return null;});}
+  if(assessment.path("needsReview").asBoolean()&&!s.demoProgress(i)){s.active(id,()->{s.transition(id,"ANALYZING","NEEDS_REVIEW");s.event(id,"REVIEW","WAITING","분류·원인 후보 교차 검증: 담당자 확인 필요",s.decode(assessment.toString()));return null;});return;}
   s.active(id,()->{recoveryPlans.prepare(id,null);s.transition(id,"ANALYZING","WAITING_APPROVAL");s.event(id,"APPROVAL","WAITING","관리자 대응 승인 대기",Map.of("actor","admin"));return null;});
  }
  private void runIndependentAgents(String id){

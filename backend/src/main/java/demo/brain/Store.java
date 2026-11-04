@@ -12,6 +12,8 @@ import java.time.Instant;
 import java.util.function.Supplier;
 @Component
 public class Store {
+ @org.springframework.beans.factory.annotation.Value("${brain.demo-relaxed-evidence:true}") boolean demoRelaxedEvidence=true;
+ public boolean demoProgress(Map<String,Object> incident){return demoRelaxedEvidence&&"DEMO".equals(incident.get("mode"));}
  public final JdbcTemplate db;public final ObjectMapper json;private final TransactionTemplate transaction;
  public Store(JdbcTemplate db,ObjectMapper json,PlatformTransactionManager manager){this.db=db;this.json=json;transaction=new TransactionTemplate(manager);}
  public <T>T tx(Supplier<T> work){return transaction.execute(status->work.get());}

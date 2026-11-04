@@ -15,6 +15,17 @@ class RecoverySimulationTest {
   assertThat(RecoverySimulation.checks(after,true)).allMatch(c->Boolean.TRUE.equals(c.get("passed")));
   var steps=(List<Map<String,Object>>)result.get("steps");assertThat(steps).hasSize(4);assertThat(steps.get(1).get("before")).isNotEqualTo(steps.get(1).get("after"));
  }
+ @Test @SuppressWarnings("unchecked") void demoCanRehearseUnknownAndAmbiguousBatchWithoutConfirmingCause(){
+  for(String evidence:List.of("ABEND","file not found and permission denied")){
+   var original=RecoverySimulation.plan(evidence,"APPLICATION",true);
+   var demo=RecoverySimulation.demoPlan(original);
+   assertThat(original).containsEntry("supported",false);
+   assertThat(demo).containsEntry("supported",true).containsEntry("causeConfirmed",false).containsEntry("demoEvidenceBypass",true);
+   assertThat(demo.get("basis")).isEqualTo(original.get("basis"));
+   var result=RecoverySimulation.execute(demo);
+   assertThat(RecoverySimulation.checks((Map<String,Object>)result.get("after"),true)).allMatch(c->Boolean.TRUE.equals(c.get("passed")));
+  }
+ }
  @Test void messageStatusAndBusinessNameAreNotRootCauseEvidence(){
   for(String status:List.of("ABEND","DELAY_END")){
    var p=RecoverySimulation.plan("문자에서 추출한 관측값 (KST).\n배치명: 해외접수금액 불일치\n알림 상태: "+status,"APPLICATION",true);

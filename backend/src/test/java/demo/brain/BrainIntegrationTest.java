@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import java.util.*;
 import static org.assertj.core.api.Assertions.*;
-@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.DEFINED_PORT,properties={"server.port=18080","spring.datasource.url=${TEST_DB_URL:jdbc:h2:mem:brain_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}","spring.datasource.username=${TEST_DB_USER:sa}","spring.datasource.password=${TEST_DB_PASSWORD:}","brain.neo4j-uri=${TEST_NEO4J_URI:disabled}","brain.graph-required=false","brain.graph-namespace=${TEST_GRAPH_NAMESPACE:Asset}","brain.step-ms=0","brain.internal-url=http://localhost:18080","brain.jev.local-url=http://127.0.0.1:19998/v1/systemone"})
+@SpringBootTest(webEnvironment=SpringBootTest.WebEnvironment.DEFINED_PORT,properties={"server.port=18080","brain.demo-relaxed-evidence=false","spring.datasource.url=${TEST_DB_URL:jdbc:h2:mem:brain_test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}","spring.datasource.username=${TEST_DB_USER:sa}","spring.datasource.password=${TEST_DB_PASSWORD:}","brain.neo4j-uri=${TEST_NEO4J_URI:disabled}","brain.graph-required=false","brain.graph-namespace=${TEST_GRAPH_NAMESPACE:Asset}","brain.step-ms=0","brain.internal-url=http://localhost:18080","brain.jev.local-url=http://127.0.0.1:19998/v1/systemone"})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @org.springframework.test.context.TestPropertySource(properties="brain.sse-timeout-ms=1200")
 class BrainIntegrationTest {
@@ -224,4 +224,18 @@ class BrainIntegrationTest {
   var knowledge=new KnowledgeEngine(s,new LocalSkillStore(s),null,new MockHermesAdapter());assertThat(knowledge.search(context).get("skills").toString()).contains(id);
   assertThat(s.db.queryForObject("SELECT COUNT(*) FROM skill_revisions WHERE skill_id=?",Integer.class,id)).isEqualTo(1);
  }
+ @Test @Order(100) void demoEvidenceRelaxationStillRequiresApprovalAndPreservesUnknownCause()throws Exception{
+  s.demoRelaxedEvidence=true;
+  try{
+   String asset=s.one("SELECT id FROM assets WHERE kind='BATCH' ORDER BY id LIMIT 1").get("id").toString();
+   String id=post("/api/incidents",Map.of("title","시연 근거 부족 배치","assetId",asset,"observations","ABEND no technical evidence","mode","DEMO","provider","MOCK")).getBody().get("id").toString();
+   waitFor(id,"WAITING_APPROVAL");
+   assertThat(get("/api/incidents/"+id).getBody()).containsEntry("demoRelaxedEvidence",true);
+   String pending=id;assertThatThrownBy(()->tools.apply(pending)).hasMessageContaining("approved");
+   assertThat(post("/api/incidents/"+id+"/approval",Map.of("approved",true,"reason","시연용 원인 미확정 기본 절차 승인")).getStatusCode().value()).isEqualTo(200);
+   waitFor(id,"RESOLVED");
+   assertThat(s.db.queryForObject("SELECT COUNT(*) FROM audit WHERE incident_id=? AND action='DEMO_EVIDENCE_BYPASS'",Integer.class,id)).isEqualTo(1);
+  }finally{s.demoRelaxedEvidence=false;}
+ }
+
 }

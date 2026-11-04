@@ -45,3 +45,7 @@ Harness & 평가에서 한국어 Mock 100건 또는 실제 Local 100건 평가�
 - PDF/Excel은 복구 완료/종료 상태에서 다운로드한다. 종료 전 후기와 재발 방지 대책을 저장한다.
 - TypeSafe는 추후 API 키로 전환하는 구조다. Jev는 Local을 사용한다. Hermes 화면에서 API 연결, 실제 LLM 응답 검증, Mock 여부를 구분해서 설명한다.
 - 승인된 Skill은 Hermes 파일 카탈로그로 게시된다. 승인 전에는 PostgreSQL DRAFT에만 저장되며 Agent 검색·Hermes 파일 게시에서 제외된다.
+
+## 근거 부족 상태의 시연 진행
+
+`brain.demo-relaxed-evidence`는 기본 `true`입니다. DEMO 장애는 근거 검토 사유와 원인 미확정 표시를 보존하면서 관리자 승인 단계로 진행합니다. 원인별 계획을 만들 수 없는 배치는 명시적인 시연용 기본 복구 절차를 사용합니다. 관리자 승인, 검증 계산, REAL 모드의 검토 정책은 유지합니다. 이미 승인 대기 중인 DEMO 장애도 승인 시 기본 절차로 전환하며 감사 기록을 남깁니다. 시연 종료 후 `BRAIN_DEMO_RELAXED_EVIDENCE=false`로 기존 근거 검토 정책을 복원할 수 있습니다.

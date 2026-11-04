@@ -60,6 +60,17 @@ public final class RecoverySimulation {
   if(supported){actions.add(Map.of("code","PRECHECK","label","대상 시스템·장애 상태 및 재실행 조건 확인"));actions.add(Map.of("code","REMEDIATE","label",action));if(batch){actions.add(Map.of("code","RERUN","label","기존 처리 이력을 확인하고 미처리 구간만 재실행"));actions.add(Map.of("code","RECONCILE","label","처리 건수·금액·중복·미해결 레코드 대조"));}else actions.add(Map.of("code","PROBE","label","오류율·응답시간·연결 상태 재측정"));}
   var plan=new LinkedHashMap<String,Object>();plan.put("version",2);plan.put("profile",code);plan.put("label",label);plan.put("batch",batch);plan.put("supported",supported);plan.put("basis",reasons.isEmpty()?List.of("ABEND·DELAY_END만으로 근본 원인을 특정하지 않습니다."):reasons);plan.put("actions",actions);plan.put("initial",initial);plan.put("prevention",prevention);plan.put("provider","SYNTHETIC_ACTION_MODEL");plan.put("realChanges",false);plan.put("dataSource","시연 환경의 데이터 기준입니다. 실제 운영 측정값이나 처리 결과가 아닙니다.");plan.put("caution","운영 재실행은 별도 원인 확인·중복 처리 방지·담당자 승인이 필요합니다. 이 모델은 실제 명령을 실행하지 않습니다.");return plan;
  }
+ /** Explicit demo scenario; preserves missing evidence instead of inventing a root cause. */
+ public static Map<String,Object> demoPlan(Map<String,Object> original) {
+  if(Boolean.TRUE.equals(original.get("supported")))return original;
+  var plan=new LinkedHashMap<>(original);
+  plan.put("supported",true);plan.put("demoEvidenceBypass",true);plan.put("causeConfirmed",false);
+  plan.put("profile","DEMO_UNCONFIRMED");plan.put("label","시연용 기본 복구 절차 · 원인 미확정");
+  plan.put("actions",List.of(Map.of("code","PRECHECK","label","대상 시스템·장애 상태 및 재실행 조건 확인"),Map.of("code","REMEDIATE","label","시연 환경의 작업 상태 초기화"),Map.of("code","RERUN","label","시연 데이터의 미처리 구간 재실행"),Map.of("code","RECONCILE","label","처리 건수·금액·중복·미해결 레코드 대조")));
+  if(!Boolean.TRUE.equals(plan.get("batch")))plan.put("actions",List.of(Map.of("code","PRECHECK","label","시연 환경 상태 확인"),Map.of("code","REMEDIATE","label","시연 환경의 상태 초기화"),Map.of("code","PROBE","label","시연 환경 응답 상태 확인")));
+  plan.put("caution","판단 근거가 부족해 시연용 기본 절차로 진행합니다. 원인은 미확정이며 실제 운영 복구 결과가 아닙니다.");
+  return plan;
+ }
  @SuppressWarnings("unchecked")
  public static Map<String,Object> execute(Map<String,Object> plan) {
   if(!Boolean.TRUE.equals(plan.get("supported")))throw new IllegalStateException("오류 근거가 부족하거나 복합 오류입니다. 추가 오류 근거를 입력하세요.");
@@ -69,6 +80,7 @@ public final class RecoverySimulation {
    switch(code){
     case "PRECHECK"->state.put("prechecked",true);
     case "REMEDIATE"->{passed=Boolean.TRUE.equals(state.get("prechecked"));if(passed){switch(plan.get("profile").toString()){
+     case "DEMO_UNCONFIRMED"->{state.put("duplicateCount",0);state.put("unresolvedRecords",0);}
      case "FILE"->state.put("fileAvailable",true);
      case "PERMISSION"->state.put("accessGranted",true);
      case "LOCK"->state.put("blockingTransactions",0);
